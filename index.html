@@ -1,0 +1,550 @@
+<!DOCTYPE html>
+<html lang="pt-BR" data-theme="dark">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>VisuAlg.dev - IDE Online para VisuAlg 3.0.7 | Pseudocódigo em Português</title>
+
+    <!-- SEO -->
+    <meta name="description" content="IDE online para VisuAlg 3.0.7. Escreva, execute e depure algoritmos em pseudocódigo português diretamente no navegador. Editor com syntax highlighting, painel de variáveis e console integrado.">
+    <meta name="keywords" content="visualg, visualg 3.0.7, visualg 3, visualg 3.0, visualg online, visualg 3.0.7 online, ide visualg, pseudocódigo, algoritmos, lógica de programação, programação em português, aprender programar, ensino de programação">
+    <meta name="author" content="Conrado Salomé Ribeiro">
+    <meta name="robots" content="index, follow">
+    <!-- <link rel="canonical" href="https://visualg.dev"> -->
+    <link rel="icon" type="image/png" href="src/images/favicon.png">
+
+
+    <!-- Open Graph -->
+    <!--
+    <meta property="og:title" content="VisuAlg.dev - IDE Online para VisuAlg">
+    <meta property="og:description" content="Escreva, execute e depure algoritmos em pseudocódigo português diretamente no navegador. Gratuito e sem instalação.">
+    <meta property="og:image" content="src/images/og-image.png">
+    <meta property="og:url" content="https://visualg.dev">
+    <meta property="og:type" content="website">
+    <meta property="og:locale" content="pt_BR">
+    -->
+
+    <!-- Twitter Card -->
+    <!--
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="VisuAlg.dev - IDE Online para VisuAlg">
+    <meta name="twitter:description" content="Escreva, execute e depure algoritmos em pseudocódigo português diretamente no navegador.">
+    <meta name="twitter:image" content="src/images/og-image.png">
+    -->
+
+    <!-- CodeMirror 5 -->
+    <link rel="stylesheet" href="vendor/codemirror/codemirror.min.css">
+    <link rel="stylesheet" href="src/css/style.css">
+
+    <!-- Lucide Icons -->
+    <script src="src/unpk/lucide.min.js"></script>
+    <!-- Marked (Markdown parser) -->
+    <script src="src/jsdelivr/marked.min.js"></script>
+</head>
+
+<body>
+    <!-- Header / Toolbar -->
+    <header class="header">
+        <div class="header-logo">
+            <span class="logo-icon">&#9670;</span>
+            <span class="logo-text">VisuAlg <small>.dev</small></span>
+            <span class="beta-tag">Beta</span>
+        </div>
+        <div class="header-controls">
+            <div class="controls-exec">
+                <button id="btn-run" class="toolbar-btn btn-run" title="Executar (F9)"><i data-lucide="play"></i> Executar</button>
+                <button id="btn-step" class="toolbar-btn btn-step" title="Passo a passo (F8)"><i data-lucide="skip-forward"></i> Passo a passo</button>
+                <button id="btn-stop" class="toolbar-btn btn-stop" title="Parar" disabled><i data-lucide="square"></i> Parar</button>
+            </div>
+            <span class="toolbar-separator"></span>
+            <div class="controls-file">
+                <button id="btn-open" class="toolbar-btn" title="Abrir arquivo"><i data-lucide="folder-open"></i> Abrir</button>
+                <div class="btn-group" id="save-group">
+                    <button id="btn-save" class="toolbar-btn" title="Salvar arquivo"><i data-lucide="download"></i> Salvar</button>
+                    <button id="btn-save-dropdown" class="toolbar-btn btn-dropdown" title="Opções de salvamento"><i data-lucide="chevron-down"></i></button>
+                    <div class="dropdown-menu hidden" id="save-menu">
+                        <button class="dropdown-item" data-format="alg">Salvar como .alg</button>
+                        <button class="dropdown-item" data-format="txt">Salvar como .txt</button>
+                    </div>
+                </div>
+                <input type="file" id="file-input" accept=".alg,.txt" style="display: none;">
+                <button id="btn-docs" class="toolbar-btn" title="Documentação"><i data-lucide="book-open"></i> Documentação</button>
+            </div>
+        </div>
+        <div class="header-actions">
+            <button id="btn-theme" class="toolbar-btn btn-theme" title="Alternar tema"><i data-lucide="moon"></i></button>
+            <button id="btn-settings" class="toolbar-btn" title="Configurações"><i data-lucide="settings"></i></button>
+            <button id="btn-menu" class="toolbar-btn btn-menu" title="Menu"><i data-lucide="menu"></i></button>
+        </div>
+        <!-- Mobile menu -->
+        <div class="mobile-menu" id="mobile-menu">
+            <button class="mobile-menu-item" id="mobile-open"><i data-lucide="folder-open"></i> Abrir</button>
+            <button class="mobile-menu-item" id="mobile-save-alg"><i data-lucide="download"></i> Salvar como .alg</button>
+            <button class="mobile-menu-item" id="mobile-save-txt"><i data-lucide="download"></i> Salvar como .txt</button>
+            <button class="mobile-menu-item" id="mobile-docs"><i data-lucide="book-open"></i> Documentação</button>
+            <button class="mobile-menu-item" id="mobile-settings"><i data-lucide="settings"></i> Configurações</button>
+        </div>
+    </header>
+
+    <!-- Conteúdo principal -->
+    <main class="main-content">
+        <div class="grid-container">
+            <!-- Editor Column (tabs + editor) -->
+            <div class="editor-column">
+                <div class="tab-bar">
+                    <div class="tab-list" id="tab-list"></div>
+                    <button class="tab-add" id="btn-add-tab" title="Nova tab">+</button>
+                    <button class="tab-bar-indent" id="btn-tab-indent" title="Autoindentar código">
+                        <i data-lucide="indent-increase"></i>
+                        <span class="tab-bar-indent-label">Indentar</span>
+                    </button>
+                </div>
+                <div class="editor-panel" id="editorPanel">
+                    <div class="resize-handle-horizontal" id="resizeHandleHorizontal"></div>
+                    <div class="resize-handle-vertical" id="resizeHandleVertical"></div>
+                    <div id="codemirror-host"></div>
+                </div>
+            </div>
+
+            <!-- Painel de variáveis -->
+            <div class="variables-panel" id="variablesPanel">
+                <div class="panel-header">
+                    Variáveis
+                    <button id="btn-clear-vars" class="panel-header-btn" title="Limpar variáveis"><i data-lucide="brush-cleaning"></i></button>
+                </div>
+                <div class="panel-body">
+                    <table id="variables-table">
+                        <thead>
+                            <tr>
+                                <th>Nome</th>
+                                <th>Tipo</th>
+                                <th>Valor</th>
+                            </tr>
+                        </thead>
+                        <tbody></tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Terminal / Console -->
+            <div class="terminal-panel" id="terminalPanel">
+                <div class="panel-header">
+                    Console
+                    <button id="btn-clear-terminal" class="panel-header-btn" title="Limpar console"><i data-lucide="brush-cleaning"></i></button>
+                </div>
+                <div class="panel-body">
+                    <div id="terminal-output"></div>
+                </div>
+                <div id="terminal-input-area" class="hidden">
+                    <input id="terminal-input" type="text" placeholder="Digite a entrada..." />
+                    <button id="terminal-input-ok">OK</button>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Footer / Status bar -->
+    <footer class="footer">
+        <span class="footer-item" id="compiler-status"><i data-lucide="circle-check" class="footer-icon"></i> Pronto</span>
+        <span class="footer-item"><i data-lucide="cpu" class="footer-icon"></i> VisuAlg 3.0.7</span>
+        <span class="footer-item footer-version" id="footer-version"><i data-lucide="code" class="footer-icon"></i> Visualg.dev v0.10</span>
+        <span class="footer-item"><i data-lucide="user" class="footer-icon"></i> Desenvolvido por Prof. Conrado Salomé Ribeiro</span>
+    </footer>
+
+    <!-- Changelog Modal -->
+    <div class="modal-overlay hidden" id="changelogOverlay">
+        <div class="modal changelog-modal">
+            <div class="modal-header">
+                <span>Changelog</span>
+                <button id="btn-close-changelog"><i data-lucide="x"></i></button>
+            </div>
+            <div class="modal-body">
+                <div class="changelog-section">
+                    <span class="changelog-version">v0.6</span>
+                    <ul class="changelog-list">
+                        <li class="changelog-item-old">Melhorias na IDE - salvamento, keywords com acentuação, indentação e UI</li>
+                    </ul>
+                    <span class="changelog-version">v0.7</span>
+                    <ul class="changelog-list">
+                        <li class="changelog-item-old">Suporte a multiplas tabs</li>
+                        <li class="changelog-item-old">Melhorias no mobile</li>
+                    </ul>
+                    <span class="changelog-version">v0.8</span>
+                    <ul class="changelog-list">
+                        <li class="changelog-item-old">Auto-indentação no editor</li>
+                        <li class="changelog-item-old">Tema de alto contraste</li>
+                        <li class="changelog-item-old">Controle numérico com slider para tamanho da fonte</li>
+                        <li class="changelog-item-old">Melhorias visuais e funcionais na tab bar</li>
+                    </ul>
+                    <span class="changelog-version">v0.9</span>
+                    <ul class="changelog-list">
+                        <li>Correções na criação de funções e procedimentos</li>
+                        <li>Documentação da linguagem</li>
+                        <li>Novo sistema de configurações</li>
+                        <li>Melhorias de design</li>
+                    </ul>
+                    <span class="changelog-version">v0.10</span>
+                    <ul class="changelog-list">
+                        <li>Detecção de loop infinito com opção de desativar</li>
+                        <li>Atalho de teclado (Cmd+/ / Ctrl+/) para comentar e descomentar linhas</li>
+                        <li>Correção no tratamento de variáveis e operador de atribuição</li>
+                        <li>Correção de erro ao usar RaizQ com número negativo</li>
+                        <li>Correções na documentação</li>
+                    </ul>
+                </div>
+<!--                <div class="changelog-section changelog-upcoming">-->
+<!--                    <span class="changelog-version upcoming">Em desenvolvimento</span>-->
+<!--                    <ul class="changelog-list">-->
+<!--                        <li>Documentação da linguagem</li>-->
+<!--                        <li>Adição de contato com o desenvolvedor</li>-->
+<!--                    </ul>-->
+<!--                </div>-->
+            </div>
+        </div>
+    </div>
+
+    <!-- Settings Modal -->
+    <div class="modal-overlay hidden" id="settingsOverlay">
+        <div class="modal">
+            <div class="modal-header">
+                <span>Configurações</span>
+                <button id="btn-close-settings"><i data-lucide="x"></i></button>
+            </div>
+            <div class="modal-tabs">
+                <button class="modal-tab active" data-tab="gerais">Gerais</button>
+                <button class="modal-tab" data-tab="editor">Editor</button>
+                <button class="modal-tab" data-tab="variaveis">Variáveis</button>
+                <button class="modal-tab" data-tab="console">Console</button>
+            </div>
+            <div class="modal-body">
+                <div class="modal-tab-panel active" data-tab-panel="gerais">
+                    <div class="setting-group">
+                        <label>Tema</label>
+                        <select id="setting-theme">
+                            <option value="dark">Tokyo Night Storm (Escuro)</option>
+                            <option value="light">Tokyo Night Day (Claro)</option>
+                            <option value="high-contrast">Tokyo Night Day (Alto Contraste)</option>
+                        </select>
+                    </div>
+                    <div class="setting-group">
+                        <label>Tamanho da fonte (geral)</label>
+                        <div class="font-size-control">
+                            <div class="font-size-input-row">
+                                <input type="number" class="setting-font-input" id="setting-global-font-size" min="1" value="100">
+                                <select id="setting-global-font-unit" class="setting-font-unit-select">
+                                    <option value="percent">%</option>
+                                    <option value="px">px</option>
+                                </select>
+                            </div>
+                            <input type="range" class="setting-font-slider" id="setting-global-font-size-slider" min="25" max="300" value="100">
+                        </div>
+                    </div>
+                    <div class="setting-group">
+                        <label>Detecção de loop infinito</label>
+                        <select id="setting-loop-detection">
+                            <option value="on">Ativada</option>
+                            <option value="off">Desativada</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="modal-tab-panel" data-tab-panel="editor">
+                    <div class="setting-group">
+                        <label>Tamanho da fonte</label>
+                        <div class="font-size-control">
+                            <div class="font-size-input-row">
+                                <input type="number" class="setting-font-input" id="setting-font-size" min="1" value="14">
+                                <span class="font-size-unit">px</span>
+                            </div>
+                            <input type="range" class="setting-font-slider" id="setting-font-size-slider" min="1" max="50" value="14">
+                        </div>
+                    </div>
+                    <div class="setting-group">
+                        <label>Quebra de linha</label>
+                        <select id="setting-word-wrap">
+                            <option value="off">Desativada</option>
+                            <option value="on">Ativada</option>
+                        </select>
+                    </div>
+                    <div class="setting-group">
+                        <label>Tamanho do tab</label>
+                        <select id="setting-tab-size">
+                            <option value="2">2 espaços</option>
+                            <option value="4">4 espaços</option>
+                        </select>
+                    </div>
+                    <div class="setting-group">
+                        <label>Guias de indentação</label>
+                        <select id="setting-indent-guides">
+                            <option value="on">Ativadas</option>
+                            <option value="off">Desativadas</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="modal-tab-panel" data-tab-panel="variaveis">
+                    <div class="setting-group">
+                        <label>Tamanho da fonte</label>
+                        <div class="font-size-control">
+                            <div class="font-size-input-row">
+                                <input type="number" class="setting-font-input" id="setting-vars-font-size" min="1" value="12">
+                                <span class="font-size-unit">px</span>
+                            </div>
+                            <input type="range" class="setting-font-slider" id="setting-vars-font-size-slider" min="1" max="50" value="12">
+                        </div>
+                    </div>
+                    <div class="setting-group">
+                        <label>Colunas visíveis</label>
+                        <div class="setting-checkboxes">
+                            <label class="setting-checkbox">
+                                <input type="checkbox" id="setting-vars-col-nome" checked> Nome
+                            </label>
+                            <label class="setting-checkbox">
+                                <input type="checkbox" id="setting-vars-col-tipo" checked> Tipo
+                            </label>
+                            <label class="setting-checkbox">
+                                <input type="checkbox" id="setting-vars-col-valor" checked> Valor
+                            </label>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-tab-panel" data-tab-panel="console">
+                    <div class="setting-group">
+                        <label>Tamanho da fonte</label>
+                        <div class="font-size-control">
+                            <div class="font-size-input-row">
+                                <input type="number" class="setting-font-input" id="setting-console-font-size" min="1" value="13">
+                                <span class="font-size-unit">px</span>
+                            </div>
+                            <input type="range" class="setting-font-slider" id="setting-console-font-size-slider" min="1" max="50" value="13">
+                        </div>
+                    </div>
+                    <div class="setting-group">
+                        <label>Entrada do console</label>
+                        <select id="setting-console-input-mode">
+                            <option value="inline">Abaixo do terminal</option>
+                            <option value="modal">Abrir modal</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Console Input Modal -->
+    <div class="modal-overlay hidden" id="consoleInputOverlay">
+        <div class="modal">
+            <div class="modal-header">
+                <span>Entrada de dados</span>
+            </div>
+            <div class="modal-body">
+                <div class="setting-group">
+                    <label id="console-input-modal-label">Digite a entrada:</label>
+                    <input id="console-input-modal" type="text" class="setting-font-input" style="width:100%" />
+                </div>
+                <div class="modal-footer">
+                    <button class="modal-btn modal-btn-secondary" id="console-input-modal-ok">OK</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Close Tab Confirmation Modal -->
+    <div class="modal-overlay hidden" id="closeTabOverlay">
+        <div class="modal">
+            <div class="modal-header">
+                <span>Fechar aba</span>
+                <button id="btn-cancel-close-tab"><i data-lucide="x"></i></button>
+            </div>
+            <div class="modal-body">
+                <p>O código desta aba foi modificado. Deseja realmente fechar e perder as alterações?</p>
+                <div class="modal-footer">
+                    <button class="modal-btn modal-btn-secondary" id="btn-cancel-close">Cancelar</button>
+                    <button class="modal-btn modal-btn-danger" id="btn-confirm-close">Fechar aba</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Loop Limit Modal -->
+    <div class="modal-overlay hidden" id="loopLimitOverlay">
+        <div class="modal">
+            <div class="modal-header">
+                <span>Possível loop infinito</span>
+            </div>
+            <div class="modal-body">
+                <p>O loop já executou mais de 1.000 iterações. Isso pode indicar um loop infinito. Deseja continuar a execução?</p>
+                <div class="modal-footer">
+                    <button class="modal-btn modal-btn-danger" id="btn-loop-stop">Parar</button>
+                    <button class="modal-btn modal-btn-secondary" id="btn-loop-continue">Continuar</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Docs Modal -->
+    <div class="modal-overlay hidden" id="docsOverlay">
+        <div class="modal docs-modal">
+            <div class="modal-header">
+                <span>Documentação</span>
+                <button id="btn-close-docs"><i data-lucide="x"></i></button>
+            </div>
+            <div class="modal-tabs">
+                <button class="modal-tab active" data-tab="introducao">Introdução</button>
+                <button class="modal-tab" data-tab="operadores">Operadores</button>
+                <button class="modal-tab" data-tab="entrada-saida">E/S</button>
+                <button class="modal-tab" data-tab="condicionais">Condicionais</button>
+                <button class="modal-tab" data-tab="repeticao">Repetição</button>
+                <button class="modal-tab" data-tab="subprogramas">Subprogramas</button>
+                <button class="modal-tab" data-tab="funcoes">Funções</button>
+<!--                <button class="modal-tab" data-tab="comandos">Comandos</button>-->
+            </div>
+            <div class="modal-body docs-body" id="docs-content">
+                <div class="modal-tab-panel active" data-tab-panel="introducao"></div>
+                <div class="modal-tab-panel" data-tab-panel="operadores"></div>
+                <div class="modal-tab-panel" data-tab-panel="entrada-saida"></div>
+                <div class="modal-tab-panel" data-tab-panel="condicionais"></div>
+                <div class="modal-tab-panel" data-tab-panel="repeticao"></div>
+                <div class="modal-tab-panel" data-tab-panel="subprogramas">Em breve</div>
+                <div class="modal-tab-panel" data-tab-panel="funcoes">Em breve</div>
+                <div class="modal-tab-panel" data-tab-panel="comandos">Em breve</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- CodeMirror 5 JS -->
+    <script src="vendor/codemirror/codemirror.min.js"></script>
+    <script src="vendor/codemirror/addon/mode/simple.min.js"></script>
+    <script src="vendor/codemirror/addon/edit/matchbrackets.min.js"></script>
+    <script src="vendor/codemirror/addon/edit/closebrackets.min.js"></script>
+    <script src="vendor/codemirror/addon/selection/active-line.min.js"></script>
+    <script src="vendor/codemirror/addon/comment/comment.min.js"></script>
+
+    <!-- App JS -->
+    <script src="js/editor.js"></script>
+    <script src="js/terminal.js"></script>
+    <script src="js/variables.js"></script>
+    <script src="js/interpreter.js"></script>
+    <script src="js/tabs.js"></script>
+    <script src="js/docs.js"></script>
+    <script src="js/main.js"></script>
+
+    <script>lucide.createIcons();</script>
+
+    <!-- Resize script -->
+    <script>
+        (function () {
+            const editorPanel = document.getElementById('editorPanel');
+            const resizableBlock = editorPanel.closest('.editor-column');
+            const resizeHandleVertical = document.getElementById('resizeHandleVertical');
+            const resizeHandleHorizontal = document.getElementById('resizeHandleHorizontal');
+            const variablesPanel = document.getElementById('variablesPanel');
+            const terminalPanel = document.getElementById('terminalPanel');
+            const gridContainer = document.querySelector('.grid-container');
+
+            let isResizing = false;
+            let resizeType = null;
+            let startPos = 0;
+            let startSize = 0;
+
+            function getEventPos(e, axis) {
+                if (e.touches && e.touches.length > 0) {
+                    return axis === 'x' ? e.touches[0].clientX : e.touches[0].clientY;
+                }
+                return axis === 'x' ? e.clientX : e.clientY;
+            }
+
+            function isMobile() {
+                return window.innerWidth <= 768;
+            }
+
+            function startResizeVertical(e) {
+                e.preventDefault();
+                isResizing = true;
+                resizeType = 'vertical';
+                startPos = getEventPos(e, 'y');
+                startSize = resizableBlock.offsetHeight;
+                document.body.classList.add('resizing');
+                resizeHandleVertical.classList.add('dragging');
+            }
+
+            function startResizeHorizontal(e) {
+                e.preventDefault();
+                isResizing = true;
+                resizeType = 'horizontal';
+                startPos = getEventPos(e, 'x');
+                startSize = resizableBlock.offsetWidth;
+                document.body.classList.add('resizing');
+                resizeHandleHorizontal.classList.add('dragging');
+            }
+
+            function resize(e) {
+                if (!isResizing) return;
+                e.preventDefault();
+
+                if (resizeType === 'vertical') {
+                    const currentY = getEventPos(e, 'y');
+                    const deltaY = currentY - startPos;
+                    const minHeight = 150;
+                    const maxHeight = window.innerHeight * 0.8;
+                    let newHeight = startSize + deltaY;
+                    newHeight = Math.max(minHeight, Math.min(maxHeight, newHeight));
+                    resizableBlock.style.height = newHeight + 'px';
+                } else if (resizeType === 'horizontal') {
+                    const currentX = getEventPos(e, 'x');
+                    const deltaX = currentX - startPos;
+                    const containerWidth = gridContainer.offsetWidth;
+                    const minWidth = 200;
+                    const maxWidth = containerWidth - 180;
+                    let newWidth = startSize + deltaX;
+                    newWidth = Math.max(minWidth, Math.min(maxWidth, newWidth));
+                    resizableBlock.style.width = newWidth + 'px';
+                    const sidebarWidth = containerWidth - newWidth - 15;
+                    variablesPanel.style.width = sidebarWidth + 'px';
+                    terminalPanel.style.width = sidebarWidth + 'px';
+                }
+
+                // Refresh CodeMirror on resize
+                if (window.VisualGEditor && window.VisualGEditor.instance) {
+                    window.VisualGEditor.instance.refresh();
+                }
+            }
+
+            function stopResize() {
+                if (!isResizing) return;
+                isResizing = false;
+                document.body.classList.remove('resizing');
+                resizeHandleVertical.classList.remove('dragging');
+                resizeHandleHorizontal.classList.remove('dragging');
+                resizeType = null;
+            }
+
+            resizeHandleVertical.addEventListener('mousedown', startResizeVertical);
+            resizeHandleVertical.addEventListener('touchstart', startResizeVertical, { passive: false });
+            resizeHandleHorizontal.addEventListener('mousedown', startResizeHorizontal);
+
+            document.addEventListener('mousemove', resize);
+            document.addEventListener('mouseup', stopResize);
+            document.addEventListener('touchmove', resize, { passive: false });
+            document.addEventListener('touchend', stopResize);
+            document.addEventListener('touchcancel', stopResize);
+
+            window.addEventListener('resize', function () {
+                if (isMobile()) {
+                    resizableBlock.style.width = '';
+                    variablesPanel.style.width = '';
+                    terminalPanel.style.width = '';
+                } else {
+                    resizableBlock.style.height = '';
+                }
+                if (window.VisualGEditor && window.VisualGEditor.instance) {
+                    window.VisualGEditor.instance.refresh();
+                }
+            });
+        })();
+    </script>
+<!--
+<script defer src="https://static.cloudflareinsights.com/beacon.min.js/v833ccba57c9e4d2798f2e76cebdd09a11778172276447" integrity="sha512-57MDmcccJXYtNnH+ZiBwzC4jb2rvgVCEokYN+L/nLlmO8rfYT/gIpW2A569iJ/3b+0UEasghjuZH/ma3wIs/EQ==" data-cf-beacon='{"version":"2024.11.0","token":"73161100079646d5b261b4be60443ea4","r":1,"server_timing":{"name":{"cfCacheStatus":true,"cfEdge":true,"cfExtPri":true,"cfL4":true,"cfOrigin":true,"cfSpeedBrain":true},"location_startswith":null}}' crossorigin="anonymous"></script>
+-->
+</body>
+
+</html>
