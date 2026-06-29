@@ -17,7 +17,7 @@
         return 'Algoritmo "MeuAlgoritmo"\n' +
             '\n' +
             '// Disciplina: Algoritmos\n' +
-            '// Professor: Conrado Salom\u00e9 Ribeiro\n' +
+            '// Professor: Murilo Gregorio Alves\n' +
             '// Descri\u00e7\u00e3o: Descreva o que o algoritmo faz\n' +
             '// Autor(a): Nome do(a) aluno(a)\n' +
             '// Data: ' + getDataAtual() + '\n' +
