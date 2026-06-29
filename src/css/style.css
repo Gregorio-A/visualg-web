@@ -78,6 +78,46 @@
     --syn-variable:  #c0caf5;
 }
 
+[data-theme="dark-monokai"] {
+    /* Dark Monokai */
+    --bg:            #272822;
+    --bg-dark:       #1e1f1c;
+    --bg-darker:     #171812;
+    --bg-highlight:  #3e3d32;
+    --bg-visual:     #49483e;
+    --fg:            #f8f8f2;
+    --fg-dark:       #e6e6dc;
+    --fg-gutter:     #3b3a32;
+    --comment:       #75715e;
+    --dark3:         #5b594b;
+    --dark5:         #8f8b77;
+    --border:        #3e3d32;
+    --blue:          #66d9ef;
+    --cyan:          #66d9ef;
+    --green:         #a6e22e;
+    --green1:        #a6e22e;
+    --yellow:        #e6db74;
+    --orange:        #fd971f;
+    --red:           #f92672;
+    --magenta:       #ae81ff;
+    --purple:        #ae81ff;
+    --teal:          #4ec9b0;
+    --blue5:         #78dce8;
+    --panel-header-bg: #34352d;
+    --panel-header-fg: #f8f8f2;
+
+    /* Syntax highlight */
+    --syn-keyword:   #f92672;
+    --syn-type:      #66d9ef;
+    --syn-string:    #e6db74;
+    --syn-number:    #ae81ff;
+    --syn-comment:   #75715e;
+    --syn-operator:  #f92672;
+    --syn-builtin:   #66d9ef;
+    --syn-atom:      #ae81ff;
+    --syn-variable:  #f8f8f2;
+}
+
 [data-theme="light"] {
     /* Tokyo Night Day (contraste melhorado) */
     --bg:            #e1e2e7;
