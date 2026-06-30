@@ -42,7 +42,7 @@
                 var info = entries[i][1];
                 var tr = document.createElement('tr');
 
-                var formattedValue = this.formatValue(info.value, info.type);
+                var formattedValue = this.formatValue(info.value, info.type, info);
 
                 // Highlight changed values
                 if (this.previousValues[name] !== undefined &&
@@ -63,7 +63,8 @@
 
                 var tdValue = document.createElement('td');
                 tdValue.textContent = formattedValue;
-                tdValue.classList.add('var-value-' + info.type, 'col-valor');
+                tdValue.classList.add('var-value-' + info.type.replace(/\s+/g, '-'), 'col-valor');
+                tdValue.title = formattedValue;
                 if (hidden.valor) tdValue.classList.add('col-hidden');
 
                 tr.appendChild(tdName);
@@ -73,7 +74,14 @@
             }
         },
 
-        formatValue: function (value, type) {
+        formatValue: function (value, type, info) {
+            if (type && type.indexOf('vetor de ') === 0) {
+                return this.formatVector(info);
+            }
+            return this.formatScalar(value, type);
+        },
+
+        formatScalar: function (value, type) {
             if (type === 'logico') {
                 return value ? 'VERDADEIRO' : 'FALSO';
             }
@@ -89,6 +97,70 @@
                 return '[vetor]';
             }
             return String(value);
+        },
+
+        defaultValue: function (type) {
+            switch (type) {
+                case 'inteiro': return 0;
+                case 'real': return 0.0;
+                case 'caractere': return '';
+                case 'logico': return false;
+                default: return '';
+            }
+        },
+
+        formatVector: function (info) {
+            if (!info || !info.dimensions) return '[vetor]';
+
+            var baseType = info.dataType || info.type.replace('vetor de ', '');
+            var ranges = [];
+            var total = 1;
+            for (var i = 0; i < info.dimensions.length; i++) {
+                var dim = info.dimensions[i];
+                ranges.push(dim.low + '..' + dim.high);
+                total *= (dim.high - dim.low + 1);
+            }
+
+            var keys = [];
+            if (total <= 50) {
+                this.collectVectorKeys(info.dimensions, 0, [], keys);
+            } else {
+                keys = Object.keys(info.value || {}).sort(this.compareVectorKeys);
+            }
+
+            var parts = [];
+            for (var k = 0; k < keys.length; k++) {
+                var key = keys[k];
+                var value = info.value && Object.prototype.hasOwnProperty.call(info.value, key)
+                    ? info.value[key]
+                    : this.defaultValue(baseType);
+                parts.push(key + ': ' + this.formatScalar(value, baseType));
+            }
+
+            var suffix = total > 50 ? (parts.length > 0 ? '; ...' : '...') : '';
+            return '[' + ranges.join(', ') + '] { ' + parts.join('; ') + suffix + ' }';
+        },
+
+        collectVectorKeys: function (dimensions, index, current, keys) {
+            if (index >= dimensions.length) {
+                keys.push(current.join(','));
+                return;
+            }
+            var dim = dimensions[index];
+            for (var value = dim.low; value <= dim.high; value++) {
+                current.push(value);
+                this.collectVectorKeys(dimensions, index + 1, current, keys);
+                current.pop();
+            }
+        },
+
+        compareVectorKeys: function (a, b) {
+            var left = a.split(',').map(Number);
+            var right = b.split(',').map(Number);
+            for (var i = 0; i < Math.max(left.length, right.length); i++) {
+                if ((left[i] || 0) !== (right[i] || 0)) return (left[i] || 0) - (right[i] || 0);
+            }
+            return 0;
         },
 
         clear: function () {
