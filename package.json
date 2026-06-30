@@ -1,7 +1,7 @@
 {
   "name": "visualg-dev",
   "productName": "VisuAlg.dev",
-  "version": "1.0.0",
+  "version": "0.11.0",
   "description": "IDE web e desktop para pseudocodigo no estilo VisuAlg 3.0.7",
   "main": ".vite/build/main.js",
   "private": true,
