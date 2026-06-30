@@ -1,55 +1,87 @@
+# Entrada e Saída
 
-Comandos de Saída de Dados
+Use `escreva` e `escreval` para mostrar valores no console. Use `leia` para receber dados digitados pelo usuário no campo de entrada do console.
 
-escreva (<lista-de-expressões>)
+## Saída com escreva
 
-Escreve no dispositivo de saída padrão (isto é, na área à direita da metade inferior da tela do VisuAlg) o conteúdo de cada uma das expressões que compõem <lista-de-expressões>.  As expressões dentro desta lista devem estar separadas por vírgulas; depois de serem avaliadas, seus resultados são impressos na ordem indicada. É equivalente ao comando write do Pascal.
+```visualg
+escreva(<lista-de-expressoes>)
+escreval(<lista-de-expressoes>)
+```
 
-De modo semelhante a Pascal, é possível especificar o número de espaços no qual se deseja escrever um determinado valor. Por exemplo, o comando escreva(x:5) escreve o valor da variável x em 5 espaços, alinhado-o à direita. Para variáveis reais, pode-se também especificar o número de casas fracionárias que serão exibidas. Por exemplo, considerando y como uma variável real, o comando escreva(y:6:2)escreve seu valor em 6 espaços colocando 2 casas decimais. 
+`escreva` mantém o cursor na mesma linha. `escreval` imprime e pula uma linha.
 
-escreval (<lista-de-expressões>). 
-
-Idem ao anterior, com a única diferença que pula uma linha em seguida. É equivalente ao writeln do Pascal.
-
-Exemplos:
-
-    algoritmo "exemplo"
-    var x: real
-        y: inteiro
-        a: caractere
-        l: logico
-    inicio
-    x <- 2.5
-    y <- 6
-    a <- "teste"
-    l <- VERDADEIRO
-    escreval ("x", x:4:1, y+3:4) // Escreve: x 2.5    9
-    escreval (a, "ok")           // Escreve: testeok (e depois pula linha)
-    escreval (a, " ok")          // Escreve: teste ok (e depois pula linha)
-    escreval (a + " ok")         // Escreve: teste ok (e depois pula linha)
-    escreva (l)                  //tipo caractere, para que assim possa haver a concatenação. Quando se deseja separar expressões do tipo caractere, é necessário acrescentar espaços nos locais adequados.
-
-Comando de Entrada de Dados
-
-leia (<lista-de-variáveis>)
-
-Recebe valores digitados pelos usuário, atribuindo-os às variáveis cujos nomes estão em <lista-de-variáveis> (é respeitada a ordem especificada nesta lista). É análogo ao comando read do Pascal.
-
-Veja no exemplo abaixo o resultado:
-
-algoritmo "exemplo 1"
-var x: inteiro;
+```visualg
+algoritmo "Saida"
 inicio
-leia (x)
-escreva (x)
+  escreva("Visu")
+  escreval("Alg")
+  escreval("Nova linha")
 fimalgoritmo
+```
 
-O comando de leitura acima irá exibir uma janela como a que se vê ao lado, com a mensagem padrão:
- "Entre com o valor de <nome-de-variável>"
+## Formatação
 
- 
+Valores podem receber largura mínima e, no caso de reais, número de casas decimais.
 
-Se você clicar em Cancelar ou teclar Esc durante a leitura de dados, o programa será imediatamente interrompido. Escreve: VERDADEIRO
-    fimalgoritmo
+| Forma | Resultado |
+| --- | --- |
+| `x:5` | Exibe `x` alinhado à direita em 5 espaços. |
+| `y:6:2` | Exibe `y` em 6 espaços com 2 casas decimais. |
 
-Note que o VisuAlg separa expressões do tipo numérico e lógico com um espaço à esquerda, mas não as expressões do 
+```visualg
+algoritmo "Formatacao"
+var
+  media: real
+  faltas: inteiro
+inicio
+  media <- 7.356
+  faltas <- 2
+  escreval("Média: ", media:6:2)
+  escreval("Faltas: ", faltas:3)
+fimalgoritmo
+```
+
+## Entrada com leia
+
+```visualg
+leia(<lista-de-variaveis>)
+```
+
+`leia` atribui os valores digitados às variáveis na ordem informada. No VisuAlg Web, escreva uma mensagem antes de `leia` quando quiser orientar o usuário.
+
+```visualg
+algoritmo "Entrada"
+var
+  nome: caractere
+  idade: inteiro
+inicio
+  escreva("Digite seu nome: ")
+  leia(nome)
+
+  escreva("Digite sua idade: ")
+  leia(idade)
+
+  escreval("Olá, ", nome, ". Você tem ", idade, " anos.")
+fimalgoritmo
+```
+
+## Conversão dos valores digitados
+
+| Tipo da variável | Conversão no Web |
+| --- | --- |
+| `inteiro` | Aceita somente números inteiros, como `10` ou `-3`. Entrada inválida gera erro. |
+| `real` | Aceita números com ponto ou vírgula decimal, como `3.14` ou `3,14`. Entrada inválida gera erro. |
+| `caractere` | Mantém o texto digitado. |
+| `logico` | Aceita `verdadeiro`/`v` ou `falso`/`f`. Outros valores geram erro. |
+
+```visualg
+algoritmo "EntradaLogica"
+var
+  confirmado: logico
+inicio
+  escreva("Confirmado? ")
+  leia(confirmado)
+  escreval("Valor lógico: ", confirmado)
+fimalgoritmo
+```

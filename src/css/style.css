@@ -1210,9 +1210,9 @@ body.resizing {
 
 /* Docs modal */
 .docs-modal {
-    width: 720px;
+    width: 900px;
     max-width: 95vw;
-    max-height: 85vh;
+    max-height: 88vh;
     display: flex;
     flex-direction: column;
 }
@@ -1225,6 +1225,7 @@ body.resizing {
     overflow-y: auto;
     flex: 1;
     min-height: 0;
+    padding: 20px 24px 24px;
 }
 
 .docs-body .modal-tab-panel {
@@ -1232,67 +1233,86 @@ body.resizing {
 }
 
 .docs-body h1 {
-    font-size: 20px;
+    font-size: 24px;
     color: var(--fg);
-    margin: 0 0 12px 0;
-    padding-bottom: 8px;
+    line-height: 1.2;
+    margin: 0 0 14px 0;
+    padding-bottom: 12px;
     border-bottom: 1px solid var(--border);
 }
 
-.docs-body h2 {
-    font-size: 16px;
+.docs-body h1 + p {
     color: var(--fg);
-    margin: 20px 0 8px 0;
+    font-size: 14px;
+    line-height: 1.65;
+    margin-bottom: 14px;
+}
+
+.docs-body h2 {
+    font-size: 17px;
+    color: var(--fg);
+    margin: 26px 0 10px 0;
+    padding-top: 14px;
+    border-top: 1px solid var(--border);
 }
 
 .docs-body h3 {
-    font-size: 14px;
-    color: var(--fg-dark);
-    margin: 16px 0 6px 0;
+    font-size: 15px;
+    color: var(--fg);
+    margin: 18px 0 8px 0;
 }
 
 .docs-body p {
     font-size: 13px;
     color: var(--fg-dark);
-    line-height: 1.6;
-    margin: 6px 0;
+    line-height: 1.7;
+    margin: 8px 0;
+}
+
+.docs-body strong {
+    color: var(--fg);
 }
 
 .docs-body code {
     background: var(--bg-highlight);
     color: var(--blue5);
-    padding: 1px 5px;
+    padding: 2px 5px;
     border-radius: 4px;
     font-size: 12px;
-    font-family: 'JetBrains Mono', monospace;
+    font-family: 'Fira Code', 'Meslo LG', monospace;
 }
 
 .docs-body pre {
     position: relative;
-    background: var(--bg);
+    background: var(--bg-darker);
     border: 1px solid var(--border);
     border-radius: 6px;
-    padding: 12px;
+    padding: 14px 42px 14px 14px;
     overflow-x: auto;
-    margin: 8px 0;
+    margin: 10px 0 14px;
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.02);
 }
 
 .docs-copy-btn {
     position: absolute;
-    top: 6px;
-    right: 6px;
-    background: none;
-    border: none;
+    top: 8px;
+    right: 8px;
+    width: 26px;
+    height: 26px;
+    background: var(--bg-highlight);
+    border: 1px solid var(--border);
+    border-radius: 6px;
     color: var(--comment);
     cursor: pointer;
-    padding: 2px;
     display: flex;
     align-items: center;
+    justify-content: center;
     transition: color 0.15s;
 }
 
 .docs-copy-btn:hover {
     color: var(--fg);
+    border-color: var(--dark3);
 }
 
 .docs-copy-btn svg {
@@ -1305,50 +1325,70 @@ body.resizing {
     padding: 0;
     color: var(--fg);
     font-size: 12px;
-    line-height: 1.5;
+    line-height: 1.65;
+    white-space: pre;
 }
 
 .docs-body ul,
 .docs-body ol {
     font-size: 13px;
     color: var(--fg-dark);
-    line-height: 1.6;
-    padding-left: 20px;
-    margin: 6px 0;
+    line-height: 1.7;
+    padding-left: 22px;
+    margin: 8px 0 12px;
 }
 
 .docs-body li {
-    margin: 3px 0;
+    margin: 4px 0;
 }
 
 .docs-body table {
     width: 100%;
     border-collapse: collapse;
     font-size: 13px;
-    margin: 8px 0;
+    margin: 10px 0 16px;
+    display: block;
+    overflow-x: auto;
+    border: 1px solid var(--border);
+    border-radius: 6px;
 }
 
 .docs-body th {
     background: var(--bg-highlight);
     color: var(--fg);
     text-align: left;
-    padding: 6px 10px;
-    border: 1px solid var(--border);
+    padding: 8px 10px;
+    border-bottom: 1px solid var(--border);
+    border-right: 1px solid var(--border);
     font-weight: 600;
+    white-space: nowrap;
 }
 
 .docs-body td {
-    padding: 5px 10px;
-    border: 1px solid var(--border);
+    padding: 8px 10px;
+    border-top: 1px solid var(--border);
+    border-right: 1px solid var(--border);
     color: var(--fg-dark);
+    vertical-align: top;
+}
+
+.docs-body th:last-child,
+.docs-body td:last-child {
+    border-right: none;
 }
 
 .docs-body blockquote {
     border-left: 3px solid var(--blue);
-    margin: 8px 0;
-    padding: 6px 12px;
-    color: var(--comment);
+    background: var(--bg-highlight);
+    border-radius: 0 6px 6px 0;
+    margin: 12px 0 16px;
+    padding: 8px 12px;
+    color: var(--fg-dark);
     font-size: 13px;
+}
+
+.docs-body blockquote p {
+    margin: 0;
 }
 
 .setting-group {

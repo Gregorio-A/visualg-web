@@ -1,85 +1,118 @@
-Funções
+# Funções
 
-Em VisuAlg, função é um subprograma que retorna um valor (corresponde ao function do Pascal). De modo análogo aos procedimentos, sua declaração deve estar entre o final da declaração de variáveis e a linha inicio do programa principal, e segue a sintaxe abaixo:
+Funções são subprogramas que retornam um valor e podem ser usadas dentro de expressões. Declare funções depois da seção `var` global e antes do `inicio` do programa principal.
 
-    funcao <nome-de-função> [(<seqüência-de-declarações-de-parâmetros>)]: <tipo-de-dado>
-    // Seção de Declarações Internas
-    inicio
-    // Seção de Comandos
-    fimfuncao
+## Sintaxe
 
-O <nome-de-função> obedece as mesmas regras de nomenclatura das variáveis. Por outro lado, a <seqüência-de-declarações-de-parâmetros> é uma seqüência de
+```visualg
+funcao <nome>(<parametros>): <tipo-de-retorno>
+var
+  <variaveis-locais>
+inicio
+  <comandos>
+  retorne <expressao>
+fimfuncao
+```
 
-    [var] <seqüência-de-parâmetros>: <tipo-de-dado>
+```visualg
+algoritmo "FuncaoSoma"
+var
+  total: inteiro
 
-separadas por ponto e vírgula. A presença (opcional) da palavra-chave var indica passagem de parâmetros por referência; caso contrário, a passagem será por valor. 
+funcao soma(a, b: inteiro): inteiro
+inicio
+  retorne a + b
+fimfuncao
 
-Por sua vez, <seqüência-de-parâmetros> é uma seqüência de nomes de parâmetros (também obedecem a mesma regra de nomenclatura de variáveis) separados por vírgulas.
+inicio
+  total <- soma(4, 9)
+  escreval("Total: ", total)
+fimalgoritmo
+```
 
-O valor retornado pela função será do tipo especificado na sua declaração (logo após os dois pontos). Em alguma parte da função (de modo geral, no seu final), este valor deve ser retornado através do comando retorne.
+## Retorno pelo nome da função
 
-De modo análogo ao programa principal, a seção de declaração internas começa com a palavra-chave var, e continua com a seguinte sintaxe:
+Além de `retorne`, o Web também aceita atribuir o resultado a uma variável local com o mesmo nome da função.
 
-    <lista-de-variáveis> : <tipo-de-dado>
+```visualg
+algoritmo "RetornoPeloNome"
+var
+  dobro: inteiro
 
-Voltando ao exemplo anterior, no qual calculamos e imprimimos a soma entre os valores 4 e –9, vamos mostrar como isso poderia ser feito através de uma função sem parâmetros. Ela também utiliza uma variável local aux para armazenar provisoriamente o resultado deste cálculo, antes de atribuí-lo à variável global res:
+funcao calcularDobro(valor: inteiro): inteiro
+inicio
+  calcularDobro <- valor * 2
+fimfuncao
 
-    funcao soma: inteiro
-    var aux: inteiro
-    inicio
-    // n, m e res são variáveis globais
-    aux <- n + m
-    retorne aux
-    fimfuncao
+inicio
+  dobro <- calcularDobro(6)
+  escreval(dobro)
+fimalgoritmo
+```
 
-    No programa principal deve haver os seguintes comandos:
-    n <- 4
-    m <- -9
-    res <- soma
-    escreva(res)
+## Recursão
 
-Se realizássemos essa mesma tarefa com uma função com parâmetros passados por valor, poderia ser do seguinte modo:
+Uma função pode chamar a si mesma. Garanta sempre uma condição de parada.
 
-    funcao soma (x,y: inteiro): inteiro
-    inicio
-    retorne x + y
-    fimfuncao
+```visualg
+algoritmo "Fatorial"
+var
+  n: inteiro
 
-    No programa principal deve haver os seguintes comandos:
-    n <- 4
-    m <- -9
-    res <- soma(n,m)
-    escreva(res)
+funcao fatorial(valor: inteiro): inteiro
+inicio
+  se valor <= 1 entao
+    retorne 1
+  senao
+    retorne valor * fatorial(valor - 1)
+  fimse
+fimfuncao
 
-Passagem de Parâmetros por Referência
+inicio
+  n <- 5
+  escreval("Fatorial: ", fatorial(n))
+fimalgoritmo
+```
 
-Há ainda uma outra forma de passagem de parâmetros para subprogramas: é a passagem por referência. Neste caso, o subprograma não recebe apenas um valor, mas sim o endereço de uma variável global. Portanto, qualquer modificação que for realizada no conteúdo deste parâmetro afetará também a variável global que está associada a ele. Durante a execução do subprograma, os parâmetros passados por referência são análogos às variáveis globais. No VisuAlg, de forma análoga a Pascal, essa passagem é feita através da palavra var
-na declaração do parâmetro.
+## Funções internas
 
-Voltando ao exemplo da soma, o procedimento abaixo realiza a mesma tarefa utilizando passagem de parâmetros por referência:
+As funções internas são chamadas com parênteses. Exemplos: `raizq(25)`, `rand()` e `pi()`.
 
-    procedimento soma (x,y: inteiro; var result: inteiro)
-    inicio
-    result <- x + y
-    fimprocedimento
+| Função | Retorno |
+| --- | --- |
+| `abs(x)` | Valor absoluto. |
+| `quad(x)` | Quadrado de `x`. |
+| `raizq(x)` | Raiz quadrada de `x`. Gera erro para número negativo. |
+| `exp(base, expoente)` | Potência de `base` elevada a `expoente`. |
+| `log(x)` | Logaritmo na base 10. `x` deve ser maior que zero. |
+| `logn(x)` | Logaritmo natural. `x` deve ser maior que zero. |
+| `sen(x)`, `cos(x)`, `tan(x)`, `cotan(x)` | Funções trigonométricas em radianos. |
+| `arcsen(x)`, `arccos(x)`, `arctan(x)` | Funções trigonométricas inversas. `arcsen` e `arccos` exigem valor entre `-1` e `1`. |
+| `grauprad(x)` | Converte graus para radianos. |
+| `radpgrau(x)` | Converte radianos para graus. |
+| `int(x)` | Parte inteira de `x`. |
+| `pi()` | Valor de π. |
+| `rand()` | Número real aleatório entre `0` e `1`. |
+| `randi(limite)` | Inteiro aleatório de `0` até `limite - 1`. O limite deve ser inteiro maior que zero. |
+| `compr(texto)` | Quantidade de caracteres. |
+| `copia(texto, inicio, tamanho)` | Trecho de texto, com posição inicial começando em `1`. |
+| `maiusc(texto)` | Texto em maiúsculas. |
+| `minusc(texto)` | Texto em minúsculas. |
+| `asc(texto)` | Código do primeiro caractere. |
+| `carac(codigo)` | Caractere do código informado. |
+| `pos(trecho, texto)` | Posição do trecho no texto, começando em `1`; retorna `0` se não encontrar. |
+| `caracpnum(texto)` | Converte texto para número. |
+| `numpcarac(numero)` | Converte número para texto. |
 
-    No programa principal deve haver os seguintes comandos:
-    n <- 4
-    m <- -9
-    soma(n,m,res)
-    escreva(res)
-
-Recursão e Aninhamento
-
-A atual versão do VisuAlg permite recursão, isto é, a possibilidade de que um subprograma possa chamar a si mesmo. A função do exemplo abaixo calcula recursivamente o fatorial do número inteiro que recebe como parâmetro:
-
-    funcao fatorial (v: inteiro): inteiro
-    inicio
-    se v <= 2 entao
-    retorne v
-    senao
-    retorne v * fatorial(v-1)
-    fimse
-    fimfuncao
-
-Em Pascal, é permitido o aninhamento de subprogramas, isto é, cada subprograma também pode ter seus próprios subprogramas. No entanto, esta característica dificulta a elaboração dos compiladores e, na prática, não é muito importante. Por este motivo, ela não é permitida na maioria das linguagens de programação (como C, por exemplo), e o VisuAlg não a implementa.
+```visualg
+algoritmo "FuncoesInternas"
+var
+  texto: caractere
+inicio
+  texto <- "VisuAlg"
+  escreval("Tamanho: ", compr(texto))
+  escreval("Maiúsculas: ", maiusc(texto))
+  escreval("Raiz: ", raizq(25))
+  escreval("Pi: ", pi():6:3)
+fimalgoritmo
+```
