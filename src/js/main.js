@@ -73,6 +73,10 @@
                 setStatus('Pronto');
             }
         };
+        tabManager.onActionBlocked = function (message) {
+            setStatus('Executando...', 'running');
+            statusEl.title = message;
+        };
 
         // Button events
         btnRun.addEventListener('click', runProgram);
@@ -616,22 +620,39 @@
     function setStatus(text, type) {
         var icon = statusIcons[text] || 'circle-check';
         statusEl.innerHTML = '<i data-lucide="' + icon + '" class="footer-icon"></i> ' + text;
+        statusEl.title = '';
         statusEl.style.color = type === 'error' ? 'var(--red)' :
                                type === 'running' ? 'var(--yellow)' : 'var(--green)';
         if (window.lucide) lucide.createIcons({ nodes: [statusEl] });
     }
 
     function setRunning(running) {
+        var tab = tabManager.getActiveTab();
+        var stepping = tab && tab.executor && tab.executor.running && tab.executor.stepMode;
         btnRun.disabled = running;
-        btnStep.disabled = false;
+        btnStep.disabled = running && !stepping;
         btnStop.disabled = !running;
         btnClearTerminal.disabled = running;
         btnClearVars.disabled = running;
     }
 
+    function getRunningTab() {
+        return tabManager.getRunningTab ? tabManager.getRunningTab() : null;
+    }
+
+    function blockIfAnotherTabRunning(tab) {
+        var runningTab = getRunningTab();
+        if (!runningTab || runningTab.id === tab.id) return false;
+        setStatus('Executando...', 'running');
+        statusEl.title = 'Ja existe uma execucao ativa em outra aba.';
+        setRunning(true);
+        return true;
+    }
+
     // === Execution ===
     async function runProgram() {
         var tab = tabManager.getActiveTab();
+        if (blockIfAnotherTabRunning(tab)) return;
         if (tab.executor && tab.executor.running) return;
 
         var source = editor.getValue();
@@ -665,8 +686,11 @@
 
     async function stepProgram() {
         var tab = tabManager.getActiveTab();
+        if (blockIfAnotherTabRunning(tab)) return;
         if (tab.executor && tab.executor.running) {
-            tab.executor.nextStep();
+            if (tab.executor.stepMode) {
+                tab.executor.nextStep();
+            }
             return;
         }
 

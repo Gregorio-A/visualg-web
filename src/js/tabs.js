@@ -19,6 +19,22 @@
         return code.trim() === getDefaultCode().trim();
     }
 
+    function getRunningTab() {
+        for (var i = 0; i < tabs.length; i++) {
+            if (tabs[i].executor && tabs[i].executor.running) return tabs[i];
+        }
+        return null;
+    }
+
+    function blockWhenRunning() {
+        var runningTab = getRunningTab();
+        if (!runningTab) return false;
+        if (window.TabManager.onActionBlocked) {
+            window.TabManager.onActionBlocked('Interrompa a execucao atual antes de alterar as abas.');
+        }
+        return true;
+    }
+
     function doCloseTab(id) {
         var tab = getTab(id);
         if (!tab) return;
@@ -166,6 +182,10 @@
             tabListEl.addEventListener('dragstart', function (e) {
                 var tabItem = e.target.closest('.tab-item');
                 if (!tabItem) return;
+                if (blockWhenRunning()) {
+                    e.preventDefault();
+                    return;
+                }
                 dragTabId = tabItem.dataset.tabId;
                 tabItem.classList.add('dragging');
                 e.dataTransfer.effectAllowed = 'move';
@@ -249,6 +269,7 @@
         },
 
         createTab: function (code) {
+            if (blockWhenRunning()) return null;
             saveCurrentState();
             var tab = createTabData(code || getDefaultCode());
             tabs.push(tab);
@@ -266,6 +287,7 @@
 
         switchTab: function (id) {
             if (id === activeTabId) return;
+            if (blockWhenRunning()) return;
             var tab = getTab(id);
             if (!tab) return;
 
@@ -280,6 +302,7 @@
         },
 
         closeTab: function (id) {
+            if (blockWhenRunning()) return;
             var tab = getTab(id);
             if (!tab) return;
 
@@ -300,6 +323,7 @@
 
         confirmClose: function () {
             if (pendingCloseTabId) {
+                if (blockWhenRunning()) return;
                 doCloseTab(pendingCloseTabId);
                 pendingCloseTabId = null;
             }
@@ -315,6 +339,8 @@
             return getTab(activeTabId);
         },
 
+        getRunningTab: getRunningTab,
+
         updateActiveTabName: function () {
             var tab = getTab(activeTabId);
             if (!tab) return;
@@ -328,6 +354,8 @@
 
         saveCurrentState: saveCurrentState,
 
-        onSwitch: null
+        onSwitch: null,
+
+        onActionBlocked: null
     };
 })();
