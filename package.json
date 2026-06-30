@@ -13,7 +13,8 @@
     "package": "electron-forge package",
     "make": "electron-forge make",
     "publish": "electron-forge publish",
-    "lint": "echo \"No linting configured\""
+    "lint": "echo \"No linting configured\"",
+    "test:p0": "node scripts/regression-check.js"
   },
   "keywords": [],
   "author": {
