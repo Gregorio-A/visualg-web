@@ -7,6 +7,8 @@ O projeto possui duas saidas a partir da mesma fonte:
 - Web: roda a interface de `src/` no navegador.
 - Desktop: empacota a mesma interface com Electron Forge e Vite.
 
+O alvo pratico e manter a experiencia o mais proxima possivel do VisuAlg 3.0.7, deixando em `docs/compatibilidade.md` o que ja e suportado, o que ainda e parcial e o que e extensao do Web.
+
 ## Recursos
 
 - Editor baseado em CodeMirror 5 com destaque de sintaxe para VisuAlg.
@@ -39,6 +41,7 @@ O interpretador roda no cliente, em JavaScript, e cobre os principais elementos 
 - Comandos: `retorne`, `interrompa`, `limpatela`.
 - Operadores aritmeticos, relacionais e logicos: `+`, `-`, `*`, `/`, `\`, `div`, `mod`, `%`, `^`, `=`, `<>`, `<`, `>`, `<=`, `>=`, `e`, `ou`, `xou`, `nao`.
 - Funcoes nativas: `abs`, `quad`, `raizq`, `exp`, `log`, `logn`, `sen`, `cos`, `tan`, `cotan`, `arcsen`, `arccos`, `arctan`, `grauprad`, `radpgrau`, `int`, `pi`, `rand`, `randi`, `compr`, `copia`, `maiusc`, `minusc`, `asc`, `carac`, `pos`, `caracpnum`, `numpcarac`.
+- Compatibilidade especial: `senao se` na mesma linha, `escreva`/`escreval`/`leia` sem parênteses, `pi` como constante e chamadas de funcoes sem parametros sem `()`.
 
 Exemplo:
 
@@ -152,7 +155,7 @@ npm run make
 
 Durante o desenvolvimento, a janela Electron abre o DevTools automaticamente. Em builds empacotadas, o DevTools nao e aberto por padrao.
 
-## Documentacao interna
+## Anexo: Documentacao interna
 
 O modal de documentacao carrega arquivos Markdown via `docs.js`, nos caminhos:
 
@@ -168,6 +171,8 @@ O modal de documentacao carrega arquivos Markdown via `docs.js`, nos caminhos:
 - `docs/historia.md`
 
 Esses arquivos estao em `src/docs/` e sao copiados para a build web por `vite.renderer.config.mjs`, mantendo a mesma documentacao na versao web e no empacotamento Electron.
+
+`docs/historia.md` e o anexo historico do projeto. Ele conta a origem do VisuAlg, o caminho ate esta base web e o lugar que a manutencao atual ocupa nessa linha de continuidade.
 
 ## Principais arquivos
 
