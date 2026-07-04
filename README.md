@@ -18,6 +18,7 @@ O projeto possui duas saidas a partir da mesma fonte:
 - Painel de variaveis com nome, tipo e valor.
 - Abertura de arquivos `.alg` e `.txt`.
 - Salvamento do codigo como `.alg` ou `.txt`.
+- Persistencia automatica das abas e dos codigos no armazenamento local do navegador/Electron.
 - Autoindentacao do codigo.
 - Comentario/descomentario com `Ctrl+/` ou `Cmd+/`.
 - Temas escuro, claro e alto contraste.
@@ -191,9 +192,10 @@ Antes de publicar uma nova versao, recomenda-se:
 
 1. Testar a execucao de programas simples e programas com `leia`.
 2. Testar `F9`, `F8`, `Parar`, abertura e salvamento de `.alg`.
-3. Verificar a versao web em navegador.
-4. Verificar a versao Electron com `npm start`.
-5. Confirmar que qualquer mudanca visual ou de interpretador foi feita em `src/`.
+3. Fechar e reabrir a versao web/Electron para confirmar a restauracao das abas.
+4. Verificar a versao web em navegador.
+5. Verificar a versao Electron com `npm start`.
+6. Confirmar que qualquer mudanca visual ou de interpretador foi feita em `src/`.
 
 ## Licenca
 
