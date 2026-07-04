@@ -163,8 +163,9 @@ O modal de documentacao carrega arquivos Markdown via `docs.js`, nos caminhos:
 - `docs/subprogramas.md`
 - `docs/funcoes.md`
 - `docs/comandos.md`
+- `docs/historia.md`
 
-Esses arquivos nao estao presentes na arvore atual do repositorio. Para habilitar a documentacao nas duas saidas, adicione os Markdown correspondentes em `src/docs/` ou ajuste `src/js/docs.js`.
+Esses arquivos estao em `src/docs/` e sao copiados para a build web por `vite.renderer.config.mjs`, mantendo a mesma documentacao na versao web e no empacotamento Electron.
 
 ## Principais arquivos
 

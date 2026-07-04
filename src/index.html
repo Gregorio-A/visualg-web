@@ -9,7 +9,7 @@
     <!-- SEO -->
     <meta name="description" content="IDE online para VisuAlg 3.0.7. Escreva, execute e depure algoritmos em pseudocódigo português diretamente no navegador. Editor com syntax highlighting, painel de variáveis e console integrado.">
     <meta name="keywords" content="visualg, visualg 3.0.7, visualg 3, visualg 3.0, visualg online, visualg 3.0.7 online, ide visualg, pseudocódigo, algoritmos, lógica de programação, programação em português, aprender programar, ensino de programação">
-    <meta name="author" content="Conrado Salomé Ribeiro">
+    <meta name="author" content="Murilo Gregorio Alves">
     <meta name="robots" content="index, follow">
     <!-- <link rel="canonical" href="https://visualg.dev"> -->
     <link rel="icon" type="image/png" href="images/favicon.png">
@@ -149,17 +149,17 @@
         <span class="footer-item" id="compiler-status"><i data-lucide="circle-check" class="footer-icon"></i> Pronto</span>
         <span class="footer-item"><i data-lucide="cpu" class="footer-icon"></i> VisuAlg 3.0.7</span>
         <span class="footer-item footer-version" id="footer-version"><i data-lucide="code" class="footer-icon"></i> Visualg.dev v0.11</span>
-        <span class="footer-item"><i data-lucide="user" class="footer-icon"></i> Desenvolvido por Prof. Conrado Salomé Ribeiro</span>
+        <button class="footer-item footer-credits" id="footer-credits" type="button" title="Quem desenvolveu o VisuAlg.dev?"><i data-lucide="user" class="footer-icon"></i> Quem desenvolveu?</button>
     </footer>
 
     <!-- Changelog Modal -->
     <div class="modal-overlay hidden" id="changelogOverlay">
         <div class="modal changelog-modal">
             <div class="modal-header">
-                <span>Changelog</span>
+                <span>Log de atualizações</span>
                 <button id="btn-close-changelog"><i data-lucide="x"></i></button>
             </div>
-            <div class="modal-body">
+            <div class="modal-body changelog-body">
                 <div class="changelog-section">
                     <span class="changelog-version">v0.6</span>
                     <ul class="changelog-list">
@@ -406,6 +406,7 @@
                 <button class="modal-tab" data-tab="subprogramas">Subprogramas</button>
                 <button class="modal-tab" data-tab="funcoes">Funções</button>
                 <button class="modal-tab" data-tab="comandos">Comandos</button>
+                <button class="modal-tab" data-tab="historia">História</button>
             </div>
             <div class="modal-body docs-body" id="docs-content">
                 <div class="modal-tab-panel active" data-tab-panel="introducao"></div>
@@ -416,6 +417,7 @@
                 <div class="modal-tab-panel" data-tab-panel="subprogramas"></div>
                 <div class="modal-tab-panel" data-tab-panel="funcoes"></div>
                 <div class="modal-tab-panel" data-tab-panel="comandos"></div>
+                <div class="modal-tab-panel" data-tab-panel="historia"></div>
             </div>
         </div>
     </div>
