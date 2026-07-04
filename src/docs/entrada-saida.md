@@ -7,15 +7,17 @@ Use `escreva` e `escreval` para mostrar valores no console. Use `leia` para rece
 ```visualg
 escreva(<lista-de-expressoes>)
 escreval(<lista-de-expressoes>)
+escreva <lista-de-expressoes>
+escreval <lista-de-expressoes>
 ```
 
-`escreva` mantém o cursor na mesma linha. `escreval` imprime e pula uma linha.
+`escreva` mantém o cursor na mesma linha. `escreval` imprime e pula uma linha. As formas sem parênteses são aceitas para aproximar o Web dos materiais clássicos do VisuAlg.
 
 ```visualg
 algoritmo "Saida"
 inicio
-  escreva("Visu")
-  escreval("Alg")
+  escreva "Visu"
+  escreval "Alg"
   escreval("Nova linha")
 fimalgoritmo
 ```
@@ -46,9 +48,10 @@ fimalgoritmo
 
 ```visualg
 leia(<lista-de-variaveis>)
+leia <lista-de-variaveis>
 ```
 
-`leia` atribui os valores digitados às variáveis na ordem informada. No VisuAlg Web, escreva uma mensagem antes de `leia` quando quiser orientar o usuário.
+`leia` atribui os valores digitados às variáveis na ordem informada. O Web mostra a variável lida e o tipo esperado, por exemplo `Leia idade (inteiro):`. Você ainda pode escrever uma mensagem antes de `leia` quando quiser uma orientação mais específica.
 
 ```visualg
 algoritmo "Entrada"
@@ -57,10 +60,10 @@ var
   idade: inteiro
 inicio
   escreva("Digite seu nome: ")
-  leia(nome)
+  leia nome
 
   escreva("Digite sua idade: ")
-  leia(idade)
+  leia idade
 
   escreval("Olá, ", nome, ". Você tem ", idade, " anos.")
 fimalgoritmo
@@ -75,13 +78,15 @@ fimalgoritmo
 | `caractere` | Mantém o texto digitado. |
 | `logico` | Aceita `verdadeiro`/`v` ou `falso`/`f`. Outros valores geram erro. |
 
+Entrada inválida interrompe a execução com uma mensagem didática. O Web ainda não repete automaticamente a pergunta. No modo modal, cancelar a entrada interrompe o programa de forma controlada.
+
 ```visualg
 algoritmo "EntradaLogica"
 var
   confirmado: logico
 inicio
   escreva("Confirmado? ")
-  leia(confirmado)
+  leia confirmado
   escreval("Valor lógico: ", confirmado)
 fimalgoritmo
 ```

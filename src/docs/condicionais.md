@@ -48,6 +48,37 @@ inicio
 fimalgoritmo
 ```
 
+## senao se
+
+Use `senao se` na mesma linha quando quiser encadear uma nova condição sem abrir um bloco `senao` separado. Essa forma usa apenas um `fimse` no final da cadeia.
+
+```visualg
+algoritmo "SenaoSe"
+var
+  x: inteiro
+inicio
+  x <- 2
+
+  se x = 1 entao
+    escreval("um")
+  senao se x = 2 entao
+    escreval("dois")
+  senao
+    escreval("outro")
+  fimse
+fimalgoritmo
+```
+
+Se `se` ficar na linha seguinte ao `senao`, ele passa a ser um bloco aninhado normal e precisa de dois `fimse`.
+
+```visualg
+senao
+  se x = 2 entao
+    escreval("dois")
+  fimse
+fimse
+```
+
 ## Aninhamento
 
 Condicionais podem ficar dentro de outras condicionais.

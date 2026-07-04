@@ -157,6 +157,7 @@ Durante o desenvolvimento, a janela Electron abre o DevTools automaticamente. Em
 O modal de documentacao carrega arquivos Markdown via `docs.js`, nos caminhos:
 
 - `docs/introducao.md`
+- `docs/compatibilidade.md`
 - `docs/operadores.md`
 - `docs/entrada-saida.md`
 - `docs/condicionais.md`
@@ -188,14 +189,23 @@ Nao ha lint real configurado no momento. O script atual apenas imprime uma mensa
 npm run lint
 ```
 
+Para validar programas padrao sem abrir a interface, use a ferramenta interna:
+
+```bash
+npm run test:standard
+```
+
+Ela executa a lista em `scripts/standard-programs.js` e compara a saida do interpretador com os resultados esperados. O `npm run test:p0` tambem roda essa validacao junto da regressao principal.
+
 Antes de publicar uma nova versao, recomenda-se:
 
 1. Testar a execucao de programas simples e programas com `leia`.
 2. Testar `F9`, `F8`, `Parar`, abertura e salvamento de `.alg`.
 3. Fechar e reabrir a versao web/Electron para confirmar a restauracao das abas.
-4. Verificar a versao web em navegador.
-5. Verificar a versao Electron com `npm start`.
-6. Confirmar que qualquer mudanca visual ou de interpretador foi feita em `src/`.
+4. Rodar `npm run test:p0`.
+5. Verificar a versao web em navegador.
+6. Verificar a versao Electron com `npm start`.
+7. Confirmar que qualquer mudanca visual ou de interpretador foi feita em `src/`.
 
 ## Licenca
 

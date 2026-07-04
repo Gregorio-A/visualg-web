@@ -8,6 +8,7 @@
     var cache = {};
     var tabs = {
         'introducao': 'docs/introducao.md',
+        'compatibilidade': 'docs/compatibilidade.md',
         'operadores': 'docs/operadores.md',
         'entrada-saida': 'docs/entrada-saida.md',
         'condicionais': 'docs/condicionais.md',

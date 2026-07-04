@@ -1,6 +1,21 @@
 # Operadores
 
-Operadores formam expressões numéricas, lógicas e de texto. O VisuAlg Web segue a precedência usual: parênteses primeiro, depois potência, multiplicação/divisão, soma/subtração, comparações e operadores lógicos.
+Operadores formam expressões numéricas, lógicas e de texto. O VisuAlg Web segue a precedência do VisuAlg clássico sempre que o comportamento já foi validado.
+
+## Precedência e associatividade
+
+| Ordem | Operadores | Associatividade |
+| --- | --- | --- |
+| 1 | Parênteses | Expressão interna primeiro |
+| 2 | `+`, `-`, `nao` unários | Direita para esquerda |
+| 3 | `^` | Direita para esquerda |
+| 4 | `*`, `/`, `\`, `div`, `mod`, `%` | Esquerda para direita |
+| 5 | `+`, `-` binários | Esquerda para direita |
+| 6 | `=`, `<>`, `<`, `>`, `<=`, `>=` | Esquerda para direita |
+| 7 | `e` | Esquerda para direita |
+| 8 | `ou`, `xou` | Esquerda para direita |
+
+Exemplo: `2 ^ 3 ^ 2` resulta em `512`, pois é interpretado como `2 ^ (3 ^ 2)`.
 
 ## Aritméticos
 
@@ -55,6 +70,8 @@ fimalgoritmo
 
 Comparações de texto não diferenciam maiúsculas e minúsculas. Assim, `"ABC" = "abc"` resulta em `VERDADEIRO`.
 
+Evite comparações encadeadas como `1 < x < 10`; escreva `x > 1 e x < 10` para deixar a intenção explícita.
+
 ## Lógicos
 
 | Operador | Uso |
@@ -63,6 +80,8 @@ Comparações de texto não diferenciam maiúsculas e minúsculas. Assim, `"ABC"
 | `e` | Verdadeiro quando os dois lados são verdadeiros. |
 | `ou` | Verdadeiro quando pelo menos um lado é verdadeiro. |
 | `xou` | Verdadeiro quando os lados são diferentes. |
+
+Os operadores lógicos ainda avaliam os dois lados da expressão. Evite depender de curto-circuito para impedir uma divisão por zero ou uma chamada inválida.
 
 ```visualg
 algoritmo "OperadoresLogicos"

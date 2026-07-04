@@ -693,17 +693,25 @@
         var tok = this.current();
         var newline = (tok.value === 'escreval');
         this.pos++;
-        this.eat(T.LPAREN);
 
         var args = [];
-        if (!this.match(T.RPAREN)) {
+        if (this.match(T.LPAREN)) {
+            this.eat(T.LPAREN);
+            if (!this.match(T.RPAREN)) {
+                args.push(this.parseEscrevaArg());
+                while (this.match(T.COMMA)) {
+                    this.eat(T.COMMA);
+                    args.push(this.parseEscrevaArg());
+                }
+            }
+            this.eat(T.RPAREN);
+        } else if (!this.match(T.NEWLINE) && !this.match(T.EOF)) {
             args.push(this.parseEscrevaArg());
             while (this.match(T.COMMA)) {
                 this.eat(T.COMMA);
                 args.push(this.parseEscrevaArg());
             }
         }
-        this.eat(T.RPAREN);
 
         return { type: 'Escreva', args: args, newline: newline, line: tok.line };
     };
@@ -729,15 +737,23 @@
     Parser.prototype.parseLeia = function () {
         var line = this.current().line;
         this.eat(T.KEYWORD, 'leia');
-        this.eat(T.LPAREN);
 
         var targets = [];
-        targets.push(this.parseVarRef());
-        while (this.match(T.COMMA)) {
-            this.eat(T.COMMA);
+        if (this.match(T.LPAREN)) {
+            this.eat(T.LPAREN);
             targets.push(this.parseVarRef());
+            while (this.match(T.COMMA)) {
+                this.eat(T.COMMA);
+                targets.push(this.parseVarRef());
+            }
+            this.eat(T.RPAREN);
+        } else {
+            targets.push(this.parseVarRef());
+            while (this.match(T.COMMA)) {
+                this.eat(T.COMMA);
+                targets.push(this.parseVarRef());
+            }
         }
-        this.eat(T.RPAREN);
 
         return { type: 'Leia', targets: targets, line: line };
     };
@@ -768,9 +784,20 @@
 
         var elseBlock = [];
         if (this.match(T.KEYWORD, 'senao')) {
-            this.eat(T.KEYWORD, 'senao');
-            this.expectNewline();
-            elseBlock = this.parseStatements('fimse');
+            var senaoTok = this.eat(T.KEYWORD, 'senao');
+            if (this.match(T.KEYWORD, 'se') && this.current().line === senaoTok.line) {
+                elseBlock = [this.parseSe()];
+                return {
+                    type: 'Se',
+                    condition: condition,
+                    thenBlock: thenBlock,
+                    elseBlock: elseBlock,
+                    line: line
+                };
+            } else {
+                this.expectNewline();
+                elseBlock = this.parseStatements('fimse');
+            }
         }
 
         this.eat(T.KEYWORD, 'fimse');
@@ -1041,9 +1068,9 @@
 
     Parser.prototype.parsePower = function () {
         var left = this.parseUnary();
-        while (this.match(T.OPERATOR, '^')) {
+        if (this.match(T.OPERATOR, '^')) {
             this.pos++;
-            var right = this.parseUnary();
+            var right = this.parsePower();
             left = { type: 'BinaryOp', op: '^', left: left, right: right };
         }
         return left;
@@ -1517,7 +1544,12 @@
                 return 'logico';
             case 'VarRef': {
                 var symbol = this.lookup(ctx.scopes, node.name);
+                if (!symbol && node.name === 'pi') return 'real';
                 if (!symbol) this.error(node.line, 'Variavel "' + node.name + '" nao declarada');
+                if (symbol.kind === 'func') {
+                    if (symbol.params.length === 0) return symbol.returnType;
+                    this.error(node.line, 'Funcao "' + node.name + '" precisa ser chamada com parenteses e argumento(s)');
+                }
                 if (symbol.kind !== 'var') {
                     this.error(node.line, '"' + node.name + '" nao e uma variavel');
                 }
@@ -1750,9 +1782,7 @@
                 // Execute body
                 await this.execBlock(ast.body);
             } catch (e) {
-                if (e.message !== '__STOP__') {
-                    throw e;
-                }
+                throw e;
             } finally {
                 this.running = false;
             }
@@ -1908,13 +1938,25 @@
         for (var i = 0; i < stmt.targets.length; i++) {
             var target = stmt.targets[i];
             var varInfo = this.getVar(target.name);
-            var prompt = '';
+            var prompt = this.formatLeiaPrompt(target, varInfo);
             var input = await this.terminal.readInput(prompt);
 
             var value = this.convertInput(input, varInfo.type);
             await this.setVarValueAsync(target.name, target.indices, value);
         }
     };
+
+        Executor.prototype.formatLeiaPrompt = function (target, varInfo) {
+            var baseType = varInfo.dataType || varInfo.type;
+            if (baseType.indexOf('vetor de ') === 0) {
+                baseType = baseType.substring(9);
+            }
+            var name = target.name;
+            if (target.indices && target.indices.length > 0) {
+                name += '[' + target.indices.map(function () { return '?'; }).join(',') + ']';
+            }
+            return 'Leia ' + name + ' (' + baseType + '): ';
+        };
 
         Executor.prototype.convertInput = function (input, type) {
             var baseType = type;
@@ -2264,8 +2306,20 @@
             case 'StringLit': return node.value;
             case 'BoolLit': return node.value;
 
-            case 'VarRef':
-                return this.getVar(node.name).value;
+            case 'VarRef': {
+                try {
+                    return this.getVar(node.name).value;
+                } catch (error) {
+                    if (node.name === 'pi') return Math.PI;
+                    if (this.functions[node.name]) {
+                        if (this.functions[node.name].params.length === 0) {
+                            return await this.callFunction(node.name, []);
+                        }
+                        throw new Error('Funcao "' + node.name + '" precisa ser chamada com parenteses e argumento(s)');
+                    }
+                    throw error;
+                }
+            }
 
                 case 'ArrayAccess': {
                     var varInfo = this.getVar(node.name);
@@ -2434,7 +2488,7 @@
                 case 'pos': {
                     var sub = String(await this.evalExpr(argNodes[0]));
                     var str = String(await this.evalExpr(argNodes[1]));
-                    var idx = str.indexOf(sub);
+                    var idx = str.toLowerCase().indexOf(sub.toLowerCase());
                     return idx >= 0 ? idx + 1 : 0;
                 }
                 case 'caracpnum': {

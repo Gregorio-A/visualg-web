@@ -11,6 +11,7 @@
         inputEl: null,
         inputResolve: null,
         _modalSubmit: null,
+        _modalCancel: null,
         _modalKeydown: null,
 
         init: function () {
@@ -76,6 +77,7 @@
             var input = document.getElementById('console-input-modal');
             var label = document.getElementById('console-input-modal-label');
             var btnOk = document.getElementById('console-input-modal-ok');
+            var btnCancel = document.getElementById('console-input-modal-cancel');
 
             label.textContent = prompt || 'Digite a entrada:';
             input.value = '';
@@ -83,28 +85,37 @@
             input.focus();
 
             var self = this;
-            return new Promise(function (resolve) {
+            return new Promise(function (resolve, reject) {
                 self.inputResolve = resolve;
 
                 self._modalSubmit = function () {
                     var val = input.value;
                     overlay.classList.add('hidden');
-                    self._cleanupModal(input, btnOk);
+                    self._cleanupModal(input, btnOk, btnCancel);
                     resolve(val);
+                };
+                self._modalCancel = function () {
+                    overlay.classList.add('hidden');
+                    self._cleanupModal(input, btnOk, btnCancel);
+                    reject(new Error('__STOP__'));
                 };
                 self._modalKeydown = function (e) {
                     if (e.key === 'Enter') self._modalSubmit();
+                    if (e.key === 'Escape') self._modalCancel();
                 };
 
                 btnOk.addEventListener('click', self._modalSubmit);
+                btnCancel.addEventListener('click', self._modalCancel);
                 input.addEventListener('keydown', self._modalKeydown);
             });
         },
 
-        _cleanupModal: function (input, btnOk) {
+        _cleanupModal: function (input, btnOk, btnCancel) {
             if (this._modalSubmit) btnOk.removeEventListener('click', this._modalSubmit);
+            if (this._modalCancel) btnCancel.removeEventListener('click', this._modalCancel);
             if (this._modalKeydown) input.removeEventListener('keydown', this._modalKeydown);
             this._modalSubmit = null;
+            this._modalCancel = null;
             this._modalKeydown = null;
             this.inputResolve = null;
         },

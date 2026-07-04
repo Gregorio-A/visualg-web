@@ -2,7 +2,7 @@
 
 O VisuAlg Web executa pseudocódigo em português no estilo do VisuAlg 3.0.7, direto no navegador ou no aplicativo desktop. A ideia é manter a escrita conhecida por quem aprende algoritmos, mas a documentação abaixo descreve o comportamento do interpretador web deste projeto.
 
-> Use esta documentação como referência do VisuAlg Web. Alguns comandos do VisuAlg desktop não existem aqui ou foram substituídos por recursos da interface.
+> Use esta documentação como referência do VisuAlg Web. A aba Compatibilidade mostra o que já segue o VisuAlg 3.0.7, o que é parcial e o que é extensão própria do Web.
 
 ## Estrutura mínima
 
@@ -30,7 +30,8 @@ fimalgoritmo
 | Acentos | Prefira palavras sem acento, como `entao`, `senao`, `ate`, `faca`, `inicio`, `logico` e `nao`. O Web aceita alguns aliases acentuados para facilitar a digitação. |
 | Comandos por linha | Escreva um comando por linha. Não é necessário usar ponto e vírgula no fim das linhas. |
 | Comentário de linha | Tudo depois de `//` é ignorado até o fim da linha. |
-| Comentário em bloco | Texto entre `{` e `}` também é ignorado. |
+| Comentário em bloco | Texto entre `{` e `}` também é ignorado. Se faltar `}`, o Web mostra erro. |
+| Strings | Textos usam aspas duplas. Se faltar a aspa final, o Web mostra erro. |
 
 ## Tipos de dados
 

@@ -1,152 +1,13 @@
-const fs = require('fs');
-const path = require('path');
-const vm = require('vm');
-
-const root = path.resolve(__dirname, '..');
-
-global.window = {};
-global.localStorage = {
-  getItem() {
-    return null;
-  },
-};
-global.document = {
-  getElementById() {
-    return {
-      classList: {
-        add() {},
-        remove() {},
-      },
-      onclick: null,
-    };
-  },
-};
-
-vm.runInThisContext(
-  fs.readFileSync(path.join(root, 'src/js/interpreter.js'), 'utf8'),
-  { filename: 'src/js/interpreter.js' },
-);
-vm.runInThisContext(
-  fs.readFileSync(path.join(root, 'src/js/variables.js'), 'utf8'),
-  { filename: 'src/js/variables.js' },
-);
-
-class TestTerminal {
-  constructor(inputs) {
-    this.inputs = inputs || [];
-    this.output = '';
-    this.inputArea = { classList: { add() {}, remove() {} } };
-  }
-
-  write(text) {
-    this.output += String(text);
-  }
-
-  writeln(text) {
-    this.output += String(text || '') + '\n';
-  }
-
-  clear() {
-    this.output = '';
-  }
-
-  async readInput() {
-    if (this.inputs.length === 0) {
-      throw new Error('Entrada de teste nao configurada');
-    }
-    return this.inputs.shift();
-  }
-}
-
-const variablesPanel = {
-  update() {},
-  clear() {},
-};
-
-function parseSource(source) {
-  const tokens = new window.VisuAlgLexer(source).tokenize();
-  return new window.VisuAlgParser(tokens).parse();
-}
-
-async function executeSource(source, inputs) {
-  const ast = parseSource(source);
-  const terminal = new TestTerminal(inputs || inferInputs(source));
-  const executor = new window.VisuAlgExecutor(terminal, variablesPanel);
-  await executor.run(ast);
-  return terminal.output;
-}
-
-function inferInputs(source) {
-  const types = new Map();
-  const declRe = /^\s*([A-Za-z_][A-Za-z0-9_, \t]*)\s*:\s*(?:vetor\s*\[[^\]]+\]\s*de\s*)?(inteiro|real|caractere|logico)\b/gim;
-  let match;
-  while ((match = declRe.exec(source)) !== null) {
-    match[1].split(',').forEach((rawName) => {
-      const name = rawName.trim().toLowerCase();
-      if (name) types.set(name, match[2].toLowerCase());
-    });
-  }
-
-  const inputs = [];
-  const leiaRe = /\bleia\s*\(([^)]*)\)/gim;
-  while ((match = leiaRe.exec(source)) !== null) {
-    match[1].split(',').forEach((target) => {
-      const name = target.trim().replace(/\[.*$/, '').toLowerCase();
-      const type = types.get(name);
-      if (type === 'inteiro') inputs.push('1');
-      else if (type === 'real') inputs.push('1.5');
-      else if (type === 'logico') inputs.push('verdadeiro');
-      else inputs.push('teste');
-    });
-  }
-  return inputs;
-}
-
-async function expectOk(name, source, expected, inputs) {
-  let output;
-  try {
-    output = await executeSource(source, inputs);
-  } catch (error) {
-    throw new Error(`${name}: ${error.message}`);
-  }
-  if (expected !== undefined && output.trimEnd() !== expected) {
-    throw new Error(`${name}: saida esperada "${expected}", recebeu "${output.trimEnd()}"`);
-  }
-}
-
-async function expectError(name, source, pattern, inputs) {
-  try {
-    await executeSource(source, inputs || []);
-  } catch (error) {
-    if (!pattern.test(error.message)) {
-      throw new Error(`${name}: erro inesperado "${error.message}"`);
-    }
-    return;
-  }
-  throw new Error(`${name}: esperava erro ${pattern}`);
-}
-
-function extractDocExamples() {
-  const docsDir = path.join(root, 'src/docs');
-  const examples = [];
-  for (const file of fs.readdirSync(docsDir)) {
-    if (!file.endsWith('.md')) continue;
-    const content = fs.readFileSync(path.join(docsDir, file), 'utf8');
-    const blockRe = /```visualg\n([\s\S]*?)```/g;
-    let match;
-    let index = 0;
-    while ((match = blockRe.exec(content)) !== null) {
-      index += 1;
-      const source = match[1].trim();
-      if (/^algoritmo\b/i.test(source)) {
-        examples.push({ name: `${file}#${index}`, source });
-      }
-    }
-  }
-  return examples;
-}
+const {
+  ensureRuntimeLoaded,
+  expectOk,
+  expectError,
+  extractDocExamples,
+} = require('./visualg-test-harness');
 
 async function run() {
+  ensureRuntimeLoaded();
+
   const vectorPreview = window.VariablesPanel.formatValue(
     { '2': 5 },
     'vetor de inteiro',
@@ -216,7 +77,7 @@ inicio
   leia(x)
   escreval(x:1:2)
 fimalgoritmo
-`, '3.14', ['3,14']);
+`, 'Leia x (real): 3.14', ['3,14']);
 
   await expectError('caractere desconhecido', `
 algoritmo "t"
@@ -316,6 +177,36 @@ inicio
   leia(x)
 fimalgoritmo
 `, /Entrada invalida para inteiro/, ['abc']);
+
+  await expectError('funcao com parametro sem chamada', `
+algoritmo "t"
+var
+  x: inteiro
+
+funcao dobro(valor: inteiro): inteiro
+inicio
+  retorne valor * 2
+fimfuncao
+
+inicio
+  x <- dobro
+fimalgoritmo
+`, /precisa ser chamada com parenteses/);
+
+  await expectError('comentario em bloco sem fechamento', `
+algoritmo "t"
+inicio
+  { comentario aberto
+  escreval("x")
+fimalgoritmo
+`, /Comentario de bloco.*nao foi fechado/);
+
+  await expectError('string sem fechamento', `
+algoritmo "t"
+inicio
+  escreval("texto aberto)
+fimalgoritmo
+`, /String nao foi fechada/);
 
   console.log(`OK: ${docExamples.length} exemplos da documentacao e regressao P0 executados.`);
 }

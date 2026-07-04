@@ -148,7 +148,7 @@
     <footer class="footer">
         <span class="footer-item" id="compiler-status"><i data-lucide="circle-check" class="footer-icon"></i> Pronto</span>
         <span class="footer-item"><i data-lucide="cpu" class="footer-icon"></i> VisuAlg 3.0.7</span>
-        <span class="footer-item footer-version" id="footer-version"><i data-lucide="code" class="footer-icon"></i> Visualg.dev v0.11</span>
+        <span class="footer-item footer-version" id="footer-version"><i data-lucide="code" class="footer-icon"></i> Visualg.dev v0.13</span>
         <button class="footer-item footer-credits" id="footer-credits" type="button" title="Quem desenvolveu o VisuAlg.dev?"><i data-lucide="user" class="footer-icon"></i> Quem desenvolveu?</button>
     </footer>
 
@@ -161,6 +161,23 @@
             </div>
             <div class="modal-body changelog-body">
                 <div class="changelog-section">
+                    <span class="changelog-version">v0.13</span>
+                    <ul class="changelog-list">
+                        <li>Nova aba Compatibilidade com tabela de suportado, parcial, não suportado e extensões Web.</li>
+                        <li>`senao se` na mesma linha agora funciona como encadeamento compatível com o VisuAlg clássico.</li>
+                        <li>`escreva`, `escreval` e `leia` aceitam a forma sem parênteses.</li>
+                        <li>Funções sem parâmetros podem ser usadas sem `()`, e `pi` funciona como constante.</li>
+                        <li>Entrada por `leia` mostra variável e tipo esperado; o modal pode cancelar a execução.</li>
+                        <li>Mais programas padrão verificam compatibilidade de operadores, funções e entrada/saída.</li>
+                    </ul>
+                    <span class="changelog-version">v0.12</span>
+                    <ul class="changelog-list">
+                        <li>Persistência automática das abas e dos códigos salvos no editor local.</li>
+                        <li>Restauração da aba ativa e da ordem das abas ao reabrir o navegador ou aplicativo.</li>
+                        <li>Ferramenta interna de validação por programas padrão para conferir saídas esperadas.</li>
+                        <li>Log de atualizações em modal maior, com rolagem própria para histórico completo.</li>
+                        <li>Nova aba de história e autoria na documentação, explicando a continuidade do projeto.</li>
+                    </ul>
                     <span class="changelog-version">v0.6</span>
                     <ul class="changelog-list">
                         <li class="changelog-item-old">Melhorias na IDE - salvamento, keywords com acentuação, indentação e UI</li>
@@ -351,6 +368,7 @@
                     <input id="console-input-modal" type="text" class="setting-font-input" style="width:100%" />
                 </div>
                 <div class="modal-footer">
+                    <button class="modal-btn modal-btn-secondary" id="console-input-modal-cancel">Cancelar</button>
                     <button class="modal-btn modal-btn-secondary" id="console-input-modal-ok">OK</button>
                 </div>
             </div>
@@ -399,6 +417,7 @@
             </div>
             <div class="modal-tabs">
                 <button class="modal-tab active" data-tab="introducao">Introdução</button>
+                <button class="modal-tab" data-tab="compatibilidade">Compatibilidade</button>
                 <button class="modal-tab" data-tab="operadores">Operadores</button>
                 <button class="modal-tab" data-tab="entrada-saida">E/S</button>
                 <button class="modal-tab" data-tab="condicionais">Condicionais</button>
@@ -410,6 +429,7 @@
             </div>
             <div class="modal-body docs-body" id="docs-content">
                 <div class="modal-tab-panel active" data-tab-panel="introducao"></div>
+                <div class="modal-tab-panel" data-tab-panel="compatibilidade"></div>
                 <div class="modal-tab-panel" data-tab-panel="operadores"></div>
                 <div class="modal-tab-panel" data-tab-panel="entrada-saida"></div>
                 <div class="modal-tab-panel" data-tab-panel="condicionais"></div>

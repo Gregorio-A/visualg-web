@@ -1,7 +1,7 @@
 {
   "name": "visualg-dev",
   "productName": "VisuAlg.dev",
-  "version": "0.11.0",
+  "version": "0.13.0",
   "description": "IDE web e desktop para pseudocodigo no estilo VisuAlg 3.0.7",
   "main": ".vite/build/main.js",
   "private": true,
@@ -14,7 +14,8 @@
     "make": "electron-forge make",
     "publish": "electron-forge publish",
     "lint": "echo \"No linting configured\"",
-    "test:p0": "node scripts/regression-check.js"
+    "test:standard": "node scripts/standard-program-check.js",
+    "test:p0": "node scripts/regression-check.js && npm run test:standard"
   },
   "keywords": [],
   "author": {

@@ -30,6 +30,24 @@ inicio
 fimalgoritmo
 ```
 
+Quando a função não tem parâmetros, ela pode ser declarada sem parênteses e usada com ou sem `()`.
+
+```visualg
+algoritmo "FuncaoSemParametro"
+var
+  valor: inteiro
+
+funcao resposta: inteiro
+inicio
+  retorne 42
+fimfuncao
+
+inicio
+  valor <- resposta
+  escreval(valor)
+fimalgoritmo
+```
+
 ## Retorno pelo nome da função
 
 Além de `retorne`, o Web também aceita atribuir o resultado a uma variável local com o mesmo nome da função.
@@ -76,7 +94,7 @@ fimalgoritmo
 
 ## Funções internas
 
-As funções internas são chamadas com parênteses. Exemplos: `raizq(25)`, `rand()` e `pi()`.
+As funções internas são chamadas com parênteses. Exemplos: `raizq(25)`, `rand()` e `pi()`. Por compatibilidade, `pi` também pode ser usado diretamente como constante.
 
 | Função | Retorno |
 | --- | --- |
@@ -91,7 +109,7 @@ As funções internas são chamadas com parênteses. Exemplos: `raizq(25)`, `ran
 | `grauprad(x)` | Converte graus para radianos. |
 | `radpgrau(x)` | Converte radianos para graus. |
 | `int(x)` | Parte inteira de `x`. |
-| `pi()` | Valor de π. |
+| `pi` ou `pi()` | Valor de π. |
 | `rand()` | Número real aleatório entre `0` e `1`. |
 | `randi(limite)` | Inteiro aleatório de `0` até `limite - 1`. O limite deve ser inteiro maior que zero. |
 | `compr(texto)` | Quantidade de caracteres. |
@@ -100,7 +118,7 @@ As funções internas são chamadas com parênteses. Exemplos: `raizq(25)`, `ran
 | `minusc(texto)` | Texto em minúsculas. |
 | `asc(texto)` | Código do primeiro caractere. |
 | `carac(codigo)` | Caractere do código informado. |
-| `pos(trecho, texto)` | Posição do trecho no texto, começando em `1`; retorna `0` se não encontrar. |
+| `pos(trecho, texto)` | Posição do trecho no texto, começando em `1`; não diferencia maiúsculas/minúsculas e retorna `0` se não encontrar. |
 | `caracpnum(texto)` | Converte texto para número. |
 | `numpcarac(numero)` | Converte número para texto. |
 
@@ -113,6 +131,6 @@ inicio
   escreval("Tamanho: ", compr(texto))
   escreval("Maiúsculas: ", maiusc(texto))
   escreval("Raiz: ", raizq(25))
-  escreval("Pi: ", pi():6:3)
+  escreval("Pi: ", pi:6:3)
 fimalgoritmo
 ```
