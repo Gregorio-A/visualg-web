@@ -1,65 +1,100 @@
-Subprograma é um programa que auxilia o programa principal através da realização de uma determinada subtarefa. Também costuma receber os nomes de sub-rotina, procedimento, método ou módulo.
+# Subprogramas
 
-Os subprogramas são chamados dentro do corpo do programa principal como se fossem comandos. Após seu término, a execução continua a partir do ponto onde foi chamado. É importante compreender que a chamada de um subprograma simplesmente gera um desvio provisório no fluxo de execução.
+Subprogramas dividem o algoritmo em partes menores. No VisuAlg Web, procedimentos e funções são declarados depois da seção `var` global e antes do `inicio` do programa principal.
 
-Há um caso particular de subprograma que recebe o nome de função. Uma função, além de executar uma determinada tarefa, retorna um valor para quem a chamou, que é o resultado da sua execução. Por este motivo, a chamada de uma função aparece no corpo do programa principal como uma expressão, e não como um comando.
+Esta aba cobre procedimentos, que executam comandos e não retornam valor. Para subprogramas com retorno, veja a aba `Funções`.
 
-Cada subprograma, além de ter acesso às variáveis do programa que o chamou (são as variáveis globais), pode ter suas próprias variáveis (são as variáveis locais), que existem apenas durante sua chamada.
+## Procedimento sem parâmetros
 
-Ao se chamar um subprograma, também é possível passar-lhe determinadas informações que recebem o nome de parâmetros (são valores que, na linha de chamada, ficam entre os parênteses e que estão separados por vírgulas). A quantidade dos parâmetros, sua seqüência e respectivos tipos não podem mudar: devem estar de acordo com o que foi especificado na sua correspondente declaração.
+```visualg
+procedimento <nome>
+var
+  <variaveis-locais>
+inicio
+  <comandos>
+fimprocedimento
+```
 
-Para se criar subprogramas, é preciso descrevê-los após a declaração das variáveis e antes do corpo do programa principal. O VisuAlg possibilita declaração e chamada de subprogramas nos moldes da linguagem Pascal, ou seja, procedimentos e funções com passagem de parâmetros por valor ou referência. Isso será explicado a seguir.
+```visualg
+algoritmo "ProcedimentoSimples"
+var
+  mensagem: caractere
 
-Procedimentos
+procedimento mostrar
+inicio
+  escreval(mensagem)
+fimprocedimento
 
-Em VisuAlg, procedimento é um subprograma que não retorna nenhum valor (corresponde ao procedure do Pascal). Sua declaração, que deve estar entre o final da declaração de variáveis e a linha inicio do programa principal, segue a sintaxe abaixo:
+inicio
+  mensagem <- "Olá do procedimento"
+  mostrar
+fimalgoritmo
+```
 
-    procedimento <nome-de-procedimento> [(<seqüência-de-declarações-de-parâmetros>)]
-    // Seção de Declarações Internas
-    inicio
-    // Seção de Comandos
-    fimprocedimento
+## Procedimento com parâmetros
 
-O <nome-de-procedimento> obedece as mesmas regras de nomenclatura das variáveis. Por outro lado, a <seqüência-de-declarações-de-parâmetros> é uma seqüência de
+Parâmetros são declarados entre parênteses. Grupos podem ser separados por ponto e vírgula, como no VisuAlg clássico.
 
-    [var] <seqüência-de-parâmetros>: <tipo-de-dado>
+```visualg
+procedimento <nome>(<parametros>: <tipo>; <parametros>: <tipo>)
+inicio
+  <comandos>
+fimprocedimento
+```
 
-separadas por ponto e vírgula. A presença (opcional) da palavra-chave var indica passagem de parâmetros por referência; caso contrário, a passagem será por valor. 
+```visualg
+algoritmo "ProcedimentoComParametro"
 
-Por sua vez, <seqüência-de-parâmetros> é uma seqüência de nomes de parâmetros (também obedecem a mesma regra de nomenclatura de variáveis) separados por vírgulas.
+procedimento saudacao(nome: caractere; idade: inteiro)
+inicio
+  escreval("Nome: ", nome)
+  escreval("Idade: ", idade)
+fimprocedimento
 
-De modo análogo ao programa principal, a seção de declaração internas começa com a palavra-chave var, e continua com a seguinte sintaxe:
+inicio
+  saudacao("Ana", 17)
+fimalgoritmo
+```
 
-    <lista-de-variáveis> : <tipo-de-dado>
+## Variáveis locais
 
-Nos próximos exemplos, através de um subprograma soma, será calculada a soma entre os valores 4 e –9 (ou seja, será obtido o resultado 13) que o programa principal imprimirá em seguida. No primeiro caso, um procedimento sem parâmetros utiliza uma variável local aux para armazenar provisoriamente o resultado deste cálculo (evidentemente, esta variável é desnecessária, mas está aí apenas para ilustrar o exemplo), antes de atribuí-lo à variável global res:
+Variáveis declaradas dentro do procedimento existem somente durante a chamada.
 
-    procedimento soma
-    var aux: inteiro
-    inicio
-    // n, m e res são variáveis globais
-    aux <- n + m
-    res <- aux
-    fimprocedimento
+```visualg
+algoritmo "VariavelLocal"
 
-    No programa principal deve haver os seguintes comandos:
-    n <- 4
-    m <- -9
-    soma
-    escreva(res)
+procedimento tabuada(numero: inteiro)
+var
+  i: inteiro
+inicio
+  para i de 1 ate 5 faca
+    escreval(numero, " x ", i, " = ", numero * i)
+  fimpara
+fimprocedimento
 
-A mesma tarefa poderia ser executada através de um procedimento com parâmetros, como descrito abaixo:
+inicio
+  tabuada(3)
+fimalgoritmo
+```
 
-    procedimento soma (x,y: inteiro)
-    inicio
-    // res é variável global
-    res <- x + y
-    fimprocedimento
+## Passagem por valor e por referência
 
-    No programa principal deve haver os seguintes comandos:
-    n <- 4
-    m <- -9
-    soma(n,m)
-    escreva(res)
+Por padrão, parâmetros recebem uma cópia do valor. Use `var` no parâmetro para permitir que o procedimento altere a variável original.
 
-A passagem de parâmetros do exemplo acima chama-se passagem por valor. Neste caso, o subprograma simplesmente recebe um valor que utiliza durante sua execução. Durante essa execução, os parâmetros passados por valor são análogos às suas variáveis locais, mas com uma única diferença: receberam um valor inicial no momento em que o subprograma foi chamado.
+```visualg
+algoritmo "Referencia"
+var
+  resultado: inteiro
+
+procedimento somar(a, b: inteiro; var saida: inteiro)
+inicio
+  saida <- a + b
+fimprocedimento
+
+inicio
+  somar(4, 9, resultado)
+  escreval("Resultado: ", resultado)
+fimalgoritmo
+```
+
+Ao usar `var`, passe uma variável simples na chamada. Expressões como `x + 1` não podem receber alterações por referência.

@@ -73,6 +73,10 @@
                 setStatus('Pronto');
             }
         };
+        tabManager.onActionBlocked = function (message) {
+            setStatus('Executando...', 'running');
+            statusEl.title = message;
+        };
 
         // Button events
         btnRun.addEventListener('click', runProgram);
@@ -159,11 +163,7 @@
             var tab = e.target.closest('.modal-tab');
             if (tab) {
                 var tabId = tab.getAttribute('data-tab');
-                var modal = tab.closest('.modal');
-                modal.querySelectorAll('.modal-tab').forEach(function (t) { t.classList.remove('active'); });
-                modal.querySelectorAll('.modal-tab-panel').forEach(function (p) { p.classList.remove('active'); });
-                tab.classList.add('active');
-                modal.querySelector('[data-tab-panel="' + tabId + '"]').classList.add('active');
+                DocsPanel.activateTab(tabId);
                 DocsPanel.loadTab(tabId);
             }
         });
@@ -173,19 +173,30 @@
         var betaTag = document.querySelector('.beta-tag');
         var betaHoverTimer = null;
 
-        betaTag.addEventListener('click', function () {
+        function openChangelog() {
             changelogOverlay.classList.remove('hidden');
+            var body = changelogOverlay.querySelector('.changelog-body');
+            if (body) body.scrollTop = 0;
+        }
+
+        betaTag.addEventListener('click', function () {
+            openChangelog();
         });
 
         // Footer version click to open changelog
         var footerVersion = document.getElementById('footer-version');
         footerVersion.addEventListener('click', function () {
-            changelogOverlay.classList.remove('hidden');
+            openChangelog();
+        });
+
+        var footerCredits = document.getElementById('footer-credits');
+        footerCredits.addEventListener('click', function () {
+            DocsPanel.open('historia');
         });
 
         betaTag.addEventListener('mouseenter', function () {
             betaHoverTimer = setTimeout(function () {
-                changelogOverlay.classList.remove('hidden');
+                openChangelog();
             }, 5000);
         });
         betaTag.addEventListener('mouseleave', function () {
@@ -325,6 +336,7 @@
             }
             if (e.key === 'Escape') {
                 if (!settingsOverlay.classList.contains('hidden')) closeSettings();
+                if (!docsOverlay.classList.contains('hidden')) DocsPanel.close();
                 if (!changelogOverlay.classList.contains('hidden')) changelogOverlay.classList.add('hidden');
                 if (!closeTabOverlay.classList.contains('hidden')) tabManager.cancelClose();
             }
@@ -616,22 +628,39 @@
     function setStatus(text, type) {
         var icon = statusIcons[text] || 'circle-check';
         statusEl.innerHTML = '<i data-lucide="' + icon + '" class="footer-icon"></i> ' + text;
+        statusEl.title = '';
         statusEl.style.color = type === 'error' ? 'var(--red)' :
                                type === 'running' ? 'var(--yellow)' : 'var(--green)';
         if (window.lucide) lucide.createIcons({ nodes: [statusEl] });
     }
 
     function setRunning(running) {
+        var tab = tabManager.getActiveTab();
+        var stepping = tab && tab.executor && tab.executor.running && tab.executor.stepMode;
         btnRun.disabled = running;
-        btnStep.disabled = false;
+        btnStep.disabled = running && !stepping;
         btnStop.disabled = !running;
         btnClearTerminal.disabled = running;
         btnClearVars.disabled = running;
     }
 
+    function getRunningTab() {
+        return tabManager.getRunningTab ? tabManager.getRunningTab() : null;
+    }
+
+    function blockIfAnotherTabRunning(tab) {
+        var runningTab = getRunningTab();
+        if (!runningTab || runningTab.id === tab.id) return false;
+        setStatus('Executando...', 'running');
+        statusEl.title = 'Ja existe uma execucao ativa em outra aba.';
+        setRunning(true);
+        return true;
+    }
+
     // === Execution ===
     async function runProgram() {
         var tab = tabManager.getActiveTab();
+        if (blockIfAnotherTabRunning(tab)) return;
         if (tab.executor && tab.executor.running) return;
 
         var source = editor.getValue();
@@ -665,8 +694,11 @@
 
     async function stepProgram() {
         var tab = tabManager.getActiveTab();
+        if (blockIfAnotherTabRunning(tab)) return;
         if (tab.executor && tab.executor.running) {
-            tab.executor.nextStep();
+            if (tab.executor.stepMode) {
+                tab.executor.nextStep();
+            }
             return;
         }
 

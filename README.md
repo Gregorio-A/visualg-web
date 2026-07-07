@@ -7,6 +7,8 @@ O projeto possui duas saidas a partir da mesma fonte:
 - Web: roda a interface de `src/` no navegador.
 - Desktop: empacota a mesma interface com Electron Forge e Vite.
 
+O alvo pratico e manter a experiencia o mais proxima possivel do VisuAlg 3.0.7, deixando em `docs/compatibilidade.md` o que ja e suportado, o que ainda e parcial e o que e extensao do Web.
+
 ## Recursos
 
 - Editor baseado em CodeMirror 5 com destaque de sintaxe para VisuAlg.
@@ -18,6 +20,7 @@ O projeto possui duas saidas a partir da mesma fonte:
 - Painel de variaveis com nome, tipo e valor.
 - Abertura de arquivos `.alg` e `.txt`.
 - Salvamento do codigo como `.alg` ou `.txt`.
+- Persistencia automatica das abas e dos codigos no armazenamento local do navegador/Electron.
 - Autoindentacao do codigo.
 - Comentario/descomentario com `Ctrl+/` ou `Cmd+/`.
 - Temas escuro, claro e alto contraste.
@@ -38,6 +41,7 @@ O interpretador roda no cliente, em JavaScript, e cobre os principais elementos 
 - Comandos: `retorne`, `interrompa`, `limpatela`.
 - Operadores aritmeticos, relacionais e logicos: `+`, `-`, `*`, `/`, `\`, `div`, `mod`, `%`, `^`, `=`, `<>`, `<`, `>`, `<=`, `>=`, `e`, `ou`, `xou`, `nao`.
 - Funcoes nativas: `abs`, `quad`, `raizq`, `exp`, `log`, `logn`, `sen`, `cos`, `tan`, `cotan`, `arcsen`, `arccos`, `arctan`, `grauprad`, `radpgrau`, `int`, `pi`, `rand`, `randi`, `compr`, `copia`, `maiusc`, `minusc`, `asc`, `carac`, `pos`, `caracpnum`, `numpcarac`.
+- Compatibilidade especial: `senao se` na mesma linha, `escreva`/`escreval`/`leia` sem parênteses, `pi` como constante e chamadas de funcoes sem parametros sem `()`.
 
 Exemplo:
 
@@ -151,11 +155,12 @@ npm run make
 
 Durante o desenvolvimento, a janela Electron abre o DevTools automaticamente. Em builds empacotadas, o DevTools nao e aberto por padrao.
 
-## Documentacao interna
+## Anexo: Documentacao interna
 
 O modal de documentacao carrega arquivos Markdown via `docs.js`, nos caminhos:
 
 - `docs/introducao.md`
+- `docs/compatibilidade.md`
 - `docs/operadores.md`
 - `docs/entrada-saida.md`
 - `docs/condicionais.md`
@@ -163,8 +168,11 @@ O modal de documentacao carrega arquivos Markdown via `docs.js`, nos caminhos:
 - `docs/subprogramas.md`
 - `docs/funcoes.md`
 - `docs/comandos.md`
+- `docs/historia.md`
 
-Esses arquivos nao estao presentes na arvore atual do repositorio. Para habilitar a documentacao nas duas saidas, adicione os Markdown correspondentes em `src/docs/` ou ajuste `src/js/docs.js`.
+Esses arquivos estao em `src/docs/` e sao copiados para a build web por `vite.renderer.config.mjs`, mantendo a mesma documentacao na versao web e no empacotamento Electron.
+
+`docs/historia.md` e o anexo historico do projeto. Ele conta a origem do VisuAlg, o caminho ate esta base web e o lugar que a manutencao atual ocupa nessa linha de continuidade.
 
 ## Principais arquivos
 
@@ -186,13 +194,23 @@ Nao ha lint real configurado no momento. O script atual apenas imprime uma mensa
 npm run lint
 ```
 
+Para validar programas padrao sem abrir a interface, use a ferramenta interna:
+
+```bash
+npm run test:standard
+```
+
+Ela executa a lista em `scripts/standard-programs.js` e compara a saida do interpretador com os resultados esperados. O `npm run test:p0` tambem roda essa validacao junto da regressao principal.
+
 Antes de publicar uma nova versao, recomenda-se:
 
 1. Testar a execucao de programas simples e programas com `leia`.
 2. Testar `F9`, `F8`, `Parar`, abertura e salvamento de `.alg`.
-3. Verificar a versao web em navegador.
-4. Verificar a versao Electron com `npm start`.
-5. Confirmar que qualquer mudanca visual ou de interpretador foi feita em `src/`.
+3. Fechar e reabrir a versao web/Electron para confirmar a restauracao das abas.
+4. Rodar `npm run test:p0`.
+5. Verificar a versao web em navegador.
+6. Verificar a versao Electron com `npm start`.
+7. Confirmar que qualquer mudanca visual ou de interpretador foi feita em `src/`.
 
 ## Licenca
 

@@ -8,13 +8,15 @@
     var cache = {};
     var tabs = {
         'introducao': 'docs/introducao.md',
+        'compatibilidade': 'docs/compatibilidade.md',
         'operadores': 'docs/operadores.md',
         'entrada-saida': 'docs/entrada-saida.md',
         'condicionais': 'docs/condicionais.md',
         'repeticao': 'docs/repeticao.md',
         'subprogramas': 'docs/subprogramas.md',
         'funcoes': 'docs/funcoes.md',
-        'comandos': 'docs/comandos.md'
+        'comandos': 'docs/comandos.md',
+        'historia': 'docs/historia.md'
     };
 
     function addCopyButtons(panel) {
@@ -69,16 +71,35 @@
             });
     }
 
+    function activateTab(tabId) {
+        var overlay = document.getElementById('docsOverlay');
+        if (!overlay) return null;
+
+        var tab = overlay.querySelector('.modal-tab[data-tab="' + tabId + '"]');
+        var panel = overlay.querySelector('.modal-tab-panel[data-tab-panel="' + tabId + '"]');
+        if (!tab || !panel) return null;
+
+        overlay.querySelectorAll('.modal-tab').forEach(function (t) { t.classList.remove('active'); });
+        overlay.querySelectorAll('.modal-tab-panel').forEach(function (p) { p.classList.remove('active'); });
+        tab.classList.add('active');
+        panel.classList.add('active');
+
+        return tabId;
+    }
+
     window.DocsPanel = {
-        open: function () {
+        open: function (tabId) {
             var overlay = document.getElementById('docsOverlay');
             overlay.classList.remove('hidden');
+            var selectedTab = tabId ? activateTab(tabId) : null;
             var activeTab = overlay.querySelector('.modal-tab.active');
-            if (activeTab) loadTab(activeTab.getAttribute('data-tab'));
+            if (!selectedTab && activeTab) selectedTab = activeTab.getAttribute('data-tab');
+            if (selectedTab) loadTab(selectedTab);
         },
         close: function () {
             document.getElementById('docsOverlay').classList.add('hidden');
         },
+        activateTab: activateTab,
         loadTab: loadTab
     };
 })();

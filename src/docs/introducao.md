@@ -1,83 +1,101 @@
-A Linguagem de Programação do VisuAlg (1) 
+# Introdução ao VisuAlg Web
 
-Introdução
+O VisuAlg Web executa pseudocódigo em português no estilo do VisuAlg 3.0.7, direto no navegador ou no aplicativo desktop. A ideia é manter a escrita conhecida por quem aprende algoritmos, mas a documentação abaixo descreve o comportamento do interpretador web deste projeto.
 
-A linguagem que o VisuAlg interpreta é bem simples: é uma versão portuguesa dos pseudocódigos largamente utilizados nos livros de introdução à programação, conhecida como "Portugol". Tomei a liberdade de acrescentar-lhe alguns comandos novos, com o intuito de criar facilidades específicas para o ensino de técnicas de elaboração de algoritmos. Inicialmente, pensava em criar uma sintaxe muito simples e "liberal", para que o usuário se preocupasse apenas com a lógica da resolução dos problemas e não com as palavras-chave, pontos e vírgulas, etc. No entanto, cheguei depois à conclusão de que alguma formalidade seria não só necessária como útil, para criar um sentido de disciplina na elaboração do "código-fonte".
+> Use esta documentação como referência do VisuAlg Web. A aba Compatibilidade mostra o que já segue o VisuAlg 3.0.7, o que é parcial e o que é extensão própria do Web.
 
-A linguagem do VisuAlg permite apenas um comando por linha: desse modo, não há necessidade de tokens separadores de estruturas, como o ponto e vírgula em Pascal. Também não existe o conceito de blocos de comandos (que correspondem ao begin e end do Pascal e ao { e } do C), nem comandos de desvio incondicional como o goto. Na versão atual do VisuAlg, com exceção das rotinas de entrada e saída, não há nenhum subprograma embutido, tal como Inc(), Sqr(), Ord(), Chr(), Pos(), Copy() ou outro.
+## Estrutura mínima
 
-Importante: para facilitar a digitação e evitar confusões, todas as palavras-chave do VisuAlg foram implementadas sem acentos, cedilha, etc. Portanto, o tipo de dados lógico é definido como logico, o comando se..então..senão é definido como se..entao..senao, e assim por diante. O VisuAlg também não distingue maiúsculas e minúsculas no reconhecimento de palavras-chave e nomes de variáveis.
+Todo programa começa com `algoritmo`, pode declarar variáveis em `var`, executa comandos a partir de `inicio` e termina em `fimalgoritmo`.
 
-Formato Básico do Pseudocódigo e Inclusão de Comentários
+```visualg
+algoritmo "MeuAlgoritmo"
+var
+  nome: caractere
+  idade: inteiro
+inicio
+  escreva("Nome: ")
+  leia(nome)
+  escreva("Idade: ")
+  leia(idade)
+  escreval("Olá, ", nome, ". Idade: ", idade)
+fimalgoritmo
+```
 
-O formato básico do nosso pseudocódigo é o seguinte:
+## Regras gerais
 
-    algoritmo "semnome"
-    // Função :
-    // Autor :
-    // Data : 
-    // Seção de Declarações 
-    inicio
-    // Seção de Comandos 
-    fimalgoritmo
+| Regra | Como funciona no Web |
+| --- | --- |
+| Maiúsculas e minúsculas | Palavras-chave e nomes são reconhecidos sem diferenciar caixa. |
+| Acentos | Prefira palavras sem acento, como `entao`, `senao`, `ate`, `faca`, `inicio`, `logico` e `nao`. O Web aceita alguns aliases acentuados para facilitar a digitação. |
+| Comandos por linha | Escreva um comando por linha. Não é necessário usar ponto e vírgula no fim das linhas. |
+| Comentário de linha | Tudo depois de `//` é ignorado até o fim da linha. |
+| Comentário em bloco | Texto entre `{` e `}` também é ignorado. Se faltar `}`, o Web mostra erro. |
+| Strings | Textos usam aspas duplas. Se faltar a aspa final, o Web mostra erro. |
 
-A primeira linha é composta pela palavra-chave algoritmo seguida do seu nome delimitado por aspas duplas. Este nome será usado como título nas janelas de leitura de dados (nas futuras versões do VisuAlg, talvez utilizemos este dado de outras formas). A seção que se segue é a de declaração de variáveis, que termina com a linha que contém a palavra-chave inicio. Deste ponto em diante está a seção de comandos, que continua até a linha em que se encontre a palavra-chave fimalgoritmo. Esta última linha marca o final do pseudocódigo: todo texto existente a partir dela é ignorado pelo interpretador.
+## Tipos de dados
 
-O VisuAlg permite a inclusão de comentários: qualquer texto precedido de "//" é ignorado, até se atingir o final da sua linha. Por este motivo, os comentários não se estendem por mais de uma linha: quando se deseja escrever comentários mais longos, que ocupem várias linhas, cada uma delas deverá começar por "//".
+| Tipo | Valor padrão | Uso |
+| --- | --- | --- |
+| `inteiro` | `0` | Números sem casas decimais. |
+| `real` | `0.0` | Números com casas decimais usando ponto, como `3.14`. |
+| `caractere` | `""` | Textos entre aspas duplas. |
+| `logico` | `FALSO` | Valores `VERDADEIRO` ou `FALSO`. |
 
-Tipos de Dados
+## Declaração de variáveis
 
-O VisuAlg prevê quatro tipos de dados: inteiro, real, cadeia de caracteres e lógico (ou booleano). As palavras-chave que os definem são as seguintes (observe que elas não têm acentuação):
+A seção `var` fica antes de `inicio`. Declare uma ou mais variáveis por linha, separadas por vírgula.
 
-        inteiro: define variáveis numéricas do tipo inteiro, ou seja, sem casas decimais.
-        real: define variáveis numéricas do tipo real, ou seja, com casas decimais.
-        caractere: define variáveis do tipo string, ou seja, cadeia de caracteres.
-        logico: define variáveis do tipo booleano, ou seja, com valor VERDADEIRO ou FALSO.
+```visualg
+algoritmo "Declaracoes"
+var
+  contador: inteiro
+  media, nota1, nota2: real
+  nome_do_aluno: caractere
+  aprovado: logico
+inicio
+  contador <- 1
+  nota1 <- 8.5
+  nota2 <- 7.0
+  media <- (nota1 + nota2) / 2
+  aprovado <- media >= 6
+  escreval("Média: ", media:4:1)
+fimalgoritmo
+```
 
-O VisuAlg permite também a declaração de variáveis estruturadas através da palavra-chave vetor, como será explicado a seguir.
+## Vetores
 
-Nomes de Variáveis e sua Declaração
+Vetores são declarados com `vetor [inicio..fim] de tipo`. O Web aceita uma ou duas dimensões, exige limites inteiros constantes e valida os índices usados entre colchetes.
 
-Os nomes das variáveis devem começar por uma letra e depois conter letras, números ou underline, até um limite de 30 caracteres. As variáveis podem ser simples ou estruturadas (na versão atual, os vetores podem ser de uma ou duas dimensões). Não pode haver duas variáveis com o mesmo nome, com a natural exceção dos elementos de um mesmo vetor.
+```visualg
+algoritmo "Vetores"
+var
+  notas: vetor [1..3] de real
+  matriz: vetor [1..2,1..2] de inteiro
+inicio
+  notas[1] <- 8.5
+  notas[2] <- 7.0
+  notas[3] <- 9.0
 
-A seção de declaração de variáveis começa com a palavra-chave var, e continua com as seguintes sintaxes:
+  matriz[1,1] <- 10
+  escreval("Primeira nota: ", notas[1]:4:1)
+  escreval("Canto da matriz: ", matriz[1,1])
+fimalgoritmo
+```
 
-    <lista-de-variáveis> : <tipo-de-dado>
-    <lista-de-variáveis> : vetor "["<lista-de-intervalos>"]" de <tipo-de-dado>
+## Constantes e atribuição
 
-Na <lista-de-variáveis>, os nomes das variáveis estão separados por vírgulas. Na <lista-de-intervalos>, os <intervalo> são separados por vírgulas, e têm a seguinte sintaxe:
+Use `<-` para atribuir valores. O Web também aceita `:=`, mas `<-` é o formato recomendado para VisuAlg.
 
-    <intervalo>: <valor-inicial> .. <valor-final> 
+```visualg
+x <- 10
+nome <- "Ana"
+ativo <- VERDADEIRO
+total <- x * 2 + 5
+```
 
-Na versão atual do VisuAlg, tanto <valor-inicial> como <valor-final> devem ser inteiros. Além disso, exige-se evidentemente que <valor-final> seja maior do que <valor-inicial>.
+Constantes reais usam ponto como separador decimal, independentemente da configuração regional.
 
-Exemplos:
-
-    var a: inteiro
-        Valor1, Valor2: real
-        vet: vetor [1..10] de real
-        matriz: vetor [0..4,8..10] de inteiro
-        nome_do_aluno: caractere
-        sinalizador: logico
-
-Note que não há a necessidade de ponto e vírgula após cada declaração: basta pular linha. A declaração de vetores é análoga à linguagem Pascal: a variável vet acima tem 10 elementos, com os índices de [1] a [10], enquanto matriz corresponde a 15 elementos com índices [0,8], [0,9], [0,10], [1,8], [1,9], [1,10], ... até [4,10]. O número total de variáveis suportado pelo VisuAlg é 500 (cada elemento de um vetor é contado individualmente).
-
-Constantes e Comando de Atribuição
-
-O VisuAlg tem três tipos de constantes:
-
-        Numéricos: são valores numéricos escritos na forma usual das linguagens de programação. Podem ser inteiros ou reais. Neste último caso, o separador de decimais é o ponto e não a vírgula, independente da configuração regional do computador onde o VisuAlg está sendo executado. O VisuAlg também não suporta separadores de milhares.
-        Caracteres: qualquer cadeia de caracteres delimitada por aspas duplas (").
-        Lógicos: admite os valores VERDADEIRO ou FALSO.
-
-A atribuição de valores a variáveis é feita com o operador <-. Do seu lado esquerdo fica a variável à qual está sendo atribuído o valor, e à sua direita pode-se colocar qualquer expressão (constantes, variáveis, expressões numéricas), desde que seu resultado tenha tipo igual ao da variável.
-
-Alguns exemplos de atribuições, usando as variáveis declaradas acima:
-
-    a <- 3
-    Valor1 <- 1.5
-    Valor2 <- Valor1 + a
-    vet[1] <- vet[1] + (a * 3)
-    matriz[3,9] <- a/4 - 5
-    nome_do_aluno <- "José da Silva"
-    sinalizador <- FALSO
+```visualg
+preco <- 12.50
+```

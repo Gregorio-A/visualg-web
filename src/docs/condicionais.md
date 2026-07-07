@@ -1,48 +1,143 @@
-Comando de Desvio Condicional
+# Condicionais
 
-se <expressão-lógica> entao
-    <seqüência-de-comandos>
+Use condicionais para executar comandos somente quando uma expressão lógica for verdadeira.
+
+## se...entao
+
+```visualg
+se <expressao-logica> entao
+  <comandos>
 fimse
+```
 
-Ao encontrar este comando, o VisuAlg analisa a <expressão-lógica>. Se o seu resultado for VERDADEIRO, todos os comandos da <seqüência-de-comandos> (entre esta linha e a linha com fimse) são executados. Se o resultado for FALSO, estes comandos são desprezados e a execução do algoritmo continua a partir da primeira linha depois do fimse.
+```visualg
+algoritmo "Maioridade"
+var
+  idade: inteiro
+inicio
+  idade <- 20
 
-se <expressão-lógica> entao
-    <seqüência-de-comandos-1>
+  se idade >= 18 entao
+    escreval("Maior de idade")
+  fimse
+fimalgoritmo
+```
+
+## se...senao
+
+```visualg
+se <expressao-logica> entao
+  <comandos-quando-verdadeiro>
 senao
-    <seqüência-de-comandos-2>
+  <comandos-quando-falso>
 fimse
+```
 
-Nesta outra forma do comando, se o resultado da avaliação de <expressão-lógica> for VERDADEIRO, todos os comandos da <seqüência-de-comandos-1> (entre esta linha e a linha com senao) são executados, e a execução continua depois a partir da primeira linha depois do fimse. Se o resultado for FALSO, estes comandos são desprezados e o algoritmo continua a ser executado a partir da primeira linha depois do senao, executando todos os comandos da <seqüência-de-comandos-2> (até a linha com fimse).
+```visualg
+algoritmo "Aprovacao"
+var
+  media: real
+inicio
+  media <- 6.5
 
-Estes comandos equivalem ao if...then e if...then...else do Pascal. Note que não há necessidade de delimitadores de bloco (como begin e end), pois as seqüências de comandos já estão delimitadas pelas palavras-chave senao e fimse. O VisuAlg permite o aninhamento desses comandos de desvio condicional.
+  se media >= 6 entao
+    escreval("Aprovado")
+  senao
+    escreval("Reprovado")
+  fimse
+fimalgoritmo
+```
 
-Comando de Seleção Múltipla
+## senao se
 
-O VisuAlg implementa (com certas variações) o comando case do Pascal. A sintaxe é a seguinte:
+Use `senao se` na mesma linha quando quiser encadear uma nova condição sem abrir um bloco `senao` separado. Essa forma usa apenas um `fimse` no final da cadeia.
 
-escolha <expressão-de-seleção>
-caso <exp11>, <exp12>, ..., <exp1n>
-   <seqüência-de-comandos-1>
-caso <exp21>, <exp22>, ..., <exp2n>
-   <seqüência-de-comandos-2>
-...
+```visualg
+algoritmo "SenaoSe"
+var
+  x: inteiro
+inicio
+  x <- 2
+
+  se x = 1 entao
+    escreval("um")
+  senao se x = 2 entao
+    escreval("dois")
+  senao
+    escreval("outro")
+  fimse
+fimalgoritmo
+```
+
+Se `se` ficar na linha seguinte ao `senao`, ele passa a ser um bloco aninhado normal e precisa de dois `fimse`.
+
+```visualg
+senao
+  se x = 2 entao
+    escreval("dois")
+  fimse
+fimse
+```
+
+## Aninhamento
+
+Condicionais podem ficar dentro de outras condicionais.
+
+```visualg
+algoritmo "Conceito"
+var
+  nota: real
+inicio
+  nota <- 8.5
+
+  se nota >= 6 entao
+    se nota >= 9 entao
+      escreval("Excelente")
+    senao
+      escreval("Aprovado")
+    fimse
+  senao
+    escreval("Reprovado")
+  fimse
+fimalgoritmo
+```
+
+## escolha...caso
+
+Use `escolha` quando a mesma expressão precisa ser comparada com vários valores.
+
+```visualg
+escolha <expressao>
+caso <valor1>, <valor2>
+  <comandos>
 outrocaso
-   <seqüência-de-comandos-extra>
+  <comandos>
 fimescolha
+```
 
-Veja o exemplo a seguir, que ilustra bem o que faz este comando:
+```visualg
+algoritmo "Menu"
+var
+  opcao: inteiro
+inicio
+  opcao <- 2
 
-    algoritmo "Times"
-    var time: caractere
-    inicio
-    escreva ("Entre com o nome de um time de futebol: ")
-    leia (time)
-    escolha time
-    caso "Flamengo", "Fluminense", "Vasco", "Botafogo"
-       escreval ("É um time carioca.")
-    caso "São Paulo", "Palmeiras", "Santos", "Corínthians"
-       escreval ("É um time paulista.")
-    outrocaso
-       escreval ("É de outro estado.")
-    fimescolha
-    fimalgoritmo
+  escolha opcao
+  caso 1
+    escreval("Novo")
+  caso 2
+    escreval("Abrir")
+  caso 3
+    escreval("Salvar")
+  outrocaso
+    escreval("Opção inválida")
+  fimescolha
+fimalgoritmo
+```
+
+`caso` aceita mais de um valor na mesma linha, separado por vírgula.
+
+```visualg
+caso "S", "s", "sim"
+  escreval("Confirmado")
+```

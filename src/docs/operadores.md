@@ -1,20 +1,101 @@
-Operadores Aritméticos
-+,- 	Operadores unários, isto é, são aplicados a um único operando. São os operadores aritméticos de maior precedência. Exemplos: -3, +x. Enquanto o operador unário - inverte o sinal do seu operando, o operador + não altera o valor em nada o seu valor.
-\ 	Operador de divisão inteira. Por exemplo, 5 \ 2 = 2. Tem a mesma precedência do operador de divisão tradicional.
-+,-,*,/ 	Operadores aritméticos tradicionais de adição, subtração, multiplicação e divisão. Por convenção, * e / têm precedência sobre + e -. Para modificar a ordem de avaliação das operações, é necessário usar parênteses como em qualquer expressão aritmética.
-MOD ou % 	Operador de módulo (isto é, resto da divisão inteira). Por exemplo, 8 MOD 3 = 2. Tem a mesma precedência do operador de divisão tradicional.
-^ 	Operador de potenciação. Por exemplo, 5 ^ 2 = 25. Tem a maior precedência entre os operadores aritméticos binários (aqueles que têm dois operandos).
+# Operadores
 
-Operadores de Caracteres
-+ 	Operador de concatenação de strings (isto é, cadeias de caracteres), quando usado com dois valores (variáveis ou constantes) do tipo "caractere". Por exemplo: "Rio " + " de Janeiro" = "Rio de Janeiro".
+Operadores formam expressões numéricas, lógicas e de texto. O VisuAlg Web segue a precedência do VisuAlg clássico sempre que o comportamento já foi validado.
 
-Operadores Relacionais
-=, <, >, <=, >=, <>  	Respectivamente: igual, menor que, maior que, menor ou igual a, maior ou igual a, diferente de. São utilizados em expressões lógicas para se testar a relação entre dois valores do mesmo tipo. Exemplos: 3 = 3 ( 3 é igual a 3?) resulta em VERDADEIRO ; "A" > "B" ("A" está depois de "B" na ordem alfabética?) resulta em FALSO.
+## Precedência e associatividade
 
-Importante: No VisuAlg, as comparações entre strings não diferenciam as letras maiúsculas das minúsculas. Assim, "ABC" é igual a "abc". Valores lógicos obedecem à seguinte ordem: FALSO < VERDADEIRO.
+| Ordem | Operadores | Associatividade |
+| --- | --- | --- |
+| 1 | Parênteses | Expressão interna primeiro |
+| 2 | `+`, `-`, `nao` unários | Direita para esquerda |
+| 3 | `^` | Direita para esquerda |
+| 4 | `*`, `/`, `\`, `div`, `mod`, `%` | Esquerda para direita |
+| 5 | `+`, `-` binários | Esquerda para direita |
+| 6 | `=`, `<>`, `<`, `>`, `<=`, `>=` | Esquerda para direita |
+| 7 | `e` | Esquerda para direita |
+| 8 | `ou`, `xou` | Esquerda para direita |
 
-Operadores Lógicos
-nao 	Operador unário de negação. nao VERDADEIRO = FALSO, e nao FALSO = VERDADEIRO. Tem a maior precedência entre os operadores lógicos. Equivale ao NOT do Pascal.
-ou 	Operador que resulta VERDADEIRO quando um dos seus operandos lógicos for verdadeiro. Equivale ao OR do Pascal.
-e 	Operador que resulta VERDADEIRO somente se seus dois operandos lógicos forem verdadeiros. Equivale ao AND do Pascal.
-xou 	Operador que resulta VERDADEIRO se seus dois operandos lógicos forem diferentes, e FALSO se forem iguais. Equivale ao XOR do Pascal.
+Exemplo: `2 ^ 3 ^ 2` resulta em `512`, pois é interpretado como `2 ^ (3 ^ 2)`.
+
+## Aritméticos
+
+| Operador | Nome | Exemplo | Resultado |
+| --- | --- | --- | --- |
+| `+` | Soma ou sinal positivo | `2 + 3` | `5` |
+| `-` | Subtração ou sinal negativo | `10 - 4` | `6` |
+| `*` | Multiplicação | `3 * 4` | `12` |
+| `/` | Divisão real | `5 / 2` | `2.5` |
+| `\` ou `div` | Divisão inteira | `5 \ 2` | `2` |
+| `mod` ou `%` | Resto da divisão | `8 mod 3` | `2` |
+| `^` | Potência | `5 ^ 2` | `25` |
+
+```visualg
+algoritmo "OperadoresAritmeticos"
+var
+  a, b: inteiro
+inicio
+  a <- 8
+  b <- 3
+  escreval("Soma: ", a + b)
+  escreval("Divisão inteira: ", a div b)
+  escreval("Resto: ", a mod b)
+  escreval("Potência: ", b ^ 2)
+fimalgoritmo
+```
+
+## Caracteres
+
+O operador `+` concatena textos quando pelo menos um dos lados é `caractere`.
+
+```visualg
+algoritmo "Texto"
+var
+  nome: caractere
+inicio
+  nome <- "Ana"
+  escreval("Olá, " + nome + "!")
+fimalgoritmo
+```
+
+## Relacionais
+
+| Operador | Significado |
+| --- | --- |
+| `=` | Igual |
+| `<>` | Diferente |
+| `<` | Menor que |
+| `>` | Maior que |
+| `<=` | Menor ou igual |
+| `>=` | Maior ou igual |
+
+Comparações de texto não diferenciam maiúsculas e minúsculas. Assim, `"ABC" = "abc"` resulta em `VERDADEIRO`.
+
+Evite comparações encadeadas como `1 < x < 10`; escreva `x > 1 e x < 10` para deixar a intenção explícita.
+
+## Lógicos
+
+| Operador | Uso |
+| --- | --- |
+| `nao` | Inverte um valor lógico. |
+| `e` | Verdadeiro quando os dois lados são verdadeiros. |
+| `ou` | Verdadeiro quando pelo menos um lado é verdadeiro. |
+| `xou` | Verdadeiro quando os lados são diferentes. |
+
+Os operadores lógicos ainda avaliam os dois lados da expressão. Evite depender de curto-circuito para impedir uma divisão por zero ou uma chamada inválida.
+
+```visualg
+algoritmo "OperadoresLogicos"
+var
+  idade: inteiro
+  tem_autorizacao: logico
+inicio
+  idade <- 16
+  tem_autorizacao <- VERDADEIRO
+
+  se idade >= 18 ou tem_autorizacao entao
+    escreval("Entrada permitida")
+  senao
+    escreval("Entrada negada")
+  fimse
+fimalgoritmo
+```

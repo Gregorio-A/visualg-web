@@ -14,9 +14,27 @@
     var activeTabId = null;
     var tabListEl = null;
     var pendingCloseTabId = null;
+    var WORKSPACE_STORAGE_KEY = 'visualg-workspace-v1';
+    var persistTimer = null;
 
     function isDefaultCode(code) {
         return code.trim() === getDefaultCode().trim();
+    }
+
+    function getRunningTab() {
+        for (var i = 0; i < tabs.length; i++) {
+            if (tabs[i].executor && tabs[i].executor.running) return tabs[i];
+        }
+        return null;
+    }
+
+    function blockWhenRunning() {
+        var runningTab = getRunningTab();
+        if (!runningTab) return false;
+        if (window.TabManager.onActionBlocked) {
+            window.TabManager.onActionBlocked('Interrompa a execucao atual antes de alterar as abas.');
+        }
+        return true;
     }
 
     function doCloseTab(id) {
@@ -52,6 +70,7 @@
         }
 
         renderTabs();
+        schedulePersist();
     }
 
     function extractName(code) {
@@ -59,17 +78,88 @@
         return (match && match[1]) ? match[1] : 'Sem nome';
     }
 
-    function createTabData(code) {
-        tabIdCounter++;
+    function updateCounterFromId(id) {
+        var match = /^tab-(\d+)$/.exec(id || '');
+        if (!match) return;
+        tabIdCounter = Math.max(tabIdCounter, parseInt(match[1], 10));
+    }
+
+    function createTabData(code, options) {
+        options = options || {};
+        var tabCode = typeof code === 'string' ? code : getDefaultCode();
+        var id = options.id;
+        if (id) {
+            updateCounterFromId(id);
+        } else {
+            tabIdCounter++;
+            id = 'tab-' + tabIdCounter;
+        }
         return {
-            id: 'tab-' + tabIdCounter,
-            name: extractName(code),
-            code: code,
+            id: id,
+            name: extractName(tabCode),
+            code: tabCode,
             terminalHTML: '',
             previousValues: {},
             executor: null,
             running: false
         };
+    }
+
+    function loadPersistedWorkspace() {
+        try {
+            var raw = localStorage.getItem(WORKSPACE_STORAGE_KEY);
+            if (!raw) return null;
+
+            var data = JSON.parse(raw);
+            if (!data || !Array.isArray(data.tabs) || data.tabs.length === 0) return null;
+
+            var restoredTabs = [];
+            for (var i = 0; i < data.tabs.length; i++) {
+                var savedTab = data.tabs[i];
+                if (!savedTab || typeof savedTab.code !== 'string') continue;
+                restoredTabs.push(createTabData(savedTab.code, { id: savedTab.id }));
+            }
+            if (restoredTabs.length === 0) return null;
+
+            return {
+                tabs: restoredTabs,
+                activeTabId: data.activeTabId
+            };
+        } catch (e) {
+            return null;
+        }
+    }
+
+    function persistWorkspaceNow() {
+        try {
+            if (!tabs.length) return;
+            saveCurrentState();
+
+            var data = {
+                version: 1,
+                activeTabId: activeTabId,
+                updatedAt: new Date().toISOString(),
+                tabs: tabs.map(function (tab) {
+                    return {
+                        id: tab.id,
+                        name: tab.name,
+                        code: tab.code
+                    };
+                })
+            };
+
+            localStorage.setItem(WORKSPACE_STORAGE_KEY, JSON.stringify(data));
+        } catch (e) {
+            // localStorage may be unavailable or full; editing must keep working.
+        }
+    }
+
+    function schedulePersist() {
+        if (persistTimer) clearTimeout(persistTimer);
+        persistTimer = setTimeout(function () {
+            persistTimer = null;
+            persistWorkspaceNow();
+        }, 250);
     }
 
     function renderTabs() {
@@ -166,6 +256,10 @@
             tabListEl.addEventListener('dragstart', function (e) {
                 var tabItem = e.target.closest('.tab-item');
                 if (!tabItem) return;
+                if (blockWhenRunning()) {
+                    e.preventDefault();
+                    return;
+                }
                 dragTabId = tabItem.dataset.tabId;
                 tabItem.classList.add('dragging');
                 e.dataTransfer.effectAllowed = 'move';
@@ -226,6 +320,7 @@
                 tabs.splice(insertIdx, 0, moved);
 
                 renderTabs();
+                schedulePersist();
             });
 
             tabListEl.addEventListener('dragend', function () {
@@ -236,19 +331,35 @@
                 }
             });
 
-            // Create initial tab
-            var initialTab = createTabData(window.VisualGEditor.getValue());
-            tabs.push(initialTab);
-            activeTabId = initialTab.id;
-            renderTabs();
+            var persistedWorkspace = loadPersistedWorkspace();
+            if (persistedWorkspace) {
+                tabs = persistedWorkspace.tabs;
+                activeTabId = getTab(persistedWorkspace.activeTabId)
+                    ? persistedWorkspace.activeTabId
+                    : tabs[0].id;
+                renderTabs();
+                restoreState(getTab(activeTabId));
+            } else {
+                var initialTab = createTabData(window.VisualGEditor.getValue());
+                tabs.push(initialTab);
+                activeTabId = initialTab.id;
+                renderTabs();
+                persistWorkspaceNow();
+            }
 
             // Listen for editor changes to update tab name
             window.VisualGEditor.instance.on('change', function () {
                 self.updateActiveTabName();
             });
+
+            window.addEventListener('beforeunload', persistWorkspaceNow);
+            document.addEventListener('visibilitychange', function () {
+                if (document.visibilityState === 'hidden') persistWorkspaceNow();
+            });
         },
 
         createTab: function (code) {
+            if (blockWhenRunning()) return null;
             saveCurrentState();
             var tab = createTabData(code || getDefaultCode());
             tabs.push(tab);
@@ -260,12 +371,14 @@
             if (window.TabManager.onSwitch) {
                 window.TabManager.onSwitch(tab);
             }
+            schedulePersist();
 
             return tab;
         },
 
         switchTab: function (id) {
             if (id === activeTabId) return;
+            if (blockWhenRunning()) return;
             var tab = getTab(id);
             if (!tab) return;
 
@@ -277,9 +390,11 @@
             if (window.TabManager.onSwitch) {
                 window.TabManager.onSwitch(tab);
             }
+            schedulePersist();
         },
 
         closeTab: function (id) {
+            if (blockWhenRunning()) return;
             var tab = getTab(id);
             if (!tab) return;
 
@@ -300,6 +415,7 @@
 
         confirmClose: function () {
             if (pendingCloseTabId) {
+                if (blockWhenRunning()) return;
                 doCloseTab(pendingCloseTabId);
                 pendingCloseTabId = null;
             }
@@ -315,19 +431,27 @@
             return getTab(activeTabId);
         },
 
+        getRunningTab: getRunningTab,
+
         updateActiveTabName: function () {
             var tab = getTab(activeTabId);
             if (!tab) return;
             var code = window.VisualGEditor.getValue();
+            tab.code = code;
             var newName = extractName(code);
             if (tab.name !== newName) {
                 tab.name = newName;
                 renderTabs();
             }
+            schedulePersist();
         },
 
         saveCurrentState: saveCurrentState,
 
-        onSwitch: null
+        saveWorkspace: persistWorkspaceNow,
+
+        onSwitch: null,
+
+        onActionBlocked: null
     };
 })();
