@@ -4,34 +4,30 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>VisuAlg.dev - IDE Online para VisuAlg 3.0.7 | Pseudocódigo em Português</title>
+    <title>VisuAlg Web - Editor Online de Portugol e Pseudocódigo</title>
 
     <!-- SEO -->
-    <meta name="description" content="IDE online para VisuAlg 3.0.7. Escreva, execute e depure algoritmos em pseudocódigo português diretamente no navegador. Editor com syntax highlighting, painel de variáveis e console integrado.">
+    <meta name="description" content="Use o VisuAlg Web no navegador para escrever, executar e testar algoritmos em Portugol e pseudocódigo. Compatível com a sintaxe do VisuAlg 3.0.7, com console, variáveis, abas, documentação e execução passo a passo. Editor online compatível com a sintaxe do VisuAlg 3.0.7, criado para estudar lógica de programação, Portugol e pseudocódigo diretamente no navegador.">
     <meta name="keywords" content="visualg, visualg 3.0.7, visualg 3, visualg 3.0, visualg online, visualg 3.0.7 online, ide visualg, pseudocódigo, algoritmos, lógica de programação, programação em português, aprender programar, ensino de programação">
-    <meta name="author" content="Conrado Salomé Ribeiro">
+    <meta name="author" content="Murilo Gregorio Alves">
     <meta name="robots" content="index, follow">
-    <!-- <link rel="canonical" href="https://visualg.dev"> -->
-    <link rel="icon" type="image/png" href="images/favicon.png">
+    <link rel="canonical" href="https://gregorioalves.com/visualg/">
+    <link rel="icon" type="image/png" href="images/logo/logo-visualg@0.25x.png">
 
 
     <!-- Open Graph -->
-    <!--
-    <meta property="og:title" content="VisuAlg.dev - IDE Online para VisuAlg">
+    <meta property="og:title" content="VisuAlg Web - IDE Online para VisuAlg">
     <meta property="og:description" content="Escreva, execute e depure algoritmos em pseudocódigo português diretamente no navegador. Gratuito e sem instalação.">
-    <meta property="og:image" content="images/og-image.png">
+    <meta property="og:image" content="images/logo/logo-visualg.png>
     <meta property="og:url" content="https://visualg.dev">
     <meta property="og:type" content="website">
     <meta property="og:locale" content="pt_BR">
-    -->
 
     <!-- Twitter Card -->
-    <!--
     <meta name="twitter:card" content="summary_large_image">
-    <meta name="twitter:title" content="VisuAlg.dev - IDE Online para VisuAlg">
+    <meta name="twitter:title" content="VisuAlg Web - IDE Online para VisuAlg">
     <meta name="twitter:description" content="Escreva, execute e depure algoritmos em pseudocódigo português diretamente no navegador.">
-    <meta name="twitter:image" content="images/og-image.png">
-    -->
+    <meta name="twitter:image" content="images/logo/logo-visualg.png">
 
     <!-- CodeMirror 5 -->
     <link rel="stylesheet" href="vendor/codemirror/codemirror.min.css">
@@ -47,8 +43,8 @@
     <!-- Header / Toolbar -->
     <header class="header">
         <div class="header-logo">
-            <span class="logo-icon">&#9670;</span>
-            <span class="logo-text">VisuAlg <small>.dev</small></span>
+            <img class="logo-img" style="height:40px" src="images/logo/logo-visualg@0.25x.png" alt="logo-visualg" />
+            <span class="logo-text">VisuAlg</span>
             <span class="beta-tag">Beta</span>
         </div>
         <div class="header-controls">
@@ -148,19 +144,36 @@
     <footer class="footer">
         <span class="footer-item" id="compiler-status"><i data-lucide="circle-check" class="footer-icon"></i> Pronto</span>
         <span class="footer-item"><i data-lucide="cpu" class="footer-icon"></i> VisuAlg 3.0.7</span>
-        <span class="footer-item footer-version" id="footer-version"><i data-lucide="code" class="footer-icon"></i> Visualg.dev v0.10</span>
-        <span class="footer-item"><i data-lucide="user" class="footer-icon"></i> Desenvolvido por Prof. Conrado Salomé Ribeiro</span>
+        <span class="footer-item footer-version" id="footer-version"><i data-lucide="code" class="footer-icon"></i> Visualg.dev v0.13</span>
+        <button class="footer-item footer-credits" id="footer-credits" type="button" title="Quem desenvolveu o VisuAlg.dev?"><i data-lucide="user" class="footer-icon"></i> Quem desenvolveu?</button>
     </footer>
 
     <!-- Changelog Modal -->
     <div class="modal-overlay hidden" id="changelogOverlay">
         <div class="modal changelog-modal">
             <div class="modal-header">
-                <span>Changelog</span>
+                <span>Log de atualizações</span>
                 <button id="btn-close-changelog"><i data-lucide="x"></i></button>
             </div>
-            <div class="modal-body">
+            <div class="modal-body changelog-body">
                 <div class="changelog-section">
+                    <span class="changelog-version">v0.13</span>
+                    <ul class="changelog-list">
+                        <li>Nova aba Compatibilidade com tabela de suportado, parcial, não suportado e extensões Web.</li>
+                        <li>`senao se` na mesma linha agora funciona como encadeamento compatível com o VisuAlg clássico.</li>
+                        <li>`escreva`, `escreval` e `leia` aceitam a forma sem parênteses.</li>
+                        <li>Funções sem parâmetros podem ser usadas sem `()`, e `pi` funciona como constante.</li>
+                        <li>Entrada por `leia` mostra variável e tipo esperado; o modal pode cancelar a execução.</li>
+                        <li>Mais programas padrão verificam compatibilidade de operadores, funções e entrada/saída.</li>
+                    </ul>
+                    <span class="changelog-version">v0.12</span>
+                    <ul class="changelog-list">
+                        <li>Persistência automática das abas e dos códigos salvos no editor local.</li>
+                        <li>Restauração da aba ativa e da ordem das abas ao reabrir o navegador ou aplicativo.</li>
+                        <li>Ferramenta interna de validação por programas padrão para conferir saídas esperadas.</li>
+                        <li>Log de atualizações em modal maior, com rolagem própria para histórico completo.</li>
+                        <li>Nova aba de história e autoria na documentação, explicando a continuidade do projeto.</li>
+                    </ul>
                     <span class="changelog-version">v0.6</span>
                     <ul class="changelog-list">
                         <li class="changelog-item-old">Melhorias na IDE - salvamento, keywords com acentuação, indentação e UI</li>
@@ -191,6 +204,14 @@
                         <li>Correção no tratamento de variáveis e operador de atribuição</li>
                         <li>Correção de erro ao usar RaizQ com número negativo</li>
                         <li>Correções na documentação</li>
+                    </ul>
+                    <span class="changelog-version">v0.11</span>
+                    <ul class="changelog-list">
+                        <li>Validação semântica antes da execução: variáveis, tipos, chamadas, retornos e uso de laços</li>
+                        <li>Erros explícitos para tokens inválidos, comandos não suportados e strings/comentários sem fechamento</li>
+                        <li>Checagem de limites de vetores, divisão por zero e domínios de funções matemáticas</li>
+                        <li>Entrada com `leia` mais estrita, sem conversão silenciosa de valores inválidos</li>
+                        <li>Proteção de abas durante execução para preservar console, variáveis e destaque do editor</li>
                     </ul>
                 </div>
 <!--                <div class="changelog-section changelog-upcoming">-->
@@ -343,6 +364,7 @@
                     <input id="console-input-modal" type="text" class="setting-font-input" style="width:100%" />
                 </div>
                 <div class="modal-footer">
+                    <button class="modal-btn modal-btn-secondary" id="console-input-modal-cancel">Cancelar</button>
                     <button class="modal-btn modal-btn-secondary" id="console-input-modal-ok">OK</button>
                 </div>
             </div>
@@ -391,23 +413,27 @@
             </div>
             <div class="modal-tabs">
                 <button class="modal-tab active" data-tab="introducao">Introdução</button>
+                <button class="modal-tab" data-tab="compatibilidade">Compatibilidade</button>
                 <button class="modal-tab" data-tab="operadores">Operadores</button>
                 <button class="modal-tab" data-tab="entrada-saida">E/S</button>
                 <button class="modal-tab" data-tab="condicionais">Condicionais</button>
                 <button class="modal-tab" data-tab="repeticao">Repetição</button>
                 <button class="modal-tab" data-tab="subprogramas">Subprogramas</button>
                 <button class="modal-tab" data-tab="funcoes">Funções</button>
-<!--                <button class="modal-tab" data-tab="comandos">Comandos</button>-->
+                <button class="modal-tab" data-tab="comandos">Comandos</button>
+                <button class="modal-tab" data-tab="historia">História</button>
             </div>
             <div class="modal-body docs-body" id="docs-content">
                 <div class="modal-tab-panel active" data-tab-panel="introducao"></div>
+                <div class="modal-tab-panel" data-tab-panel="compatibilidade"></div>
                 <div class="modal-tab-panel" data-tab-panel="operadores"></div>
                 <div class="modal-tab-panel" data-tab-panel="entrada-saida"></div>
                 <div class="modal-tab-panel" data-tab-panel="condicionais"></div>
                 <div class="modal-tab-panel" data-tab-panel="repeticao"></div>
-                <div class="modal-tab-panel" data-tab-panel="subprogramas">Em breve</div>
-                <div class="modal-tab-panel" data-tab-panel="funcoes">Em breve</div>
-                <div class="modal-tab-panel" data-tab-panel="comandos">Em breve</div>
+                <div class="modal-tab-panel" data-tab-panel="subprogramas"></div>
+                <div class="modal-tab-panel" data-tab-panel="funcoes"></div>
+                <div class="modal-tab-panel" data-tab-panel="comandos"></div>
+                <div class="modal-tab-panel" data-tab-panel="historia"></div>
             </div>
         </div>
     </div>
