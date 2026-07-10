@@ -1955,7 +1955,7 @@
             if (target.indices && target.indices.length > 0) {
                 name += '[' + target.indices.map(function () { return '?'; }).join(',') + ']';
             }
-            return 'Leia ' + name + ' (' + baseType + '): ';
+            return 'Leia ' + name + ' (' + baseType + '): ' + '\n' ;
         };
 
         Executor.prototype.convertInput = function (input, type) {
