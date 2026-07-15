@@ -51,20 +51,20 @@
             // Line comments
             { regex: /\/\/.*/, token: 'comment' },
             // Strings
-            { regex: /"(?:[^"\\]|\\.)*"/, token: 'string' },
+            { regex: /"(?:[^"\\]|\\.|"")*"/, token: 'string' },
             // Assignment operator
             { regex: /<-|:=/, token: 'operator' },
             // Comparison operators (multi-char)
             { regex: /<=|>=|<>/, token: 'operator' },
             // Keywords (case-insensitive)
             {
-                regex: wordBoundaryRegex('algoritmo|var|inicio|início|fimalgoritmo|se|entao|então|senao|senão|fimse|enquanto|faca|faça|fimenquanto|para|de|ate|até|passo|fimpara|repita|fimrepita|escolha|caso|outrocaso|fimescolha|escreva|escreval|leia|procedimento|fimprocedimento|funcao|fimfuncao|retorne|interrompa|limpatela|pausa|debug|eco|cronometro|timer|aleatorio|arquivo'),
+                regex: wordBoundaryRegex('algoritmo|var|declare|inicio|início|fimalgoritmo|se|entao|então|senao|senão|fimse|enquanto|faca|faça|fimenquanto|para|de|ate|até|passo|fimpara|repita|fimrepita|escolha|caso|outrocaso|fimescolha|escreva|escreval|leia|procedimento|fimprocedimento|funcao|função|fimfuncao|retorne|interrompa|limpatela|pausa|debug|eco|cronometro|cronômetro|timer|aleatorio|aleatório|arquivo'),
                 token: 'keyword'
             },
             // Data types
-            { regex: wordBoundaryRegex('inteiro|real|caractere|logico|lógico|vetor'), token: 'type' },
+            { regex: wordBoundaryRegex('inteiro|real|numerico|numérico|literal|caractere|caracter|caráter|logico|lógico|vetor'), token: 'type' },
             // Boolean literals
-            { regex: wordBoundaryRegex('verdadeiro|falso'), token: 'atom' },
+            { regex: wordBoundaryRegex('verdadeiro|falso|on|off'), token: 'atom' },
             // Logical and special operators
             { regex: wordBoundaryRegex('e|ou|nao|não|xou|mod|div'), token: 'operator' },
             // Built-in functions
@@ -91,6 +91,7 @@
     });
 
     var highlightedLine = null;
+    var highlightedLineClass = null;
     var _guideColors = null;
 
     window.VisualGEditor = {
@@ -172,19 +173,33 @@
             this.instance.setValue(code);
         },
 
-        highlightLine: function (lineNumber) {
+        highlightLine: function (lineNumber, className) {
             this.clearHighlight();
             if (lineNumber >= 0) {
                 highlightedLine = lineNumber;
-                this.instance.addLineClass(lineNumber, 'background', 'cm-highlight-line');
+                highlightedLineClass = className || 'cm-highlight-line';
+                this.instance.addLineClass(lineNumber, 'background', highlightedLineClass);
                 this.instance.scrollIntoView({ line: lineNumber, ch: 0 }, 50);
             }
         },
 
+        revealLocation: function (lineNumber, columnNumber) {
+            var line = Math.max(0, (parseInt(lineNumber, 10) || 1) - 1);
+            var column = Math.max(0, (parseInt(columnNumber, 10) || 1) - 1);
+            var lineText = this.instance.getLine(line) || '';
+
+            column = Math.min(column, lineText.length);
+            this.highlightLine(line, 'cm-error-line');
+            this.instance.setCursor({ line: line, ch: column });
+            this.instance.scrollIntoView({ line: line, ch: column }, 100);
+            this.instance.focus();
+        },
+
         clearHighlight: function () {
             if (highlightedLine !== null) {
-                this.instance.removeLineClass(highlightedLine, 'background', 'cm-highlight-line');
+                this.instance.removeLineClass(highlightedLine, 'background', highlightedLineClass || 'cm-highlight-line');
                 highlightedLine = null;
+                highlightedLineClass = null;
             }
         }
     };

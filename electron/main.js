@@ -1,4 +1,5 @@
-import { app, BrowserWindow } from 'electron';
+import { app, BrowserWindow, ipcMain } from 'electron';
+import fs from 'node:fs/promises';
 import path from 'node:path';
 import started from 'electron-squirrel-startup';
 
@@ -6,6 +7,39 @@ import started from 'electron-squirrel-startup';
 if (started) {
   app.quit();
 }
+
+const resolveDataFile = (filename) => {
+  if (typeof filename !== 'string' || filename.trim() === '') {
+    throw new Error('Nome de arquivo de dados invalido');
+  }
+
+  const root = path.join(app.getPath('userData'), 'visualg-data');
+  const resolved = path.resolve(root, filename);
+  if (resolved !== root && !resolved.startsWith(`${root}${path.sep}`)) {
+    throw new Error('O arquivo de dados deve ficar dentro da pasta de dados do VisuAlg.dev');
+  }
+  return { root, resolved };
+};
+
+ipcMain.handle('visualg-data-file:read', async (_event, filename) => {
+  const { resolved } = resolveDataFile(filename);
+  try {
+    const content = await fs.readFile(resolved, 'utf8');
+    const values = content.split(/\r?\n/);
+    if (values.length > 0 && values[values.length - 1] === '') values.pop();
+    return values;
+  } catch (error) {
+    if (error && error.code === 'ENOENT') return null;
+    throw error;
+  }
+});
+
+ipcMain.handle('visualg-data-file:append', async (_event, filename, value) => {
+  const { root, resolved } = resolveDataFile(filename);
+  await fs.mkdir(root, { recursive: true });
+  await fs.mkdir(path.dirname(resolved), { recursive: true });
+  await fs.appendFile(resolved, `${String(value)}\n`, 'utf8');
+});
 
 const createWindow = () => {
   // Create the browser window.

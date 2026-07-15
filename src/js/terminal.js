@@ -31,7 +31,7 @@
         },
 
         write: function (text) {
-            this.outputEl.textContent += text;
+            this.outputEl.appendChild(document.createTextNode(String(text)));
             // Auto-scroll to bottom
             var panel = this.outputEl.closest('.panel-body');
             if (panel) {
@@ -43,6 +43,30 @@
             this.write(text + '\n');
         },
 
+        writelnError: function (message, location, onNavigate) {
+            var row = document.createElement('div');
+            row.className = 'console-error';
+
+            var prefix = document.createElement('span');
+            prefix.textContent = 'ERRO: ';
+            row.appendChild(prefix);
+
+            if (location && typeof onNavigate === 'function') {
+                var link = document.createElement('button');
+                link.type = 'button';
+                link.className = 'console-error-link';
+                link.textContent = message;
+                link.title = 'Ir para a linha ' + location.line;
+                link.addEventListener('click', onNavigate);
+                row.appendChild(link);
+            } else {
+                row.appendChild(document.createTextNode(message));
+            }
+
+            this.outputEl.appendChild(row);
+            var panel = this.outputEl.closest('.panel-body');
+            if (panel) panel.scrollTop = panel.scrollHeight;
+        },
         readInput: function (prompt) {
             if (prompt) {
                 this.write(prompt);
@@ -54,6 +78,21 @@
                 return this._readInputModal(prompt);
             }
             return this._readInputInline();
+        },
+
+        waitForContinue: function (message) {
+            var mode = localStorage.getItem('visualg-console-input-mode') || 'inline';
+            if (mode === 'modal') {
+                return this._readInputModal(message || 'Pressione Enter para continuar.');
+            }
+
+            var previousPlaceholder = this.inputEl.placeholder;
+            this.inputEl.placeholder = message || 'Pressione Enter para continuar.';
+            var self = this;
+            return this._readInputInline().then(function (value) {
+                self.inputEl.placeholder = previousPlaceholder;
+                return value;
+            });
         },
 
         _readInputInline: function () {
@@ -127,6 +166,19 @@
                 var resolve = this.inputResolve;
                 this.inputResolve = null;
                 resolve(val);
+            }
+        },
+
+        cancelPendingInput: function () {
+            if (this._modalCancel) {
+                this._modalCancel();
+                return;
+            }
+            this.inputArea.classList.add('hidden');
+            if (this.inputResolve) {
+                var resolve = this.inputResolve;
+                this.inputResolve = null;
+                resolve('');
             }
         },
 

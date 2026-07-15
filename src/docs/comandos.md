@@ -33,6 +33,68 @@ inicio
 fimalgoritmo
 ```
 
+## aleatorio
+
+Substitui leituras numéricas e de texto por valores gerados automaticamente. Variáveis lógicas continuam pedindo entrada.
+
+```visualg
+aleatorio
+aleatorio on
+aleatorio 50
+aleatorio -10, 10
+aleatorio off
+```
+
+Sem faixa, usa `0..100`. Com um valor, usa `0..valor`. Com dois, usa `minimo..maximo`; a ordem é corrigida se estiver invertida. Textos aleatórios têm cinco letras maiúsculas.
+
+## arquivo
+
+Deve aparecer antes da seção `var`/`inicio` e só pode ser usado uma vez. Se o arquivo já existe, cada `leia` consome o próximo valor. Se ainda não existe, as entradas digitadas são registradas para as próximas execuções.
+
+```visualg
+arquivo "turma/dados.txt"
+```
+
+No navegador, o nome identifica dados persistentes isolados pelo site. No aplicativo Electron, corresponde a um arquivo de texto físico na pasta de dados do VisuAlg.dev.
+
+## timer
+
+Aplica um atraso antes de cada comando seguinte. `timer on` usa 500 ms; valores são limitados ao intervalo de 0 a 10.000 ms.
+
+```visualg
+timer on
+timer 1000
+timer off
+```
+
+## pausa e debug
+
+`pausa` interrompe sempre e `debug` interrompe apenas quando sua expressão lógica é verdadeira. Confirme pelo terminal para continuar.
+
+```visualg
+pausa
+debug contador > 10
+```
+
+## eco
+
+Controla se os valores obtidos por `leia` são reproduzidos no console. O padrão é ligado.
+
+```visualg
+eco off
+eco on
+```
+
+## cronometro
+
+Mede o tempo entre os comandos de início e fim e escreve o resultado em segundos e milissegundos.
+
+```visualg
+cronometro on
+// comandos medidos
+cronometro off
+```
+
 ## Recursos da interface
 
 Algumas ações de depuração são recursos da interface, não comandos da linguagem:
@@ -44,17 +106,3 @@ Algumas ações de depuração são recursos da interface, não comandos da ling
 | Parar | Botão `Parar` durante a execução. |
 | Limpar console | Botão de limpeza no painel `Console` ou comando `limpatela`. |
 | Detecção de loop infinito | `Configurações > Gerais > Detecção de loop infinito`. |
-
-## Comandos do VisuAlg desktop não disponíveis no Web
-
-Os comandos abaixo aparecem em materiais do VisuAlg desktop, mas não são executados pelo interpretador web atual. Quando usados como comandos da linguagem, eles geram erro explícito para evitar que o programa siga com comportamento diferente do esperado.
-
-| Comando desktop | Situação no Web |
-| --- | --- |
-| `aleatorio` | Use as funções `rand()` e `randi(limite)`. |
-| `arquivo` | Entrada por arquivo ainda não é suportada pela linguagem. Use `Abrir` para carregar o código-fonte `.alg` ou `.txt`. |
-| `timer` | Use o modo `Passo a passo` para acompanhar a execução. |
-| `pausa` | Use o modo `Passo a passo` ou o botão `Parar`. |
-| `debug` | Breakpoint condicional por comando ainda não está disponível. |
-| `eco` | O console não possui modo de eco configurável por comando. |
-| `cronometro` | Cronômetro interno por comando ainda não está disponível. |

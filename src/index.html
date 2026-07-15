@@ -65,6 +65,7 @@
                     </div>
                 </div>
                 <input type="file" id="file-input" accept=".alg,.txt" style="display: none;">
+                <button id="btn-examples" class="toolbar-btn" title="Abrir exemplos prontos"><i data-lucide="library-big"></i> Exemplos</button>
                 <button id="btn-docs" class="toolbar-btn" title="Documentação"><i data-lucide="book-open"></i> Documentação</button>
             </div>
         </div>
@@ -78,6 +79,7 @@
             <button class="mobile-menu-item" id="mobile-open"><i data-lucide="folder-open"></i> Abrir</button>
             <button class="mobile-menu-item" id="mobile-save-alg"><i data-lucide="download"></i> Salvar como .alg</button>
             <button class="mobile-menu-item" id="mobile-save-txt"><i data-lucide="download"></i> Salvar como .txt</button>
+            <button class="mobile-menu-item" id="mobile-examples"><i data-lucide="library-big"></i> Exemplos</button>
             <button class="mobile-menu-item" id="mobile-docs"><i data-lucide="book-open"></i> Documentação</button>
             <button class="mobile-menu-item" id="mobile-settings"><i data-lucide="settings"></i> Configurações</button>
         </div>
@@ -146,6 +148,18 @@
         <span class="footer-item"><i data-lucide="cpu" class="footer-icon"></i> VisuAlg 3.0.7</span>
         <span class="footer-item footer-version" id="footer-version"><i data-lucide="code" class="footer-icon"></i> Visualg.dev v0.13</span>
         <button class="footer-item footer-credits" id="footer-credits" type="button" title="Quem desenvolveu o VisuAlg.dev?"><i data-lucide="user" class="footer-icon"></i> Quem desenvolveu?</button>
+        <span class="footer-spacer"></span>
+        <button class="footer-item autosave-status" id="autosave-status" type="button" title="Ver opções de recuperação"><i data-lucide="cloud-check" class="footer-icon"></i><span>Salvo localmente</span></button>
+        <div class="section-visibility">
+            <button class="footer-item section-visibility-trigger" id="btn-sections" type="button" aria-expanded="false" aria-controls="sections-menu"><i data-lucide="panel-top" class="footer-icon"></i> Seções</button>
+            <div class="sections-menu hidden" id="sections-menu">
+                <span class="sections-menu-title">Mostrar na tela</span>
+                <label><input type="checkbox" data-section="editor" checked> Editor</label>
+                <label><input type="checkbox" data-section="variables" checked> Variáveis</label>
+                <label><input type="checkbox" data-section="terminal" checked> Console</label>
+                <button type="button" id="btn-show-all-sections">Mostrar todas</button>
+            </div>
+        </div>
     </footer>
 
     <!-- Changelog Modal -->
@@ -159,11 +173,15 @@
                 <div class="changelog-section">
                     <span class="changelog-version">v0.13</span>
                     <ul class="changelog-list">
+                        <li>Onboarding de primeira visita e galeria com cinco exemplos que podem ser abertos ou executados.</li>
+                        <li>Erros clicáveis levam o cursor diretamente para a linha e coluna do problema.</li>
+                        <li>Autosave agora mostra seu estado e permite restaurar uma cópia anterior com segurança.</li>
+                        <li>Menu Seções permite mostrar ou esconder editor, variáveis e console.</li>
                         <li>Nova aba Compatibilidade com tabela de suportado, parcial, não suportado e extensões Web.</li>
                         <li>`senao se` na mesma linha agora funciona como encadeamento compatível com o VisuAlg clássico.</li>
                         <li>`escreva`, `escreval` e `leia` aceitam a forma sem parênteses.</li>
                         <li>Funções sem parâmetros podem ser usadas sem `()`, e `pi` funciona como constante.</li>
-                        <li>Entrada por `leia` mostra variável e tipo esperado; o modal pode cancelar a execução.</li>
+                        <li>Entrada por `leia` repete valores inválidos e o modal pode cancelar a execução.</li>
                         <li>Mais programas padrão verificam compatibilidade de operadores, funções e entrada/saída.</li>
                     </ul>
                     <span class="changelog-version">v0.12</span>
@@ -352,6 +370,62 @@
         </div>
     </div>
 
+    <!-- First-use Onboarding -->
+    <div class="modal-overlay hidden" id="onboardingOverlay" role="dialog" aria-modal="true" aria-labelledby="onboarding-title">
+        <div class="modal onboarding-modal">
+            <div class="modal-header">
+                <span id="onboarding-title">Comece a programar em poucos segundos</span>
+                <button id="btn-skip-onboarding" title="Pular apresentação"><i data-lucide="x"></i></button>
+            </div>
+            <div class="modal-body">
+                <p class="onboarding-intro">Escreva em português, execute no navegador e acompanhe cada variável sem instalar nada.</p>
+                <div class="onboarding-steps">
+                    <div class="onboarding-step"><span>1</span><strong>Escolha</strong><small>Abra um exemplo ou escreva seu algoritmo.</small></div>
+                    <div class="onboarding-step"><span>2</span><strong>Execute</strong><small>Use Executar (F9) ou avance com F8.</small></div>
+                    <div class="onboarding-step"><span>3</span><strong>Aprenda</strong><small>Veja saídas, variáveis e erros direto na linha.</small></div>
+                </div>
+                <p class="onboarding-save-note"><i data-lucide="cloud-check"></i> Suas abas são salvas automaticamente neste dispositivo.</p>
+                <div class="modal-footer onboarding-actions">
+                    <button class="modal-btn modal-btn-secondary" id="btn-onboarding-editor">Começar do zero</button>
+                    <button class="modal-btn modal-btn-primary" id="btn-onboarding-examples"><i data-lucide="sparkles"></i> Ver exemplos</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Executable Examples -->
+    <div class="modal-overlay hidden" id="examplesOverlay" role="dialog" aria-modal="true" aria-labelledby="examples-title">
+        <div class="modal examples-modal">
+            <div class="modal-header">
+                <span id="examples-title">Exemplos para aprender fazendo</span>
+                <button id="btn-close-examples"><i data-lucide="x"></i></button>
+            </div>
+            <div class="modal-body examples-body">
+                <p>Abra o código para explorar ou execute imediatamente em uma nova aba.</p>
+                <div class="examples-grid" id="examples-grid"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Autosave Recovery -->
+    <div class="modal-overlay hidden" id="recoveryOverlay" role="dialog" aria-modal="true" aria-labelledby="recovery-title">
+        <div class="modal recovery-modal">
+            <div class="modal-header">
+                <span id="recovery-title">Salvamento e recuperação</span>
+                <button id="btn-close-recovery"><i data-lucide="x"></i></button>
+            </div>
+            <div class="modal-body">
+                <div class="recovery-current"><i data-lucide="cloud-check"></i><div><strong id="recovery-current-status">Código salvo localmente</strong><small id="recovery-current-time"></small></div></div>
+                <div class="recovery-copy">
+                    <strong>Cópia de recuperação</strong>
+                    <p id="recovery-copy-description">Procurando uma cópia anterior...</p>
+                    <button class="modal-btn modal-btn-secondary" id="btn-restore-recovery" disabled><i data-lucide="history"></i> Restaurar cópia</button>
+                </div>
+                <p class="recovery-note">A restauração troca o conteúdo atual pela cópia anterior. O estado atual continuará disponível para desfazer a operação.</p>
+            </div>
+        </div>
+    </div>
+
     <!-- Console Input Modal -->
     <div class="modal-overlay hidden" id="consoleInputOverlay">
         <div class="modal">
@@ -451,6 +525,7 @@
     <script src="js/terminal.js"></script>
     <script src="js/variables.js"></script>
     <script src="js/interpreter.js"></script>
+    <script src="js/examples.js"></script>
     <script src="js/tabs.js"></script>
     <script src="js/docs.js"></script>
     <script src="js/main.js"></script>

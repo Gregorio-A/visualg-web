@@ -80,11 +80,11 @@ function parseSource(source) {
   return new window.VisuAlgParser(tokens).parse();
 }
 
-async function executeSource(source, inputs) {
+async function executeSource(source, inputs, options) {
   ensureRuntimeLoaded();
   const ast = parseSource(source);
   const terminal = new TestTerminal(inputs || inferInputs(source));
-  const executor = new window.VisuAlgExecutor(terminal, variablesPanel);
+  const executor = new window.VisuAlgExecutor(terminal, variablesPanel, options);
   await executor.run(ast);
   return terminal.output;
 }
@@ -119,10 +119,10 @@ function inferInputs(source) {
   return inputs;
 }
 
-async function expectOk(name, source, expected, inputs) {
+async function expectOk(name, source, expected, inputs, options) {
   let output;
   try {
-    output = await executeSource(source, inputs);
+    output = await executeSource(source, inputs, options);
   } catch (error) {
     throw new Error(`${name}: ${error.message}`);
   }
@@ -131,9 +131,9 @@ async function expectOk(name, source, expected, inputs) {
   }
 }
 
-async function expectError(name, source, pattern, inputs) {
+async function expectError(name, source, pattern, inputs, options) {
   try {
-    await executeSource(source, inputs || []);
+    await executeSource(source, inputs || [], options);
   } catch (error) {
     if (!pattern.test(error.message)) {
       throw new Error(`${name}: erro inesperado "${error.message}"`);
@@ -166,9 +166,11 @@ function extractDocExamples() {
 module.exports = {
   root,
   ensureRuntimeLoaded,
+  parseSource,
   executeSource,
   expectOk,
   expectError,
   extractDocExamples,
   variablesPanel,
+  TestTerminal,
 };

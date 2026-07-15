@@ -48,6 +48,8 @@ inicio
 fimalgoritmo
 ```
 
+No VisuAlg, `retorne` define o valor retornado, mas não encerra imediatamente a função. Se houver outros comandos depois dele, esses comandos continuam sendo executados e um novo `retorne` pode substituir o valor anterior.
+
 ## Retorno pelo nome da função
 
 Além de `retorne`, o Web também aceita atribuir o resultado a uma variável local com o mesmo nome da função.

@@ -1,6 +1,6 @@
 # Compatibilidade com VisuAlg
 
-O alvo deste projeto é executar pseudocódigo o mais próximo possível do VisuAlg 3.0.7, especialmente para uso didático em sala de aula. O Web ainda não é uma cópia completa do desktop; por isso esta tabela separa o que é compatível, o que é parcial e o que é extensão própria da IDE web.
+O interpretador tem como contrato a linguagem do VisuAlg 3.0.7. A mesma implementação de lexer, parser, análise semântica e execução é usada no navegador e no Electron; apenas recursos dependentes do sistema operacional usam adaptadores diferentes.
 
 ## Compatível
 
@@ -8,6 +8,7 @@ O alvo deste projeto é executar pseudocódigo o mais próximo possível do Visu
 | --- | --- | --- |
 | Estrutura `algoritmo`, `var`, `inicio`, `fimalgoritmo` | Suportado | Um programa por arquivo ou aba. |
 | Tipos `inteiro`, `real`, `caractere`, `logico` | Suportado | Conversões de entrada são validadas por tipo. |
+| Aliases `declare`, `numerico`, `literal`, `caracter` | Suportado | Formas históricas continuam aceitas. |
 | Vetores com 1 ou 2 dimensões | Suportado | Índices são validados contra os limites declarados. |
 | Atribuição com `<-` | Suportado | Forma recomendada para compatibilidade. |
 | `se`, `senao`, `senao se`, `fimse` | Suportado | `senao se` na mesma linha é tratado como encadeamento. |
@@ -19,32 +20,29 @@ O alvo deste projeto é executar pseudocódigo o mais próximo possível do Visu
 | Comentário `//` e comentário `{ ... }` | Suportado | Comentário em bloco sem fechamento gera erro. |
 | String entre aspas duplas | Suportado | String sem fechamento gera erro. |
 | `limpatela` e `interrompa` | Suportado | `interrompa` só pode ser usado dentro de laços. |
+| Todas as funções internas do manual | Suportado | Inclui validação de quantidade, tipo e domínio dos argumentos. |
+| `pi`/`pi()` e `rand`/`rand()` | Suportado | Funções internas sem parâmetros aceitam as duas formas clássicas. |
+| Operadores `e`, `ou`, `xou` | Suportado | `e` e `ou` fazem curto-circuito; `xou` avalia ambos os lados por definição. |
+| Comparações encadeadas | Suportado | `a < b <= c` compara pares adjacentes e avalia cada operando uma vez. |
+| Entrada inválida em `leia` | Suportado | Mostra o erro e repete a leitura sem encerrar o algoritmo. |
+| Aspas dentro de string | Suportado | Aceita a forma clássica `""` e também `\"` como extensão. |
+| `aleatorio` | Suportado | Inclui `on`, `off`, faixa padrão, limite único e faixa mínima/máxima. |
+| `timer` | Suportado | Atraso assíncrono persistente de 0 a 10.000 ms por comando. |
+| `pausa` e `debug` | Suportado | Pausa incondicional e condicional com retomada pelo terminal. |
+| `eco on/off` | Suportado | Controla se valores de entrada aparecem no console. |
+| `cronometro on/off` | Suportado | Mede e mostra o tempo decorrido. |
+| `arquivo` | Suportado | Alimenta `leia` e grava entradas quando o arquivo ainda não existe. |
 
-## Parcial
+## Equivalência entre navegador e desktop
 
-| Recurso | Situação | Diferença atual |
-| --- | --- | --- |
-| Funções internas matemáticas e de texto | Parcial | Há validação de aridade e domínio nas funções implementadas, mas nem toda função do desktop existe. |
-| `pi` | Parcial | O Web aceita `pi` como constante e `pi()` como função interna. |
-| Operadores lógicos `e`, `ou`, `xou` | Parcial | A expressão ainda avalia os dois lados; não há curto-circuito. |
-| Comparações encadeadas | Parcial | Prefira escrever cada comparação de forma explícita com `e` ou `ou`. |
-| Entrada com `leia` | Parcial | O prompt mostra variável e tipo. Entrada inválida gera erro; ainda não repete a pergunta automaticamente. |
-| Aleatoriedade | Parcial | Use `rand()` e `randi(limite)`; o comando desktop `aleatorio` não existe. |
-| Comentários e strings avançadas | Parcial | Aspas escapadas dentro de string ainda não são uma regra documentada como compatível com o desktop. |
+O código do algoritmo é idêntico nas duas plataformas. A única diferença inevitável é onde `arquivo "nome.txt"` persiste os dados:
 
-## Não Suportado
-
-| Comando do VisuAlg desktop | Situação no Web |
+| Plataforma | Armazenamento de `arquivo` |
 | --- | --- |
-| `arquivo` | Não suportado como comando da linguagem. Use a interface para abrir arquivos de código. |
-| `aleatorio` | Não suportado como comando. Use `rand()` ou `randi(limite)`. |
-| `timer` | Não suportado como comando. |
-| `pausa` | Não suportado como comando. |
-| `debug` | Não suportado como comando. Use a execução passo a passo da interface. |
-| `eco` | Não suportado como comando. |
-| `cronometro` | Não suportado como comando. |
+| Navegador | Área persistente e isolada do site (`localStorage`), identificada pelo nome informado. |
+| Electron | Arquivo de texto físico dentro da pasta de dados do VisuAlg.dev, com subpastas relativas permitidas. |
 
-Quando um desses comandos aparece no código, o Web gera erro explícito em vez de tentar executar parcialmente.
+O navegador não pode acessar silenciosamente um caminho arbitrário do computador por causa do modelo de segurança da Web. O adaptador mantém a semântica de leitura, gravação e reutilização sem criar duas versões do interpretador.
 
 ## Extensões do Web
 
@@ -65,7 +63,7 @@ Quando um desses comandos aparece no código, o Web gera erro explícito em vez 
 | 3 | `^` | Direita para esquerda |
 | 4 | `*`, `/`, `\`, `div`, `mod`, `%` | Esquerda para direita |
 | 5 | `+`, `-` binários | Esquerda para direita |
-| 6 | `=`, `<>`, `<`, `>`, `<=`, `>=` | Esquerda para direita |
+| 6 | `=`, `<>`, `<`, `>`, `<=`, `>=` | Encadeamento por pares adjacentes |
 | 7 | `e` | Esquerda para direita |
 | 8 | `ou`, `xou` | Esquerda para direita |
 

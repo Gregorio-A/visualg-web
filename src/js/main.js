@@ -10,13 +10,16 @@
     var varsPanel = window.VariablesPanel;
     var tabManager = window.TabManager;
 
-    var btnRun, btnStep, btnStop, btnSave, btnSaveDropdown, saveMenu, btnOpen, fileInput, btnTheme, btnSettings, btnClearTerminal, btnClearVars, statusEl;
+    var btnRun, btnStep, btnStop, btnSave, btnSaveDropdown, saveMenu, btnOpen, btnExamples, fileInput, btnTheme, btnSettings, btnClearTerminal, btnClearVars, statusEl;
     var settingsOverlay, settingTheme, settingFontSize, settingFontSizeSlider, settingWordWrap, settingTabSize, settingIndentGuides;
     var settingVarsFontSize, settingVarsFontSizeSlider, settingConsoleFontSize, settingConsoleFontSizeSlider, settingConsoleInputMode;
     var settingGlobalFontSize, settingGlobalFontSizeSlider, settingGlobalFontUnit;
     var settingVarsColNome, settingVarsColTipo, settingVarsColValor;
     var settingLoopDetection;
     var _globalFontBase = { editor: 14, vars: 12, console: 13 };
+    var ONBOARDING_STORAGE_KEY = 'visualg-onboarding-complete-v1';
+    var SECTION_VISIBILITY_KEY = 'visualg-section-visibility-v1';
+    var sectionVisibility = { editor: true, variables: true, terminal: true };
 
     document.addEventListener('DOMContentLoaded', function () {
         // Initialize modules
@@ -32,6 +35,7 @@
         btnSaveDropdown = document.getElementById('btn-save-dropdown');
         saveMenu = document.getElementById('save-menu');
         btnOpen = document.getElementById('btn-open');
+        btnExamples = document.getElementById('btn-examples');
         fileInput = document.getElementById('file-input');
         btnTheme = document.getElementById('btn-theme');
         btnSettings = document.getElementById('btn-settings');
@@ -62,7 +66,8 @@
         initTheme();
         initSettings();
 
-        // Initialize tab manager
+        // Initialize tab manager and make its persistence visible to the user.
+        tabManager.onPersistenceChange = updateAutosaveStatus;
         tabManager.init();
         tabManager.onSwitch = function (tab) {
             var running = tab.executor && tab.executor.running;
@@ -77,6 +82,7 @@
             setStatus('Executando...', 'running');
             statusEl.title = message;
         };
+        updateAutosaveStatus(tabManager.getPersistenceState());
 
         // Button events
         btnRun.addEventListener('click', runProgram);
@@ -101,6 +107,7 @@
         });
 
         btnOpen.addEventListener('click', openProgram);
+        btnExamples.addEventListener('click', openExamples);
         fileInput.addEventListener('change', handleFileOpen);
         document.getElementById('btn-tab-indent').addEventListener('click', autoIndent);
         btnTheme.addEventListener('click', toggleTheme);
@@ -130,6 +137,10 @@
             mobileMenu.classList.remove('open');
             saveProgramAs('txt');
         });
+        document.getElementById('mobile-examples').addEventListener('click', function () {
+            mobileMenu.classList.remove('open');
+            openExamples();
+        });
         document.getElementById('mobile-settings').addEventListener('click', function () {
             mobileMenu.classList.remove('open');
             openSettings();
@@ -145,6 +156,11 @@
         });
 
         btnSettings.addEventListener('click', openSettings);
+
+        initExamples();
+        initOnboarding();
+        initRecovery();
+        initSectionVisibility();
 
         // Docs modal events
         var docsOverlay = document.getElementById('docsOverlay');
@@ -339,9 +355,311 @@
                 if (!docsOverlay.classList.contains('hidden')) DocsPanel.close();
                 if (!changelogOverlay.classList.contains('hidden')) changelogOverlay.classList.add('hidden');
                 if (!closeTabOverlay.classList.contains('hidden')) tabManager.cancelClose();
+                closeProductModals();
             }
         });
     });
+
+    // === First-use experience & examples ===
+    function getStoredValue(key) {
+        try {
+            return localStorage.getItem(key);
+        } catch (e) {
+            return null;
+        }
+    }
+
+    function setStoredValue(key, value) {
+        try {
+            localStorage.setItem(key, value);
+        } catch (e) {
+            // The app remains usable when storage is blocked by the browser.
+        }
+    }
+
+    function getExampleById(id) {
+        var examples = window.VisuAlgExamples || [];
+        for (var i = 0; i < examples.length; i++) {
+            if (examples[i].id === id) return examples[i];
+        }
+        return null;
+    }
+
+    function renderExamples() {
+        var grid = document.getElementById('examples-grid');
+        var examples = window.VisuAlgExamples || [];
+        grid.textContent = '';
+
+        examples.forEach(function (example) {
+            var card = document.createElement('article');
+            card.className = 'example-card';
+
+            var header = document.createElement('div');
+            header.className = 'example-card-header';
+            var title = document.createElement('h3');
+            title.textContent = example.title;
+            var level = document.createElement('span');
+            level.className = 'example-level';
+            level.textContent = example.level;
+            header.appendChild(title);
+            header.appendChild(level);
+
+            var description = document.createElement('p');
+            description.textContent = example.description;
+
+            var actions = document.createElement('div');
+            actions.className = 'example-actions';
+            actions.innerHTML =
+                '<button type="button" class="modal-btn modal-btn-secondary" data-example-action="open" data-example-id="' + example.id + '"><i data-lucide="code-2"></i> Abrir código</button>' +
+                '<button type="button" class="modal-btn modal-btn-primary" data-example-action="run" data-example-id="' + example.id + '"><i data-lucide="play"></i> Executar</button>';
+
+            card.appendChild(header);
+            card.appendChild(description);
+            card.appendChild(actions);
+            grid.appendChild(card);
+        });
+
+        if (window.lucide) lucide.createIcons({ nodes: [grid] });
+    }
+
+    function openExamples() {
+        document.getElementById('examplesOverlay').classList.remove('hidden');
+    }
+
+    function closeExamples() {
+        document.getElementById('examplesOverlay').classList.add('hidden');
+    }
+
+    function loadExample(id, executeNow) {
+        var example = getExampleById(id);
+        if (!example) return;
+        var tab = tabManager.createTab(example.source);
+        if (!tab) return;
+
+        closeExamples();
+        setSectionVisible('editor', true);
+        if (executeNow) {
+            setSectionVisible('terminal', true);
+            window.setTimeout(runProgram, 0);
+        } else {
+            editor.instance.focus();
+        }
+    }
+
+    function initExamples() {
+        var overlay = document.getElementById('examplesOverlay');
+        renderExamples();
+        document.getElementById('btn-close-examples').addEventListener('click', closeExamples);
+        overlay.addEventListener('click', function (event) {
+            if (event.target === overlay) closeExamples();
+            var button = event.target.closest('[data-example-action]');
+            if (button) {
+                loadExample(button.dataset.exampleId, button.dataset.exampleAction === 'run');
+            }
+        });
+    }
+
+    function completeOnboarding(nextAction) {
+        setStoredValue(ONBOARDING_STORAGE_KEY, 'true');
+        document.getElementById('onboardingOverlay').classList.add('hidden');
+        if (nextAction === 'examples') {
+            openExamples();
+        } else if (editor.instance) {
+            editor.instance.focus();
+        }
+    }
+
+    function initOnboarding() {
+        var overlay = document.getElementById('onboardingOverlay');
+        document.getElementById('btn-skip-onboarding').addEventListener('click', function () {
+            completeOnboarding('editor');
+        });
+        document.getElementById('btn-onboarding-editor').addEventListener('click', function () {
+            completeOnboarding('editor');
+        });
+        document.getElementById('btn-onboarding-examples').addEventListener('click', function () {
+            completeOnboarding('examples');
+        });
+        overlay.addEventListener('click', function (event) {
+            if (event.target === overlay) completeOnboarding('editor');
+        });
+
+        if (getStoredValue(ONBOARDING_STORAGE_KEY) !== 'true') {
+            window.setTimeout(function () {
+                overlay.classList.remove('hidden');
+            }, 120);
+        }
+    }
+
+    function closeProductModals() {
+        var examplesOverlay = document.getElementById('examplesOverlay');
+        var recoveryOverlay = document.getElementById('recoveryOverlay');
+        var onboardingOverlay = document.getElementById('onboardingOverlay');
+        if (!examplesOverlay.classList.contains('hidden')) closeExamples();
+        if (!recoveryOverlay.classList.contains('hidden')) recoveryOverlay.classList.add('hidden');
+        if (!onboardingOverlay.classList.contains('hidden')) completeOnboarding('editor');
+    }
+
+    // === Autosave & recovery ===
+    function formatLocalDate(isoValue) {
+        if (!isoValue) return 'Ainda não há horário de salvamento.';
+        var date = new Date(isoValue);
+        if (Number.isNaN(date.getTime())) return 'Horário de salvamento indisponível.';
+        return date.toLocaleString('pt-BR', {
+            day: '2-digit',
+            month: '2-digit',
+            hour: '2-digit',
+            minute: '2-digit',
+            second: '2-digit'
+        });
+    }
+
+    function updateAutosaveStatus(state) {
+        state = state || { status: 'idle' };
+        var button = document.getElementById('autosave-status');
+        if (!button) return;
+
+        var labels = {
+            saving: { icon: 'cloud-upload', text: 'Salvando...' },
+            saved: { icon: 'cloud-check', text: 'Salvo localmente' },
+            restored: { icon: 'history', text: 'Cópia restaurada' },
+            error: { icon: 'cloud-alert', text: 'Falha ao salvar' },
+            idle: { icon: 'cloud', text: 'Autosave local' }
+        };
+        var view = labels[state.status] || labels.idle;
+        button.classList.toggle('is-saving', state.status === 'saving');
+        button.classList.toggle('is-error', state.status === 'error');
+        button.classList.toggle('is-restored', state.status === 'restored');
+        button.innerHTML = '<i data-lucide="' + view.icon + '" class="footer-icon"></i><span>' + view.text + '</span>';
+        button.title = state.updatedAt
+            ? view.text + ' em ' + formatLocalDate(state.updatedAt) + '. Clique para recuperar uma versão anterior.'
+            : view.text + '. Clique para ver as opções de recuperação.';
+        if (window.lucide) lucide.createIcons({ nodes: [button] });
+    }
+
+    function refreshRecoveryModal() {
+        var state = tabManager.getPersistenceState();
+        var recovery = tabManager.getRecoveryInfo();
+        var restoreButton = document.getElementById('btn-restore-recovery');
+
+        document.getElementById('recovery-current-status').textContent =
+            state.status === 'error' ? 'Não foi possível salvar neste dispositivo' : 'Código salvo automaticamente neste dispositivo';
+        document.getElementById('recovery-current-time').textContent = formatLocalDate(state.updatedAt);
+
+        if (recovery) {
+            document.getElementById('recovery-copy-description').textContent =
+                'Cópia de ' + formatLocalDate(recovery.updatedAt) + ', com ' + recovery.tabCount +
+                (recovery.tabCount === 1 ? ' aba.' : ' abas.');
+            restoreButton.disabled = false;
+        } else {
+            document.getElementById('recovery-copy-description').textContent =
+                'Uma cópia anterior será criada automaticamente conforme você editar.';
+            restoreButton.disabled = true;
+        }
+    }
+
+    function initRecovery() {
+        var overlay = document.getElementById('recoveryOverlay');
+        document.getElementById('autosave-status').addEventListener('click', function () {
+            refreshRecoveryModal();
+            overlay.classList.remove('hidden');
+        });
+        document.getElementById('btn-close-recovery').addEventListener('click', function () {
+            overlay.classList.add('hidden');
+        });
+        overlay.addEventListener('click', function (event) {
+            if (event.target === overlay) overlay.classList.add('hidden');
+        });
+        document.getElementById('btn-restore-recovery').addEventListener('click', function () {
+            if (tabManager.getRunningTab()) {
+                setStatus('Executando...', 'running');
+                statusEl.title = 'Interrompa a execução antes de restaurar uma cópia.';
+                return;
+            }
+            if (tabManager.restoreRecovery()) {
+                overlay.classList.add('hidden');
+                setStatus('Pronto');
+            }
+        });
+    }
+
+    // === Section visibility ===
+    function persistSectionVisibility() {
+        setStoredValue(SECTION_VISIBILITY_KEY, JSON.stringify(sectionVisibility));
+    }
+
+    function applySectionVisibility() {
+        var grid = document.querySelector('.grid-container');
+        var elements = {
+            editor: document.querySelector('.editor-column'),
+            variables: document.getElementById('variablesPanel'),
+            terminal: document.getElementById('terminalPanel')
+        };
+
+        // Inline sizes come from drag-resizing; reset them when changing the grid.
+        elements.editor.style.width = '';
+        elements.variables.style.width = '';
+        elements.terminal.style.width = '';
+
+        Object.keys(elements).forEach(function (name) {
+            elements[name].classList.toggle('section-hidden', !sectionVisibility[name]);
+            grid.classList.toggle('section-' + name + '-hidden', !sectionVisibility[name]);
+            var checkbox = document.querySelector('#sections-menu [data-section="' + name + '"]');
+            if (checkbox) checkbox.checked = sectionVisibility[name];
+        });
+
+        if (sectionVisibility.editor && editor.instance) {
+            window.setTimeout(function () { editor.instance.refresh(); }, 0);
+        }
+    }
+
+    function setSectionVisible(name, visible) {
+        if (!Object.prototype.hasOwnProperty.call(sectionVisibility, name)) return;
+        sectionVisibility[name] = !!visible;
+        applySectionVisibility();
+        persistSectionVisibility();
+    }
+
+    function initSectionVisibility() {
+        var raw = getStoredValue(SECTION_VISIBILITY_KEY);
+        if (raw) {
+            try {
+                var stored = JSON.parse(raw);
+                Object.keys(sectionVisibility).forEach(function (name) {
+                    if (typeof stored[name] === 'boolean') sectionVisibility[name] = stored[name];
+                });
+            } catch (e) {
+                sectionVisibility = { editor: true, variables: true, terminal: true };
+            }
+        }
+        applySectionVisibility();
+
+        var trigger = document.getElementById('btn-sections');
+        var menu = document.getElementById('sections-menu');
+        trigger.addEventListener('click', function (event) {
+            event.stopPropagation();
+            var willOpen = menu.classList.contains('hidden');
+            menu.classList.toggle('hidden');
+            trigger.setAttribute('aria-expanded', willOpen ? 'true' : 'false');
+        });
+        menu.addEventListener('click', function (event) {
+            event.stopPropagation();
+        });
+        menu.querySelectorAll('[data-section]').forEach(function (checkbox) {
+            checkbox.addEventListener('change', function () {
+                setSectionVisible(this.dataset.section, this.checked);
+            });
+        });
+        document.getElementById('btn-show-all-sections').addEventListener('click', function () {
+            sectionVisibility = { editor: true, variables: true, terminal: true };
+            applySectionVisibility();
+            persistSectionVisibility();
+        });
+        document.addEventListener('click', function () {
+            menu.classList.add('hidden');
+            trigger.setAttribute('aria-expanded', 'false');
+        });
+    }
 
     // === Theme ===
     function initTheme() {
@@ -657,6 +975,29 @@
         return true;
     }
 
+    function getErrorLocation(message) {
+        var match = /Linha\s+(\d+)(?:\s*,\s*coluna\s+(\d+))?/i.exec(message || '');
+        if (!match) return null;
+        return {
+            line: parseInt(match[1], 10),
+            column: match[2] ? parseInt(match[2], 10) : 1
+        };
+    }
+
+    function reportExecutionError(error) {
+        var message = error && error.message ? error.message : String(error);
+        var location = getErrorLocation(message);
+        terminal.writelnError(message, location, function () {
+            setSectionVisible('editor', true);
+            editor.revealLocation(location.line, location.column);
+        });
+        if (location) {
+            setSectionVisible('editor', true);
+            editor.revealLocation(location.line, location.column);
+        }
+        setStatus('Erro', 'error');
+    }
+
     // === Execution ===
     async function runProgram() {
         var tab = tabManager.getActiveTab();
@@ -669,6 +1010,7 @@
         editor.clearHighlight();
         setStatus('Executando...', 'running');
         setRunning(true);
+        var hadError = false;
 
         try {
             var tokens = new window.VisuAlgLexer(source).tokenize();
@@ -679,14 +1021,14 @@
             setStatus('Execução finalizada');
         } catch (e) {
             if (e.message !== '__STOP__') {
-                terminal.writeln('ERRO: ' + e.message);
-                setStatus('Erro', 'error');
+                hadError = true;
+                reportExecutionError(e);
             } else {
                 setStatus('Execução interrompida');
             }
         }
 
-        editor.clearHighlight();
+        if (!hadError) editor.clearHighlight();
         setRunning(false);
         tab.executor = null;
         tab.running = false;
@@ -708,6 +1050,7 @@
         editor.clearHighlight();
         setStatus('Passo a passo...', 'running');
         setRunning(true);
+        var hadError = false;
 
         try {
             var tokens = new window.VisuAlgLexer(source).tokenize();
@@ -719,14 +1062,14 @@
             setStatus('Execução finalizada');
         } catch (e) {
             if (e.message !== '__STOP__') {
-                terminal.writeln('ERRO: ' + e.message);
-                setStatus('Erro', 'error');
+                hadError = true;
+                reportExecutionError(e);
             } else {
                 setStatus('Execução interrompida');
             }
         }
 
-        editor.clearHighlight();
+        if (!hadError) editor.clearHighlight();
         setRunning(false);
         tab.executor = null;
         tab.running = false;
@@ -740,9 +1083,10 @@
                 tab.executor.stepResolve();
                 tab.executor.stepResolve = null;
             }
-            tab.executor = null;
-            tab.running = false;
         }
+        if (terminal.cancelPendingInput) terminal.cancelPendingInput();
+        tab.executor = null;
+        tab.running = false;
         terminal.inputArea.classList.add('hidden');
         var consoleInputOverlay = document.getElementById('consoleInputOverlay');
         if (consoleInputOverlay) consoleInputOverlay.classList.add('hidden');

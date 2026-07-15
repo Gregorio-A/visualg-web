@@ -14,8 +14,11 @@
     "make": "electron-forge make",
     "publish": "electron-forge publish",
     "lint": "echo \"No linting configured\"",
+    "test:examples": "node scripts/examples-check.js",
+    "test:workspace": "node scripts/workspace-recovery-check.js",
     "test:standard": "node scripts/standard-program-check.js",
-    "test:p0": "node scripts/regression-check.js && npm run test:standard"
+    "test:compat": "node scripts/compatibility-check.js",
+    "test:p0": "node scripts/regression-check.js && npm run test:standard && npm run test:compat && npm run test:examples && npm run test:workspace"
   },
   "keywords": [],
   "author": {

@@ -51,7 +51,7 @@ leia(<lista-de-variaveis>)
 leia <lista-de-variaveis>
 ```
 
-`leia` atribui os valores digitados às variáveis na ordem informada. O Web mostra a variável lida e o tipo esperado, por exemplo `Leia idade (inteiro):`. Você ainda pode escrever uma mensagem antes de `leia` quando quiser uma orientação mais específica.
+`leia` atribui os valores digitados às variáveis na ordem informada. Como no VisuAlg, o próprio algoritmo deve usar `escreva` quando quiser mostrar uma orientação antes da leitura. A entrada aceita o campo inline ou a janela modal configurada na IDE.
 
 ```visualg
 algoritmo "Entrada"
@@ -73,12 +73,12 @@ fimalgoritmo
 
 | Tipo da variável | Conversão no Web |
 | --- | --- |
-| `inteiro` | Aceita somente números inteiros, como `10` ou `-3`. Entrada inválida gera erro. |
-| `real` | Aceita números com ponto ou vírgula decimal, como `3.14` ou `3,14`. Entrada inválida gera erro. |
+| `inteiro` | Aceita somente números inteiros, como `10` ou `-3`. |
+| `real` | Aceita números com ponto ou vírgula decimal, como `3.14` ou `3,14`. |
 | `caractere` | Mantém o texto digitado. |
-| `logico` | Aceita `verdadeiro`/`v` ou `falso`/`f`. Outros valores geram erro. |
+| `logico` | Aceita `verdadeiro`/`v` ou `falso`/`f`. |
 
-Entrada inválida interrompe a execução com uma mensagem didática. O Web ainda não repete automaticamente a pergunta. No modo modal, cancelar a entrada interrompe o programa de forma controlada.
+Uma entrada inválida mostra uma mensagem didática e a leitura é repetida até chegar um valor compatível. No modo modal, cancelar a entrada interrompe o programa de forma controlada. Por padrão, o valor lido aparece no console; use `eco off` para ocultá-lo e `eco on` para reativá-lo.
 
 ```visualg
 algoritmo "EntradaLogica"

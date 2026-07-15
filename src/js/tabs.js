@@ -15,7 +15,32 @@
     var tabListEl = null;
     var pendingCloseTabId = null;
     var WORKSPACE_STORAGE_KEY = 'visualg-workspace-v1';
+    var RECOVERY_STORAGE_KEY = 'visualg-workspace-recovery-v1';
+    var RECOVERY_CHECKPOINT_KEY = 'visualg-workspace-recovery-checkpoint-v1';
+    var RECOVERY_INTERVAL = 30000;
     var persistTimer = null;
+    var persistenceState = {
+        status: 'idle',
+        updatedAt: null,
+        hasRecovery: false
+    };
+
+    function notifyPersistence(status, updatedAt) {
+        var hasRecovery = false;
+        try {
+            hasRecovery = !!localStorage.getItem(RECOVERY_STORAGE_KEY);
+        } catch (e) {
+            hasRecovery = false;
+        }
+        persistenceState = {
+            status: status,
+            updatedAt: updatedAt || persistenceState.updatedAt,
+            hasRecovery: hasRecovery
+        };
+        if (window.TabManager && window.TabManager.onPersistenceChange) {
+            window.TabManager.onPersistenceChange(persistenceState);
+        }
+    }
 
     function isDefaultCode(code) {
         return code.trim() === getDefaultCode().trim();
@@ -105,26 +130,30 @@
         };
     }
 
+    function deserializeWorkspace(raw) {
+        if (!raw) return null;
+
+        var data = JSON.parse(raw);
+        if (!data || !Array.isArray(data.tabs) || data.tabs.length === 0) return null;
+
+        var restoredTabs = [];
+        for (var i = 0; i < data.tabs.length; i++) {
+            var savedTab = data.tabs[i];
+            if (!savedTab || typeof savedTab.code !== 'string') continue;
+            restoredTabs.push(createTabData(savedTab.code, { id: savedTab.id }));
+        }
+        if (restoredTabs.length === 0) return null;
+
+        return {
+            tabs: restoredTabs,
+            activeTabId: data.activeTabId,
+            updatedAt: data.updatedAt || null
+        };
+    }
+
     function loadPersistedWorkspace() {
         try {
-            var raw = localStorage.getItem(WORKSPACE_STORAGE_KEY);
-            if (!raw) return null;
-
-            var data = JSON.parse(raw);
-            if (!data || !Array.isArray(data.tabs) || data.tabs.length === 0) return null;
-
-            var restoredTabs = [];
-            for (var i = 0; i < data.tabs.length; i++) {
-                var savedTab = data.tabs[i];
-                if (!savedTab || typeof savedTab.code !== 'string') continue;
-                restoredTabs.push(createTabData(savedTab.code, { id: savedTab.id }));
-            }
-            if (restoredTabs.length === 0) return null;
-
-            return {
-                tabs: restoredTabs,
-                activeTabId: data.activeTabId
-            };
+            return deserializeWorkspace(localStorage.getItem(WORKSPACE_STORAGE_KEY));
         } catch (e) {
             return null;
         }
@@ -134,6 +163,15 @@
         try {
             if (!tabs.length) return;
             saveCurrentState();
+
+            var previousRaw = localStorage.getItem(WORKSPACE_STORAGE_KEY);
+            var now = Date.now();
+            var previousCheckpoint = parseInt(localStorage.getItem(RECOVERY_CHECKPOINT_KEY) || '0', 10);
+
+            if (previousRaw && now - previousCheckpoint >= RECOVERY_INTERVAL) {
+                localStorage.setItem(RECOVERY_STORAGE_KEY, previousRaw);
+                localStorage.setItem(RECOVERY_CHECKPOINT_KEY, String(now));
+            }
 
             var data = {
                 version: 1,
@@ -149,13 +187,80 @@
             };
 
             localStorage.setItem(WORKSPACE_STORAGE_KEY, JSON.stringify(data));
+            notifyPersistence('saved', data.updatedAt);
         } catch (e) {
             // localStorage may be unavailable or full; editing must keep working.
+            notifyPersistence('error');
+        }
+    }
+
+    function serializeCurrentWorkspace() {
+        saveCurrentState();
+        return JSON.stringify({
+            version: 1,
+            activeTabId: activeTabId,
+            updatedAt: new Date().toISOString(),
+            tabs: tabs.map(function (tab) {
+                return {
+                    id: tab.id,
+                    name: tab.name,
+                    code: tab.code
+                };
+            })
+        });
+    }
+
+    function getRecoveryInfo() {
+        try {
+            var raw = localStorage.getItem(RECOVERY_STORAGE_KEY);
+            if (!raw) return null;
+            var data = JSON.parse(raw);
+            if (!data || !Array.isArray(data.tabs) || data.tabs.length === 0) return null;
+            return {
+                updatedAt: data.updatedAt || null,
+                tabCount: data.tabs.length
+            };
+        } catch (e) {
+            return null;
+        }
+    }
+
+    function restoreRecovery() {
+        try {
+            if (persistTimer) {
+                clearTimeout(persistTimer);
+                persistTimer = null;
+            }
+            var recoveryRaw = localStorage.getItem(RECOVERY_STORAGE_KEY);
+            var recovered = deserializeWorkspace(recoveryRaw);
+            if (!recovered) return false;
+
+            var currentRaw = serializeCurrentWorkspace();
+            localStorage.setItem(WORKSPACE_STORAGE_KEY, recoveryRaw);
+            localStorage.setItem(RECOVERY_STORAGE_KEY, currentRaw);
+            localStorage.setItem(RECOVERY_CHECKPOINT_KEY, String(Date.now()));
+
+            tabs = recovered.tabs;
+            activeTabId = getTab(recovered.activeTabId)
+                ? recovered.activeTabId
+                : tabs[0].id;
+            renderTabs();
+            restoreState(getTab(activeTabId));
+            notifyPersistence('restored', recovered.updatedAt);
+
+            if (window.TabManager.onSwitch) {
+                window.TabManager.onSwitch(getTab(activeTabId));
+            }
+            return true;
+        } catch (e) {
+            notifyPersistence('error');
+            return false;
         }
     }
 
     function schedulePersist() {
         if (persistTimer) clearTimeout(persistTimer);
+        notifyPersistence('saving');
         persistTimer = setTimeout(function () {
             persistTimer = null;
             persistWorkspaceNow();
@@ -339,6 +444,7 @@
                     : tabs[0].id;
                 renderTabs();
                 restoreState(getTab(activeTabId));
+                notifyPersistence('saved', persistedWorkspace.updatedAt);
             } else {
                 var initialTab = createTabData(window.VisualGEditor.getValue());
                 tabs.push(initialTab);
@@ -450,8 +556,22 @@
 
         saveWorkspace: persistWorkspaceNow,
 
+        getPersistenceState: function () {
+            return {
+                status: persistenceState.status,
+                updatedAt: persistenceState.updatedAt,
+                hasRecovery: persistenceState.hasRecovery
+            };
+        },
+
+        getRecoveryInfo: getRecoveryInfo,
+
+        restoreRecovery: restoreRecovery,
+
         onSwitch: null,
 
-        onActionBlocked: null
+        onActionBlocked: null,
+
+        onPersistenceChange: null
     };
 })();

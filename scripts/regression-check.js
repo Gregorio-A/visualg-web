@@ -77,7 +77,7 @@ inicio
   leia(x)
   escreval(x:1:2)
 fimalgoritmo
-`, 'Leia x (real): 3.14', ['3,14']);
+`, '3,14\n3.14', ['3,14']);
 
   await expectError('caractere desconhecido', `
 algoritmo "t"
@@ -88,12 +88,12 @@ inicio
 fimalgoritmo
 `, /Caractere invalido/);
 
-  await expectError('comando nao suportado', `
+  await expectError('comando inexistente', `
 algoritmo "t"
 inicio
-  pausa
+  comando_inexistente
 fimalgoritmo
-`, /pausa/);
+`, /Procedimento "comando_inexistente" nao encontrado/);
 
   await expectError('interrompa fora de laco', `
 algoritmo "t"
@@ -125,7 +125,7 @@ var
 inicio
   x <- 1 / 0
 fimalgoritmo
-`, /Divisao por zero/);
+`, /Linha 6: Divisao por zero/);
 
   await expectError('indice fora do vetor', `
 algoritmo "t"
@@ -169,14 +169,14 @@ inicio
 fimalgoritmo
 `, /referencia/);
 
-  await expectError('leia inteiro invalido', `
+  await expectOk('leia inteiro invalido repete a leitura', `
 algoritmo "t"
 var
   x: inteiro
 inicio
   leia(x)
 fimalgoritmo
-`, /Entrada invalida para inteiro/, ['abc']);
+`, 'abc\nEntrada invalida para inteiro: "abc". Tente novamente.\n2', ['abc', '2']);
 
   await expectError('funcao com parametro sem chamada', `
 algoritmo "t"

@@ -21,6 +21,10 @@ O alvo pratico e manter a experiencia o mais proxima possivel do VisuAlg 3.0.7, 
 - Abertura de arquivos `.alg` e `.txt`.
 - Salvamento do codigo como `.alg` ou `.txt`.
 - Persistencia automatica das abas e dos codigos no armazenamento local do navegador/Electron.
+- Indicador visivel de autosave e restauracao de uma copia de recuperacao.
+- Onboarding de primeira visita e galeria com cinco exemplos executaveis.
+- Erros clicaveis com navegacao direta para a linha e coluna no editor.
+- Menu persistente para mostrar ou esconder editor, variaveis e console.
 - Autoindentacao do codigo.
 - Comentario/descomentario com `Ctrl+/` ou `Cmd+/`.
 - Temas escuro, claro e alto contraste.
@@ -38,10 +42,11 @@ O interpretador roda no cliente, em JavaScript, e cobre os principais elementos 
 - Repeticoes: `enquanto`, `para`, `repita`.
 - Escolha de casos: `escolha`, `caso`, `outrocaso`.
 - Subprogramas: `procedimento`, `funcao`, parametros por valor e por referencia com `var`.
-- Comandos: `retorne`, `interrompa`, `limpatela`.
+- Comandos: `retorne`, `interrompa`, `limpatela`, `aleatorio`, `arquivo`, `timer`, `pausa`, `debug`, `eco` e `cronometro`.
 - Operadores aritmeticos, relacionais e logicos: `+`, `-`, `*`, `/`, `\`, `div`, `mod`, `%`, `^`, `=`, `<>`, `<`, `>`, `<=`, `>=`, `e`, `ou`, `xou`, `nao`.
 - Funcoes nativas: `abs`, `quad`, `raizq`, `exp`, `log`, `logn`, `sen`, `cos`, `tan`, `cotan`, `arcsen`, `arccos`, `arctan`, `grauprad`, `radpgrau`, `int`, `pi`, `rand`, `randi`, `compr`, `copia`, `maiusc`, `minusc`, `asc`, `carac`, `pos`, `caracpnum`, `numpcarac`.
-- Compatibilidade especial: `senao se` na mesma linha, `escreva`/`escreval`/`leia` sem parênteses, `pi` como constante e chamadas de funcoes sem parametros sem `()`.
+- Compatibilidade especial: `senao se` na mesma linha, `escreva`/`escreval`/`leia` sem parênteses, `pi` como constante, chamadas de funcoes sem parametros sem `()`, curto-circuito lógico, comparações encadeadas e repetição de entrada inválida.
+- `arquivo`: persistência isolada no navegador e arquivo de texto físico na pasta de dados do aplicativo Electron.
 
 Exemplo:
 
@@ -198,6 +203,18 @@ Para validar programas padrao sem abrir a interface, use a ferramenta interna:
 
 ```bash
 npm run test:standard
+```
+
+Para validar a matriz de compatibilidade legada e todas as funções internas:
+
+```bash
+npm run test:compat
+```
+
+Para executar os cinco programas publicados na galeria de exemplos:
+
+```bash
+npm run test:examples
 ```
 
 Ela executa a lista em `scripts/standard-programs.js` e compara a saida do interpretador com os resultados esperados. O `npm run test:p0` tambem roda essa validacao junto da regressao principal.

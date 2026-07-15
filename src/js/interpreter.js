@@ -30,7 +30,7 @@
     };
 
     var DATA_TYPES = ['inteiro', 'real', 'caractere', 'logico'];
-    var UNSUPPORTED_KEYWORDS = [
+    var COMPATIBILITY_COMMANDS = [
         'pausa', 'debug', 'eco', 'cronometro', 'timer', 'aleatorio', 'arquivo'
     ];
 
@@ -48,7 +48,7 @@
         'e', 'ou', 'nao', 'xou', 'mod', 'div',
         'verdadeiro', 'falso',
         'inteiro', 'real', 'caractere', 'logico', 'vetor'
-    ].concat(UNSUPPORTED_KEYWORDS);
+    ].concat(COMPATIBILITY_COMMANDS);
 
     var BUILTIN_FUNCTIONS = [
         'abs', 'quad', 'raizq', 'exp', 'log', 'logn',
@@ -65,7 +65,16 @@
         'faça': 'faca',
         'início': 'inicio',
         'lógico': 'logico',
-        'não': 'nao'
+        'não': 'nao',
+        'função': 'funcao',
+        'caráter': 'caractere',
+        'caracter': 'caractere',
+        'literal': 'caractere',
+        'numérico': 'real',
+        'numerico': 'real',
+        'declare': 'var',
+        'cronômetro': 'cronometro',
+        'aleatório': 'aleatorio'
     };
 
     // ==========================================
@@ -253,19 +262,38 @@
         var column = this.column;
         this.advance(); // skip opening "
         var str = '';
-        while (this.pos < this.source.length && this.source[this.pos] !== '"') {
+        while (this.pos < this.source.length) {
             if (this.source[this.pos] === '\n') {
                 this.error('String nao foi fechada antes do fim da linha', line, column);
             }
-            str += this.source[this.pos];
-            this.advance();
+            if (this.source[this.pos] === '"') {
+                if (this.pos + 1 < this.source.length && this.source[this.pos + 1] === '"') {
+                    str += '"';
+                    this.advance();
+                    this.advance();
+                    continue;
+                }
+                this.advance();
+                return new Token(T.STRING, str, line, column);
+            }
+            if (this.source[this.pos] === '\\' && this.pos + 1 < this.source.length) {
+                var escaped = this.source[this.pos + 1];
+                if (escaped === '"' || escaped === '\\') {
+                    str += escaped;
+                    this.advance();
+                    this.advance();
+                    continue;
+                }
+                if (escaped === 'n' || escaped === 't') {
+                    str += escaped === 'n' ? '\n' : '\t';
+                    this.advance();
+                    this.advance();
+                    continue;
+                }
+            }
+            str += this.advance();
         }
-        if (this.pos < this.source.length) {
-            this.advance(); // skip closing "
-        } else {
-            this.error('String iniciada com aspas duplas nao foi fechada', line, column);
-        }
-        return new Token(T.STRING, str, line, column);
+        this.error('String iniciada com aspas duplas nao foi fechada', line, column);
     };
 
     Lexer.prototype.readNumber = function () {
@@ -345,14 +373,6 @@
         return tok.type === type && (value === undefined || tok.value === value);
     };
 
-    Parser.prototype.isUnsupportedKeyword = function (tok) {
-        return tok && tok.type === T.KEYWORD && UNSUPPORTED_KEYWORDS.indexOf(tok.value) !== -1;
-    };
-
-    Parser.prototype.throwUnsupported = function (tok) {
-        throw new Error('Linha ' + tok.line + ', coluna ' + tok.column + ': Comando "' + tok.value + '" ainda nao e suportado no VisuAlg Web');
-    };
-
     Parser.prototype.throwUnexpected = function (tok) {
         throw new Error('Linha ' + tok.line + ', coluna ' + tok.column + ': Token inesperado "' + tok.value + '"');
     };
@@ -378,8 +398,10 @@
         var name = this.eat(T.STRING).value;
         this.expectNewline();
 
-        if (this.isUnsupportedKeyword(this.current())) {
-            this.throwUnsupported(this.current());
+        var directives = [];
+        while (this.isCompatibilityCommand(this.current())) {
+            directives.push(this.parseCompatibilityCommand());
+            this.skipNewlines();
         }
 
         // var declarations
@@ -393,8 +415,9 @@
             varDecls = this.parseVarDecls();
         }
 
-        if (this.isUnsupportedKeyword(this.current())) {
-            this.throwUnsupported(this.current());
+        while (this.isCompatibilityCommand(this.current())) {
+            directives.push(this.parseCompatibilityCommand());
+            this.skipNewlines();
         }
 
         // Procedures and functions (before inicio)
@@ -405,9 +428,6 @@
                 functions.push(this.parseFunction());
             }
             this.skipNewlines();
-            if (this.isUnsupportedKeyword(this.current())) {
-                this.throwUnsupported(this.current());
-            }
         }
 
         // inicio
@@ -421,6 +441,7 @@
         return {
             type: 'Program',
             name: name,
+            directives: directives,
             variables: varDecls,
             procedures: procedures,
             functions: functions,
@@ -434,13 +455,11 @@
         while (!this.match(T.KEYWORD, 'inicio') &&
                !this.match(T.KEYWORD, 'procedimento') &&
                !this.match(T.KEYWORD, 'funcao') &&
+               !this.isCompatibilityCommand(this.current()) &&
                !this.match(T.EOF)) {
             if (this.match(T.NEWLINE)) {
                 this.skipNewlines();
                 continue;
-            }
-            if (this.isUnsupportedKeyword(this.current())) {
-                this.throwUnsupported(this.current());
             }
             if (this.match(T.IDENT)) {
                 var decl = this.parseVarDecl();
@@ -500,6 +519,9 @@
         if (DATA_TYPES.indexOf(dataType) === -1) {
             throw new Error('Linha ' + line + ': Tipo de dado invalido "' + dataType + '"');
         }
+
+        // The classic editor accepts a trailing semicolon even though it is optional.
+        if (this.match(T.OPERATOR, ';')) this.eat(T.OPERATOR, ';');
 
         return {
             type: 'VarDecl',
@@ -650,10 +672,15 @@
         }
 
         if (tok.type === T.KEYWORD) {
-            if (this.isUnsupportedKeyword(tok)) {
-                this.throwUnsupported(tok);
-            }
             switch (tok.value) {
+                case 'pausa':
+                case 'debug':
+                case 'eco':
+                case 'cronometro':
+                case 'timer':
+                case 'aleatorio':
+                case 'arquivo':
+                    return this.parseCompatibilityCommand();
                 case 'escreva':
                 case 'escreval':
                     return this.parseEscreva();
@@ -684,6 +711,105 @@
 
         if (tok.type === T.IDENT) {
             return this.parseAssignmentOrCall();
+        }
+
+        this.throwUnexpected(tok);
+    };
+
+    Parser.prototype.isCompatibilityCommand = function (tok) {
+        return tok && tok.type === T.KEYWORD && COMPATIBILITY_COMMANDS.indexOf(tok.value) !== -1;
+    };
+
+    Parser.prototype.matchWord = function (value) {
+        var tok = this.current();
+        return (tok.type === T.IDENT || tok.type === T.KEYWORD) && tok.value === value;
+    };
+
+    Parser.prototype.eatWord = function (value) {
+        var tok = this.current();
+        if (this.matchWord(value)) {
+            this.pos++;
+            return tok;
+        }
+        throw new Error('Linha ' + tok.line + ', coluna ' + tok.column + ': Esperado "' + value + '", encontrado "' + tok.value + '"');
+    };
+
+    Parser.prototype.parseSignedNumberConstant = function (commandName) {
+        var sign = 1;
+        if (this.match(T.OPERATOR, '-') || this.match(T.OPERATOR, '+')) {
+            if (this.current().value === '-') sign = -1;
+            this.pos++;
+        }
+        if (!this.match(T.NUMBER)) {
+            var tok = this.current();
+            throw new Error('Linha ' + tok.line + ': Comando ' + commandName + ' exige uma constante numerica');
+        }
+        return sign * this.eat(T.NUMBER).value;
+    };
+
+    Parser.prototype.parseOnOff = function (commandName) {
+        if (this.matchWord('on')) {
+            this.eatWord('on');
+            return true;
+        }
+        if (this.matchWord('off')) {
+            this.eatWord('off');
+            return false;
+        }
+        var tok = this.current();
+        throw new Error('Linha ' + tok.line + ': Comando ' + commandName + ' espera on ou off');
+    };
+
+    Parser.prototype.parseCompatibilityCommand = function () {
+        var tok = this.current();
+        var command = tok.value;
+        this.eat(T.KEYWORD, command);
+
+        if (command === 'pausa') {
+            return { type: 'Pausa', line: tok.line };
+        }
+        if (command === 'debug') {
+            return { type: 'Debug', condition: this.parseExpression(), line: tok.line };
+        }
+        if (command === 'eco' || command === 'cronometro') {
+            return {
+                type: command === 'eco' ? 'Eco' : 'Cronometro',
+                enabled: this.parseOnOff(command),
+                line: tok.line
+            };
+        }
+        if (command === 'timer') {
+            if (this.matchWord('on') || this.matchWord('off')) {
+                var enabled = this.parseOnOff(command);
+                return { type: 'Timer', enabled: enabled, delay: enabled ? 500 : 0, line: tok.line };
+            }
+            var delay = this.parseSignedNumberConstant(command);
+            if (!Number.isInteger(delay)) {
+                throw new Error('Linha ' + tok.line + ': Comando timer exige uma constante inteira');
+            }
+            return { type: 'Timer', enabled: true, delay: delay, line: tok.line };
+        }
+        if (command === 'aleatorio') {
+            if (this.matchWord('off')) {
+                this.eatWord('off');
+                return { type: 'Aleatorio', enabled: false, line: tok.line };
+            }
+            if (this.matchWord('on')) this.eatWord('on');
+            var min = 0;
+            var max = 100;
+            if (!this.match(T.NEWLINE) && !this.match(T.EOF)) {
+                max = this.parseSignedNumberConstant(command);
+                if (this.match(T.COMMA)) {
+                    this.eat(T.COMMA);
+                    min = max;
+                    max = this.parseSignedNumberConstant(command);
+                }
+            }
+            return { type: 'Aleatorio', enabled: true, min: min, max: max, line: tok.line };
+        }
+        if (command === 'arquivo') {
+            var filename = this.eat(T.STRING).value;
+            return { type: 'Arquivo', filename: filename, line: tok.line };
         }
 
         this.throwUnexpected(tok);
@@ -1031,15 +1157,22 @@
 
     Parser.prototype.parseComparison = function () {
         var left = this.parseAddSub();
+        var operators = [];
+        var operands = [left];
         while (this.match(T.OPERATOR, '=') || this.match(T.OPERATOR, '<>') ||
                this.match(T.OPERATOR, '<') || this.match(T.OPERATOR, '>') ||
                this.match(T.OPERATOR, '<=') || this.match(T.OPERATOR, '>=')) {
             var op = this.current().value;
             this.pos++;
             var right = this.parseAddSub();
-            left = { type: 'BinaryOp', op: op, left: left, right: right };
+            operators.push(op);
+            operands.push(right);
         }
-        return left;
+        if (operators.length === 0) return left;
+        if (operators.length === 1) {
+            return { type: 'BinaryOp', op: operators[0], left: operands[0], right: operands[1] };
+        }
+        return { type: 'ComparisonChain', operators: operators, operands: operands, line: left.line };
     };
 
     Parser.prototype.parseAddSub = function () {
@@ -1176,11 +1309,12 @@
     };
 
     SemanticAnalyzer.prototype.isNumeric = function (type) {
-        return type === 'inteiro' || type === 'real';
+        return type === 'inteiro' || type === 'real' || type === 'numerico';
     };
 
     SemanticAnalyzer.prototype.isAssignable = function (targetType, valueType) {
         if (targetType === valueType) return true;
+        if ((targetType === 'inteiro' || targetType === 'real') && valueType === 'numerico') return true;
         return targetType === 'real' && valueType === 'inteiro';
     };
 
@@ -1321,6 +1455,24 @@
     SemanticAnalyzer.prototype.validate = function () {
         this.registerGlobals();
 
+        var directives = this.ast.directives || [];
+        var fileCount = 0;
+        for (var d = 0; d < directives.length; d++) {
+            if (directives[d].type === 'Arquivo') fileCount++;
+        }
+        if (fileCount > 1) {
+            this.error(directives[0].line, 'Somente um comando arquivo pode ser usado em cada algoritmo');
+        }
+
+        this.validateStatements(directives, {
+            scopes: [this.globals],
+            loopDepth: 0,
+            inFunction: false,
+            returnType: null,
+            inProcedure: false,
+            inPrelude: true
+        });
+
         for (var i = 0; i < this.ast.procedures.length; i++) {
             this.validateProcedure(this.ast.procedures[i]);
         }
@@ -1333,7 +1485,8 @@
             loopDepth: 0,
             inFunction: false,
             returnType: null,
-            inProcedure: false
+            inProcedure: false,
+            inPrelude: false
         });
     };
 
@@ -1346,7 +1499,8 @@
             loopDepth: 0,
             inFunction: false,
             returnType: null,
-            inProcedure: true
+            inProcedure: true,
+            inPrelude: false
         });
     };
 
@@ -1367,7 +1521,8 @@
             loopDepth: 0,
             inFunction: true,
             returnType: func.returnType,
-            inProcedure: false
+            inProcedure: false,
+            inPrelude: false
         });
     };
 
@@ -1462,6 +1617,23 @@
                 break;
             case 'Limpatela':
                 break;
+            case 'Pausa':
+            case 'Eco':
+            case 'Cronometro':
+            case 'Timer':
+            case 'Aleatorio':
+                break;
+            case 'Debug':
+                this.requireType(stmt.line, this.inferExpr(stmt.condition, ctx), 'logico', 'condicao do debug');
+                break;
+            case 'Arquivo':
+                if (!ctx.inPrelude) {
+                    this.error(stmt.line, 'Comando arquivo deve aparecer na secao de declaracoes, antes de inicio');
+                }
+                if (!stmt.filename) {
+                    this.error(stmt.line, 'Comando arquivo exige um nome de arquivo');
+                }
+                break;
             default:
                 this.error(stmt.line || 1, 'Comando desconhecido "' + stmt.type + '"');
         }
@@ -1473,7 +1645,8 @@
             loopDepth: ctx.loopDepth,
             inFunction: ctx.inFunction,
             returnType: ctx.returnType,
-            inProcedure: ctx.inProcedure
+            inProcedure: ctx.inProcedure,
+            inPrelude: ctx.inPrelude
         };
         for (var key in changes) {
             if (changes.hasOwnProperty(key)) next[key] = changes[key];
@@ -1529,6 +1702,7 @@
 
     SemanticAnalyzer.prototype.numericResultType = function (left, right, op) {
         if (op === '/') return 'real';
+        if (left === 'numerico' || right === 'numerico') return 'numerico';
         if (left === 'real' || right === 'real') return 'real';
         return 'inteiro';
     };
@@ -1544,7 +1718,7 @@
                 return 'logico';
             case 'VarRef': {
                 var symbol = this.lookup(ctx.scopes, node.name);
-                if (!symbol && node.name === 'pi') return 'real';
+                if (!symbol && (node.name === 'pi' || node.name === 'rand')) return 'real';
                 if (!symbol) this.error(node.line, 'Variavel "' + node.name + '" nao declarada');
                 if (symbol.kind === 'func') {
                     if (symbol.params.length === 0) return symbol.returnType;
@@ -1564,6 +1738,17 @@
             }
             case 'BinaryOp':
                 return this.inferBinary(node, ctx);
+            case 'ComparisonChain': {
+                var previous = this.inferExpr(node.operands[0], ctx);
+                for (var c = 0; c < node.operators.length; c++) {
+                    var next = this.inferExpr(node.operands[c + 1], ctx);
+                    if (!this.areComparable(previous, next)) {
+                        this.error(node.line || 1, 'Nao e possivel comparar ' + previous + ' com ' + next);
+                    }
+                    previous = next;
+                }
+                return 'logico';
+            }
             case 'UnaryOp': {
                 var operand = this.inferExpr(node.operand, ctx);
                 if (node.op === '-') {
@@ -1590,7 +1775,10 @@
 
         switch (node.op) {
             case '+':
-                if (left === 'caractere' || right === 'caractere') return 'caractere';
+                if (left === 'caractere' || right === 'caractere') {
+                    if (left === 'caractere' && right === 'caractere') return 'caractere';
+                    this.error(line, 'Concatenacao com + exige dois valores do tipo caractere');
+                }
                 this.requireNumeric(line, left, 'lado esquerdo de +');
                 this.requireNumeric(line, right, 'lado direito de +');
                 return this.numericResultType(left, right, node.op);
@@ -1716,7 +1904,7 @@
             asc: { args: ['caractere'], returns: 'inteiro' },
             carac: { args: ['inteiro'], returns: 'caractere' },
             pos: { args: ['caractere', 'caractere'], returns: 'inteiro' },
-            caracpnum: { args: ['caractere'], returns: 'real' },
+            caracpnum: { args: ['caractere'], returns: 'numerico' },
             numpcarac: { args: ['numerico'], returns: 'caractere' }
         };
         var sig = signatures[name];
@@ -1741,9 +1929,47 @@
     // ==========================================
     // EXECUTOR
     // ==========================================
-    function Executor(terminal, variablesPanel) {
+    function createDefaultDataFileAdapter() {
+        if (window.visualgDesktopDataFiles &&
+            typeof window.visualgDesktopDataFiles.read === 'function' &&
+            typeof window.visualgDesktopDataFiles.append === 'function') {
+            return window.visualgDesktopDataFiles;
+        }
+
+        return {
+            read: async function (filename) {
+                var raw = localStorage.getItem('visualg-data-file:' + encodeURIComponent(filename));
+                if (raw === null) return null;
+                try {
+                    var values = JSON.parse(raw);
+                    return Array.isArray(values) ? values.map(String) : [];
+                } catch (error) {
+                    throw new Error('Arquivo de dados "' + filename + '" esta corrompido');
+                }
+            },
+            append: async function (filename, value) {
+                var key = 'visualg-data-file:' + encodeURIComponent(filename);
+                var raw = localStorage.getItem(key);
+                var values = raw === null ? [] : JSON.parse(raw);
+                if (!Array.isArray(values)) values = [];
+                values.push(String(value));
+                localStorage.setItem(key, JSON.stringify(values));
+            }
+        };
+    }
+
+    function Executor(terminal, variablesPanel, options) {
+        options = options || {};
         this.terminal = terminal;
         this.variablesPanel = variablesPanel;
+        this.random = options.random || Math.random;
+        this.now = options.now || function () {
+            return typeof performance !== 'undefined' && performance.now ? performance.now() : Date.now();
+        };
+        this.sleep = options.sleep || function (milliseconds) {
+            return new Promise(function (resolve) { setTimeout(resolve, milliseconds); });
+        };
+        this.dataFiles = options.dataFiles || createDefaultDataFileAdapter();
         this.variables = new Map();
         this.procedures = {};
         this.functions = {};
@@ -1753,6 +1979,11 @@
         this.callStack = [];
         this.breakFlag = false;
         this.returnValue = undefined;
+        this.timerDelay = 0;
+        this.echoInput = true;
+        this.randomInput = { enabled: false, min: 0, max: 100 };
+        this.dataFile = null;
+        this.chronometerStartedAt = null;
     }
 
         Executor.prototype.run = async function (ast) {
@@ -1763,6 +1994,11 @@
             this.variables = new Map();
             this.procedures = {};
             this.functions = {};
+            this.timerDelay = 0;
+            this.echoInput = true;
+            this.randomInput = { enabled: false, min: 0, max: 100 };
+            this.dataFile = null;
+            this.chronometerStartedAt = null;
 
             try {
                 new SemanticAnalyzer(ast).validate();
@@ -1778,6 +2014,9 @@
                 // Declare global variables
                 this.declareVariables(ast.variables, this.variables);
                 this.updateVarsPanel();
+
+                // Directives declared before "inicio" run after variables exist.
+                await this.execBlock(ast.directives || []);
 
                 // Execute body
                 await this.execBlock(ast.body);
@@ -1867,13 +2106,20 @@
         for (var i = 0; i < stmts.length; i++) {
             this.checkRunning();
             if (this.breakFlag) return;
-            if (this.returnValue !== undefined) return;
             await this.execStatement(stmts[i]);
         }
     };
 
     Executor.prototype.execStatement = async function (stmt) {
         this.checkRunning();
+
+        if (this.timerDelay > 0) {
+            if (stmt.line !== undefined && window.VisualGEditor) {
+                window.VisualGEditor.highlightLine(stmt.line - 1);
+            }
+            await this.sleep(this.timerDelay);
+            this.checkRunning();
+        }
 
         if (this.stepMode && stmt.line !== undefined) {
             if (window.VisualGEditor) {
@@ -1882,22 +2128,37 @@
             await this.waitForStep();
         }
 
-        switch (stmt.type) {
-            case 'Escreva': await this.execEscreva(stmt); await this.yield(); break;
-            case 'Leia': await this.execLeia(stmt); break;
-            case 'Assignment': await this.execAssignment(stmt); break;
-            case 'Se': await this.execSe(stmt); break;
-            case 'Enquanto': await this.execEnquanto(stmt); break;
-            case 'Para': await this.execPara(stmt); break;
-            case 'Repita': await this.execRepita(stmt); break;
-            case 'Escolha': await this.execEscolha(stmt); break;
-            case 'Call': await this.execCall(stmt); break;
-            case 'Retorne': await this.execRetorne(stmt); break;
-            case 'Interrompa': this.breakFlag = true; break;
-            case 'Limpatela': this.terminal.clear(); break;
-        }
+        try {
+            switch (stmt.type) {
+                case 'Escreva': await this.execEscreva(stmt); await this.yield(); break;
+                case 'Leia': await this.execLeia(stmt); break;
+                case 'Assignment': await this.execAssignment(stmt); break;
+                case 'Se': await this.execSe(stmt); break;
+                case 'Enquanto': await this.execEnquanto(stmt); break;
+                case 'Para': await this.execPara(stmt); break;
+                case 'Repita': await this.execRepita(stmt); break;
+                case 'Escolha': await this.execEscolha(stmt); break;
+                case 'Call': await this.execCall(stmt); break;
+                case 'Retorne': await this.execRetorne(stmt); break;
+                case 'Interrompa': this.breakFlag = true; break;
+                case 'Limpatela': this.terminal.clear(); break;
+                case 'Pausa': await this.execPausa(); break;
+                case 'Debug': await this.execDebug(stmt); break;
+                case 'Eco': this.echoInput = stmt.enabled; break;
+                case 'Cronometro': this.execCronometro(stmt); break;
+                case 'Timer': this.execTimer(stmt); break;
+                case 'Aleatorio': this.execAleatorio(stmt); break;
+                case 'Arquivo': await this.execArquivo(stmt); break;
+                default: throw new Error('Comando desconhecido: ' + stmt.type);
+            }
 
-        this.updateVarsPanel();
+            this.updateVarsPanel();
+        } catch (error) {
+            if (error.message === '__STOP__' || /^Linha\s+\d+/i.test(error.message)) {
+                throw error;
+            }
+            throw new Error('Linha ' + (stmt.line || 1) + ': ' + error.message);
+        }
     };
 
     Executor.prototype.execEscreva = async function (stmt) {
@@ -1939,12 +2200,130 @@
             var target = stmt.targets[i];
             var varInfo = this.getVar(target.name);
             var prompt = this.formatLeiaPrompt(target, varInfo);
-            var input = await this.terminal.readInput(prompt);
+            var completed = false;
 
-            var value = this.convertInput(input, varInfo.type);
-            await this.setVarValueAsync(target.name, target.indices, value);
+            while (!completed) {
+                this.checkRunning();
+                var source = 'terminal';
+                var input;
+
+                if (this.randomInput.enabled && this.getBaseType(varInfo.type) !== 'logico') {
+                    source = 'aleatorio';
+                    input = this.generateRandomInput(varInfo.type);
+                } else if (this.dataFile && this.dataFile.index < this.dataFile.values.length) {
+                    source = 'arquivo';
+                    input = this.dataFile.values[this.dataFile.index++];
+                } else {
+                    input = await this.terminal.readInput(prompt);
+                }
+
+                if (this.echoInput) {
+                    this.terminal.writeln(String(input));
+                }
+
+                try {
+                    var value = this.convertInput(input, varInfo.type);
+                    if (source === 'terminal' && this.dataFile && this.dataFile.recording) {
+                        await this.dataFiles.append(this.dataFile.filename, input);
+                    }
+                    await this.setVarValueAsync(target.name, target.indices, value);
+                    completed = true;
+                } catch (error) {
+                    if (source !== 'terminal') {
+                        throw new Error((source === 'arquivo' ? 'Valor invalido no arquivo de dados: ' : 'Valor aleatorio invalido: ') + error.message);
+                    }
+                    this.terminal.writeln(error.message + '. Tente novamente.');
+                }
+            }
         }
     };
+
+        Executor.prototype.getBaseType = function (type) {
+            return type.indexOf('vetor de ') === 0 ? type.substring(9) : type;
+        };
+
+        Executor.prototype.generateRandomInput = function (type) {
+            var baseType = this.getBaseType(type);
+            var min = Math.min(this.randomInput.min, this.randomInput.max);
+            var max = Math.max(this.randomInput.min, this.randomInput.max);
+
+            if (baseType === 'caractere') {
+                var text = '';
+                for (var i = 0; i < 5; i++) {
+                    text += String.fromCharCode(65 + Math.floor(this.random() * 26));
+                }
+                return text;
+            }
+            if (baseType === 'inteiro') {
+                var low = Math.ceil(min);
+                var high = Math.floor(max);
+                if (high < low) throw new Error('Faixa do aleatorio nao contem valores inteiros');
+                return String(low + Math.floor(this.random() * (high - low + 1)));
+            }
+            if (baseType === 'real') {
+                return String(min + this.random() * (max - min));
+            }
+            throw new Error('Comando aleatorio nao gera valores logicos');
+        };
+
+        Executor.prototype.execPausa = async function () {
+            if (this.terminal.waitForContinue) {
+                await this.terminal.waitForContinue('Execucao pausada. Pressione Enter para continuar.');
+            } else {
+                await this.terminal.readInput('');
+            }
+            this.checkRunning();
+        };
+
+        Executor.prototype.execDebug = async function (stmt) {
+            if (await this.evalExpr(stmt.condition)) {
+                await this.execPausa();
+            }
+        };
+
+        Executor.prototype.execTimer = function (stmt) {
+            if (!stmt.enabled) {
+                this.timerDelay = 0;
+                return;
+            }
+            this.timerDelay = Math.max(0, Math.min(10000, stmt.delay));
+        };
+
+        Executor.prototype.execAleatorio = function (stmt) {
+            if (!stmt.enabled) {
+                this.randomInput.enabled = false;
+                return;
+            }
+            this.randomInput = {
+                enabled: true,
+                min: stmt.min,
+                max: stmt.max
+            };
+        };
+
+        Executor.prototype.execCronometro = function (stmt) {
+            if (stmt.enabled) {
+                this.chronometerStartedAt = this.now();
+                this.terminal.writeln('Cronômetro iniciado.');
+                return;
+            }
+            if (this.chronometerStartedAt === null) return;
+            var elapsed = Math.max(0, Math.round(this.now() - this.chronometerStartedAt));
+            var seconds = Math.floor(elapsed / 1000);
+            var milliseconds = elapsed % 1000;
+            this.terminal.writeln('Cronômetro terminado. Tempo decorrido: ' + seconds + ' segundo(s) e ' + milliseconds + ' ms');
+            this.chronometerStartedAt = null;
+        };
+
+        Executor.prototype.execArquivo = async function (stmt) {
+            var values = await this.dataFiles.read(stmt.filename);
+            this.dataFile = {
+                filename: stmt.filename,
+                values: values === null ? [] : values.map(String),
+                index: 0,
+                recording: values === null
+            };
+        };
 
         Executor.prototype.formatLeiaPrompt = function (target, varInfo) {
             var baseType = varInfo.dataType || varInfo.type;
@@ -1955,14 +2334,12 @@
             if (target.indices && target.indices.length > 0) {
                 name += '[' + target.indices.map(function () { return '?'; }).join(',') + ']';
             }
-            return 'Leia ' + name + ' (' + baseType + '): ' + '\n' ;
+            // return 'Leia ' + name + ' (' + baseType + '): ' + '\n' ;
         };
 
         Executor.prototype.convertInput = function (input, type) {
             var baseType = type;
-            if (type.indexOf('vetor de ') === 0) {
-                baseType = type.substring(9);
-            }
+            baseType = this.getBaseType(type);
             var text = String(input);
             var trimmed = text.trim();
             switch (baseType) {
@@ -2118,7 +2495,6 @@
             this.breakFlag = false;
             await this.execBlock(stmt.body);
             if (this.breakFlag) { this.breakFlag = false; break; }
-            if (this.returnValue !== undefined) return;
             // Yield to avoid blocking UI
             await this.yield();
         }
@@ -2147,8 +2523,6 @@
             this.breakFlag = false;
             await this.execBlock(stmt.body);
             if (this.breakFlag) { this.breakFlag = false; break; }
-            if (this.returnValue !== undefined) return;
-
             this.setVarValue(stmt.variable, [], current + step);
             await this.yield();
         }
@@ -2163,8 +2537,6 @@
             this.breakFlag = false;
             await this.execBlock(stmt.body);
             if (this.breakFlag) { this.breakFlag = false; break; }
-            if (this.returnValue !== undefined) return;
-
             if (stmt.condition) {
                 var cond = await this.evalExpr(stmt.condition);
                 if (cond) break;
@@ -2311,6 +2683,7 @@
                     return this.getVar(node.name).value;
                 } catch (error) {
                     if (node.name === 'pi') return Math.PI;
+                    if (node.name === 'rand') return this.random();
                     if (this.functions[node.name]) {
                         if (this.functions[node.name].params.length === 0) {
                             return await this.callFunction(node.name, []);
@@ -2335,8 +2708,20 @@
 
             case 'BinaryOp': {
                 var left = await this.evalExpr(node.left);
+                if (node.op === 'e' && !left) return false;
+                if (node.op === 'ou' && left) return true;
                 var right = await this.evalExpr(node.right);
                 return this.evalBinaryOp(node.op, left, right);
+            }
+
+            case 'ComparisonChain': {
+                var previous = await this.evalExpr(node.operands[0]);
+                for (var c = 0; c < node.operators.length; c++) {
+                    var next = await this.evalExpr(node.operands[c + 1]);
+                    if (!this.evalBinaryOp(node.operators[c], previous, next)) return false;
+                    previous = next;
+                }
+                return true;
             }
 
             case 'UnaryOp': {
@@ -2385,10 +2770,19 @@
                     return left.toLowerCase() !== right.toLowerCase();
                 }
                 return left !== right;
-            case '<': return left < right;
-            case '>': return left > right;
-            case '<=': return left <= right;
-            case '>=': return left >= right;
+            case '<':
+            case '>':
+            case '<=':
+            case '>=': {
+                if (typeof left === 'string' && typeof right === 'string') {
+                    left = left.toLowerCase();
+                    right = right.toLowerCase();
+                }
+                if (op === '<') return left < right;
+                if (op === '>') return left > right;
+                if (op === '<=') return left <= right;
+                return left >= right;
+            }
             case 'e': return left && right;
             case 'ou': return left || right;
             case 'xou': return (left && !right) || (!left && right);
@@ -2457,11 +2851,11 @@
                 case 'radpgrau': return (await this.evalExpr(argNodes[0])) * 180 / Math.PI;
                 case 'int': return Math.trunc(await this.evalExpr(argNodes[0]));
                 case 'pi': return Math.PI;
-                case 'rand': return Math.random();
+                case 'rand': return this.random();
                 case 'randi': {
                     var limit = await this.evalExpr(argNodes[0]);
                     if (!Number.isInteger(limit) || limit <= 0) throw new Error('randi exige limite inteiro maior que zero');
-                    return Math.floor(Math.random() * limit);
+                    return Math.floor(this.random() * limit);
                 }
                 case 'compr': return String(await this.evalExpr(argNodes[0])).length;
                 case 'copia': {

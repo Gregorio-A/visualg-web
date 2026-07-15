@@ -132,7 +132,7 @@ fimalgoritmo
   {
     name: 'entrada leia',
     inputs: ['Ana', '17'],
-    expected: 'Leia nome (caractere): Leia idade (inteiro): Nome: Ana\nIdade: 17',
+    expected: 'Ana\n17\nNome: Ana\nIdade: 17',
     source: `
 algoritmo "entrada"
 var
@@ -236,7 +236,7 @@ fimalgoritmo
   {
     name: 'comandos de entrada e saida sem parenteses',
     inputs: ['21'],
-    expected: 'Valor: 21\nLeia idade (inteiro): Idade: 21',
+    expected: 'Valor: 21\n21\nIdade: 21',
     source: `
 algoritmo "sem_parenteses"
 var
