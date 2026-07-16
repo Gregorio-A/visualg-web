@@ -2,6 +2,8 @@
 
 IDE web para escrever, executar e depurar algoritmos em pseudocodigo no estilo do VisuAlg 3.0.7, com editor de codigo, console integrado, painel de variaveis e execucao passo a passo.
 
+![Printscreen da interface](img/printscreen.png "Printscreen Programa")
+
 Esta versão `0.14.0` dá continuidade à linha iniciada na `0.10` a partir de um
 fork do projeto **VisuAlg.dev**. A nova identidade
 evita confundir este produto com a aplicação de origem e preserva seus créditos
@@ -174,16 +176,16 @@ Durante o desenvolvimento, a janela Electron abre o DevTools automaticamente. Em
 
 O modal de documentacao carrega arquivos Markdown via `docs.js`, nos caminhos:
 
-- `docs/introducao.md`
-- `docs/compatibilidade.md`
-- `docs/operadores.md`
-- `docs/entrada-saida.md`
-- `docs/condicionais.md`
-- `docs/repeticao.md`
-- `docs/subprogramas.md`
-- `docs/funcoes.md`
-- `docs/comandos.md`
-- `docs/historia.md`
+- `docs/introducao.md` [Link](src/docs/introducao.md)
+- `docs/compatibilidade.md` [Link](src/docs/compatibilidade.md)
+- `docs/operadores.md` [Link](src/docs/operadores.md)
+- `docs/entrada-saida.md` [Link](src/docs/entrada-saida.md)
+- `docs/condicionais.md` [Link](src/docs/condicionais.md)
+- `docs/repeticao.md` [Link](src/docs/repeticao.md)
+- `docs/subprogramas.md` [Link](src/docs/subprogramas.md)
+- `docs/funcoes.md` [Link](src/docs/funcoes.md)
+- `docs/comandos.md` [Link](src/docs/comandos.md)
+- `docs/historia.md` [Link](src/docs/historia.md)
 
 Esses arquivos estao em `src/docs/` e sao copiados para a build web por `vite.renderer.config.mjs`, mantendo a mesma documentacao na versao web e no empacotamento Electron.
 
