@@ -1,6 +1,11 @@
-# VisuAlg.dev
+# VisuAlg Web
 
 IDE web para escrever, executar e depurar algoritmos em pseudocodigo no estilo do VisuAlg 3.0.7, com editor de codigo, console integrado, painel de variaveis e execucao passo a passo.
+
+Esta versão `0.2.0` é um fork do projeto **VisuAlg.dev**. A nova identidade
+evita confundir este produto com a aplicação de origem e preserva seus créditos
+no [histórico do projeto](src/docs/historia.md). Contato público:
+`contato@conradosal.com`.
 
 O projeto possui duas saidas a partir da mesma fonte:
 
@@ -191,13 +196,41 @@ Esses arquivos estao em `src/docs/` e sao copiados para a build web por `vite.re
 - `electron/preload.js`: preload do Electron.
 - `forge.config.js`: empacotamento com Electron Forge.
 
+## Suporte, bugs e governança
+
+- Bugs reproduzíveis: [abra um relato pelo formulário do projeto](https://github.com/Gregorio-A/visualg-web/issues/new?template=bug_report.yml).
+- Vulnerabilidades: use somente o canal privado descrito em [`SECURITY.md`](SECURITY.md).
+- Navegadores e sistemas suportados: [`SUPPORT.md`](SUPPORT.md).
+- Compromissos de linguagem e mudanças incompatíveis: [`COMPATIBILITY.md`](COMPATIBILITY.md).
+- Tratamento e armazenamento de dados: [`PRIVACY.md`](PRIVACY.md).
+- Processo de publicação: [`RELEASE_CHECKLIST.md`](RELEASE_CHECKLIST.md).
+
+Ao relatar um bug, informe versão, ambiente, passos, resultado esperado e um
+programa `.alg` mínimo. Não publique segredos ou dados pessoais.
+
 ## Desenvolvimento
 
-Nao ha lint real configurado no momento. O script atual apenas imprime uma mensagem:
+Para executar o lint de corretude sobre a interface, Electron e testes:
 
 ```bash
 npm run lint
 ```
+
+Para instalar os navegadores e executar os testes reais da interface:
+
+```bash
+npx playwright install chromium firefox chrome msedge
+npm run test:e2e
+```
+
+Para uma verificação local mais rápida somente no Chromium:
+
+```bash
+npm run test:e2e:chromium
+```
+
+O workflow [`.github/workflows/ci.yml`](.github/workflows/ci.yml) executa lint,
+regressões e build, além da suíte E2E no Chrome, Edge e Firefox.
 
 Para validar programas padrao sem abrir a interface, use a ferramenta interna:
 
@@ -217,18 +250,19 @@ Para executar os cinco programas publicados na galeria de exemplos:
 npm run test:examples
 ```
 
+Para validar o isolamento Electron, os canais IPC e a proteção do comando
+`arquivo` contra travessia e links simbólicos:
+
+```bash
+npm run test:security
+```
+
 Ela executa a lista em `scripts/standard-programs.js` e compara a saida do interpretador com os resultados esperados. O `npm run test:p0` tambem roda essa validacao junto da regressao principal.
 
-Antes de publicar uma nova versao, recomenda-se:
-
-1. Testar a execucao de programas simples e programas com `leia`.
-2. Testar `F9`, `F8`, `Parar`, abertura e salvamento de `.alg`.
-3. Fechar e reabrir a versao web/Electron para confirmar a restauracao das abas.
-4. Rodar `npm run test:p0`.
-5. Verificar a versao web em navegador.
-6. Verificar a versao Electron com `npm start`.
-7. Confirmar que qualquer mudanca visual ou de interpretador foi feita em `src/`.
+Antes de publicar uma nova versão, siga o
+[`RELEASE_CHECKLIST.md`](RELEASE_CHECKLIST.md). O `npm run test:p0` inclui as
+regressões da linguagem, workspace, exemplos e segurança Electron.
 
 ## Licenca
 
-O pacote declara licenca MIT em `package.json`.
+Distribuído sob a licença MIT. Consulte [`LICENSE`](LICENSE).
