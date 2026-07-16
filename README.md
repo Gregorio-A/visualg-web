@@ -1,6 +1,9 @@
 # VisuAlg Web
 
 IDE web para escrever, executar e depurar algoritmos em pseudocodigo no estilo do VisuAlg 3.0.7, com editor de codigo, console integrado, painel de variaveis e execucao passo a passo.
+Teste o app: [gregorioalves.com/visualg](https://gregorioalves.com/visualg/)
+
+Este projeto não é o VisuAlg original nem o VisuAlg.dev. O VisuAlg Web é um fork do VisuAlg.dev, do qual herdou a base do editor e do interpretador antes de receber identidade, políticas, testes e alterações próprias. Ambos fazem parte de uma história maior, construída por professores, desenvolvedores, materiais didáticos e iniciativas anteriores.
 
 ![Printscreen da interface](img/printscreen.png "Printscreen Programa")
 
