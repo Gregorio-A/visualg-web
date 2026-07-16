@@ -11,8 +11,8 @@ async function run() {
   );
 
   const examples = window.VisuAlgExamples;
-  if (!Array.isArray(examples) || examples.length !== 5) {
-    throw new Error(`A galeria deve ter exatamente 5 exemplos; encontrou ${examples && examples.length}`);
+  if (!Array.isArray(examples) || examples.length < 35) {
+    throw new Error(`A galeria deve ter pelo menos 35 exemplos; encontrou ${examples && examples.length}`);
   }
 
   const ids = new Set();
@@ -22,7 +22,7 @@ async function run() {
     }
     ids.add(example.id);
 
-    const output = (await executeSource(example.source)).trimEnd();
+    const output = (await executeSource(example.source, example.inputs)).trimEnd();
     if (output !== example.expected) {
       throw new Error(
         `${example.title}: saída esperada "${example.expected}", recebeu "${output}"`,
@@ -30,7 +30,7 @@ async function run() {
     }
   }
 
-  console.log('OK: 5 exemplos da galeria executados com a saída esperada.');
+  console.log(`OK: ${examples.length} exemplos da galeria executados com a saída esperada.`);
 }
 
 run().catch((error) => {
