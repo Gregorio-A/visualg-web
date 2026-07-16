@@ -42,7 +42,7 @@ O contrato detalhado está em `src/docs/compatibilidade.md`. Diferenças futuras
 
   ## Bloqueadores para a versão 1.0
 
-  1. Testes reais da interface — concluído para a v0.2
+  1. Testes reais da interface — concluído para a v0.14
 
   A suíte Playwright cobre abertura/execução de exemplos, F8, F9, Parar, `leia`
   inline e modal, abertura/salvamento `.alg`, abas e recuperação, visibilidade
@@ -120,10 +120,12 @@ O contrato detalhado está em `src/docs/compatibilidade.md`. Diferenças futuras
   vulnerabilidades. Permanecem para o lançamento apenas as notas específicas
   da versão 1.0.
 
-  8. Limpeza da identidade de versão — concluída para a v0.2
+  8. Limpeza da identidade de versão — concluída para a v0.14
 
-  O fork agora se chama VisuAlg Web, usa a versão `0.2.0`, possui changelog
-  próprio e mantém VisuAlg.dev apenas como atribuição do projeto-base. Para a
+  O fork agora se chama VisuAlg Web, usa a versão `0.14.0` e preserva a
+  continuidade da manutenção iniciada na `0.10`. As versões `0.9` e anteriores
+  formam o legado do projeto-base. O projeto possui changelog próprio e mantém
+  VisuAlg.dev como atribuição de origem. Para a
   futura 1.0 ainda será necessário remover a etiqueta “Beta” e automatizar a
   versão da interface a partir de uma única fonte.
 

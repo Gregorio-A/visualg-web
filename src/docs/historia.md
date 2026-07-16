@@ -66,6 +66,10 @@ O projeto tem, portanto, várias camadas:
 3. o VisuAlg.dev, que forneceu a base direta deste código;
 4. o VisuAlg Web, fork que passa a ter versão e identidade independentes.
 
+A numeração foi preservada: a manutenção do VisuAlg Web começa na versão
+`0.10` e segue por `0.11`, `0.12`, `0.13` e `0.14`. As versões `0.9` e
+anteriores são registradas como legado anterior a esta etapa de manutenção.
+
 O trabalho do fork envolve melhorar o interpretador, alinhar a documentação
 com o que realmente executa, ajustar a interface, preservar compatibilidade
 quando possível e registrar melhor as decisões para os próximos mantenedores.

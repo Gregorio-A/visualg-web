@@ -4,7 +4,9 @@ Data da análise: 2026-06-30
 
 Este arquivo lista os problemas atuais do projeto em ordem de prioridade. A prioridade considera impacto para alunos/professores, risco de executar algoritmos incorretamente, facilidade de diagnosticar erros e maturidade para publicação.
 
-Status após o fork VisuAlg Web v0.2: os itens P0 abaixo foram corrigidos. Eles
+Status do VisuAlg Web v0.14: os itens P0 abaixo foram corrigidos. A manutenção
+atual dá continuidade às versões `0.10` em diante; `0.9` e anteriores compõem o
+legado do projeto-base. Os itens
 permanecem documentados como histórico e referência para regressões futuras.
 
 ## Evidências verificadas

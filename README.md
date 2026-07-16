@@ -2,7 +2,8 @@
 
 IDE web para escrever, executar e depurar algoritmos em pseudocodigo no estilo do VisuAlg 3.0.7, com editor de codigo, console integrado, painel de variaveis e execucao passo a passo.
 
-Esta versão `0.2.0` é um fork do projeto **VisuAlg.dev**. A nova identidade
+Esta versão `0.14.0` dá continuidade à linha iniciada na `0.10` a partir de um
+fork do projeto **VisuAlg.dev**. A nova identidade
 evita confundir este produto com a aplicação de origem e preserva seus créditos
 no [histórico do projeto](src/docs/historia.md).
 
