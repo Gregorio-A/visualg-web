@@ -16,12 +16,15 @@ function createClassList() {
 
 function createElement() {
   return {
+    attributes: {},
     children: [],
     classList: createClassList(),
     dataset: {},
     textContent: '',
     innerHTML: '',
     addEventListener() {},
+    setAttribute(name, value) { this.attributes[name] = String(value); },
+    getAttribute(name) { return this.attributes[name] || null; },
     appendChild(child) { this.children.push(child); return child; },
     closest() { return null; },
     querySelectorAll() { return []; },

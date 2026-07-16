@@ -40,7 +40,7 @@ O código do algoritmo é idêntico nas duas plataformas. A única diferença in
 | Plataforma | Armazenamento de `arquivo` |
 | --- | --- |
 | Navegador | Área persistente e isolada do site (`localStorage`), identificada pelo nome informado. |
-| Electron | Arquivo de texto físico dentro da pasta de dados do VisuAlg.dev, com subpastas relativas permitidas. |
+| Electron | Arquivo de texto físico dentro da pasta de dados do VisuAlg Web, com subpastas relativas permitidas. |
 
 O navegador não pode acessar silenciosamente um caminho arbitrário do computador por causa do modelo de segurança da Web. O adaptador mantém a semântica de leitura, gravação e reutilização sem criar duas versões do interpretador.
 

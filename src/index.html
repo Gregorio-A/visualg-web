@@ -4,6 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; base-uri 'none'; object-src 'none'; frame-ancestors 'none'; form-action 'none'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; font-src 'self'; connect-src 'self'">
     <title>VisuAlg Web - Editor Online de Portugol e Pseudocódigo</title>
 
     <!-- SEO -->
@@ -11,14 +12,12 @@
     <meta name="keywords" content="visualg, visualg 3.0.7, visualg 3, visualg 3.0, visualg online, visualg 3.0.7 online, ide visualg, pseudocódigo, algoritmos, lógica de programação, programação em português, aprender programar, ensino de programação">
     <meta name="author" content="Murilo Gregorio Alves">
     <meta name="robots" content="index, follow">
-    <link rel="canonical" href="https://gregorioalves.com/visualg/">
     <link rel="icon" type="image/png" href="images/logo/logo-visualg@0.25x.png">
 
     <!-- Open Graph -->
     <meta property="og:title" content="VisuAlg Web - IDE Online para VisuAlg">
     <meta property="og:description" content="Escreva, execute e depure algoritmos em pseudocódigo português diretamente no navegador. Gratuito e sem instalação.">
     <meta property="og:image" content="images/logo/logo-visualg.png">
-    <meta property="og:url" content="https://visualg.dev">
     <meta property="og:type" content="website">
     <meta property="og:locale" content="pt_BR">
 
@@ -145,8 +144,8 @@
     <footer class="footer">
         <span class="footer-item" id="compiler-status"><i data-lucide="circle-check" class="footer-icon"></i> Pronto</span>
         <span class="footer-item"><i data-lucide="cpu" class="footer-icon"></i> VisuAlg 3.0.7</span>
-        <span class="footer-item footer-version" id="footer-version"><i data-lucide="code" class="footer-icon"></i> Visualg.dev v0.13</span>
-        <button class="footer-item footer-credits" id="footer-credits" type="button" title="Quem desenvolveu o VisuAlg.dev?"><i data-lucide="user" class="footer-icon"></i> Quem desenvolveu?</button>
+        <span class="footer-item footer-version" id="footer-version"><i data-lucide="code" class="footer-icon"></i> VisuAlg Web v0.2</span>
+        <button class="footer-item footer-credits" id="footer-credits" type="button" title="Conheça a origem e os créditos do VisuAlg Web"><i data-lucide="user" class="footer-icon"></i> Origem e créditos</button>
         <span class="footer-spacer"></span>
         <button class="footer-item autosave-status" id="autosave-status" type="button" title="Ver opções de recuperação"><i data-lucide="cloud-check" class="footer-icon"></i><span>Salvo localmente</span></button>
         <div class="section-visibility">
@@ -170,7 +169,13 @@
             </div>
             <div class="modal-body changelog-body">
                 <div class="changelog-section">
-                    <span class="changelog-version">v0.13</span>
+                    <span class="changelog-version">v0.2</span>
+                    <ul class="changelog-list">
+                        <li>Nova identidade VisuAlg Web, separada do projeto VisuAlg.dev que serviu como base para este fork.</li>
+                        <li>Acessibilidade completa por teclado, foco seguro em modais e novos temas.</li>
+                        <li>Políticas públicas, segurança Electron reforçada, testes E2E e integração contínua.</li>
+                    </ul>
+                    <span class="changelog-version">Histórico do projeto-base — v0.13</span>
                     <ul class="changelog-list">
                         <li>Onboarding de primeira visita e galeria com cinco exemplos que podem ser abertos ou executados.</li>
                         <li>Erros clicáveis levam o cursor diretamente para a linha e coluna do problema.</li>
@@ -262,8 +267,14 @@
                         <select id="setting-theme">
                             <option value="dark">Tokyo Night Storm (Escuro)</option>
                             <option value="dark-monokai">Monokai (escuro)</option>
+                            <option value="dracula">Dracula (escuro)</option>
+                            <option value="nord">Nord (escuro)</option>
+                            <option value="solarized-dark">Solarized (escuro)</option>
                             <option value="light">Tokyo Night Day (Claro)</option>
+                            <option value="github-light">GitHub (claro)</option>
+                            <option value="solarized-light">Solarized (claro)</option>
                             <option value="high-contrast">Tokyo Night Day (Alto Contraste)</option>
+                            <option value="high-contrast-dark">Alto contraste (escuro)</option>
                         </select>
                     </div>
                     <div class="setting-group">
@@ -528,124 +539,10 @@
     <script src="js/tabs.js"></script>
     <script src="js/docs.js"></script>
     <script src="js/main.js"></script>
+    <script src="js/accessibility.js"></script>
 
-    <script>lucide.createIcons();</script>
-
-    <!-- Resize script -->
-    <script>
-        (function () {
-            const editorPanel = document.getElementById('editorPanel');
-            const resizableBlock = editorPanel.closest('.editor-column');
-            const resizeHandleVertical = document.getElementById('resizeHandleVertical');
-            const resizeHandleHorizontal = document.getElementById('resizeHandleHorizontal');
-            const variablesPanel = document.getElementById('variablesPanel');
-            const terminalPanel = document.getElementById('terminalPanel');
-            const gridContainer = document.querySelector('.grid-container');
-
-            let isResizing = false;
-            let resizeType = null;
-            let startPos = 0;
-            let startSize = 0;
-
-            function getEventPos(e, axis) {
-                if (e.touches && e.touches.length > 0) {
-                    return axis === 'x' ? e.touches[0].clientX : e.touches[0].clientY;
-                }
-                return axis === 'x' ? e.clientX : e.clientY;
-            }
-
-            function isMobile() {
-                return window.innerWidth <= 768;
-            }
-
-            function startResizeVertical(e) {
-                e.preventDefault();
-                isResizing = true;
-                resizeType = 'vertical';
-                startPos = getEventPos(e, 'y');
-                startSize = resizableBlock.offsetHeight;
-                document.body.classList.add('resizing');
-                resizeHandleVertical.classList.add('dragging');
-            }
-
-            function startResizeHorizontal(e) {
-                e.preventDefault();
-                isResizing = true;
-                resizeType = 'horizontal';
-                startPos = getEventPos(e, 'x');
-                startSize = resizableBlock.offsetWidth;
-                document.body.classList.add('resizing');
-                resizeHandleHorizontal.classList.add('dragging');
-            }
-
-            function resize(e) {
-                if (!isResizing) return;
-                e.preventDefault();
-
-                if (resizeType === 'vertical') {
-                    const currentY = getEventPos(e, 'y');
-                    const deltaY = currentY - startPos;
-                    const minHeight = 150;
-                    const maxHeight = window.innerHeight * 0.8;
-                    let newHeight = startSize + deltaY;
-                    newHeight = Math.max(minHeight, Math.min(maxHeight, newHeight));
-                    resizableBlock.style.height = newHeight + 'px';
-                } else if (resizeType === 'horizontal') {
-                    const currentX = getEventPos(e, 'x');
-                    const deltaX = currentX - startPos;
-                    const containerWidth = gridContainer.offsetWidth;
-                    const minWidth = 200;
-                    const maxWidth = containerWidth - 180;
-                    let newWidth = startSize + deltaX;
-                    newWidth = Math.max(minWidth, Math.min(maxWidth, newWidth));
-                    resizableBlock.style.width = newWidth + 'px';
-                    const sidebarWidth = containerWidth - newWidth - 15;
-                    variablesPanel.style.width = sidebarWidth + 'px';
-                    terminalPanel.style.width = sidebarWidth + 'px';
-                }
-
-                // Refresh CodeMirror on resize
-                if (window.VisualGEditor && window.VisualGEditor.instance) {
-                    window.VisualGEditor.instance.refresh();
-                }
-            }
-
-            function stopResize() {
-                if (!isResizing) return;
-                isResizing = false;
-                document.body.classList.remove('resizing');
-                resizeHandleVertical.classList.remove('dragging');
-                resizeHandleHorizontal.classList.remove('dragging');
-                resizeType = null;
-            }
-
-            resizeHandleVertical.addEventListener('mousedown', startResizeVertical);
-            resizeHandleVertical.addEventListener('touchstart', startResizeVertical, { passive: false });
-            resizeHandleHorizontal.addEventListener('mousedown', startResizeHorizontal);
-
-            document.addEventListener('mousemove', resize);
-            document.addEventListener('mouseup', stopResize);
-            document.addEventListener('touchmove', resize, { passive: false });
-            document.addEventListener('touchend', stopResize);
-            document.addEventListener('touchcancel', stopResize);
-
-            window.addEventListener('resize', function () {
-                if (isMobile()) {
-                    resizableBlock.style.width = '';
-                    variablesPanel.style.width = '';
-                    terminalPanel.style.width = '';
-                } else {
-                    resizableBlock.style.height = '';
-                }
-                if (window.VisualGEditor && window.VisualGEditor.instance) {
-                    window.VisualGEditor.instance.refresh();
-                }
-            });
-        })();
-    </script>
-<!--
-<script defer src="https://static.cloudflareinsights.com/beacon.min.js/v833ccba57c9e4d2798f2e76cebdd09a11778172276447" integrity="sha512-57MDmcccJXYtNnH+ZiBwzC4jb2rvgVCEokYN+L/nLlmO8rfYT/gIpW2A569iJ/3b+0UEasghjuZH/ma3wIs/EQ==" data-cf-beacon='{"version":"2024.11.0","token":"73161100079646d5b261b4be60443ea4","r":1,"server_timing":{"name":{"cfCacheStatus":true,"cfEdge":true,"cfExtPri":true,"cfL4":true,"cfOrigin":true,"cfSpeedBrain":true},"location_startswith":null}}' crossorigin="anonymous"></script>
--->
+    <!-- Resize and icon initialization -->
+    <script src="js/layout.js"></script>
 </body>
 
 </html>

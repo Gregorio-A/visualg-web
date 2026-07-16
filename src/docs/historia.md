@@ -1,8 +1,12 @@
 # História, autoria e continuidade
 
-O VisuAlg.dev existe para manter vivo, no navegador e no aplicativo desktop, um jeito de estudar algoritmos que muita gente no Brasil aprendeu pelo VisuAlg clássico: pseudocódigo em português, execução imediata e foco na lógica antes da sintaxe de uma linguagem profissional.
+O VisuAlg Web existe para manter vivo, no navegador e no aplicativo desktop, um jeito de estudar algoritmos que muita gente no Brasil aprendeu pelo VisuAlg clássico: pseudocódigo em português, execução imediata e foco na lógica antes da sintaxe de uma linguagem profissional.
 
-Este projeto não é o VisuAlg original. Ele também não deve ser apresentado como obra de uma única pessoa. O VisuAlg.dev é uma continuação: passou por professores, desenvolvedores, materiais didáticos e iniciativas anteriores que precisam aparecer antes de qualquer crédito atual.
+Este projeto não é o VisuAlg original nem o VisuAlg.dev. O VisuAlg Web é um
+fork do VisuAlg.dev, do qual herdou a base do editor e do interpretador antes
+de receber identidade, políticas, testes e alterações próprias. Ambos fazem
+parte de uma história maior, construída por professores, desenvolvedores,
+materiais didáticos e iniciativas anteriores.
 
 ## Nomes em destaque antes de mim
 
@@ -38,7 +42,7 @@ O mérito do VisuAlg clássico está em ter criado um ambiente direto para apren
 
 ## Por que este site está sendo feito
 
-O objetivo do VisuAlg.dev é continuar essa experiência em um ambiente atual:
+O objetivo do VisuAlg Web é continuar essa experiência em um ambiente atual:
 
 - rodar no navegador, sem exigir instalação do VisuAlg desktop;
 - funcionar também como aplicativo desktop com Electron;
@@ -49,23 +53,32 @@ O objetivo do VisuAlg.dev é continuar essa experiência em um ambiente atual:
 
 Por isso a documentação deste modal descreve o comportamento do interpretador web. Quando um comando existe no VisuAlg desktop, mas ainda não existe aqui, ele deve ser explicado como não suportado em vez de parecer que funciona.
 
-## Onde Murilo Gregorio Alves entra
+## O projeto-base VisuAlg.dev
 
-Eu, Murilo Gregorio Alves, não sou o criador do VisuAlg e não estou reivindicando a autoria do projeto original. Meu papel aqui é de continuidade e manutenção.
+O código que deu origem a este fork foi publicado como VisuAlg.dev e registra
+Murilo Gregorio Alves em sua etapa de continuidade e manutenção. Esse trabalho
+permanece creditado: mudar o nome do fork não apaga a autoria ou o histórico do
+projeto-base.
 
-Este repositório já existia antes da minha entrada e já trazia trabalho de outras pessoas. A interface anterior, por exemplo, citava Prof. Conrado Salomé Ribeiro no rodapé. Em vez de apagar esse passado, a intenção desta página é deixar claro que o projeto tem camadas:
+O projeto tem, portanto, várias camadas:
 
 1. o VisuAlg clássico, ligado à história do Portugol e aos autores do ambiente original;
 2. as iniciativas web e materiais online que vieram depois;
-3. este repositório, que estou organizando, corrigindo e expandindo como continuação prática desse caminho.
+3. o VisuAlg.dev, que forneceu a base direta deste código;
+4. o VisuAlg Web, fork que passa a ter versão e identidade independentes.
 
-O trabalho atual envolve melhorar o interpretador, alinhar a documentação com o que realmente executa, ajustar a interface, preservar compatibilidade quando possível e registrar melhor as decisões para os próximos mantenedores.
+O trabalho do fork envolve melhorar o interpretador, alinhar a documentação
+com o que realmente executa, ajustar a interface, preservar compatibilidade
+quando possível e registrar melhor as decisões para os próximos mantenedores.
+O contato público desta etapa é `contato@conradosal.com`.
 
 ## Créditos e responsabilidade
 
 Quando a interface diz "Quem desenvolveu?", a resposta correta não é um único nome.
 
-O VisuAlg clássico tem autores e mantenedores próprios. O VisuAlg.dev tem uma história de contribuições anteriores. Murilo Gregorio Alves está na etapa atual dessa cadeia, continuando o projeto e deixando explícito que ele se apoia no trabalho de muitos desenvolvedores, professores e materiais que vieram antes.
+O VisuAlg clássico tem autores e mantenedores próprios. O VisuAlg.dev tem uma
+história de contribuições anteriores e é a origem direta deste fork. O VisuAlg
+Web é a etapa atual, sem reivindicar a autoria dos trabalhos nos quais se apoia.
 
 ## Fontes públicas consultadas
 

@@ -1,0 +1,57 @@
+name: Relatar um bug
+description: Informe um comportamento reproduzível no VisuAlg Web
+title: "[Bug]: "
+labels: [bug]
+body:
+  - type: markdown
+    attributes:
+      value: Antes de enviar, remova dados pessoais. Vulnerabilidades devem seguir o SECURITY.md, não este formulário.
+  - type: input
+    id: version
+    attributes:
+      label: Versão do VisuAlg Web
+      placeholder: v0.2.0
+    validations:
+      required: true
+  - type: dropdown
+    id: edition
+    attributes:
+      label: Edição
+      options: [Web, Electron]
+    validations:
+      required: true
+  - type: input
+    id: environment
+    attributes:
+      label: Sistema e navegador
+      description: Inclua versões e arquitetura quando souber.
+    validations:
+      required: true
+  - type: textarea
+    id: steps
+    attributes:
+      label: Passos para reproduzir
+      description: Inclua o menor programa .alg que demonstra o problema.
+    validations:
+      required: true
+  - type: textarea
+    id: expected
+    attributes:
+      label: Resultado esperado
+    validations:
+      required: true
+  - type: textarea
+    id: actual
+    attributes:
+      label: Resultado obtido
+    validations:
+      required: true
+  - type: checkboxes
+    id: checks
+    attributes:
+      label: Verificações
+      options:
+        - label: Procurei issues existentes para evitar duplicata.
+          required: true
+        - label: Removi senhas e dados pessoais do relato.
+          required: true

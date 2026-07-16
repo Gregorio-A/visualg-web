@@ -55,7 +55,7 @@ Deve aparecer antes da seção `var`/`inicio` e só pode ser usado uma vez. Se o
 arquivo "turma/dados.txt"
 ```
 
-No navegador, o nome identifica dados persistentes isolados pelo site. No aplicativo Electron, corresponde a um arquivo de texto físico na pasta de dados do VisuAlg.dev.
+No navegador, o nome identifica dados persistentes isolados pelo site. No aplicativo Electron, corresponde a um arquivo de texto físico na pasta de dados do VisuAlg Web.
 
 ## timer
 

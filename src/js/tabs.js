@@ -269,12 +269,17 @@
 
     function renderTabs() {
         tabListEl.innerHTML = '';
+        tabListEl.setAttribute('role', 'tablist');
+        tabListEl.setAttribute('aria-label', 'Arquivos abertos');
         for (var i = 0; i < tabs.length; i++) {
             var tab = tabs[i];
             var el = document.createElement('div');
             el.className = 'tab-item' + (tab.id === activeTabId ? ' active' : '');
             el.dataset.tabId = tab.id;
             el.draggable = true;
+            el.setAttribute('role', 'tab');
+            el.setAttribute('aria-selected', tab.id === activeTabId ? 'true' : 'false');
+            el.tabIndex = tab.id === activeTabId ? 0 : -1;
 
             var nameSpan = document.createElement('span');
             nameSpan.className = 'tab-name';
@@ -284,6 +289,7 @@
             var closeBtn = document.createElement('button');
             closeBtn.className = 'tab-close';
             closeBtn.title = 'Fechar tab';
+            closeBtn.setAttribute('aria-label', 'Fechar ' + tab.name);
             closeBtn.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>';
             closeBtn.dataset.tabId = tab.id;
             el.appendChild(closeBtn);
@@ -368,6 +374,26 @@
                 dragTabId = tabItem.dataset.tabId;
                 tabItem.classList.add('dragging');
                 e.dataTransfer.effectAllowed = 'move';
+            });
+
+            tabListEl.addEventListener('keydown', function (e) {
+                var tabItem = e.target.closest('.tab-item');
+                if (!tabItem || e.target.closest('.tab-close')) return;
+                var items = Array.prototype.slice.call(tabListEl.querySelectorAll('.tab-item'));
+                var index = items.indexOf(tabItem);
+                if (e.key === 'Enter' || e.key === ' ') {
+                    e.preventDefault();
+                    self.switchTab(tabItem.dataset.tabId);
+                } else if (e.key === 'Delete') {
+                    e.preventDefault();
+                    self.closeTab(tabItem.dataset.tabId);
+                } else if (e.key === 'ArrowLeft' || e.key === 'ArrowRight' || e.key === 'Home' || e.key === 'End') {
+                    e.preventDefault();
+                    if (e.key === 'Home') index = 0;
+                    else if (e.key === 'End') index = items.length - 1;
+                    else index = (index + (e.key === 'ArrowRight' ? 1 : -1) + items.length) % items.length;
+                    items[index].focus();
+                }
             });
 
             tabListEl.addEventListener('dragover', function (e) {
