@@ -1,0 +1,81 @@
+const sharedGlobals = {
+  Blob: 'readonly', CodeMirror: 'readonly', DocsPanel: 'readonly', FileReader: 'readonly',
+  MutationObserver: 'readonly', URL: 'readonly',
+  alert: 'readonly', clearTimeout: 'readonly', console: 'readonly', document: 'readonly',
+  fetch: 'readonly', getComputedStyle: 'readonly', localStorage: 'readonly', lucide: 'readonly', marked: 'readonly',
+  navigator: 'readonly', performance: 'readonly', setTimeout: 'readonly', window: 'readonly',
+};
+
+const correctnessRules = {
+  'for-direction': 'error',
+  'getter-return': 'error',
+  'no-async-promise-executor': 'error',
+  'no-case-declarations': 'error',
+  'no-class-assign': 'error',
+  'no-compare-neg-zero': 'error',
+  'no-cond-assign': ['error', 'except-parens'],
+  'no-const-assign': 'error',
+  'no-constant-binary-expression': 'error',
+  'no-control-regex': 'error',
+  'no-debugger': 'error',
+  'no-dupe-args': 'error',
+  'no-dupe-class-members': 'error',
+  'no-dupe-else-if': 'error',
+  'no-dupe-keys': 'error',
+  'no-duplicate-case': 'error',
+  'no-ex-assign': 'error',
+  'no-extra-boolean-cast': 'error',
+  'no-func-assign': 'error',
+  'no-import-assign': 'error',
+  'no-invalid-regexp': 'error',
+  'no-irregular-whitespace': 'error',
+  'no-loss-of-precision': 'error',
+  'no-obj-calls': 'error',
+  'no-self-assign': 'error',
+  'no-setter-return': 'error',
+  'no-shadow-restricted-names': 'error',
+  'no-sparse-arrays': 'error',
+  'no-this-before-super': 'error',
+  'no-undef': 'error',
+  'no-unexpected-multiline': 'error',
+  'no-unreachable': 'error',
+  'no-unsafe-finally': 'error',
+  'no-unsafe-negation': 'error',
+  'no-unused-labels': 'error',
+  'no-with': 'error',
+  'require-yield': 'error',
+  'use-isnan': 'error',
+  'valid-typeof': 'error',
+};
+
+export default [
+  {
+    ignores: ['.vite/**', 'dist/**', 'node_modules/**', 'out/**', 'src/jsdelivr/**', 'src/unpk/**', 'src/vendor/**'],
+  },
+  {
+    files: ['src/js/**/*.js'],
+    languageOptions: { ecmaVersion: 'latest', sourceType: 'script', globals: sharedGlobals },
+    rules: correctnessRules,
+  },
+  {
+    files: ['electron/main.js', 'electron/**/*.mjs'],
+    languageOptions: {
+      ecmaVersion: 'latest', sourceType: 'module',
+      globals: { __dirname: 'readonly', MAIN_WINDOW_VITE_DEV_SERVER_URL: 'readonly', MAIN_WINDOW_VITE_NAME: 'readonly', process: 'readonly', URL: 'readonly' },
+    },
+    rules: correctnessRules,
+  },
+  {
+    files: ['electron/preload.js'],
+    languageOptions: { ecmaVersion: 'latest', sourceType: 'commonjs', globals: { require: 'readonly' } },
+    rules: correctnessRules,
+  },
+  {
+    files: ['e2e/**/*.js', 'playwright.config.mjs'],
+    languageOptions: {
+      ecmaVersion: 'latest', sourceType: 'module',
+      globals: { Buffer: 'readonly', localStorage: 'readonly', process: 'readonly', window: 'readonly' },
+    },
+    rules: correctnessRules,
+  },
+];
