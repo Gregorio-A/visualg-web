@@ -4,13 +4,15 @@ Data da análise: 2026-06-30
 
 Este arquivo lista os problemas atuais do projeto em ordem de prioridade. A prioridade considera impacto para alunos/professores, risco de executar algoritmos incorretamente, facilidade de diagnosticar erros e maturidade para publicação.
 
-Status após v0.11: os itens P0 abaixo foram corrigidos no lançamento v0.11. Eles permanecem documentados como histórico do que foi tratado e como referência para regressões futuras.
+Status após o fork VisuAlg Web v0.2: os itens P0 abaixo foram corrigidos. Eles
+permanecem documentados como histórico e referência para regressões futuras.
 
 ## Evidências verificadas
 
 - `npm run build:web` passa, mas com avisos de scripts não empacotados e fontes ausentes.
-- `npm run lint` não valida nada; apenas imprime `No linting configured`.
-- 29 exemplos completos dentro de `src/docs/*.md` passam pelo lexer, parser e executor.
+- `npm run lint` executa ESLint sobre interface, Electron e testes.
+- 31 exemplos completos dentro de `src/docs/*.md` passam pelo lexer, parser e executor.
+- A interface possui testes E2E em Chrome, Edge e Firefox executados pelo CI.
 - Capturas desktop e mobile renderizam, mas a versão mobile mostra rolagem horizontal no editor e controles comprimidos.
 - Antes da v0.11, testes manuais de comportamento confirmaram que tokens inválidos, comandos não suportados e comandos fora de contexto podiam passar sem erro. Esses casos agora devem gerar erro explícito.
 
@@ -598,7 +600,8 @@ A fazer:
 
 ### 39. Changelog e versão estão hardcoded
 
-O footer mostra `Visualg.dev v0.10`, enquanto `package.json` está em `1.0.0`.
+O footer e o `package.json` estão alinhados na versão VisuAlg Web 0.2, mas a
+versão ainda aparece em mais de uma fonte.
 
 A fazer:
 
