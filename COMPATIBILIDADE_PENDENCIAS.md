@@ -26,7 +26,8 @@ O navegador não tem autorização para abrir silenciosamente um caminho arbitr�
 
 - regressões semânticas e todos os exemplos completos da documentação;
 - programas padrão de entrada, saída, controle de fluxo, vetores e subprogramas;
-- matriz legada com todas as funções internas e comandos especiais.
+- matriz legada com todas as funções internas e comandos especiais;
+- isolamento Electron, CSP, IPC e proteção de caminhos/links simbólicos.
 
 O contrato detalhado está em `src/docs/compatibilidade.md`. Diferenças futuras encontradas contra o binário 3.0.7 devem entrar primeiro como teste de reprodução e só então como alteração do runtime.
 
@@ -41,23 +42,13 @@ O contrato detalhado está em `src/docs/compatibilidade.md`. Diferenças futuras
 
   ## Bloqueadores para a versão 1.0
 
-  1. Testes reais da interface
+  1. Testes reais da interface — concluído para a v0.2
 
-  Os testes atuais validam muito bem o interpretador, exemplos e recuperação, mas não simulam um usuário no navegador.
-
-  Faltam testes E2E para:
-
-  - Abrir e executar exemplos.
-  - F8, F9 e Parar.
-  - leia inline e modal.
-  - Abrir e salvar .alg.
-  - Restaurar abas e recuperação.
-  - Mostrar/esconder painéis.
-  - Navegação de erros.
-  - Onboarding.
-  - Chrome, Edge e Firefox.
-
-  Também falta CI para executar esses testes automaticamente. Atualmente não há workflow em .github, e o lint ainda é apenas uma mensagem em package.json:16.
+  A suíte Playwright cobre abertura/execução de exemplos, F8, F9, Parar, `leia`
+  inline e modal, abertura/salvamento `.alg`, abas e recuperação, visibilidade
+  dos painéis, navegação de erros e onboarding. O workflow
+  `.github/workflows/ci.yml` executa os testes no Chrome, Edge e Firefox. O
+  comando `npm run lint` agora executa ESLint de verdade.
 
   2. Garantia contra perda de código
 
@@ -70,18 +61,13 @@ O contrato detalhado está em `src/docs/compatibilidade.md`. Diferenças futuras
   - Migração versionada do formato do workspace.
   - Teste de fechamento inesperado do navegador/aplicativo.
 
-  3. Segurança da versão Electron
+  3. Segurança da versão Electron — concluído
 
-  Os fuses do Electron estão bem configurados, mas ainda faltam:
-
-  - Política CSP.
-  - contextIsolation, nodeIntegration e sandbox declarados explicitamente.
-  - Bloqueio de navegação para sites externos.
-  - Bloqueio de novas janelas não autorizadas.
-  - Revisão dos canais IPC.
-  - Teste contra caminhos e links simbólicos no comando arquivo.
-
-  A configuração atual está em electron/main.js:44.
+  A camada Electron agora possui CSP, isolamento e sandbox explícitos, bloqueio
+  de navegação/pop-ups/permissões, inventário mínimo de IPC e validação do
+  comando `arquivo` contra travessia e links simbólicos. A configuração está em
+  `electron/main.js`, a camada de arquivos em `electron/data-files.mjs` e a
+  regressão em `scripts/electron-security-check.mjs`.
 
   4. Distribuição desktop real
 
@@ -126,28 +112,20 @@ O contrato detalhado está em `src/docs/compatibilidade.md`. Diferenças futuras
   - Registro e correção dos problemas encontrados.
   - Nenhum erro crítico durante pelo menos duas semanas de uso.
 
-  7. Documentação e governança
+  7. Documentação e governança — base concluída
 
-  Faltam elementos básicos de um produto público:
+  A raiz agora inclui `LICENSE`, `SECURITY.md`, `SUPPORT.md`,
+  `COMPATIBILITY.md`, `PRIVACY.md` e `RELEASE_CHECKLIST.md`. O GitHub possui
+  formulário estruturado para bugs e canal privado indicado para
+  vulnerabilidades. Permanecem para o lançamento apenas as notas específicas
+  da versão 1.0.
 
-  - Arquivo LICENSE na raiz — o package.json declara MIT, mas o arquivo não existe.
-  - SECURITY.md.
-  - Canal claro para relatar bugs.
-  - Navegadores e sistemas oficialmente suportados.
-  - Política de compatibilidade.
-  - Política de privacidade, mesmo que seja para declarar que não há coleta.
-  - Checklist de release.
-  - Notas da versão 1.0.
+  8. Limpeza da identidade de versão — concluída para a v0.2
 
-  8. Limpeza da identidade de versão
-
-  No lançamento será necessário:
-
-  - Alterar 0.13.0 para 1.0.0.
-  - Remover a etiqueta “Beta”.
-  - Criar changelog específico da v1.0.
-  - Evitar versões duplicadas entre package.json, rodapé e changelog.
-  - Gerar a versão da interface a partir de uma única fonte.
+  O fork agora se chama VisuAlg Web, usa a versão `0.2.0`, possui changelog
+  próprio e mantém VisuAlg.dev apenas como atribuição do projeto-base. Para a
+  futura 1.0 ainda será necessário remover a etiqueta “Beta” e automatizar a
+  versão da interface a partir de uma única fonte.
 
   ## Corte recomendado
 
