@@ -18,7 +18,7 @@ Não abra uma issue pública para uma vulnerabilidade ainda não corrigida.
 Use, de preferência, o recurso **Report a vulnerability** na aba Security do
 [repositório](https://github.com/Gregorio-A/visualg-web/security/advisories/new).
 Se esse recurso não estiver disponível, envie o relato para
-`contato@conradosal.com` com o assunto `[SECURITY] VisuAlg Web`.
+`murilogregorioalves@gmail.com` com o assunto `[SECURITY] VisuAlg Web`.
 
 Inclua a versão, plataforma, impacto, passos mínimos para reprodução e, se
 possível, uma prova de conceito sem dados pessoais. Não envie segredos reais.

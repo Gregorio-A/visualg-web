@@ -3,3 +3,6 @@ contact_links:
   - name: Relatar vulnerabilidade em privado
     url: https://github.com/Gregorio-A/visualg-web/security/advisories/new
     about: Não publique vulnerabilidades ainda não corrigidas em uma issue.
+  - name: Contato do mantenedor
+    url: https://github.com/murilogregorioalves
+    about: Canal de contato de Murilo Gregorio Alves, responsável pelo VisuAlg Web.

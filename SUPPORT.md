@@ -31,4 +31,9 @@ Informe versão do VisuAlg Web, sistema, navegador/versão quando aplicável,
 código `.alg` mínimo, resultado obtido e resultado esperado. Use o
 [formulário de bug](https://github.com/Gregorio-A/visualg-web/issues/new?template=bug_report.yml).
 
+O contato principal do VisuAlg Web é **Murilo Gregorio Alves**
+([@murilogregorioalves](https://github.com/murilogregorioalves)). Consulte
+[`CONTACT.md`](CONTACT.md) antes de enviar informações privadas. Os professores
+citados no histórico do projeto não são responsáveis pelo suporte deste fork.
+
 Consulte também a [política de compatibilidade](COMPATIBILITY.md).

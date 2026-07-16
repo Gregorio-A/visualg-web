@@ -8,7 +8,7 @@ de receber identidade, políticas, testes e alterações próprias. Ambos fazem
 parte de uma história maior, construída por professores, desenvolvedores,
 materiais didáticos e iniciativas anteriores.
 
-## Nomes em destaque antes de mim
+## Referências históricas
 
 ### Prof. Antonio Carlos Nicolodi
 
@@ -55,10 +55,9 @@ Por isso a documentação deste modal descreve o comportamento do interpretador 
 
 ## O projeto-base VisuAlg.dev
 
-O código que deu origem a este fork foi publicado como VisuAlg.dev e registra
-Murilo Gregorio Alves em sua etapa de continuidade e manutenção. Esse trabalho
-permanece creditado: mudar o nome do fork não apaga a autoria ou o histórico do
-projeto-base.
+O código que deu origem a este fork foi publicado como VisuAlg.dev. Seus
+autores e colaboradores permanecem creditados pelo histórico do Git e pela
+licença do projeto-base: mudar o nome do fork não apaga autoria nem histórico.
 
 O projeto tem, portanto, várias camadas:
 
@@ -70,7 +69,18 @@ O projeto tem, portanto, várias camadas:
 O trabalho do fork envolve melhorar o interpretador, alinhar a documentação
 com o que realmente executa, ajustar a interface, preservar compatibilidade
 quando possível e registrar melhor as decisões para os próximos mantenedores.
-O contato público desta etapa é `contato@conradosal.com`.
+
+## Manutenção atual e contatos
+
+O VisuAlg Web é mantido por **Murilo Gregorio Alves**. Questões sobre suporte,
+bugs, contribuições, segurança, privacidade e uso deste fork devem ser dirigidas
+a ele pelos canais oficiais do repositório ou por
+`murilogregorioalves@gmail.com`.
+
+O professor Conrado Salomé Ribeiro pode ser contatado em
+`contato@conradosal.com` para assuntos ligados ao trabalho e aos materiais
+dele. Esse endereço é um crédito e contato acadêmico; não é o canal de suporte
+do VisuAlg Web.
 
 ## Créditos e responsabilidade
 
@@ -79,6 +89,8 @@ Quando a interface diz "Quem desenvolveu?", a resposta correta não é um único
 O VisuAlg clássico tem autores e mantenedores próprios. O VisuAlg.dev tem uma
 história de contribuições anteriores e é a origem direta deste fork. O VisuAlg
 Web é a etapa atual, sem reivindicar a autoria dos trabalhos nos quais se apoia.
+Os nomes históricos nesta página não indicam responsabilidade pela manutenção
+ou pelo atendimento do VisuAlg Web.
 
 ## Fontes públicas consultadas
 

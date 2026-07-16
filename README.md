@@ -4,8 +4,12 @@ IDE web para escrever, executar e depurar algoritmos em pseudocodigo no estilo d
 
 Esta versão `0.2.0` é um fork do projeto **VisuAlg.dev**. A nova identidade
 evita confundir este produto com a aplicação de origem e preserva seus créditos
-no [histórico do projeto](src/docs/historia.md). Contato público:
-`contato@conradosal.com`.
+no [histórico do projeto](src/docs/historia.md).
+
+O **VisuAlg Web é mantido por Murilo Gregorio Alves**. Dúvidas, suporte,
+propostas e assuntos sobre este fork devem ser encaminhados pelos
+[canais oficiais do projeto](CONTACT.md), não aos autores e professores citados
+como referência histórica.
 
 O projeto possui duas saidas a partir da mesma fonte:
 
@@ -198,7 +202,11 @@ Esses arquivos estao em `src/docs/` e sao copiados para a build web por `vite.re
 
 ## Suporte, bugs e governança
 
+- Contato principal e responsabilidades: [`CONTACT.md`](CONTACT.md).
 - Bugs reproduzíveis: [abra um relato pelo formulário do projeto](https://github.com/Gregorio-A/visualg-web/issues/new?template=bug_report.yml).
+- Contribuições: [`CONTRIBUTING.md`](CONTRIBUTING.md).
+- Governança e tomada de decisões: [`GOVERNANCE.md`](GOVERNANCE.md).
+- Padrões de convivência: [`CODE_OF_CONDUCT.md`](CODE_OF_CONDUCT.md).
 - Vulnerabilidades: use somente o canal privado descrito em [`SECURITY.md`](SECURITY.md).
 - Navegadores e sistemas suportados: [`SUPPORT.md`](SUPPORT.md).
 - Compromissos de linguagem e mudanças incompatíveis: [`COMPATIBILITY.md`](COMPATIBILITY.md).
@@ -231,6 +239,10 @@ npm run test:e2e:chromium
 
 O workflow [`.github/workflows/ci.yml`](.github/workflows/ci.yml) executa lint,
 regressões e build, além da suíte E2E no Chrome, Edge e Firefox.
+
+Contribuições são bem-vindas. Antes de abrir um pull request, leia o
+[`CONTRIBUTING.md`](CONTRIBUTING.md) e confirme que os testes relacionados à
+mudança passam localmente.
 
 Para validar programas padrao sem abrir a interface, use a ferramenta interna:
 

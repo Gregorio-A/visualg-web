@@ -1,0 +1,45 @@
+name: Propor uma funcionalidade
+description: Sugira uma melhoria para o VisuAlg Web
+title: "[Proposta]: "
+labels: [enhancement]
+body:
+  - type: markdown
+    attributes:
+      value: Explique o problema antes da solução e procure propostas existentes.
+  - type: textarea
+    id: problem
+    attributes:
+      label: Problema ou necessidade
+      description: Quem se beneficia e em qual situação?
+    validations:
+      required: true
+  - type: textarea
+    id: proposal
+    attributes:
+      label: Solução proposta
+      description: Descreva o comportamento esperado e possíveis alternativas.
+    validations:
+      required: true
+  - type: dropdown
+    id: area
+    attributes:
+      label: Área principal
+      options:
+        - Interpretador e compatibilidade
+        - Interface e acessibilidade
+        - Web
+        - Electron
+        - Documentação
+        - Testes e infraestrutura
+        - Outra
+    validations:
+      required: true
+  - type: checkboxes
+    id: checks
+    attributes:
+      label: Verificações
+      options:
+        - label: Procurei issues existentes para evitar duplicata.
+          required: true
+        - label: A proposta não contém dados pessoais nem informações sigilosas.
+          required: true

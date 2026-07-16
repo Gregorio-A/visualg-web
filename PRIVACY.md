@@ -38,5 +38,5 @@ dos algoritmos à rede para interpretar ou executar programas.
 ## Contato e mudanças
 
 Dúvidas de privacidade podem ser enviadas para
-`contato@conradosal.com`. Mudanças materiais nesta política serão
+`murilogregorioalves@gmail.com`. Mudanças materiais nesta política serão
 registradas no histórico do repositório e terão a data acima atualizada.

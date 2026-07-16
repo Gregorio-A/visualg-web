@@ -24,10 +24,22 @@
     "test:p0": "node scripts/regression-check.js && npm run test:standard && npm run test:compat && npm run test:examples && npm run test:workspace && npm run test:security",
     "test:ci": "npm run lint && npm run test:p0 && npm run build:web"
   },
-  "keywords": [],
+  "keywords": [
+    "visualg",
+    "portugol",
+    "pseudocodigo",
+    "algoritmos",
+    "educacao",
+    "electron"
+  ],
   "author": {
-    "name": "VisuAlg Web contributors",
-    "email": "contato@conradosal.com"
+    "name": "Murilo Gregorio Alves",
+    "email": "murilogregorioalves@gmail.com",
+    "url": "https://github.com/murilogregorioalves"
+  },
+  "engines": {
+    "node": ">=22",
+    "npm": ">=10"
   },
   "license": "MIT",
   "homepage": "https://github.com/Gregorio-A/visualg-web#readme",
