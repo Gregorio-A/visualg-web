@@ -89,5 +89,10 @@ typings/
 .vite/
 dist/
 
+# Playwright
+playwright-report/
+test-results/
+blob-report/
+
 # Electron-Forge
 out/
