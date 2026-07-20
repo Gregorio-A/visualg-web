@@ -16,11 +16,13 @@
     window.gerarTemplate = function () {
         return 'Algoritmo "MeuAlgoritmo"\n' +
             '\n' +
-            '// Disciplina: Algoritmos\n' +
-            '// Professor: Murilo Gregorio Alves\n' +
-            '// Descri\u00e7\u00e3o: Descreva o que o algoritmo faz\n' +
-            '// Autor(a): Nome do(a) aluno(a)\n' +
+            // '// Disciplina: Algoritmos\n' +
+            // '// Professor: Murilo Gregorio Alves\n' +
+            // '// Descri\u00e7\u00e3o: Descreva o que o algoritmo faz\n' +
+            '// Autor(a): \n' +
+            '// Descri\u00e7\u00e3o: \n' +
             '// Data: ' + getDataAtual() + '\n' +
+            
             '\n' +
             'Var\n' +
             '  // Se\u00e7\u00e3o de Declara\u00e7\u00f5es das vari\u00e1veis\n' +
@@ -28,7 +30,6 @@
             '\n' +
             'Inicio\n' +
             '  // Se\u00e7\u00e3o de Comandos\n' +
-            '\n' +
             '\n' +
             '\n' +
             'fimalgoritmo';
