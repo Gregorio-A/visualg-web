@@ -43,7 +43,7 @@
         <div class="header-logo">
             <img class="logo-img" style="height:40px" src="images/logo/logo-visualg@0.25x.png" alt="logo-visualg" />
             <span class="logo-text">VisuAlg</span>
-            <span class="beta-tag">Beta</span>
+            <button type="button" class="beta-tag" title="Abrir status do projeto">Beta</button>
         </div>
         <div class="header-controls">
             <div class="controls-exec">
@@ -144,7 +144,7 @@
     <footer class="footer">
         <span class="footer-item" id="compiler-status"><i data-lucide="circle-check" class="footer-icon"></i> Pronto</span>
         <span class="footer-item"><i data-lucide="cpu" class="footer-icon"></i> VisuAlg 3.0.7</span>
-        <span class="footer-item footer-version" id="footer-version"><i data-lucide="code" class="footer-icon"></i> VisuAlg Web v0.14</span>
+        <button type="button" class="footer-item footer-version" id="footer-version" title="Abrir status do projeto"><i data-lucide="code" class="footer-icon"></i> VisuAlg Web v0.14</button>
         <button class="footer-item footer-credits" id="footer-credits" type="button" title="Conheça a origem e os créditos do VisuAlg Web"><i data-lucide="user" class="footer-icon"></i> Origem e créditos</button>
         <span class="footer-spacer"></span>
         <button class="footer-item autosave-status" id="autosave-status" type="button" title="Ver opções de recuperação"><i data-lucide="cloud-check" class="footer-icon"></i><span>Salvo localmente</span></button>
@@ -159,93 +159,6 @@
             </div>
         </div>
     </footer>
-
-    <!-- Changelog Modal -->
-    <div class="modal-overlay hidden" id="changelogOverlay">
-        <div class="modal changelog-modal">
-            <div class="modal-header">
-                <span>Log de atualizações</span>
-                <button id="btn-close-changelog"><i data-lucide="x"></i></button>
-            </div>
-            <div class="modal-body changelog-body">
-                <div class="changelog-section">
-                    <span class="changelog-version">v0.14</span>
-                    <ul class="changelog-list">
-                        <li>Nova identidade VisuAlg Web, separada do projeto VisuAlg.dev que serviu como base para este fork.</li>
-                        <li>Acessibilidade completa por teclado, foco seguro em modais e novos temas.</li>
-                        <li>Políticas públicas, segurança Electron reforçada, testes E2E e integração contínua.</li>
-                    </ul>
-                    <span class="changelog-version">v0.13</span>
-                    <ul class="changelog-list">
-                        <li>Onboarding de primeira visita e galeria com cinco exemplos que podem ser abertos ou executados.</li>
-                        <li>Erros clicáveis levam o cursor diretamente para a linha e coluna do problema.</li>
-                        <li>Autosave agora mostra seu estado e permite restaurar uma cópia anterior com segurança.</li>
-                        <li>Menu Seções permite mostrar ou esconder editor, variáveis e console.</li>
-                        <li>Nova aba Compatibilidade com tabela de suportado, parcial, não suportado e extensões Web.</li>
-                        <li>`senao se` na mesma linha agora funciona como encadeamento compatível com o VisuAlg clássico.</li>
-                        <li>`escreva`, `escreval` e `leia` aceitam a forma sem parênteses.</li>
-                        <li>Funções sem parâmetros podem ser usadas sem `()`, e `pi` funciona como constante.</li>
-                        <li>Entrada por `leia` repete valores inválidos e o modal pode cancelar a execução.</li>
-                        <li>Mais programas padrão verificam compatibilidade de operadores, funções e entrada/saída.</li>
-                    </ul>
-                    <span class="changelog-version">v0.12</span>
-                    <ul class="changelog-list">
-                        <li>Persistência automática das abas e dos códigos salvos no editor local.</li>
-                        <li>Restauração da aba ativa e da ordem das abas ao reabrir o navegador ou aplicativo.</li>
-                        <li>Ferramenta interna de validação por programas padrão para conferir saídas esperadas.</li>
-                        <li>Log de atualizações em modal maior, com rolagem própria para histórico completo.</li>
-                        <li>Nova aba de história e autoria na documentação, explicando a continuidade do projeto.</li>
-                    </ul>
-                    <span class="changelog-version">v0.11</span>
-                    <ul class="changelog-list">
-                        <li>Validação semântica antes da execução: variáveis, tipos, chamadas, retornos e uso de laços</li>
-                        <li>Erros explícitos para tokens inválidos, comandos não suportados e strings/comentários sem fechamento</li>
-                        <li>Checagem de limites de vetores, divisão por zero e domínios de funções matemáticas</li>
-                        <li>Entrada com `leia` mais estrita, sem conversão silenciosa de valores inválidos</li>
-                        <li>Proteção de abas durante execução para preservar console, variáveis e destaque do editor</li>
-                    </ul>
-                    <span class="changelog-version">v0.10</span>
-                    <ul class="changelog-list">
-                        <li>Detecção de loop infinito com opção de desativar</li>
-                        <li>Atalho de teclado (Cmd+/ / Ctrl+/) para comentar e descomentar linhas</li>
-                        <li>Correção no tratamento de variáveis e operador de atribuição</li>
-                        <li>Correção de erro ao usar RaizQ com número negativo</li>
-                        <li>Correções na documentação</li>
-                    </ul>
-                    <span class="changelog-version">Legado do projeto-base — v0.9 e anteriores</span>
-                    <ul class="changelog-list">
-                        <li>Correções na criação de funções e procedimentos</li>
-                        <li>Documentação da linguagem</li>
-                        <li>Novo sistema de configurações</li>
-                        <li>Melhorias de design</li>
-                    </ul>
-                    <span class="changelog-version">v0.8</span>
-                    <ul class="changelog-list">
-                        <li class="changelog-item-old">Auto-indentação no editor</li>
-                        <li class="changelog-item-old">Tema de alto contraste</li>
-                        <li class="changelog-item-old">Controle numérico com slider para tamanho da fonte</li>
-                        <li class="changelog-item-old">Melhorias visuais e funcionais na tab bar</li>
-                    </ul>
-                    <span class="changelog-version">v0.7</span>
-                    <ul class="changelog-list">
-                        <li class="changelog-item-old">Suporte a multiplas tabs</li>
-                        <li class="changelog-item-old">Melhorias no mobile</li>
-                    </ul>
-                    <span class="changelog-version">v0.6</span>
-                    <ul class="changelog-list">
-                        <li class="changelog-item-old">Melhorias na IDE - salvamento, keywords com acentuação, indentação e UI</li>
-                    </ul>
-                </div>
-<!--                <div class="changelog-section changelog-upcoming">-->
-<!--                    <span class="changelog-version upcoming">Em desenvolvimento</span>-->
-<!--                    <ul class="changelog-list">-->
-<!--                        <li>Documentação da linguagem</li>-->
-<!--                        <li>Adição de contato com o desenvolvedor</li>-->
-<!--                    </ul>-->
-<!--                </div>-->
-            </div>
-        </div>
-    </div>
 
     <!-- Settings Modal -->
     <div class="modal-overlay hidden" id="settingsOverlay">
@@ -497,6 +410,7 @@
             </div>
             <div class="modal-tabs">
                 <button class="modal-tab active" data-tab="introducao">Introdução</button>
+                <button class="modal-tab" data-tab="status">Status</button>
                 <button class="modal-tab" data-tab="compatibilidade">Compatibilidade</button>
                 <button class="modal-tab" data-tab="operadores">Operadores</button>
                 <button class="modal-tab" data-tab="entrada-saida">E/S</button>
@@ -509,6 +423,7 @@
             </div>
             <div class="modal-body docs-body" id="docs-content">
                 <div class="modal-tab-panel active" data-tab-panel="introducao"></div>
+                <div class="modal-tab-panel" data-tab-panel="status"></div>
                 <div class="modal-tab-panel" data-tab-panel="compatibilidade"></div>
                 <div class="modal-tab-panel" data-tab-panel="operadores"></div>
                 <div class="modal-tab-panel" data-tab-panel="entrada-saida"></div>

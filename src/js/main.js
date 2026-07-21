@@ -184,25 +184,22 @@
             }
         });
 
-        // Changelog modal events
-        var changelogOverlay = document.getElementById('changelogOverlay');
+        // The version indicators open the canonical project status.
         var betaTag = document.querySelector('.beta-tag');
         var betaHoverTimer = null;
 
-        function openChangelog() {
-            changelogOverlay.classList.remove('hidden');
-            var body = changelogOverlay.querySelector('.changelog-body');
-            if (body) body.scrollTop = 0;
+        function openProjectStatus() {
+            DocsPanel.open('status');
         }
 
         betaTag.addEventListener('click', function () {
-            openChangelog();
+            openProjectStatus();
         });
 
-        // Footer version click to open changelog
+        // Footer version click opens the same source of truth.
         var footerVersion = document.getElementById('footer-version');
         footerVersion.addEventListener('click', function () {
-            openChangelog();
+            openProjectStatus();
         });
 
         var footerCredits = document.getElementById('footer-credits');
@@ -212,17 +209,11 @@
 
         betaTag.addEventListener('mouseenter', function () {
             betaHoverTimer = setTimeout(function () {
-                openChangelog();
+                openProjectStatus();
             }, 5000);
         });
         betaTag.addEventListener('mouseleave', function () {
             clearTimeout(betaHoverTimer);
-        });
-        document.getElementById('btn-close-changelog').addEventListener('click', function () {
-            changelogOverlay.classList.add('hidden');
-        });
-        changelogOverlay.addEventListener('click', function (e) {
-            if (e.target === changelogOverlay) changelogOverlay.classList.add('hidden');
         });
 
         // Settings modal events
@@ -353,7 +344,6 @@
             if (e.key === 'Escape') {
                 if (!settingsOverlay.classList.contains('hidden')) closeSettings();
                 if (!docsOverlay.classList.contains('hidden')) DocsPanel.close();
-                if (!changelogOverlay.classList.contains('hidden')) changelogOverlay.classList.add('hidden');
                 if (!closeTabOverlay.classList.contains('hidden')) tabManager.cancelClose();
                 closeProductModals();
             }

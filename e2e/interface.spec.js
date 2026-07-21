@@ -28,6 +28,17 @@ test('abre e executa um exemplo da galeria', async ({ page }) => {
   await expect(page.locator('#compiler-status')).toContainText('Execução finalizada');
 });
 
+test('expõe o status consolidado na documentação', async ({ page }) => {
+  await openApp(page);
+  await page.locator('#footer-version').click();
+  await expect(page.locator('#docsOverlay')).toBeVisible();
+  await expect(page.locator('.modal-tab[data-tab="status"]')).toHaveClass(/active/);
+  const statusPanel = page.locator('[data-tab-panel="status"]');
+  await expect(statusPanel.locator('h1')).toHaveText('Status do VisuAlg Web');
+  await expect(statusPanel).toContainText('Pendências ativas');
+  await expect(statusPanel).toContainText('Correções concluídas');
+});
+
 test('executa com F9, avança com F8 e permite parar', async ({ page }) => {
   await openApp(page);
   await setCode(page, programs.output);
