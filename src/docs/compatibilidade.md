@@ -2,7 +2,26 @@
 
 O interpretador tem como contrato a linguagem do VisuAlg 3.0.7. A mesma implementação de lexer, parser, análise semântica e execução é usada no navegador e no Electron; apenas recursos dependentes do sistema operacional usam adaptadores diferentes.
 
-## Compatível
+> Este documento descreve somente o comportamento funcional atual. Consulte a
+> aba **Status** para ver correções concluídas, pendências e itens em validação.
+
+## Como ler a matriz
+
+- Os recursos da tabela abaixo estão **suportados** e possuem cobertura na suíte
+  de regressão do projeto.
+- Uma adaptação inevitável da plataforma é descrita separadamente e não deve ser
+  confundida com uma pendência.
+- Uma extensão do Web é um recurso adicional, não uma afirmação sobre o VisuAlg
+  clássico.
+- A ausência de um recurso nesta página não garante suporte. Uma diferença deve
+  ser demonstrada com um programa mínimo antes de entrar no status como problema
+  confirmado.
+
+Nesta revisão da versão `0.14.0`, não há incompatibilidade de linguagem
+reproduzida registrada como aberta. Isso não equivale a afirmar identidade total
+em todos os casos ainda não testados.
+
+## Recursos suportados
 
 | Recurso | Situação | Observação |
 | --- | --- | --- |

@@ -2,7 +2,9 @@
 
 O VisuAlg Web executa pseudocódigo em português no estilo do VisuAlg 3.0.7, direto no navegador ou no aplicativo desktop. A ideia é manter a escrita conhecida por quem aprende algoritmos, mas a documentação abaixo descreve o comportamento do interpretador web deste projeto.
 
-> Use esta documentação como referência do VisuAlg Web. A aba Compatibilidade mostra o que já segue o VisuAlg 3.0.7, o que é parcial e o que é extensão própria do Web.
+> Use esta documentação como referência do VisuAlg Web. A aba **Status** separa
+> correções, pendências e itens em validação; a aba **Compatibilidade** descreve
+> o contrato funcional da linguagem e as extensões próprias do Web.
 
 ## Estrutura mínima
 

@@ -2,8 +2,10 @@
 
 ## Preparação
 
-- [ ] Definir escopo e confirmar que issues bloqueadoras estão resolvidas.
-- [ ] Atualizar versão em `package.json`, lockfile, interface e changelog.
+- [ ] Definir escopo e revisar os bloqueadores em [`src/docs/status.md`](src/docs/status.md).
+- [ ] Confirmar que as issues da release estão resolvidas ou explicitamente adiadas no status.
+- [ ] Atualizar versão em `package.json`, lockfile e interface.
+- [ ] Mover itens concluídos para o histórico de correções em `src/docs/status.md` e registrar as limitações restantes.
 - [ ] Atualizar compatibilidade, plataformas e políticas quando necessário.
 - [ ] Revisar dependências e avisos de segurança (`npm audit`).
 - [ ] Confirmar que nenhum segredo, dado pessoal ou artefato local entrou no diff.

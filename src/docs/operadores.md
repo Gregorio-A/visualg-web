@@ -11,7 +11,7 @@ Operadores formam expressões numéricas, lógicas e de texto. O VisuAlg Web seg
 | 3 | `^` | Direita para esquerda |
 | 4 | `*`, `/`, `\`, `div`, `mod`, `%` | Esquerda para direita |
 | 5 | `+`, `-` binários | Esquerda para direita |
-| 6 | `=`, `<>`, `<`, `>`, `<=`, `>=` | Esquerda para direita |
+| 6 | `=`, `<>`, `<`, `>`, `<=`, `>=` | Pares adjacentes no encadeamento |
 | 7 | `e` | Esquerda para direita |
 | 8 | `ou`, `xou` | Esquerda para direita |
 
@@ -45,7 +45,9 @@ fimalgoritmo
 
 ## Caracteres
 
-O operador `+` concatena textos quando pelo menos um dos lados é `caractere`.
+O operador `+` concatena textos quando os dois lados são `caractere`. Misturar
+texto e número na mesma soma gera erro de tipo; use uma chamada separada de
+`escreva` ou `escreval` quando quiser exibir valores de tipos diferentes.
 
 ```visualg
 algoritmo "Texto"
@@ -70,7 +72,10 @@ fimalgoritmo
 
 Comparações de texto não diferenciam maiúsculas e minúsculas. Assim, `"ABC" = "abc"` resulta em `VERDADEIRO`.
 
-Evite comparações encadeadas como `1 < x < 10`; escreva `x > 1 e x < 10` para deixar a intenção explícita.
+Comparações encadeadas são suportadas por pares adjacentes. Por exemplo,
+`1 < x < 10` verifica `1 < x` e `x < 10`; a forma
+`x > 1 e x < 10` pode ser usada quando deixar a intenção mais explícita for
+preferível.
 
 ## Lógicos
 
@@ -81,7 +86,9 @@ Evite comparações encadeadas como `1 < x < 10`; escreva `x > 1 e x < 10` para 
 | `ou` | Verdadeiro quando pelo menos um lado é verdadeiro. |
 | `xou` | Verdadeiro quando os lados são diferentes. |
 
-Os operadores lógicos ainda avaliam os dois lados da expressão. Evite depender de curto-circuito para impedir uma divisão por zero ou uma chamada inválida.
+Os operadores `e` e `ou` usam curto-circuito: o lado direito só é avaliado
+quando ainda pode alterar o resultado. O operador `xou` avalia os dois lados,
+pois precisa comparar ambos os valores.
 
 ```visualg
 algoritmo "OperadoresLogicos"

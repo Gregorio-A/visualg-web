@@ -6,6 +6,10 @@ O VisuAlg Web busca executar programas educacionais escritos para o VisuAlg
 3.0.7 sem alterar seu significado. A tabela funcional detalhada fica em
 [`src/docs/compatibilidade.md`](src/docs/compatibilidade.md).
 
+Este arquivo define a política, não o backlog. O estado atual, as correções e as
+pendências são mantidos somente em
+[`src/docs/status.md`](src/docs/status.md).
+
 ## Classes de comportamento
 
 - **Suportado:** coberto pelo interpretador e tratado como compromisso de compatibilidade.
@@ -17,7 +21,8 @@ O VisuAlg Web busca executar programas educacionais escritos para o VisuAlg
 
 Correções que aproximam o comportamento do VisuAlg 3.0.7 podem alterar um
 resultado que dependia de um bug desta implementação. Elas devem aparecer nas
-notas de versão e ganhar teste de regressão.
+notas da versão, ser movidas para a seção de correções do status e ganhar teste
+de regressão.
 
 Mudanças incompatíveis deliberadas exigem justificativa, documentação de
 migração e incremento de versão principal. Durante a fase beta, superfícies de
@@ -32,3 +37,11 @@ intercâmbio. Arquivos `.alg` e `.txt` permanecem os formatos portáveis.
 O mesmo interpretador em `src/` é usado na Web e no Electron. Diferenças de
 persistência do comando `arquivo` são intencionais e documentadas. A matriz de
 navegadores e sistemas fica em [`SUPPORT.md`](SUPPORT.md).
+
+## Responsabilidade de cada documento
+
+- `src/docs/status.md`: o que foi corrigido e o que ainda falta.
+- `src/docs/compatibilidade.md`: o que a linguagem executa hoje.
+- `COMPATIBILITY.md`: como mudanças no contrato devem ser tratadas.
+- `SUPPORT.md`: quais navegadores e sistemas recebem suporte.
+- `RELEASE_CHECKLIST.md`: passos de validação e publicação de uma versão.
