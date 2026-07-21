@@ -22,7 +22,29 @@ O projeto possui duas saidas a partir da mesma fonte:
 - Web: roda a interface de `src/` no navegador.
 - Desktop: empacota a mesma interface com Electron Forge e Vite.
 
-O alvo pratico e manter a experiencia o mais proxima possivel do VisuAlg 3.0.7, deixando em `docs/compatibilidade.md` o que ja e suportado, o que ainda e parcial e o que e extensao do Web.
+O alvo pratico e manter a experiencia o mais proxima possivel do VisuAlg 3.0.7.
+A [matriz de compatibilidade](src/docs/compatibilidade.md) define o comportamento
+da linguagem; o [status consolidado](src/docs/status.md) mostra separadamente o
+que ja foi corrigido e o que ainda esta pendente.
+
+## Status do projeto
+
+Para evitar listas concorrentes, existe uma unica fonte para acompanhamento:
+
+- **[Status, correcoes e pendencias](src/docs/status.md):** estado atual,
+  evidencias, limitacoes conhecidas e criterios de conclusao.
+- **[Compatibilidade da linguagem](src/docs/compatibilidade.md):** sintaxe e
+  recursos que fazem parte do contrato funcional atual.
+- **[Politica de compatibilidade](COMPATIBILITY.md):** regras para corrigir ou
+  alterar esse contrato.
+- **[Checklist de release](RELEASE_CHECKLIST.md):** procedimento de publicacao;
+  caixas desmarcadas nele nao significam automaticamente bugs em aberto.
+
+No aplicativo, a mesma fonte abre pela aba **Documentacao > Status**, pelo selo
+**Beta** ou pela versao exibida no rodape.
+
+Novos relatos devem ser abertos como issues reproduziveis. Depois de confirmados,
+eles entram no documento de status com identificador e criterio de conclusao.
 
 ## Recursos
 
@@ -37,7 +59,7 @@ O alvo pratico e manter a experiencia o mais proxima possivel do VisuAlg 3.0.7, 
 - Salvamento do codigo como `.alg` ou `.txt`.
 - Persistencia automatica das abas e dos codigos no armazenamento local do navegador/Electron.
 - Indicador visivel de autosave e restauracao de uma copia de recuperacao.
-- Onboarding de primeira visita e galeria com cinco exemplos executaveis.
+- Onboarding de primeira visita e galeria de exemplos executaveis.
 - Erros clicaveis com navegacao direta para a linha e coluna no editor.
 - Menu persistente para mostrar ou esconder editor, variaveis e console.
 - Autoindentacao do codigo.
@@ -48,20 +70,13 @@ O alvo pratico e manter a experiencia o mais proxima possivel do VisuAlg 3.0.7, 
 
 ## Linguagem suportada
 
-O interpretador roda no cliente, em JavaScript, e cobre os principais elementos de pseudocodigo usados no VisuAlg:
+O interpretador roda no cliente, em JavaScript, e cobre estruturas de programa,
+tipos, vetores, entrada e saida, condicionais, repeticoes, subprogramas,
+operadores, funcoes internas e comandos especiais usados no VisuAlg.
 
-- Tipos: `inteiro`, `real`, `caractere`, `logico` e `vetor`.
-- Variaveis globais e locais.
-- Entrada e saida: `leia`, `escreva`, `escreval`.
-- Condicionais: `se`, `entao`, `senao`, `fimse`.
-- Repeticoes: `enquanto`, `para`, `repita`.
-- Escolha de casos: `escolha`, `caso`, `outrocaso`.
-- Subprogramas: `procedimento`, `funcao`, parametros por valor e por referencia com `var`.
-- Comandos: `retorne`, `interrompa`, `limpatela`, `aleatorio`, `arquivo`, `timer`, `pausa`, `debug`, `eco` e `cronometro`.
-- Operadores aritmeticos, relacionais e logicos: `+`, `-`, `*`, `/`, `\`, `div`, `mod`, `%`, `^`, `=`, `<>`, `<`, `>`, `<=`, `>=`, `e`, `ou`, `xou`, `nao`.
-- Funcoes nativas: `abs`, `quad`, `raizq`, `exp`, `log`, `logn`, `sen`, `cos`, `tan`, `cotan`, `arcsen`, `arccos`, `arctan`, `grauprad`, `radpgrau`, `int`, `pi`, `rand`, `randi`, `compr`, `copia`, `maiusc`, `minusc`, `asc`, `carac`, `pos`, `caracpnum`, `numpcarac`.
-- Compatibilidade especial: `senao se` na mesma linha, `escreva`/`escreval`/`leia` sem parênteses, `pi` como constante, chamadas de funcoes sem parametros sem `()`, curto-circuito lógico, comparações encadeadas e repetição de entrada inválida.
-- `arquivo`: persistência isolada no navegador e arquivo de texto físico na pasta de dados do aplicativo Electron.
+Para que este resumo nao volte a divergir do runtime, a lista detalhada e
+mantida somente na [matriz de compatibilidade](src/docs/compatibilidade.md). Ela
+tambem explica as adaptacoes de plataforma e as extensoes proprias do Web.
 
 Exemplo:
 
@@ -179,16 +194,17 @@ Durante o desenvolvimento, a janela Electron abre o DevTools automaticamente. Em
 
 O modal de documentacao carrega arquivos Markdown via `docs.js`, nos caminhos:
 
-- `docs/introducao.md` [Link](src/docs/introducao.md)
-- `docs/compatibilidade.md` [Link](src/docs/compatibilidade.md)
-- `docs/operadores.md` [Link](src/docs/operadores.md)
-- `docs/entrada-saida.md` [Link](src/docs/entrada-saida.md)
-- `docs/condicionais.md` [Link](src/docs/condicionais.md)
-- `docs/repeticao.md` [Link](src/docs/repeticao.md)
-- `docs/subprogramas.md` [Link](src/docs/subprogramas.md)
-- `docs/funcoes.md` [Link](src/docs/funcoes.md)
-- `docs/comandos.md` [Link](src/docs/comandos.md)
-- `docs/historia.md` [Link](src/docs/historia.md)
+- [`src/docs/introducao.md`](src/docs/introducao.md): primeiros passos e regras gerais.
+- [`src/docs/status.md`](src/docs/status.md): correcoes, pendencias e validacoes atuais.
+- [`src/docs/compatibilidade.md`](src/docs/compatibilidade.md): contrato funcional da linguagem.
+- [`src/docs/operadores.md`](src/docs/operadores.md)
+- [`src/docs/entrada-saida.md`](src/docs/entrada-saida.md)
+- [`src/docs/condicionais.md`](src/docs/condicionais.md)
+- [`src/docs/repeticao.md`](src/docs/repeticao.md)
+- [`src/docs/subprogramas.md`](src/docs/subprogramas.md)
+- [`src/docs/funcoes.md`](src/docs/funcoes.md)
+- [`src/docs/comandos.md`](src/docs/comandos.md)
+- [`src/docs/historia.md`](src/docs/historia.md): historia e autoria do projeto.
 
 Esses arquivos estao em `src/docs/` e sao copiados para a build web por `vite.renderer.config.mjs`, mantendo a mesma documentacao na versao web e no empacotamento Electron.
 
@@ -215,6 +231,7 @@ Esses arquivos estao em `src/docs/` e sao copiados para a build web por `vite.re
 - Padrões de convivência: [`CODE_OF_CONDUCT.md`](CODE_OF_CONDUCT.md).
 - Vulnerabilidades: use somente o canal privado descrito em [`SECURITY.md`](SECURITY.md).
 - Navegadores e sistemas suportados: [`SUPPORT.md`](SUPPORT.md).
+- Estado atual, correcoes e pendencias: [`src/docs/status.md`](src/docs/status.md).
 - Compromissos de linguagem e mudanças incompatíveis: [`COMPATIBILITY.md`](COMPATIBILITY.md).
 - Tratamento e armazenamento de dados: [`PRIVACY.md`](PRIVACY.md).
 - Processo de publicação: [`RELEASE_CHECKLIST.md`](RELEASE_CHECKLIST.md).
@@ -262,7 +279,7 @@ Para validar a matriz de compatibilidade legada e todas as funções internas:
 npm run test:compat
 ```
 
-Para executar os cinco programas publicados na galeria de exemplos:
+Para executar os programas publicados na galeria de exemplos:
 
 ```bash
 npm run test:examples
