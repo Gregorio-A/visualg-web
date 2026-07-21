@@ -1,4 +1,5 @@
 # Checklist de release
+Pelo amor de deus, não esqueça de fazer esse checklist antes de lançar uma nova versão:
 
 ## Preparação
 
