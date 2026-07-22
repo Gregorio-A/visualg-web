@@ -1,0 +1,38 @@
+  name: Publicar VisuAlg Web
+
+  on:
+    push:
+      branches:
+        - main
+    workflow_dispatch:
+
+  permissions:
+    contents: write
+
+  jobs:
+    publish:
+      runs-on: ubuntu-latest
+
+      steps:
+        - name: Baixar código
+          uses: actions/checkout@v4
+
+        - name: Configurar Node
+          uses: actions/setup-node@v4
+          with:
+            node-version: 22
+            cache: npm
+
+        - name: Instalar dependências
+          run: npm ci
+
+        - name: Gerar build web
+          run: npm run build:web
+
+        - name: Publicar branch da Hostinger
+          uses: peaceiris/actions-gh-pages@v4
+          with:
+            github_token: ${{ secrets.GITHUB_TOKEN }}
+            publish_branch: visualg-deploy-web
+            publish_dir: ./dist
+            force_orphan: true
