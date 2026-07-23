@@ -1,0 +1,462 @@
+<!DOCTYPE html>
+<html lang="pt-BR" data-theme="dark">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; base-uri 'none'; object-src 'none'; frame-ancestors 'none'; form-action 'none'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; font-src 'self'; connect-src 'self'">
+    <title>VisuAlg Web - Editor Online de Portugol e Pseudocódigo</title>
+
+    <!-- SEO -->
+    <meta name="description" content="Use o VisuAlg Web no navegador para escrever, executar e testar algoritmos em Portugol e pseudocódigo. Compatível com a sintaxe do VisuAlg 3.0.7, com console, variáveis, abas, documentação e execução passo a passo. Editor online compatível com a sintaxe do VisuAlg 3.0.7, criado para estudar lógica de programação, Portugol e pseudocódigo diretamente no navegador.">
+    <meta name="keywords" content="visualg, visualg 3.0.7, visualg 3, visualg 3.0, visualg online, visualg 3.0.7 online, ide visualg, pseudocódigo, algoritmos, lógica de programação, programação em português, aprender programar, ensino de programação">
+    <meta name="author" content="Murilo Gregorio Alves">
+    <meta name="robots" content="index, follow">
+    <link rel="icon" type="image/png" href="./assets/logo-visualg@0.25x-CzR5TBgn.png">
+
+    <!-- Open Graph -->
+    <meta property="og:title" content="VisuAlg Web - IDE Online para VisuAlg">
+    <meta property="og:description" content="Escreva, execute e depure algoritmos em pseudocódigo português diretamente no navegador. Gratuito e sem instalação.">
+    <meta property="og:image" content="images/logo/logo-visualg.png">
+    <meta property="og:type" content="website">
+    <meta property="og:locale" content="pt_BR">
+
+    <!-- Twitter Card -->
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="VisuAlg Web - IDE Online para VisuAlg">
+    <meta name="twitter:description" content="Escreva, execute e depure algoritmos em pseudocódigo português diretamente no navegador.">
+    <meta name="twitter:image" content="images/logo/logo-visualg.png">
+
+    <!-- CodeMirror 5 -->
+
+    <!-- Lucide Icons -->
+    <script src="unpk/lucide.min.js"></script>
+    <!-- Marked (Markdown parser) -->
+    <script src="jsdelivr/marked.min.js"></script>
+  <link rel="stylesheet" crossorigin href="./assets/index-CM3dUBH4.css">
+</head>
+
+<body>
+    <!-- Header / Toolbar -->
+    <header class="header">
+        <div class="header-logo">
+            <img class="logo-img" style="height:40px" src="data:image/png;base64,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" alt="logo-visualg" />
+            <span class="logo-text">VisuAlg</span>
+            <button type="button" class="beta-tag" title="Abrir status do projeto">Beta</button>
+        </div>
+        <div class="header-controls">
+            <div class="controls-exec">
+                <button id="btn-run" class="toolbar-btn btn-run" title="Executar (F9)"><i data-lucide="play"></i> Executar</button>
+                <button id="btn-step" class="toolbar-btn btn-step" title="Passo a passo (F8)"><i data-lucide="skip-forward"></i> Passo a passo</button>
+                <button id="btn-stop" class="toolbar-btn btn-stop" title="Parar" disabled><i data-lucide="square"></i> Parar</button>
+            </div>
+            <span class="toolbar-separator"></span>
+            <div class="controls-file">
+                <button id="btn-open" class="toolbar-btn" title="Abrir arquivo"><i data-lucide="folder-open"></i> Abrir</button>
+                <div class="btn-group" id="save-group">
+                    <button id="btn-save" class="toolbar-btn" title="Salvar arquivo"><i data-lucide="download"></i> Salvar</button>
+                    <button id="btn-save-dropdown" class="toolbar-btn btn-dropdown" title="Opções de salvamento"><i data-lucide="chevron-down"></i></button>
+                    <div class="dropdown-menu hidden" id="save-menu">
+                        <button class="dropdown-item" data-format="alg">Salvar como .alg</button>
+                        <button class="dropdown-item" data-format="txt">Salvar como .txt</button>
+                    </div>
+                </div>
+                <input type="file" id="file-input" accept=".alg,.txt" style="display: none;">
+                <button id="btn-examples" class="toolbar-btn" title="Abrir exemplos prontos"><i data-lucide="library-big"></i> Exemplos</button>
+                <button id="btn-docs" class="toolbar-btn" title="Documentação"><i data-lucide="book-open"></i> Documentação</button>
+            </div>
+        </div>
+        <div class="header-actions">
+            <button id="btn-theme" class="toolbar-btn btn-theme" title="Alternar tema"><i data-lucide="moon"></i></button>
+            <button id="btn-settings" class="toolbar-btn" title="Configurações"><i data-lucide="settings"></i></button>
+            <button id="btn-menu" class="toolbar-btn btn-menu" title="Menu"><i data-lucide="menu"></i></button>
+        </div>
+        <!-- Mobile menu -->
+        <div class="mobile-menu" id="mobile-menu">
+            <button class="mobile-menu-item" id="mobile-open"><i data-lucide="folder-open"></i> Abrir</button>
+            <button class="mobile-menu-item" id="mobile-save-alg"><i data-lucide="download"></i> Salvar como .alg</button>
+            <button class="mobile-menu-item" id="mobile-save-txt"><i data-lucide="download"></i> Salvar como .txt</button>
+            <button class="mobile-menu-item" id="mobile-examples"><i data-lucide="library-big"></i> Exemplos</button>
+            <button class="mobile-menu-item" id="mobile-docs"><i data-lucide="book-open"></i> Documentação</button>
+            <button class="mobile-menu-item" id="mobile-settings"><i data-lucide="settings"></i> Configurações</button>
+        </div>
+    </header>
+
+    <!-- Conteúdo principal -->
+    <main class="main-content">
+        <div class="grid-container">
+            <!-- Editor Column (tabs + editor) -->
+            <div class="editor-column">
+                <div class="tab-bar">
+                    <div class="tab-list" id="tab-list"></div>
+                    <button class="tab-add" id="btn-add-tab" title="Nova tab">+</button>
+                    <button class="tab-bar-indent" id="btn-tab-indent" title="Autoindentar código">
+                        <i data-lucide="indent-increase"></i>
+                        <span class="tab-bar-indent-label">Indentar</span>
+                    </button>
+                </div>
+                <div class="editor-panel" id="editorPanel">
+                    <div class="resize-handle-horizontal" id="resizeHandleHorizontal"></div>
+                    <div class="resize-handle-vertical" id="resizeHandleVertical"></div>
+                    <div id="codemirror-host"></div>
+                </div>
+            </div>
+
+            <!-- Painel de variáveis -->
+            <div class="variables-panel" id="variablesPanel">
+                <div class="panel-header">
+                    Variáveis
+                    <button id="btn-clear-vars" class="panel-header-btn" title="Limpar variáveis"><i data-lucide="brush-cleaning"></i></button>
+                </div>
+                <div class="panel-body">
+                    <table id="variables-table">
+                        <thead>
+                            <tr>
+                                <th>Nome</th>
+                                <th>Tipo</th>
+                                <th>Valor</th>
+                            </tr>
+                        </thead>
+                        <tbody></tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Terminal / Console -->
+            <div class="terminal-panel" id="terminalPanel">
+                <div class="panel-header">
+                    Console
+                    <button id="btn-clear-terminal" class="panel-header-btn" title="Limpar console"><i data-lucide="brush-cleaning"></i></button>
+                </div>
+                <div class="panel-body">
+                    <div id="terminal-output"></div>
+                </div>
+                <div id="terminal-input-area" class="hidden">
+                    <input id="terminal-input" type="text" placeholder="Digite a entrada..." />
+                    <button id="terminal-input-ok">OK</button>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Footer / Status bar -->
+    <footer class="footer">
+        <span class="footer-item" id="compiler-status"><i data-lucide="circle-check" class="footer-icon"></i> Pronto</span>
+        <span class="footer-item"><i data-lucide="cpu" class="footer-icon"></i> VisuAlg 3.0.7</span>
+        <button type="button" class="footer-item footer-version" id="footer-version" title="Abrir status do projeto"><i data-lucide="code" class="footer-icon"></i> VisuAlg Web v0.14</button>
+        <button class="footer-item footer-credits" id="footer-credits" type="button" title="Conheça a origem e os créditos do VisuAlg Web"><i data-lucide="user" class="footer-icon"></i> Origem e créditos</button>
+        <span class="footer-spacer"></span>
+        <button class="footer-item autosave-status" id="autosave-status" type="button" title="Ver opções de recuperação"><i data-lucide="cloud-check" class="footer-icon"></i><span>Salvo localmente</span></button>
+        <div class="section-visibility">
+            <button class="footer-item section-visibility-trigger" id="btn-sections" type="button" aria-expanded="false" aria-controls="sections-menu"><i data-lucide="panel-top" class="footer-icon"></i> Seções</button>
+            <div class="sections-menu hidden" id="sections-menu">
+                <span class="sections-menu-title">Mostrar na tela</span>
+                <label><input type="checkbox" data-section="editor" checked> Editor</label>
+                <label><input type="checkbox" data-section="variables" checked> Variáveis</label>
+                <label><input type="checkbox" data-section="terminal" checked> Console</label>
+                <button type="button" id="btn-show-all-sections">Mostrar todas</button>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Settings Modal -->
+    <div class="modal-overlay hidden" id="settingsOverlay">
+        <div class="modal">
+            <div class="modal-header">
+                <span>Configurações</span>
+                <button id="btn-close-settings"><i data-lucide="x"></i></button>
+            </div>
+            <div class="modal-tabs">
+                <button class="modal-tab active" data-tab="gerais">Gerais</button>
+                <button class="modal-tab" data-tab="editor">Editor</button>
+                <button class="modal-tab" data-tab="variaveis">Variáveis</button>
+                <button class="modal-tab" data-tab="console">Console</button>
+            </div>
+            <div class="modal-body">
+                <div class="modal-tab-panel active" data-tab-panel="gerais">
+                    <div class="setting-group">
+                        <label>Tema</label>
+                        <select id="setting-theme">
+                            <option value="dark">Tokyo Night Storm (Escuro)</option>
+                            <option value="dark-monokai">Monokai (escuro)</option>
+                            <option value="dracula">Dracula (escuro)</option>
+                            <option value="nord">Nord (escuro)</option>
+                            <option value="solarized-dark">Solarized (escuro)</option>
+                            <option value="light">Tokyo Night Day (Claro)</option>
+                            <option value="github-light">GitHub (claro)</option>
+                            <option value="solarized-light">Solarized (claro)</option>
+                            <option value="high-contrast">Tokyo Night Day (Alto Contraste)</option>
+                            <option value="high-contrast-dark">Alto contraste (escuro)</option>
+                        </select>
+                    </div>
+                    <div class="setting-group">
+                        <label>Tamanho da fonte (geral)</label>
+                        <div class="font-size-control">
+                            <div class="font-size-input-row">
+                                <input type="number" class="setting-font-input" id="setting-global-font-size" min="1" value="100">
+                                <select id="setting-global-font-unit" class="setting-font-unit-select">
+                                    <option value="percent">%</option>
+                                    <option value="px">px</option>
+                                </select>
+                            </div>
+                            <input type="range" class="setting-font-slider" id="setting-global-font-size-slider" min="25" max="300" value="100">
+                        </div>
+                    </div>
+                    <div class="setting-group">
+                        <label>Detecção de loop infinito</label>
+                        <select id="setting-loop-detection">
+                            <option value="on">Ativada</option>
+                            <option value="off">Desativada</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="modal-tab-panel" data-tab-panel="editor">
+                    <div class="setting-group">
+                        <label>Tamanho da fonte</label>
+                        <div class="font-size-control">
+                            <div class="font-size-input-row">
+                                <input type="number" class="setting-font-input" id="setting-font-size" min="1" value="14">
+                                <span class="font-size-unit">px</span>
+                            </div>
+                            <input type="range" class="setting-font-slider" id="setting-font-size-slider" min="1" max="50" value="14">
+                        </div>
+                    </div>
+                    <div class="setting-group">
+                        <label>Quebra de linha</label>
+                        <select id="setting-word-wrap">
+                            <option value="off">Desativada</option>
+                            <option value="on">Ativada</option>
+                        </select>
+                    </div>
+                    <div class="setting-group">
+                        <label>Tamanho do tab</label>
+                        <select id="setting-tab-size">
+                            <option value="2">2 espaços</option>
+                            <option value="4">4 espaços</option>
+                        </select>
+                    </div>
+                    <div class="setting-group">
+                        <label>Guias de indentação</label>
+                        <select id="setting-indent-guides">
+                            <option value="on">Ativadas</option>
+                            <option value="off">Desativadas</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="modal-tab-panel" data-tab-panel="variaveis">
+                    <div class="setting-group">
+                        <label>Tamanho da fonte</label>
+                        <div class="font-size-control">
+                            <div class="font-size-input-row">
+                                <input type="number" class="setting-font-input" id="setting-vars-font-size" min="1" value="12">
+                                <span class="font-size-unit">px</span>
+                            </div>
+                            <input type="range" class="setting-font-slider" id="setting-vars-font-size-slider" min="1" max="50" value="12">
+                        </div>
+                    </div>
+                    <div class="setting-group">
+                        <label>Colunas visíveis</label>
+                        <div class="setting-checkboxes">
+                            <label class="setting-checkbox">
+                                <input type="checkbox" id="setting-vars-col-nome" checked> Nome
+                            </label>
+                            <label class="setting-checkbox">
+                                <input type="checkbox" id="setting-vars-col-tipo" checked> Tipo
+                            </label>
+                            <label class="setting-checkbox">
+                                <input type="checkbox" id="setting-vars-col-valor" checked> Valor
+                            </label>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-tab-panel" data-tab-panel="console">
+                    <div class="setting-group">
+                        <label>Tamanho da fonte</label>
+                        <div class="font-size-control">
+                            <div class="font-size-input-row">
+                                <input type="number" class="setting-font-input" id="setting-console-font-size" min="1" value="13">
+                                <span class="font-size-unit">px</span>
+                            </div>
+                            <input type="range" class="setting-font-slider" id="setting-console-font-size-slider" min="1" max="50" value="13">
+                        </div>
+                    </div>
+                    <div class="setting-group">
+                        <label>Entrada do console</label>
+                        <select id="setting-console-input-mode">
+                            <option value="inline">Abaixo do terminal</option>
+                            <option value="modal">Abrir modal</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- First-use Onboarding -->
+    <div class="modal-overlay hidden" id="onboardingOverlay" role="dialog" aria-modal="true" aria-labelledby="onboarding-title">
+        <div class="modal onboarding-modal">
+            <div class="modal-header">
+                <span id="onboarding-title">Comece a programar em poucos segundos</span>
+                <button id="btn-skip-onboarding" title="Pular apresentação"><i data-lucide="x"></i></button>
+            </div>
+            <div class="modal-body">
+                <p class="onboarding-intro">Escreva em português, execute no navegador e acompanhe cada variável sem instalar nada.</p>
+                <div class="onboarding-steps">
+                    <div class="onboarding-step"><span>1</span><strong>Escolha</strong><small>Abra um exemplo ou escreva seu algoritmo.</small></div>
+                    <div class="onboarding-step"><span>2</span><strong>Execute</strong><small>Use Executar (F9) ou avance com F8.</small></div>
+                    <div class="onboarding-step"><span>3</span><strong>Aprenda</strong><small>Veja saídas, variáveis e erros direto na linha.</small></div>
+                </div>
+                <p class="onboarding-save-note"><i data-lucide="cloud-check"></i> Suas abas são salvas automaticamente neste dispositivo.</p>
+                <div class="modal-footer onboarding-actions">
+                    <button class="modal-btn modal-btn-secondary" id="btn-onboarding-editor">Começar do zero</button>
+                    <button class="modal-btn modal-btn-primary" id="btn-onboarding-examples"><i data-lucide="sparkles"></i> Ver exemplos</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Executable Examples -->
+    <div class="modal-overlay hidden" id="examplesOverlay" role="dialog" aria-modal="true" aria-labelledby="examples-title">
+        <div class="modal examples-modal">
+            <div class="modal-header">
+                <span id="examples-title">Exemplos para aprender fazendo</span>
+                <button id="btn-close-examples"><i data-lucide="x"></i></button>
+            </div>
+            <div class="modal-body examples-body">
+                <p>Abra o código para explorar ou execute imediatamente em uma nova aba.</p>
+                <div class="examples-grid" id="examples-grid"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Autosave Recovery -->
+    <div class="modal-overlay hidden" id="recoveryOverlay" role="dialog" aria-modal="true" aria-labelledby="recovery-title">
+        <div class="modal recovery-modal">
+            <div class="modal-header">
+                <span id="recovery-title">Salvamento e recuperação</span>
+                <button id="btn-close-recovery"><i data-lucide="x"></i></button>
+            </div>
+            <div class="modal-body">
+                <div class="recovery-current"><i data-lucide="cloud-check"></i><div><strong id="recovery-current-status">Código salvo localmente</strong><small id="recovery-current-time"></small></div></div>
+                <div class="recovery-copy">
+                    <strong>Cópia de recuperação</strong>
+                    <p id="recovery-copy-description">Procurando uma cópia anterior...</p>
+                    <button class="modal-btn modal-btn-secondary" id="btn-restore-recovery" disabled><i data-lucide="history"></i> Restaurar cópia</button>
+                </div>
+                <p class="recovery-note">A restauração troca o conteúdo atual pela cópia anterior. O estado atual continuará disponível para desfazer a operação.</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Console Input Modal -->
+    <div class="modal-overlay hidden" id="consoleInputOverlay">
+        <div class="modal">
+            <div class="modal-header">
+                <span>Entrada de dados</span>
+            </div>
+            <div class="modal-body">
+                <div class="setting-group">
+                    <label id="console-input-modal-label">Digite a entrada:</label>
+                    <input id="console-input-modal" type="text" class="setting-font-input" style="width:100%" />
+                </div>
+                <div class="modal-footer">
+                    <button class="modal-btn modal-btn-secondary" id="console-input-modal-cancel">Cancelar</button>
+                    <button class="modal-btn modal-btn-secondary" id="console-input-modal-ok">OK</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Close Tab Confirmation Modal -->
+    <div class="modal-overlay hidden" id="closeTabOverlay">
+        <div class="modal">
+            <div class="modal-header">
+                <span>Fechar aba</span>
+                <button id="btn-cancel-close-tab"><i data-lucide="x"></i></button>
+            </div>
+            <div class="modal-body">
+                <p>O código desta aba foi modificado. Deseja realmente fechar e perder as alterações?</p>
+                <div class="modal-footer">
+                    <button class="modal-btn modal-btn-secondary" id="btn-cancel-close">Cancelar</button>
+                    <button class="modal-btn modal-btn-danger" id="btn-confirm-close">Fechar aba</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Loop Limit Modal -->
+    <div class="modal-overlay hidden" id="loopLimitOverlay">
+        <div class="modal">
+            <div class="modal-header">
+                <span>Possível loop infinito</span>
+            </div>
+            <div class="modal-body">
+                <p>O loop já executou mais de 1.000 iterações. Isso pode indicar um loop infinito. Deseja continuar a execução?</p>
+                <div class="modal-footer">
+                    <button class="modal-btn modal-btn-danger" id="btn-loop-stop">Parar</button>
+                    <button class="modal-btn modal-btn-secondary" id="btn-loop-continue">Continuar</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Docs Modal -->
+    <div class="modal-overlay hidden" id="docsOverlay">
+        <div class="modal docs-modal">
+            <div class="modal-header">
+                <span>Documentação</span>
+                <button id="btn-close-docs"><i data-lucide="x"></i></button>
+            </div>
+            <div class="modal-tabs">
+                <button class="modal-tab active" data-tab="introducao">Introdução</button>
+                <button class="modal-tab" data-tab="status">Status</button>
+                <button class="modal-tab" data-tab="compatibilidade">Compatibilidade</button>
+                <button class="modal-tab" data-tab="operadores">Operadores</button>
+                <button class="modal-tab" data-tab="entrada-saida">E/S</button>
+                <button class="modal-tab" data-tab="condicionais">Condicionais</button>
+                <button class="modal-tab" data-tab="repeticao">Repetição</button>
+                <button class="modal-tab" data-tab="subprogramas">Subprogramas</button>
+                <button class="modal-tab" data-tab="funcoes">Funções</button>
+                <button class="modal-tab" data-tab="comandos">Comandos</button>
+                <button class="modal-tab" data-tab="historia">História</button>
+            </div>
+            <div class="modal-body docs-body" id="docs-content">
+                <div class="modal-tab-panel active" data-tab-panel="introducao"></div>
+                <div class="modal-tab-panel" data-tab-panel="status"></div>
+                <div class="modal-tab-panel" data-tab-panel="compatibilidade"></div>
+                <div class="modal-tab-panel" data-tab-panel="operadores"></div>
+                <div class="modal-tab-panel" data-tab-panel="entrada-saida"></div>
+                <div class="modal-tab-panel" data-tab-panel="condicionais"></div>
+                <div class="modal-tab-panel" data-tab-panel="repeticao"></div>
+                <div class="modal-tab-panel" data-tab-panel="subprogramas"></div>
+                <div class="modal-tab-panel" data-tab-panel="funcoes"></div>
+                <div class="modal-tab-panel" data-tab-panel="comandos"></div>
+                <div class="modal-tab-panel" data-tab-panel="historia"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- CodeMirror 5 JS -->
+    <script src="vendor/codemirror/codemirror.min.js"></script>
+    <script src="vendor/codemirror/addon/mode/simple.min.js"></script>
+    <script src="vendor/codemirror/addon/edit/matchbrackets.min.js"></script>
+    <script src="vendor/codemirror/addon/edit/closebrackets.min.js"></script>
+    <script src="vendor/codemirror/addon/selection/active-line.min.js"></script>
+    <script src="vendor/codemirror/addon/comment/comment.min.js"></script>
+
+    <!-- App JS -->
+    <script src="js/editor.js"></script>
+    <script src="js/terminal.js"></script>
+    <script src="js/variables.js"></script>
+    <script src="js/interpreter.js"></script>
+    <script src="js/examples.js"></script>
+    <script src="js/tabs.js"></script>
+    <script src="js/docs.js"></script>
+    <script src="js/main.js"></script>
+    <script src="js/accessibility.js"></script>
+
+    <!-- Resize and icon initialization -->
+    <script src="js/layout.js"></script>
+</body>
+
+</html>
