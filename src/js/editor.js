@@ -26,12 +26,12 @@
             '\n' +
             'Var\n' +
             '  // Se\u00e7\u00e3o de Declara\u00e7\u00f5es das vari\u00e1veis\n' +
-            '\n' +
-            '\n' +
+            '  \n' +
+            '  \n' +
             'Inicio\n' +
             '  // Se\u00e7\u00e3o de Comandos\n' +
-            '\n' +
-            '\n' +
+            '  \n' +
+            '  \n' +
             'fimalgoritmo';
     };
 
