@@ -6,6 +6,38 @@
 
 A interface não precisa copiar o VS Code, mas deve adotar a mesma lógica estrutural: área de arquivos, editor central, painéis de execução e uma barra de status contextual. IDEs consolidadas permitem mover, recolher, redimensionar e restaurar painéis, além de persistir o layout do workspace. ([Visual Studio Code][1])
 
+## Imagens conceituais
+
+![VisuAlg conceitual 1](<artes-conceituais/ChatGPT Image 5 de ago. de 2026, 11_03_29 (1).png>)
+*Visão de uma interface escura com explorador, editor e painel de depuração.*
+
+![VisuAlg conceitual 2](<artes-conceituais/ChatGPT Image 5 de ago. de 2026, 11_03_29 (2).png>)
+*Visão clara da interface com navegação lateral, editor central e painel de saída.*
+
+![VisuAlg conceitual 3](<artes-conceituais/ChatGPT Image 5 de ago. de 2026, 11_03_29 (3).png>)
+*Mockup de modo Aula com foco no código e console interativo para entrada de dados.*
+
+![VisuAlg conceitual 4](<artes-conceituais/ChatGPT Image 5 de ago. de 2026, 11_03_30 (4).png>)
+*Mockup de depuração mostrando linha atual, variáveis e breakpoints.*
+
+![VisuAlg conceitual 5](<artes-conceituais/ChatGPT Image 5 de ago. de 2026, 11_03_30 (5).png>)
+*Paleta de comandos central para acesso rápido a ações e alternância de layout.*
+
+![VisuAlg conceitual 6](<artes-conceituais/ChatGPT Image 5 de ago. de 2026, 11_03_30 (6).png>)
+*Exemplo de navegação de arquivos com menu contextual em abas.*
+
+![VisuAlg conceitual 7](<artes-conceituais/ChatGPT Image 5 de ago. de 2026, 11_03_30 (7).png>)
+*Interface multilíngue com projeto Python, terminal e painel de saída.*
+
+![VisuAlg conceitual 8](<artes-conceituais/ChatGPT Image 5 de ago. de 2026, 11_03_31 (8).png>)
+*Tela inicial do workspace, incluindo projetos recentes e templates.*
+
+![VisuAlg conceitual 9](<artes-conceituais/ChatGPT Image 5 de ago. de 2026, 11_03_31 (9).png>)
+*Visual de UI com barra de topo compacta e explorador lateral.*
+
+![VisuAlg conceitual 10](<artes-conceituais/ChatGPT Image 5 de ago. de 2026, 11_03_31 (10).png>)
+*Exemplo de projeto com editor, barra de status e painéis auxiliares.*
+
 ---
 
 # 1. O que já está funcionando bem
