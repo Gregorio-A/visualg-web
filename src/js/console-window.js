@@ -14,6 +14,7 @@
             style.setProperty('--console-border', colors.border);
         }
         if (event.data.fontSize) document.getElementById('output').style.fontSize = event.data.fontSize + 'px';
+        if (['jetbrains', 'fira-code', 'ibm-plex', 'system'].includes(event.data.fontFamily)) document.body.dataset.consoleFont = event.data.fontFamily;
         var form = document.getElementById('input-form'); form.classList.toggle('visible', !!event.data.inputNeeded);
         if (event.data.inputNeeded) document.getElementById('input').focus();
     });

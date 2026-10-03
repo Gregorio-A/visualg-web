@@ -27,6 +27,12 @@ A interface também se adapta a telas estreitas e roda como aplicativo Electron:
 
 ![VisuAlg como aplicativo Electron](img/interface-electron-2026.png)
 
+Dois dos novos temas completos, com paletas próprias para a interface e a sintaxe:
+
+![Editor no tema escuro Catppuccin Mocha](img/interface-tema-mocha.png)
+
+![Editor no tema claro Paper & Ink](img/interface-tema-paper.png)
+
 Esta versão `0.14.0` dá continuidade à linha iniciada na `0.10` a partir de um
 fork do projeto **VisuAlg.dev**. A nova identidade
 evita confundir este produto com a aplicação de origem e preserva seus créditos
@@ -87,8 +93,9 @@ eles entram no documento de status com identificador e criterio de conclusao.
 - Botões superiores independentes para ocultar/reabrir arquivos e depuração; o editor ocupa automaticamente o espaço liberado.
 - Autoindentacao do codigo.
 - Comentario/descomentario com `Ctrl+/` ou `Cmd+/`.
-- Botão sol/lua para alternar diretamente entre VisuAlg Light e Dark; botão de paleta para escolher Dracula, Nord, Monokai, GitHub Dark/Light, One Dark, Solarized Dark/Light e outros, com cores próprias para toda a interface e sintaxe.
-- Fontes independentes no editor e Console, com botões discretos, `Ctrl++`, `Ctrl+-`, `Ctrl+0` e `Ctrl+roda do mouse` sobre a área desejada.
+- Botão sol/lua para alternar diretamente entre VisuAlg Light e Dark; botão de paleta para escolher também Catppuccin Mocha/Latte, Rosé Pine, Gruvbox Dark/Light e Paper & Ink, além dos temas anteriores, com cores próprias para toda a interface e sintaxe.
+- Fontes independentes no editor e Console (JetBrains Mono, Fira Code, IBM Plex Mono ou fonte do sistema), distribuídas com a aplicação, com botões discretos, `Ctrl++`, `Ctrl+-`, `Ctrl+0` e `Ctrl+roda do mouse` sobre a área desejada.
+- O espaçamento entre letras e linhas continua configurável; ao mudar o tamanho da fonte do editor, ambos acompanham proporcionalmente o valor escolhido.
 - Pontos de parada no editor e controles reais para pausar, avançar e continuar.
 - Configuracoes persistidas no `localStorage`.
 - Deteccao de possivel loop infinito apos 1.000 iteracoes, com opcao de continuar ou parar.
@@ -162,6 +169,7 @@ fimalgoritmo
 - **Console:** abra pelo ícone de terminal e escolha o modo em **Configurações > Console > Modo de exibição**: painel, aba, modal, janela separada ou nova aba do navegador.
 - **Painéis laterais:** os dois ícones de painel no topo ocultam/reabrem, respectivamente, Arquivos e Depuração. O editor aumenta automaticamente quando um deles é ocultado.
 - **Fonte:** use `−` e `+` nas barras do editor e do Console, ou `Ctrl++`, `Ctrl+-`, `Ctrl+0` e `Ctrl+roda do mouse` com a área desejada em foco. Os tamanhos são salvos separadamente.
+- **Família e espaçamento:** em **Configurações > Editor** ou **Console**, escolha a fonte de cada área. No Editor, o espaçamento entre letras e linhas é definido em relação a 14 px e escalado automaticamente com os controles de tamanho.
 
 ## Rodando a versao web
 

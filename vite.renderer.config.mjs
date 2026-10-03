@@ -10,13 +10,18 @@ function copyRuntimeAssets(outDir) {
   return {
     name: 'copy-runtime-assets',
     closeBundle: function () {
-      ['js', 'vendor', 'jsdelivr', 'unpk', 'images', 'docs', 'console-window.html'].forEach(function (dir) {
+      ['js', 'vendor', 'jsdelivr', 'unpk', 'images', 'docs'].forEach(function (dir) {
         var source = path.join(sourceRoot, dir);
         if (!fs.existsSync(source)) return;
 
         var target = path.join(outDir, dir);
         fs.rmSync(target, { recursive: true, force: true });
         fs.cpSync(source, target, { recursive: true });
+      });
+      const licensesDir = path.join(outDir, 'font-licenses');
+      fs.mkdirSync(licensesDir, { recursive: true });
+      ['jetbrains-mono', 'fira-code', 'ibm-plex-mono'].forEach(function (font) {
+        fs.copyFileSync(path.join(configDir, 'node_modules', '@fontsource', font, 'LICENSE'), path.join(licensesDir, font + '.txt'));
       });
     },
   };
@@ -37,6 +42,12 @@ export default defineConfig((env) => {
     build: {
       outDir: outDir,
       emptyOutDir: true,
+      rollupOptions: {
+        input: {
+          main: path.join(sourceRoot, 'index.html'),
+          console: path.join(sourceRoot, 'console-window.html'),
+        },
+      },
     },
     plugins: [
       copyRuntimeAssets(outDir),

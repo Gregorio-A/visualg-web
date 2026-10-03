@@ -30,6 +30,7 @@
     <!-- CodeMirror 5 -->
     <link rel="stylesheet" href="vendor/codemirror/codemirror.min.css">
     <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/fonts.css">
     <link rel="stylesheet" href="css/workspace.css">
 
     <!-- Lucide Icons -->
@@ -239,6 +240,12 @@
                             <option value="solarized-light">Solarized Light</option>
                             <option value="high-contrast">Tokyo Night Day (Alto Contraste)</option>
                             <option value="high-contrast-dark">Alto contraste (escuro)</option>
+                            <option value="catppuccin-mocha">Catppuccin Mocha (escuro)</option>
+                            <option value="rose-pine">Rosé Pine (escuro)</option>
+                            <option value="gruvbox-dark">Gruvbox (escuro)</option>
+                            <option value="catppuccin-latte">Catppuccin Latte (claro)</option>
+                            <option value="gruvbox-light">Gruvbox (claro)</option>
+                            <option value="paper">Paper & Ink (claro)</option>
                         </select>
                     </div>
                     <div class="setting-group">
@@ -264,6 +271,15 @@
                 </div>
                 <div class="modal-tab-panel" data-tab-panel="editor">
                     <div class="setting-group">
+                        <label for="setting-editor-font-family">Fonte do editor</label>
+                        <select id="setting-editor-font-family">
+                            <option value="jetbrains">JetBrains Mono</option>
+                            <option value="fira-code">Fira Code</option>
+                            <option value="ibm-plex">IBM Plex Mono</option>
+                            <option value="system">Fonte monoespaçada do sistema</option>
+                        </select>
+                    </div>
+                    <div class="setting-group">
                         <label>Tamanho da fonte</label>
                         <div class="font-size-control">
                             <div class="font-size-input-row">
@@ -274,11 +290,11 @@
                         </div>
                     </div>
                     <div class="setting-group">
-                        <label for="setting-letter-spacing">Espaçamento entre letras (px)</label>
-                        <input type="number" class="setting-font-input" id="setting-letter-spacing" min="-1" max="10" step="0.25" value="0">
+                        <label for="setting-letter-spacing">Espaçamento entre letras (px em 14px; acompanha a fonte)</label>
+                        <input type="number" class="setting-font-input" id="setting-letter-spacing" min="-1" max="10" step="0.25" value="0.25">
                     </div>
                     <div class="setting-group">
-                        <label for="setting-line-spacing">Espaçamento entre linhas (px)</label>
+                        <label for="setting-line-spacing">Espaçamento entre linhas (px em 14px; acompanha a fonte)</label>
                         <input type="number" class="setting-font-input" id="setting-line-spacing" min="18" max="80" step="1" value="27">
                     </div>
                     <div class="setting-group">
@@ -330,6 +346,15 @@
                     </div>
                 </div>
                 <div class="modal-tab-panel" data-tab-panel="console">
+                    <div class="setting-group">
+                        <label for="setting-console-font-family">Fonte do Console</label>
+                        <select id="setting-console-font-family">
+                            <option value="jetbrains">JetBrains Mono</option>
+                            <option value="fira-code">Fira Code</option>
+                            <option value="ibm-plex">IBM Plex Mono</option>
+                            <option value="system">Fonte monoespaçada do sistema</option>
+                        </select>
+                    </div>
                     <div class="setting-group">
                         <label for="setting-console-presentation">Exibir console em</label>
                         <select id="setting-console-presentation">

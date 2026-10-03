@@ -5,9 +5,13 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; object-src 'none'">
   <title>Console — VisuAlg</title>
+  <link rel="stylesheet" href="css/fonts.css">
   <style>
     * { box-sizing: border-box; }
-    body { margin: 0; height: 100vh; display: flex; flex-direction: column; background: var(--console-background,#111); color: var(--console-foreground,#dedede); font: 15px/1.5 monospace; }
+    body { margin: 0; height: 100vh; display: flex; flex-direction: column; background: var(--console-background,#111); color: var(--console-foreground,#dedede); font: 15px/1.5 'JetBrains Mono', monospace; }
+    body[data-console-font="fira-code"] { font-family: 'Fira Code', monospace; }
+    body[data-console-font="ibm-plex"] { font-family: 'IBM Plex Mono', monospace; }
+    body[data-console-font="system"] { font-family: ui-monospace, SFMono-Regular, Consolas, monospace; }
     header { display: flex; align-items: center; gap: 8px; padding: 8px 12px; background: var(--console-panel,#19191a); color: var(--console-foreground,#bfbfbf); font: 14px Arial,sans-serif; }
     header span { margin-right: auto; }
     button { padding: 6px 10px; border: 1px solid var(--console-border,#454545); border-radius: 4px; background: var(--console-background,#29292c); color: var(--console-foreground,#ddd); cursor: pointer; }

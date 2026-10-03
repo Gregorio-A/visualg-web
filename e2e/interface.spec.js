@@ -375,6 +375,20 @@ test('abas de documentação, console e configurações ocupam a área principal
   await expect(page.locator('#editorPanel')).toBeVisible();
 });
 
+test('editor e abas não exibem linhas decorativas acima ou abaixo', async ({ page }) => {
+  await openApp(page);
+  const decoration = async (selector) => page.locator(selector).evaluate((element) => {
+    const style = window.getComputedStyle(element);
+    return { shadow: style.boxShadow, top: style.borderTopWidth, bottom: style.borderBottomWidth };
+  });
+  expect((await decoration('.tab-item.active')).shadow).toBe('none');
+  expect((await decoration('.tab-bar')).bottom).toBe('0px');
+  expect((await decoration('#editorPanel')).top).toBe('0px');
+  expect((await decoration('#editorPanel')).bottom).toBe('0px');
+  await page.locator('#btn-show-console').click();
+  expect((await decoration('.view-tab.active')).shadow).toBe('none');
+});
+
 test('paletas mudam a interface inteira e a sintaxe; lua e sol alternam diretamente', async ({ page }) => {
   await openApp(page);
   await setCode(page, 'Algoritmo "Cor"\nVar\n  nome: caractere\nInicio\n  escreva("texto", 42) // comentário\nfimalgoritmo');
@@ -440,6 +454,84 @@ test('todos os dez temas têm paletas e sintaxe próprias', async ({ page }) => 
     palettes.push(palette.join('|'));
   }
   expect(new Set(palettes).size).toBe(themes.length);
+});
+
+test('novos temas claros e escuros mudam superfícies e sintaxe', async ({ page }) => {
+  await openApp(page);
+  await setCode(page, 'algoritmo "Tema"\nvar\n  n: inteiro\ninicio\n  escreval("Olá", 12)\nfimalgoritmo');
+  const themes = ['catppuccin-mocha', 'rose-pine', 'gruvbox-dark', 'catppuccin-latte', 'gruvbox-light', 'paper'];
+  const palettes = [];
+  for (const theme of themes) {
+    const palette = await page.evaluate((name) => {
+      const select = window.document.getElementById('setting-theme');
+      select.value = name; select.dispatchEvent(new window.Event('change', { bubbles: true }));
+      const color = (selector, property = 'backgroundColor') => window.getComputedStyle(window.document.querySelector(selector))[property];
+      return [color('body'), color('.workspace-sidebar'), color('.editor-panel'), color('.tab-item.active'), color('.cm-keyword', 'color'), color('.cm-string', 'color')];
+    }, theme);
+    expect(new Set(palette.slice(0, 4)).size).toBeGreaterThan(2);
+    expect(palette[4]).not.toBe(palette[5]);
+    await expect(page.locator('html')).toHaveAttribute('data-color-mode', themes.indexOf(theme) < 3 ? 'dark' : 'light');
+    palettes.push(palette.join('|'));
+  }
+  expect(new Set(palettes).size).toBe(themes.length);
+});
+
+test('fontes independentes persistem e espaçamento acompanha o zoom do editor', async ({ page }) => {
+  await openApp(page);
+  await page.locator('#btn-settings').click();
+  await page.locator('.settings-categories button').filter({ hasText: 'Editor' }).click();
+  await page.locator('#workspace-setting-editor-font-family').selectOption('fira-code');
+  await page.locator('#workspace-setting-letter-spacing').fill('2');
+  await page.locator('#workspace-setting-line-spacing').fill('33');
+  await page.locator('.settings-categories button').filter({ hasText: 'Console' }).click();
+  await page.locator('#workspace-setting-console-font-family').selectOption('ibm-plex');
+  await page.locator('.view-tab[data-type="settings"] .view-tab-close').click();
+  const metrics = () => page.evaluate(() => ({
+    editorFamily: window.getComputedStyle(window.document.querySelector('.editor-panel .CodeMirror')).fontFamily,
+    consoleFamily: window.getComputedStyle(window.document.getElementById('terminal-output')).fontFamily,
+    spacing: parseFloat(window.getComputedStyle(window.document.querySelector('.editor-panel .CodeMirror')).letterSpacing),
+    lineHeight: parseFloat(window.getComputedStyle(window.document.querySelector('.editor-panel .CodeMirror-line')).lineHeight),
+  }));
+  const before = await metrics();
+  expect(before.editorFamily).toContain('Fira Code');
+  expect(before.consoleFamily).toContain('IBM Plex Mono');
+  expect(before.spacing).toBeCloseTo(2, 1);
+  expect(before.lineHeight).toBeCloseTo(33, 1);
+  await page.locator('#editor-font-increase').click();
+  const larger = await metrics();
+  expect(larger.spacing).toBeGreaterThan(before.spacing);
+  expect(larger.lineHeight).toBeGreaterThan(before.lineHeight);
+  expect(larger.spacing / before.spacing).toBeCloseTo(15 / 14, 2);
+  await page.locator('#editor-font-decrease').click();
+  expect((await metrics()).spacing).toBeCloseTo(before.spacing, 1);
+  await page.reload();
+  expect((await metrics()).editorFamily).toContain('Fira Code');
+  expect((await metrics()).consoleFamily).toContain('IBM Plex Mono');
+  expect((await metrics()).spacing).toBeCloseTo(2, 1);
+  await page.locator('#btn-settings').click();
+  await page.locator('.settings-categories button').filter({ hasText: 'Console' }).click();
+  await page.locator('#workspace-setting-console-presentation').selectOption('window');
+  await page.locator('.view-tab[data-type="settings"] .view-tab-close').click();
+  const popupPromise = page.waitForEvent('popup');
+  await page.locator('#btn-show-console').click();
+  const popup = await popupPromise;
+  await expect(popup.locator('body')).toHaveAttribute('data-console-font', 'ibm-plex');
+  await expect.poll(() => popup.evaluate(async () => (await window.document.fonts.load('13px "IBM Plex Mono"')).length > 0)).toBe(true);
+  await popup.close();
+});
+
+test('configuração antiga de espaçamento mantém a aparência após atualização', async ({ page }) => {
+  await page.addInitScript(() => {
+    localStorage.setItem('visualg-font-size', '20');
+    localStorage.setItem('visualg-editor-letter-spacing', '2');
+    localStorage.setItem('visualg-editor-line-spacing', '40');
+  });
+  await openApp(page);
+  const read = () => page.locator('.editor-panel .CodeMirror').evaluate((element) => window.getComputedStyle(element).letterSpacing);
+  expect(parseFloat(await read())).toBeCloseTo(2, 1);
+  await expect(page.locator('#setting-letter-spacing')).toHaveValue('1.4');
+  await page.locator('#editor-font-increase').click();
+  expect(parseFloat(await read())).toBeGreaterThan(2);
 });
 
 test('atalhos e roda alteram somente a fonte da área em foco', async ({ page }) => {

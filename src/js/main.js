@@ -12,6 +12,7 @@
 
     var btnRun, btnStep, btnStop, btnSave, btnSaveDropdown, saveMenu, btnOpen, btnExamples, fileInput, btnTheme, btnSettings, btnClearTerminal, btnClearVars, statusEl;
     var settingsOverlay, settingTheme, settingFontSize, settingFontSizeSlider, settingWordWrap, settingTabSize, settingIndentGuides;
+    var settingEditorFontFamily, settingConsoleFontFamily;
     var settingVarsFontSize, settingVarsFontSizeSlider, settingConsoleFontSize, settingConsoleFontSizeSlider, settingConsoleInputMode;
     var settingGlobalFontSize, settingGlobalFontSizeSlider, settingGlobalFontUnit;
     var settingVarsColNome, settingVarsColTipo, settingVarsColValor;
@@ -46,6 +47,8 @@
         settingTheme = document.getElementById('setting-theme');
         settingFontSize = document.getElementById('setting-font-size');
         settingFontSizeSlider = document.getElementById('setting-font-size-slider');
+        settingEditorFontFamily = document.getElementById('setting-editor-font-family');
+        settingConsoleFontFamily = document.getElementById('setting-console-font-family');
         settingWordWrap = document.getElementById('setting-word-wrap');
         settingTabSize = document.getElementById('setting-tab-size');
         settingIndentGuides = document.getElementById('setting-indent-guides');
@@ -253,6 +256,8 @@
         settingTheme.addEventListener('change', function () {
             applyTheme(this.value);
         });
+        settingEditorFontFamily.addEventListener('change', function () { applyFontFamily('editor', this.value); });
+        settingConsoleFontFamily.addEventListener('change', function () { applyFontFamily('console', this.value); });
         settingFontSize.addEventListener('input', function () {
             var val = parseInt(this.value, 10);
             if (val >= 1) applyFontSize(val);
@@ -660,17 +665,18 @@
     }
 
     function toggleTheme() {
-        var current = document.documentElement.getAttribute('data-theme');
-        var next = ['light', 'github-light', 'solarized-light', 'high-contrast'].includes(current) ? 'dark' : 'light';
+        var next = document.documentElement.dataset.colorMode === 'light' ? 'dark' : 'light';
         applyTheme(next);
         if (settingTheme) settingTheme.value = next;
     }
 
     function applyTheme(theme) {
+        var lightThemes = ['light', 'github-light', 'solarized-light', 'high-contrast', 'catppuccin-latte', 'gruvbox-light', 'paper'];
         document.documentElement.setAttribute('data-theme', theme);
+        document.documentElement.dataset.colorMode = lightThemes.includes(theme) ? 'light' : 'dark';
         localStorage.setItem('visualg-theme', theme);
         if (btnTheme) {
-            var isLight = ['light', 'github-light', 'solarized-light', 'high-contrast'].includes(theme);
+            var isLight = lightThemes.includes(theme);
             btnTheme.innerHTML = '<i data-lucide="' + (isLight ? 'moon' : 'sun') + '"></i>';
             btnTheme.title = isLight ? 'Ativar modo escuro' : 'Ativar modo claro';
             btnTheme.setAttribute('aria-label', btnTheme.title);
@@ -686,6 +692,8 @@
 
     // === Settings ===
     function initSettings() {
+        applyFontFamily('editor', localStorage.getItem('visualg-editor-font-family') || 'jetbrains');
+        applyFontFamily('console', localStorage.getItem('visualg-console-font-family') || 'jetbrains');
         // Font size
         var fontSize = localStorage.getItem('visualg-font-size') || '14';
         applyFontSize(fontSize);
@@ -728,10 +736,21 @@
         if (isNaN(size) || size < 1) return;
         var px = size + 'px';
         editor.instance.getWrapperElement().style.fontSize = px;
+        document.documentElement.style.setProperty('--ide-editor-font-size', px);
         editor.instance.refresh();
         localStorage.setItem('visualg-font-size', size);
         if (settingFontSize) settingFontSize.value = size;
         if (settingFontSizeSlider) settingFontSizeSlider.value = Math.min(size, 50);
+        document.dispatchEvent(new window.CustomEvent('visualg:editor-font-size'));
+    }
+
+    function applyFontFamily(area, value) {
+        if (!['jetbrains', 'fira-code', 'ibm-plex', 'system'].includes(value)) value = 'jetbrains';
+        document.documentElement.setAttribute('data-' + area + '-font', value);
+        localStorage.setItem('visualg-' + area + '-font-family', value);
+        (area === 'editor' ? settingEditorFontFamily : settingConsoleFontFamily).value = value;
+        if (area === 'editor' && editor.instance) editor.instance.refresh();
+        document.dispatchEvent(new window.CustomEvent('visualg:font-family-changed', { detail: { area: area } }));
     }
 
     function applyIndentGuides(value) {
@@ -826,6 +845,7 @@
         localStorage.setItem('visualg-console-font-size', size);
         if (settingConsoleFontSize) settingConsoleFontSize.value = size;
         if (settingConsoleFontSizeSlider) settingConsoleFontSizeSlider.value = Math.min(size, 50);
+        document.dispatchEvent(new window.CustomEvent('visualg:console-font-size'));
     }
 
     function applyConsoleInputMode(value) {

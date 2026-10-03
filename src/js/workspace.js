@@ -284,7 +284,7 @@
     function syncConsoleWindow() {
         if (!consoleWindow || consoleWindow.closed) return;
         var style = window.getComputedStyle(document.documentElement);
-        consoleWindow.postMessage({ type: 'visualg-console', output: get('terminal-output').innerText, inputNeeded: !get('terminal-input-area').classList.contains('hidden') || !get('consoleInputOverlay').classList.contains('hidden'), colors: { background: style.getPropertyValue('--ide-canvas').trim(), panel: style.getPropertyValue('--ide-panel').trim(), foreground: style.getPropertyValue('--ide-foreground').trim(), border: style.getPropertyValue('--ide-border').trim() }, fontSize: get('setting-console-font-size').value }, window.location.origin === 'null' ? '*' : window.location.origin);
+        consoleWindow.postMessage({ type: 'visualg-console', output: get('terminal-output').innerText, inputNeeded: !get('terminal-input-area').classList.contains('hidden') || !get('consoleInputOverlay').classList.contains('hidden'), colors: { background: style.getPropertyValue('--ide-canvas').trim(), panel: style.getPropertyValue('--ide-panel').trim(), foreground: style.getPropertyValue('--ide-foreground').trim(), border: style.getPropertyValue('--ide-border').trim() }, fontSize: get('setting-console-font-size').value, fontFamily: get('setting-console-font-family').value }, window.location.origin === 'null' ? '*' : window.location.origin);
     }
     function showConsole() {
         var mode = localStorage.getItem('visualg-console-presentation') || 'tab';
@@ -376,8 +376,8 @@
         var content = document.createElement('section'); content.className = 'settings-content';
         var categories = [
             ['Aparência', [['Tema de cores', 'setting-theme']]],
-            ['Editor', [['Tamanho da fonte (px)', 'setting-font-size'], ['Espaçamento entre letras (px)', 'setting-letter-spacing'], ['Espaçamento entre linhas (px)', 'setting-line-spacing'], ['Quebra de linha', 'setting-word-wrap'], ['Tamanho da tabulação', 'setting-tab-size'], ['Guias de indentação', 'setting-indent-guides']]],
-            ['Console', [['Modo de exibição', 'setting-console-presentation'], ['Tamanho da fonte (px)', 'setting-console-font-size'], ['Entrada do console', 'setting-console-input-mode']]],
+            ['Editor', [['Fonte', 'setting-editor-font-family'], ['Tamanho da fonte (px)', 'setting-font-size'], ['Espaçamento entre letras (px em 14px; acompanha a fonte)', 'setting-letter-spacing'], ['Espaçamento entre linhas (px em 14px; acompanha a fonte)', 'setting-line-spacing'], ['Quebra de linha', 'setting-word-wrap'], ['Tamanho da tabulação', 'setting-tab-size'], ['Guias de indentação', 'setting-indent-guides']]],
+            ['Console', [['Modo de exibição', 'setting-console-presentation'], ['Fonte', 'setting-console-font-family'], ['Tamanho da fonte (px)', 'setting-console-font-size'], ['Entrada do console', 'setting-console-input-mode']]],
             ['Execução', [['Detecção de loop infinito', 'setting-loop-detection']]],
             ['Arquivos', []], ['Atalhos', []],
             ['Interface', [['Tamanho da fonte das variáveis (px)', 'setting-vars-font-size']]]
@@ -536,41 +536,58 @@
         if (existing) { existing.remove(); return; }
         var menu = document.createElement('div'); menu.id = 'workspace-theme-menu'; menu.className = 'workspace-theme-menu';
         var current = document.documentElement.getAttribute('data-theme') || 'dark';
-        [['Escuros', ['dark', 'dracula', 'nord', 'dark-monokai', 'github-dark', 'one-dark', 'solarized-dark', 'high-contrast-dark']], ['Claros', ['light', 'github-light', 'solarized-light', 'high-contrast']]].forEach(function (group) {
+        var currentMode = document.documentElement.dataset.colorMode;
+        function previewTheme(id, mode) {
+            document.documentElement.setAttribute('data-theme', id);
+            document.documentElement.dataset.colorMode = mode;
+            window.VisualGEditor.instance.refresh();
+        }
+        [['Escuros', ['dark', 'dracula', 'nord', 'dark-monokai', 'github-dark', 'one-dark', 'solarized-dark', 'high-contrast-dark', 'catppuccin-mocha', 'rose-pine', 'gruvbox-dark']], ['Claros', ['light', 'github-light', 'solarized-light', 'high-contrast', 'catppuccin-latte', 'gruvbox-light', 'paper']]].forEach(function (group) {
             var subgroup = document.createElement('div'); subgroup.className = 'theme-subgroup';
             var title = document.createElement('span'); title.className = 'theme-group-title'; title.textContent = group[0]; subgroup.appendChild(title);
             group[1].forEach(function (id) {
                 var option = get('setting-theme').querySelector('option[value="' + id + '"]');
                 var button = document.createElement('button'); button.type = 'button'; button.textContent = option ? option.textContent.replace(/ \(.+\)$/, '') : id;
                 if (id === current) button.classList.add('selected');
-                button.addEventListener('mouseenter', function () { document.documentElement.setAttribute('data-theme', id); window.VisualGEditor.instance.refresh(); });
-                button.addEventListener('click', function () { var select = get('setting-theme'); select.value = id; select.dispatchEvent(new window.Event('change', { bubbles: true })); menu.remove(); });
+                button.addEventListener('mouseenter', function () { previewTheme(id, group[0] === 'Claros' ? 'light' : 'dark'); });
+                button.addEventListener('click', function () { var select = get('setting-theme'); select.value = id; select.dispatchEvent(new window.Event('change', { bubbles: true })); menu.remove(); document.removeEventListener('pointerdown', dismiss); });
                 subgroup.appendChild(button);
             });
             menu.appendChild(subgroup);
         });
-        menu.addEventListener('mouseleave', function () { document.documentElement.setAttribute('data-theme', current); window.VisualGEditor.instance.refresh(); });
+        menu.addEventListener('mouseleave', function () { previewTheme(current, currentMode); });
         document.body.appendChild(menu);
         function dismiss(event) {
             if (menu.contains(event.target) || event.target.closest('#btn-scale')) return;
-            document.documentElement.setAttribute('data-theme', get('setting-theme').value);
+            previewTheme(get('setting-theme').value, currentMode);
             menu.remove(); document.removeEventListener('pointerdown', dismiss);
         }
         document.addEventListener('pointerdown', dismiss);
     }
 
     function initEditorSpacing() {
-        [['setting-letter-spacing', 'visualg-editor-letter-spacing', '--ide-editor-letter-spacing', -1, 10, 'px'], ['setting-line-spacing', 'visualg-editor-line-spacing', '--ide-editor-line-height', 18, 80, 'px']].forEach(function (setting) {
+        var migrationKey = 'visualg-editor-spacing-relative-v1';
+        if (!localStorage.getItem(migrationKey)) {
+            var previousFontSize = Number(get('setting-font-size').value) || 14;
+            ['visualg-editor-letter-spacing', 'visualg-editor-line-spacing'].forEach(function (key) {
+                var oldValue = localStorage.getItem(key);
+                if (oldValue !== null && Number.isFinite(Number(oldValue))) localStorage.setItem(key, String(Math.round(Number(oldValue) * 14 / previousFontSize * 100) / 100));
+            });
+            localStorage.setItem(migrationKey, 'true');
+        }
+        [['setting-letter-spacing', 'visualg-editor-letter-spacing', '--ide-editor-letter-spacing', -1, 10, 0.25], ['setting-line-spacing', 'visualg-editor-line-spacing', '--ide-editor-line-height', 18, 80, 27]].forEach(function (setting) {
             var field = get(setting[0]); var saved = localStorage.getItem(setting[1]);
-            if (saved !== null) field.value = saved;
-            else if (setting[0] === 'setting-line-spacing') field.value = Math.round(parseFloat(window.getComputedStyle(window.VisualGEditor.instance.getWrapperElement()).lineHeight));
+            field.value = saved !== null ? saved : String(setting[5]);
             function apply() {
                 var value = Number(field.value); if (!Number.isFinite(value) || value < setting[3] || value > setting[4]) return;
-                document.documentElement.style.setProperty(setting[2], value + setting[5]);
-                localStorage.setItem(setting[1], String(value));
+                var fontSize = Number(get('setting-font-size').value) || 14;
+                document.documentElement.style.setProperty(setting[2], (Math.round(value * fontSize / 14 * 100) / 100) + 'px');
                 window.VisualGEditor.instance.refresh();
+                if (secondaryEditor) secondaryEditor.refresh();
             }
-            field.addEventListener('input', apply); if (saved !== null) apply();
+            field.addEventListener('input', function () { localStorage.setItem(setting[1], field.value); apply(); });
+            document.addEventListener('visualg:editor-font-size', apply);
+            apply();
         });
     }
 
@@ -590,6 +607,8 @@
             get(item[1]).addEventListener('click', function () { changeAreaFont(item[0], item[2]); });
         });
         ['setting-font-size', 'setting-console-font-size'].forEach(function (id) { get(id).addEventListener('input', updateFontLabels); });
+        document.addEventListener('visualg:editor-font-size', updateFontLabels);
+        document.addEventListener('visualg:console-font-size', updateFontLabels);
         updateFontLabels();
         document.addEventListener('keydown', function (event) {
             if (!(event.ctrlKey || event.metaKey) || event.altKey || (event.shiftKey && event.key !== '+')) return;
@@ -628,6 +647,7 @@
         new MutationObserver(syncConsoleWindow).observe(get('consoleInputOverlay'), { attributes: true, attributeFilter: ['class'] });
         new MutationObserver(syncConsoleWindow).observe(document.documentElement, { attributes: true, attributeFilter: ['data-theme'] });
         get('setting-console-font-size').addEventListener('input', syncConsoleWindow);
+        document.addEventListener('visualg:font-family-changed', function (event) { if (event.detail.area === 'console') syncConsoleWindow(); });
         window.addEventListener('message', function (event) {
             if (event.origin !== window.location.origin || event.source !== consoleWindow || !event.data) return;
             if (event.data.type === 'visualg-console-ready') syncConsoleWindow();
