@@ -90,6 +90,7 @@
 
     window.DocsPanel = {
         open: function (tabId) {
+            if (window.VisualGWorkspace) { window.VisualGWorkspace.showDoc(tabId || 'introducao'); return; }
             var overlay = document.getElementById('docsOverlay');
             overlay.classList.remove('hidden');
             var selectedTab = tabId ? activateTab(tabId) : null;

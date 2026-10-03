@@ -53,13 +53,16 @@
             { regex: /\/\/.*/, token: 'comment' },
             // Strings
             { regex: /"(?:[^"\\]|\\.|"")*"/, token: 'string' },
+            { regex: /"[^"\n]*$/, token: 'error' },
+            // Input/output and execution commands
+            { regex: wordBoundaryRegex('escreval|escreva|leia|limpatela|pausa|interrompa|retorne|debug|eco|cronometro|cronômetro|timer|aleatorio|aleatório|arquivo'), token: 'command' },
             // Assignment operator
             { regex: /<-|:=/, token: 'operator' },
             // Comparison operators (multi-char)
             { regex: /<=|>=|<>/, token: 'operator' },
             // Keywords (case-insensitive)
             {
-                regex: wordBoundaryRegex('algoritmo|var|declare|inicio|início|fimalgoritmo|se|entao|então|senao|senão|fimse|enquanto|faca|faça|fimenquanto|para|de|ate|até|passo|fimpara|repita|fimrepita|escolha|caso|outrocaso|fimescolha|escreva|escreval|leia|procedimento|fimprocedimento|funcao|função|fimfuncao|retorne|interrompa|limpatela|pausa|debug|eco|cronometro|cronômetro|timer|aleatorio|aleatório|arquivo'),
+                regex: wordBoundaryRegex('algoritmo|var|declare|inicio|início|fimalgoritmo|se|entao|então|senao|senão|fimse|enquanto|faca|faça|fimenquanto|para|de|ate|até|passo|fimpara|repita|fimrepita|escolha|caso|outrocaso|fimescolha|procedimento|fimprocedimento|funcao|função|fimfuncao'),
                 token: 'keyword'
             },
             // Data types
@@ -78,7 +81,8 @@
             // Identifiers
             { regex: /[a-zA-ZáàâãéèêíìîóòôõúùûçÁÀÂÃÉÈÊÍÌÎÓÒÔÕÚÙÛÇ_][\wáàâãéèêíìîóòôõúùûçÁÀÂÃÉÈÊÍÌÎÓÒÔÕÚÙÛÇ]*/, token: 'variable-2' },
             // Operators
-            { regex: /[+\-*\/\\^=<>(),:\[\]]/, token: null },
+            { regex: /[+\-*\/\\^=<>]/, token: 'operator' },
+            { regex: /[(),:\[\]]/, token: 'punctuation' },
             // Range operator
             { regex: /\.\./, token: 'operator' }
         ],
@@ -94,6 +98,44 @@
     var highlightedLine = null;
     var highlightedLineClass = null;
     var _guideColors = null;
+    var completions = ['algoritmo', 'var', 'inicio', 'fimalgoritmo', 'escreva', 'escreval', 'leia', 'se', 'entao', 'senao', 'fimse', 'enquanto', 'faca', 'fimenquanto', 'para', 'de', 'ate', 'passo', 'fimpara', 'repita', 'escolha', 'caso', 'outrocaso', 'fimescolha', 'funcao', 'fimfuncao', 'procedimento', 'fimprocedimento', 'inteiro', 'real', 'caractere', 'logico', 'verdadeiro', 'falso'];
+    var hintMenu = null;
+    var hintItems = [];
+    var hintIndex = 0;
+    var hintStart = null;
+
+    function closeHints() { if (hintMenu) hintMenu.remove(); hintMenu = null; hintItems = []; }
+    function acceptHint(cm) {
+        if (!hintMenu || !hintItems.length) return false;
+        var cursor = cm.getCursor(); cm.replaceRange(hintItems[hintIndex], hintStart, cursor); closeHints(); return true;
+    }
+    function showHints(cm, explicit) {
+        closeHints();
+        var cursor = cm.getCursor(); var before = cm.getLine(cursor.line).slice(0, cursor.ch);
+        var match = /[A-Za-zÀ-ÿ][A-Za-zÀ-ÿ0-9_]*$/.exec(before);
+        if (!match || (!explicit && match[0].length < 2)) return;
+        var word = match[0].toLocaleLowerCase('pt-BR');
+        hintItems = completions.filter(function (entry) { return entry.startsWith(word) && entry !== word; }).slice(0, 8);
+        if (!hintItems.length) return;
+        hintStart = { line: cursor.line, ch: cursor.ch - match[0].length }; hintIndex = 0;
+        hintMenu = document.createElement('div'); hintMenu.className = 'visualg-hints'; hintMenu.setAttribute('role', 'listbox');
+        hintItems.forEach(function (entry, index) {
+            var option = document.createElement('button'); option.type = 'button'; option.textContent = entry;
+            if (index === 0) option.classList.add('selected');
+            option.addEventListener('mousedown', function (event) { event.preventDefault(); hintIndex = index; acceptHint(cm); cm.focus(); });
+            hintMenu.appendChild(option);
+        });
+        document.body.appendChild(hintMenu);
+        var coords = cm.cursorCoords(cursor, 'page');
+        hintMenu.style.left = Math.max(0, Math.min(coords.left, window.innerWidth - 200)) + 'px';
+        hintMenu.style.top = Math.min(coords.bottom + 4, window.innerHeight - hintMenu.offsetHeight - 8) + 'px';
+    }
+    function moveHint(delta) {
+        if (!hintMenu) return false;
+        hintIndex = (hintIndex + delta + hintItems.length) % hintItems.length;
+        Array.prototype.forEach.call(hintMenu.children, function (item, index) { item.classList.toggle('selected', index === hintIndex); });
+        return true;
+    }
 
     window.VisualGEditor = {
         instance: null,
@@ -111,12 +153,20 @@
                 autoCloseBrackets: true,
                 styleActiveLine: true,
                 extraKeys: {
+                    'Ctrl-Space': function (cm) { showHints(cm, true); },
+                    'Enter': function (cm) { if (!acceptHint(cm)) cm.execCommand('newlineAndIndent'); },
+                    'Tab': function (cm) { if (!acceptHint(cm)) cm.execCommand('insertSoftTab'); },
+                    'Esc': function () { closeHints(); },
+                    'Down': function (cm) { if (!moveHint(1)) cm.execCommand('goLineDown'); },
+                    'Up': function (cm) { if (!moveHint(-1)) cm.execCommand('goLineUp'); },
                     'Shift-Tab': 'indentLess',
                     'Cmd-/': 'toggleComment',
                     'Ctrl-/': 'toggleComment'
                 },
                 value: DEFAULT_PROGRAM
             });
+            this.instance.on('inputRead', function (cm) { showHints(cm, false); });
+            this.instance.on('blur', function () { window.setTimeout(closeHints, 150); });
 
             this.instance.on('renderLine', function (cm, line, el) {
                 if (!_guideColors) {

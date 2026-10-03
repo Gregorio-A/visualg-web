@@ -70,6 +70,7 @@
         tabManager.onPersistenceChange = updateAutosaveStatus;
         tabManager.init();
         tabManager.onSwitch = function (tab) {
+            document.dispatchEvent(new window.CustomEvent('visualg:tab-switched', { detail: { id: tab.id } }));
             var running = tab.executor && tab.executor.running;
             setRunning(!!running);
             if (running) {
@@ -119,8 +120,8 @@
             e.stopPropagation();
             mobileMenu.classList.toggle('open');
         });
-        document.addEventListener('click', function () {
-            mobileMenu.classList.remove('open');
+        document.addEventListener('pointerdown', function (event) {
+            if (!event.target.closest('#mobile-menu, #btn-menu')) mobileMenu.classList.remove('open');
         });
         mobileMenu.addEventListener('click', function (e) {
             e.stopPropagation();
@@ -155,7 +156,10 @@
             varsPanel.clear();
         });
 
-        btnSettings.addEventListener('click', openSettings);
+        btnSettings.addEventListener('click', function () {
+            if (window.VisualGWorkspace && window.VisualGWorkspace.showSettings) window.VisualGWorkspace.showSettings();
+            else openSettings();
+        });
 
         initExamples();
         initOnboarding();
@@ -413,6 +417,7 @@
     }
 
     function openExamples() {
+        if (window.VisualGWorkspace) { window.VisualGWorkspace.showExamples(); return; }
         document.getElementById('examplesOverlay').classList.remove('hidden');
     }
 
@@ -474,11 +479,7 @@
             if (event.target === overlay) completeOnboarding('editor');
         });
 
-        if (getStoredValue(ONBOARDING_STORAGE_KEY) !== 'true') {
-            window.setTimeout(function () {
-                overlay.classList.remove('hidden');
-            }, 120);
-        }
+        // The workspace itself is the landing screen in the reference design.
     }
 
     function closeProductModals() {
@@ -579,7 +580,7 @@
     }
 
     function applySectionVisibility() {
-        var grid = document.querySelector('.grid-container');
+        var grid = document.querySelector('.ide-shell') || document.querySelector('.grid-container');
         var elements = {
             editor: document.querySelector('.editor-column'),
             variables: document.getElementById('variablesPanel'),
@@ -654,19 +655,13 @@
     // === Theme ===
     function initTheme() {
         var saved = localStorage.getItem('visualg-theme');
-        if (!saved) {
-            if (window.matchMedia && window.matchMedia('(prefers-color-scheme: light)').matches) {
-                saved = 'light';
-            } else {
-                saved = 'dark';
-            }
-        }
+        if (!saved) saved = 'dark';
         applyTheme(saved);
     }
 
     function toggleTheme() {
         var current = document.documentElement.getAttribute('data-theme');
-        var next = current === 'dark' ? 'light' : 'dark';
+        var next = ['light', 'github-light', 'solarized-light', 'high-contrast'].includes(current) ? 'dark' : 'light';
         applyTheme(next);
         if (settingTheme) settingTheme.value = next;
     }
@@ -675,9 +670,10 @@
         document.documentElement.setAttribute('data-theme', theme);
         localStorage.setItem('visualg-theme', theme);
         if (btnTheme) {
-            var iconName = theme === 'dark' ? 'moon' : 'sun';
-            btnTheme.innerHTML = '<i data-lucide="' + iconName + '"></i>';
-            btnTheme.title = theme === 'dark' ? 'Tema claro' : 'Tema escuro';
+            var isLight = ['light', 'github-light', 'solarized-light', 'high-contrast'].includes(theme);
+            btnTheme.innerHTML = '<i data-lucide="' + (isLight ? 'moon' : 'sun') + '"></i>';
+            btnTheme.title = isLight ? 'Ativar modo escuro' : 'Ativar modo claro';
+            btnTheme.setAttribute('aria-label', btnTheme.title);
             if (window.lucide) lucide.createIcons({ nodes: [btnTheme] });
         }
         if (settingTheme) settingTheme.value = theme;
@@ -866,6 +862,7 @@
     }
 
     function openSettings() {
+        if (window.VisualGWorkspace) { window.VisualGWorkspace.showSettings(); return; }
         // Sync current values
         settingTheme.value = document.documentElement.getAttribute('data-theme');
         var savedFontSize = localStorage.getItem('visualg-font-size') || '14';
@@ -940,16 +937,20 @@
         statusEl.style.color = type === 'error' ? 'var(--red)' :
                                type === 'running' ? 'var(--yellow)' : 'var(--green)';
         if (window.lucide) lucide.createIcons({ nodes: [statusEl] });
+        document.dispatchEvent(new window.CustomEvent('visualg:status', { detail: { text: text, type: type || 'success', at: Date.now() } }));
     }
 
     function setRunning(running) {
         var tab = tabManager.getActiveTab();
         var stepping = tab && tab.executor && tab.executor.running && tab.executor.stepMode;
-        btnRun.disabled = running;
-        btnStep.disabled = running && !stepping;
+        var paused = !!(tab && tab.executor && tab.executor.stepResolve);
+        btnRun.disabled = running && !paused;
+        btnStep.disabled = running && !stepping && !paused;
         btnStop.disabled = !running;
         btnClearTerminal.disabled = running;
         btnClearVars.disabled = running;
+        if (editor.instance) editor.instance.setOption('readOnly', running ? 'nocursor' : false);
+        document.dispatchEvent(new window.CustomEvent('visualg:running', { detail: { running: running, stepping: !!stepping } }));
     }
 
     function getRunningTab() {
@@ -977,6 +978,7 @@
     function reportExecutionError(error) {
         var message = error && error.message ? error.message : String(error);
         var location = getErrorLocation(message);
+        document.dispatchEvent(new window.CustomEvent('visualg:diagnostic', { detail: { message: message, location: location, at: Date.now() } }));
         terminal.writelnError(message, location, function () {
             setSectionVisible('editor', true);
             editor.revealLocation(location.line, location.column);
@@ -992,10 +994,14 @@
     async function runProgram() {
         var tab = tabManager.getActiveTab();
         if (blockIfAnotherTabRunning(tab)) return;
-        if (tab.executor && tab.executor.running) return;
+        if (tab.executor && tab.executor.running) {
+            if (tab.executor.stepResolve) { tab.executor.stepMode = false; tab.executor.nextStep(); setRunning(true); }
+            return;
+        }
 
         var source = editor.getValue();
         terminal.clear();
+        document.dispatchEvent(new window.CustomEvent('visualg:execution-start'));
         varsPanel.clear();
         editor.clearHighlight();
         setStatus('Executando...', 'running');
@@ -1006,6 +1012,7 @@
             var tokens = new window.VisuAlgLexer(source).tokenize();
             var ast = new window.VisuAlgParser(tokens).parse();
             tab.executor = new window.VisuAlgExecutor(terminal, varsPanel);
+            tab.executor.breakpointLines = new Set(window.VisualGWorkspace ? window.VisualGWorkspace.getBreakpoints() : []);
             tab.running = true;
             await tab.executor.run(ast);
             setStatus('Execução finalizada');
@@ -1028,14 +1035,13 @@
         var tab = tabManager.getActiveTab();
         if (blockIfAnotherTabRunning(tab)) return;
         if (tab.executor && tab.executor.running) {
-            if (tab.executor.stepMode) {
-                tab.executor.nextStep();
-            }
+            if (tab.executor.stepResolve) { tab.executor.stepMode = true; tab.executor.nextStep(); setRunning(true); }
             return;
         }
 
         var source = editor.getValue();
         terminal.clear();
+        document.dispatchEvent(new window.CustomEvent('visualg:execution-start'));
         varsPanel.clear();
         editor.clearHighlight();
         setStatus('Passo a passo...', 'running');
@@ -1046,8 +1052,10 @@
             var tokens = new window.VisuAlgLexer(source).tokenize();
             var ast = new window.VisuAlgParser(tokens).parse();
             tab.executor = new window.VisuAlgExecutor(terminal, varsPanel);
+            tab.executor.breakpointLines = new Set(window.VisualGWorkspace ? window.VisualGWorkspace.getBreakpoints() : []);
             tab.executor.stepMode = true;
             tab.running = true;
+            setRunning(true);
             await tab.executor.run(ast);
             setStatus('Execução finalizada');
         } catch (e) {
@@ -1121,6 +1129,7 @@
 
         // Libera o objeto URL
         URL.revokeObjectURL(link.href);
+        if (tabManager.markActiveClean) tabManager.markActiveClean();
     }
 
     function saveProgram() {
@@ -1161,6 +1170,9 @@
             }
 
             editor.setValue(content);
+            if (tabManager.setFileName) tabManager.setFileName(tab.id, file.name);
+            if (tabManager.markActiveClean) tabManager.markActiveClean();
+            if (window.VisualGWorkspace) window.VisualGWorkspace.showEditor();
             terminal.clear();
             varsPanel.clear();
             editor.clearHighlight();

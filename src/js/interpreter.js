@@ -2121,11 +2121,16 @@
             this.checkRunning();
         }
 
-        if (this.stepMode && stmt.line !== undefined) {
+        var onBreakpoint = !this.stepMode && this.breakpointLines && this.breakpointLines.has(stmt.line);
+        if ((this.stepMode || onBreakpoint) && stmt.line !== undefined) {
             if (window.VisualGEditor) {
                 window.VisualGEditor.highlightLine(stmt.line - 1);
             }
-            await this.waitForStep();
+            var stepPromise = this.waitForStep();
+            if (onBreakpoint) {
+                document.dispatchEvent(new window.CustomEvent('visualg:breakpoint', { detail: { line: stmt.line } }));
+            }
+            await stepPromise;
         }
 
         try {

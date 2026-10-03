@@ -65,7 +65,30 @@ const createWindow = () => {
     },
   });
 
-  mainWindow.webContents.setWindowOpenHandler(() => ({ action: 'deny' }));
+  const allowedConsole = new URL('console-window.html', allowedEntry).href;
+  mainWindow.webContents.setWindowOpenHandler((details) => {
+    if (details.url !== allowedConsole) return { action: 'deny' };
+    return {
+      action: 'allow',
+      overrideBrowserWindowOptions: {
+        width: 1000,
+        height: 720,
+        webPreferences: {
+          contextIsolation: true,
+          nodeIntegration: false,
+          sandbox: true,
+          webSecurity: true,
+          preload: undefined,
+        },
+      },
+    };
+  });
+  mainWindow.webContents.on('did-create-window', (child) => {
+    child.webContents.setWindowOpenHandler(() => ({ action: 'deny' }));
+    child.webContents.on('will-navigate', (event, url) => {
+      if (url !== allowedConsole) event.preventDefault();
+    });
+  });
   mainWindow.webContents.on('will-navigate', (event, navigationUrl) => {
     const target = typeof navigationUrl === 'string' ? navigationUrl : navigationUrl.url;
     try {

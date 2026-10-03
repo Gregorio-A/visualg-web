@@ -10,7 +10,7 @@ function copyRuntimeAssets(outDir) {
   return {
     name: 'copy-runtime-assets',
     closeBundle: function () {
-      ['js', 'vendor', 'jsdelivr', 'unpk', 'images', 'docs'].forEach(function (dir) {
+      ['js', 'vendor', 'jsdelivr', 'unpk', 'images', 'docs', 'console-window.html'].forEach(function (dir) {
         var source = path.join(sourceRoot, dir);
         if (!fs.existsSync(source)) return;
 

@@ -9,7 +9,7 @@
     var resizeHandleHorizontal = document.getElementById('resizeHandleHorizontal');
     var variablesPanel = document.getElementById('variablesPanel');
     var terminalPanel = document.getElementById('terminalPanel');
-    var gridContainer = document.querySelector('.grid-container');
+    var gridContainer = document.querySelector('.ide-shell') || document.querySelector('.grid-container');
     var isResizing = false;
     var resizeType = null;
     var startPos = 0;
@@ -58,9 +58,13 @@
             var containerWidth = gridContainer.offsetWidth;
             var newWidth = startSize + getEventPos(event, 'x') - startPos;
             newWidth = Math.max(200, Math.min(containerWidth - 180, newWidth));
-            resizableBlock.style.width = newWidth + 'px';
-            variablesPanel.style.width = containerWidth - newWidth - 15 + 'px';
-            terminalPanel.style.width = containerWidth - newWidth - 15 + 'px';
+            if (gridContainer.classList.contains('ide-shell')) {
+                gridContainer.style.gridTemplateColumns = '42px 250px ' + newWidth + 'px minmax(240px, 1fr)';
+            } else {
+                resizableBlock.style.width = newWidth + 'px';
+                variablesPanel.style.width = containerWidth - newWidth - 15 + 'px';
+                terminalPanel.style.width = containerWidth - newWidth - 15 + 'px';
+            }
         }
 
         if (window.VisualGEditor && window.VisualGEditor.instance) {

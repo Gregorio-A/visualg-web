@@ -7,18 +7,18 @@
 
 **Versão revisada:** `0.14.0`
 
-**Última revisão:** 21 de julho de 2026
-**Base funcional auditada:** `main` em `79e2b94`, antes desta consolidação documental
+**Última revisão:** 2 de outubro de 2026
+**Base funcional auditada:** árvore de trabalho local da versão `0.14.0`, incluindo a nova interface
 
 ## Leitura rápida
 
 | Área | Estado atual | O que falta |
 | --- | --- | --- |
 | Linguagem | O conjunto documentado está implementado e coberto por regressões. Não há incompatibilidade de linguagem reproduzida registrada como aberta nesta revisão. | Novas diferenças em relação ao VisuAlg 3.0.7 precisam de programa mínimo e teste de reprodução. |
-| Aplicação Web | Build, lint, regressões e os principais fluxos de interface possuem automação. A versão continua Beta. | Reforçar recuperação de dados, concluir validações manuais e realizar uso acompanhado em sala de aula. |
-| Abas e autosave | Abas, códigos, aba ativa e uma cópia de recuperação são persistidos e testados. Falhas de salvamento geram aviso visível. | Tratar armazenamento cheio/bloqueado, workspace corrompido, migração e fechamento inesperado; oferecer backup completo. |
+| Aplicação Web | Build, lint, regressões e os principais fluxos de interface possuem automação. A versão continua Beta. As abas, painéis, temas, Console e fontes foram exercitados em Chromium e Firefox. | Reforçar recuperação de dados, concluir validações manuais e realizar uso acompanhado em sala de aula. |
+| Abas e autosave | Abas de código e conteúdos auxiliares podem ser fechadas; códigos, aba ativa, estado modificado e uma cópia de recuperação são persistidos e testados. Falhas de salvamento geram aviso visível. | Tratar armazenamento cheio/bloqueado, workspace corrompido, migração e fechamento inesperado; oferecer backup completo. |
 | Acessibilidade | Atalhos, navegação por teclado em abas e modais, foco inicial e preso em modais, retorno do foco, ARIA e anúncios de estado foram implementados. | Validar com leitor de tela, zoom de 200%, todos os temas e tamanhos mínimos de alvos de toque. |
-| Electron | Isolamento, sandbox, CSP, IPC e proteção de caminhos possuem regressões automatizadas. | Preparar e validar a distribuição pública dos instaladores. |
+| Electron | Isolamento, sandbox, CSP, IPC e proteção de caminhos possuem regressões automatizadas. O aplicativo iniciou em desenvolvimento, abriu a janela permitida do Console e sincronizou a saída. | Preparar e validar a distribuição pública dos instaladores. |
 | Build e arquitetura | A build Web é gerada com sucesso e os assets necessários são copiados. | Os scripts clássicos ainda produzem avisos esperados do Vite e mantêm dependência de globais e ordem de carregamento. |
 
 Esta tabela não significa “100% idêntico em qualquer caso”. O contrato funcional
@@ -40,8 +40,9 @@ Na revisão desta versão, `npm run test:ci` passou com:
 
 A suíte Playwright cobre os principais fluxos da interface. Localmente, ela roda
 separada de `npm run test:ci`, por meio de `npm run test:e2e`; o CI executa
-projetos separados para Chrome, Edge e Firefox. Nesta revisão,
-`npm run test:e2e:chromium` passou com 10 testes.
+projetos separados para Chrome, Edge e Firefox. Nesta revisão, foram executados
+27 cenários em Chromium e Firefox (54 execuções), incluindo as dez paletas,
+abas, atalhos de fonte, layout e os cinco modos de Console.
 
 ## Como interpretar os estados
 
@@ -64,10 +65,10 @@ Prioridade **alta** indica risco para dados, acessibilidade ou publicação;
 | A11Y-001 | Alta | Em validação | **Auditoria assistiva.** Validar leitor de tela, zoom de 200%, contraste de todos os temas, mensagens sem dependência exclusiva de cor e alvos de toque. Concluir com registro dos ambientes e correção dos achados. |
 | PILOT-001 | Alta | Pendente | **Uso real.** Validar com pelo menos 10 alunos e 3 professores, incluindo abertura de arquivos `.alg`, uma aula sem perda de código e duas semanas de uso acompanhado sem defeitos críticos. |
 | DESKTOP-001 | Alta | Pendente | **Distribuição Electron.** Testar instaladores nas plataformas publicadas, definir ícone/publicador/metadados, assinatura quando aplicável, checksums e um processo reproduzível de instalação, atualização e remoção. |
-| EDITOR-001 | Média | Pendente | **Estado de arquivo por aba.** Hoje o fechamento compara o código com o template inicial. Concluir quando cada aba controlar nome de origem, estado modificado e último salvamento sem alertas falsos. |
+| EDITOR-001 | Média | Em validação | **Estado de arquivo por aba.** O indicador de alteração desde o último download e o nome de arquivo persistem por aba. Ainda falta registrar data/origem do último export e validar casos de importação e recuperação. |
 | FILE-001 | Média | Pendente | **Falsos positivos ao abrir `.alg`.** O filtro textual bloqueia palavras parecidas com HTML/JavaScript mesmo que estejam em comentários ou strings. Concluir com validação adequada ao fato de o arquivo ser exibido como texto no editor. |
 | ERROR-001 | Média | Pendente | **Mensagens de erro uniformes.** Nem todo erro semântico ou de execução possui linha, coluna e trecho. Concluir quando a localização e a orientação didática forem consistentes nas fases do interpretador. |
-| MOBILE-001 | Média | Em validação | **Interface móvel.** Navegadores móveis continuam em melhor esforço. Revalidar editor, controles, modais e áreas de toque em larguras pequenas e criar ao menos um teste de viewport móvel. |
+| MOBILE-001 | Média | Em validação | **Interface móvel.** Há teste de viewport estreita e captura visual. Ainda é necessário validar em dispositivos reais o editor, teclado virtual, áreas de toque e janelas auxiliares. |
 | RELEASE-001 | Média | Pendente | **Versão em uma única fonte.** A versão ainda é repetida no `package.json`, na interface e em formulários. Concluir quando a build derivar esses valores de uma fonte única e a retirada da etiqueta Beta tiver critério explícito. |
 | DOCS-001 | Baixa | Pendente | **Carregamento seguro da documentação.** Verificar `response.ok` e definir uma fronteira de sanitização antes de aceitar qualquer Markdown que não faça parte do pacote local. |
 | TECH-001 | Baixa | Planejado | **Scripts clássicos e globais.** Modularizar gradualmente o runtime e permitir que o Vite empacote o código sem os avisos atuais, preservando os testes existentes. |
@@ -87,7 +88,7 @@ incompatibilidades ou regressões conhecidas:
 
 | Versão | Principais entregas consolidadas | Evidência atual |
 | --- | --- | --- |
-| `0.14` | Identidade própria do fork; base pública de suporte e governança; teclado, foco e ARIA; segurança Electron; lint, CI e testes E2E; lógica de resize retirada do HTML. | `npm run lint`, `npm run test:security`, suíte Playwright e workflow de CI. |
+| `0.14` | Identidade própria do fork; nova interface com abas unificadas, painéis responsivos, dez paletas e destaque de sintaxe; Console em painel/aba/modal/janela/aba externa; fontes independentes; teclado, foco e ARIA; segurança Electron; lint, CI e testes E2E. | `npm run test:ci`, 27 cenários Playwright em Chromium e Firefox e capturas em `img/`. |
 | `0.13` | Onboarding e galeria; erro clicável; estado visível do autosave e recuperação; controle dos painéis; `senao se`; E/S sem parênteses; funções sem `()`; `pi`; entrada inválida repetida; comandos especiais e semântica avançada. | `npm run test:compat`, `npm run test:standard`, `npm run test:examples`, `npm run test:workspace` e testes E2E. |
 | `0.12` | Persistência das abas e códigos, restauração da sessão, programas padrão e documentação de história/autoria. | `npm run test:workspace` e `npm run test:standard`. |
 | `0.11` | Erro para tokens inválidos e blocos abertos; análise semântica de nomes, tipos, aridade e contexto; limites de vetores; divisão por zero; domínios matemáticos; isolamento da execução entre abas. | Regressões semânticas em `npm run test:p0`; bloqueio de ações entre abas implementado no gerenciador de abas. |

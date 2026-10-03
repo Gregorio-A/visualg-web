@@ -1,5 +1,7 @@
 import { defineConfig } from '@playwright/test';
 
+const includeSystemChannels = Boolean(process.env.CI || process.env.VISUALG_ALL_BROWSERS);
+
 export default defineConfig({
   testDir: './e2e',
   outputDir: 'test-results/artifacts',
@@ -25,8 +27,10 @@ export default defineConfig({
   },
   projects: [
     { name: 'chromium', use: { browserName: 'chromium' } },
-    { name: 'chrome', use: { browserName: 'chromium', channel: 'chrome' } },
-    { name: 'edge', use: { browserName: 'chromium', channel: 'msedge' } },
     { name: 'firefox', use: { browserName: 'firefox' } },
+    ...(includeSystemChannels ? [
+      { name: 'chrome', use: { browserName: 'chromium', channel: 'chrome' } },
+      { name: 'edge', use: { browserName: 'chromium', channel: 'msedge' } },
+    ] : []),
   ],
 });

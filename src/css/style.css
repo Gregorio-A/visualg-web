@@ -45,6 +45,162 @@
     --syn-variable:  #c0caf5;
 }
 
+/* Final workspace overrides: keep the new IDE shell above legacy component rules. */
+.header { height: 48px; padding: 0 12px; gap: 14px; background: var(--bg-dark); border-bottom: 1px solid var(--border); }
+.header-logo { min-width: 188px; } .header-logo .logo-img { height: 30px !important; }
+.top-menu { display:flex; gap:2px; } .top-menu-btn { border:0; background:transparent; color:var(--fg-dark); padding:7px 8px; border-radius:5px; font-size:12px; cursor:pointer; } .top-menu-btn:hover { background:var(--bg-highlight); color:var(--fg); }
+.command-bar { display:flex; align-items:center; gap:8px; height:30px; flex:1; max-width:620px; margin:auto; padding:0 9px; background:var(--bg-highlight); border:1px solid var(--border); border-radius:5px; color:var(--comment); } .command-bar svg { width:15px; } .command-bar input { flex:1; min-width:0; border:0; outline:0; background:transparent; color:var(--fg); font-size:12px; } .command-bar kbd { color:var(--comment); font-size:10px; white-space:nowrap; }
+.header-controls { display:flex; gap:5px; order:3; } .controls-file { display:none; } .header-actions { order:4; }
+.main-content { padding:0; min-height:0; } .ide-shell { display:grid; grid-template-columns:42px 250px minmax(360px,1fr) 310px; height:100%; min-height:0; background:var(--bg-darker); gap:0; }
+.activity-bar { background:var(--bg-dark); border-right:1px solid var(--border); padding-top:8px; display:flex; flex-direction:column; align-items:center; gap:8px; } .activity-btn { width:38px; height:54px; border:0; border-left:2px solid transparent; background:transparent; color:var(--comment); cursor:pointer; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:4px; font-size:8px; } .activity-btn svg { width:19px; height:19px; } .activity-btn:hover,.activity-btn.active { color:var(--fg); border-left-color:var(--blue); background:var(--bg-highlight); }
+.workspace-sidebar { min-width:0; background:var(--bg-dark); border-right:1px solid var(--border); overflow:auto; } .workspace-sidebar-header,.debug-header { height:38px; padding:0 10px; display:flex; align-items:center; justify-content:space-between; color:var(--fg-dark); font-size:11px; letter-spacing:.04em; } .icon-btn,.sidebar-actions button,.tree-heading button { border:0; background:transparent; color:var(--comment); cursor:pointer; padding:5px; border-radius:4px; } .icon-btn:hover,.sidebar-actions button:hover,.tree-heading button:hover { color:var(--fg); background:var(--bg-highlight); } .icon-btn svg,.sidebar-actions svg,.tree-heading svg { width:15px; height:15px; }
+.sidebar-actions { display:flex; gap:2px; padding:0 8px 8px; border-bottom:1px solid var(--border); } .workspace-search { margin:8px; padding:5px 8px; display:flex; gap:6px; align-items:center; background:var(--bg-darker); border-radius:5px; color:var(--comment); } .workspace-search svg { width:15px; } .workspace-search input { width:100%; background:transparent; border:0; outline:0; color:var(--fg); font-size:11px; } .tree-heading { display:flex; align-items:center; justify-content:space-between; padding:8px 10px 5px; color:var(--comment); font-size:10px; } .tree-heading span { display:flex; align-items:center; gap:4px; } .tree-heading span svg { width:12px; }
+.docs-tree { margin-top:14px; border-top:1px solid var(--border); } .file-item,.doc-item { display:flex; align-items:center; gap:8px; margin:2px 7px; padding:7px 8px; color:var(--fg-dark); border-radius:4px; cursor:pointer; font-size:12px; } .file-item:hover,.doc-item:hover,.file-item.active { background:var(--bg-highlight); color:var(--fg); } .file-item.active { border-left:2px solid var(--green); padding-left:6px; } .file-item svg { width:14px; color:var(--green); } .file-item .file-close { margin-left:auto; opacity:.5; } .doc-item { font-size:11px; }
+.editor-column { grid-column:auto; grid-row:auto; min-width:0; min-height:0; display:flex; flex-direction:column; background:var(--bg); } .tab-bar { height:38px; flex-shrink:0; background:var(--bg-dark); border-bottom:1px solid var(--border); } .editor-panel { flex:1; min-height:0; }
+.right-sidebar { min-width:0; min-height:0; display:flex; flex-direction:column; background:var(--bg-dark); border-left:1px solid var(--border); overflow:hidden; } .debug-header { border-bottom:1px solid var(--border); } .debug-controls { display:flex; gap:8px; padding:10px 12px; border-bottom:1px solid var(--border); } .debug-controls button { width:27px; height:27px; border:0; border-radius:50%; display:grid; place-items:center; background:var(--bg-highlight); color:var(--fg); cursor:pointer; } .debug-controls button:first-child { color:var(--green); } .debug-controls button:hover { background:var(--blue); color:var(--bg-dark); } .debug-controls svg { width:15px; }
+.problems-panel { min-height:105px; max-height:190px; overflow:auto; border-bottom:1px solid var(--border); } .right-section-title { display:flex; justify-content:space-between; padding:10px 12px 7px; color:var(--comment); font-size:10px; letter-spacing:.05em; } .right-section-title span:last-child { background:var(--bg-highlight); border-radius:8px; padding:1px 6px; } .empty-state { display:flex; align-items:center; gap:7px; padding:10px 12px; color:var(--comment); font-size:11px; } .empty-state svg { width:14px; color:var(--green); }
+.right-sidebar .variables-panel,.right-sidebar .terminal-panel { width:auto; height:auto; min-height:0; border:0; border-bottom:1px solid var(--border); border-radius:0; box-shadow:none; } .right-sidebar .variables-panel { flex:0 0 165px; } .right-sidebar .terminal-panel { flex:1; } .right-sidebar .panel-header { height:34px; font-size:10px; letter-spacing:.05em; } .right-sidebar .panel-body { overflow:auto; }
+.footer { height:25px; min-height:25px; font-size:10px; } .footer-item { padding:3px 8px; } .grid-container { display:contents; } .section-hidden { display:none !important; }
+body.sidebar-left-collapsed .ide-shell { grid-template-columns:42px minmax(360px,1fr) 310px; } body.sidebar-left-collapsed .workspace-sidebar { display:none; } body.sidebar-right-collapsed .ide-shell { grid-template-columns:42px 250px minmax(360px,1fr); } body.sidebar-right-collapsed .right-sidebar { display:none; }
+@media (max-width:1050px) { .ide-shell { grid-template-columns:38px 210px minmax(300px,1fr) 260px; } .top-menu { display:none; } .header-logo { min-width:145px; } } @media (max-width:760px) { .ide-shell { display:flex; } .activity-bar,.workspace-sidebar,.right-sidebar { display:none; } .editor-column { width:100%; } .command-bar,.header-controls { display:none; } }
+
+/* Runtime layout reset: the legacy shell used a fixed header and viewport
+   padding. The new workspace owns the entire viewport instead. */
+html, body { width:100% !important; height:100% !important; }
+body { display:flex !important; flex-direction:column !important; min-height:100vh !important; overflow:hidden !important; }
+body > .header { position:static !important; inset:auto !important; width:auto !important; height:48px !important; min-height:48px !important; margin:0 !important; border-radius:0 !important; flex:0 0 48px !important; }
+body > .main-content { width:100% !important; height:auto !important; min-height:0 !important; padding:0 !important; flex:1 1 auto !important; overflow:hidden !important; }
+body > .main-content > .ide-shell { width:100% !important; height:100% !important; min-height:0 !important; }
+body > .footer { width:100% !important; height:25px !important; min-height:25px !important; margin:0 !important; border-radius:0 !important; flex:0 0 25px !important; }
+.ide-shell > .editor-column { grid-column:auto !important; grid-row:auto !important; width:auto !important; height:100% !important; }
+.ide-shell > .right-sidebar { grid-column:auto !important; grid-row:auto !important; width:auto !important; height:100% !important; }
+@media (max-width:760px) { body { overflow:auto !important; } body > .main-content { overflow:hidden !important; } body > .main-content > .ide-shell { display:flex !important; height:100% !important; } body > .main-content > .ide-shell > .activity-bar, body > .main-content > .ide-shell > .workspace-sidebar, body > .main-content > .ide-shell > .right-sidebar { display:none !important; } body > .main-content > .ide-shell > .editor-column { display:flex !important; width:100% !important; flex:1 1 auto !important; } }
+
+/* Reference visual: compact dark browser-like chrome and high-density workspace. */
+[data-theme="light"] body, [data-theme="github-light"] body, [data-theme="solarized-light"] body { --bg:#171717; --bg-dark:#202020; --bg-darker:#111111; --bg-highlight:#292929; --border:#343434; --fg:#d7d7d7; --fg-dark:#a9a9a9; --comment:#777; --panel-header-bg:#202020; --panel-header-fg:#c9c9c9; }
+body > .header { background:#3b3b3b !important; border-bottom:1px solid #4b4b4b !important; }
+.header-logo { min-width:245px !important; gap:8px !important; }
+.header-logo .logo-img { height:25px !important; width:auto; }
+.header-logo .logo-text { color:#bdbdbd !important; font-size:13px !important; font-weight:400 !important; }
+.beta-tag { display:none !important; }
+.top-menu { display:none !important; }
+.command-bar { max-width:none !important; height:27px !important; background:#484848 !important; border-color:#5b5b5b !important; }
+.command-bar input { color:#dedede !important; }
+.command-bar kbd { display:none !important; }
+.header-controls { display:none !important; }
+.header-actions { margin-left:12px; }
+.header-actions .toolbar-btn { color:#d0d0d0 !important; padding:5px !important; }
+.ide-shell { grid-template-columns:42px 258px minmax(420px,1fr) 334px !important; background:#111 !important; }
+.activity-bar { background:#262626 !important; border-color:#414141 !important; }
+.workspace-sidebar { background:#191919 !important; border-color:#3d3d3d !important; }
+.workspace-sidebar-header,.debug-header { height:35px !important; color:#bdbdbd !important; }
+.sidebar-actions { justify-content:flex-start; padding:3px 9px 6px !important; border-bottom:1px solid #333 !important; }
+.workspace-search { background:#101010 !important; border-radius:18px !important; height:29px; }
+.file-item,.doc-item { color:#aaa !important; background:transparent !important; border:0 !important; }
+.file-item:hover,.doc-item:hover,.file-item.active { background:#303039 !important; color:#e0e0e0 !important; }
+.doc-item { display:block !important; width:calc(100% - 14px); text-align:left; border-radius:4px !important; }
+.editor-column { background:#0f0f0f !important; }
+.editor-panel .CodeMirror, .editor-panel .CodeMirror-gutters { background:#101010 !important; color:#c8c8c8 !important; }
+.editor-panel .CodeMirror-gutters { border-right:1px solid #202020 !important; }
+.editor-panel .CodeMirror-linenumber { color:#27b7d8 !important; }
+.editor-panel .CodeMirror-cursor { border-left-color:#e5e5e5 !important; }
+.editor-panel .CodeMirror-activeline-background { background:#151515 !important; }
+.tab-bar { height:35px !important; background:#191919 !important; border-color:#383838 !important; }
+.tab-item { background:#242424 !important; color:#c5c5c5 !important; border-right:1px solid #3c3c3c !important; }
+.editor-panel { background:#101010 !important; }
+.right-sidebar { background:#191919 !important; border-color:#3d3d3d !important; }
+.debug-controls { background:#191919 !important; padding:9px 12px !important; }
+.debug-controls button { background:#303030 !important; color:#ddd !important; }
+.problems-panel { background:#151515 !important; border-color:#333 !important; }
+.right-sidebar .variables-panel,.right-sidebar .terminal-panel { background:#191919 !important; }
+.panel-header { background:#202020 !important; color:#bdbdbd !important; border-color:#333 !important; }
+.footer { background:#3b3b3b !important; border-color:#4b4b4b !important; }
+
+/* Runtime layout reset: the legacy shell used a fixed header and viewport
+   padding. The new workspace owns the entire viewport instead. */
+html, body { width:100%; height:100%; }
+body { display:flex; flex-direction:column; min-height:100vh; overflow:hidden; }
+body > .header { position:static; inset:auto; width:auto; height:48px; min-height:48px; margin:0; border-radius:0; flex:0 0 48px; }
+body > .main-content { width:100%; height:auto; min-height:0; padding:0; flex:1 1 auto; overflow:hidden; }
+body > .main-content > .ide-shell { width:100%; height:100%; min-height:0; }
+body > .footer { width:100%; height:25px; min-height:25px; margin:0; border-radius:0; flex:0 0 25px; }
+.ide-shell > .editor-column { grid-column:auto; grid-row:auto; width:auto; height:100%; }
+.ide-shell > .right-sidebar { grid-column:auto; grid-row:auto; width:auto; height:100%; }
+@media (max-width:760px) { body { overflow:auto; } body > .main-content { overflow:hidden; } body > .main-content > .ide-shell { height:100%; } }
+
+/* ============================================
+   IDE workspace (new interface)
+   ============================================ */
+.header { height: 48px; padding: 0 12px; gap: 14px; background: var(--bg-dark); border-bottom: 1px solid var(--border); }
+.header-logo { min-width: 188px; }
+.header-logo .logo-img { height: 30px !important; }
+.top-menu { display:flex; gap:2px; }
+.top-menu-btn { border:0; background:transparent; color:var(--fg-dark); padding:7px 8px; border-radius:5px; font-size:12px; cursor:pointer; }
+.top-menu-btn:hover { background:var(--bg-highlight); color:var(--fg); }
+.command-bar { display:flex; align-items:center; gap:8px; height:30px; flex:1; max-width:620px; margin:auto; padding:0 9px; background:var(--bg-highlight); border:1px solid var(--border); border-radius:5px; color:var(--comment); }
+.command-bar svg { width:15px; }
+.command-bar input { flex:1; min-width:0; border:0; outline:0; background:transparent; color:var(--fg); font-size:12px; }
+.command-bar kbd { color:var(--comment); font-size:10px; white-space:nowrap; }
+.header-controls { display:flex; gap:5px; order:3; }
+.controls-file { display:none; }
+.header-actions { order:4; }
+.main-content { padding:0; min-height:0; }
+.ide-shell { display:grid; grid-template-columns:42px 250px minmax(360px,1fr) 310px; height:100%; min-height:0; background:var(--bg-darker); gap:0; }
+.activity-bar { background:var(--bg-dark); border-right:1px solid var(--border); padding-top:8px; display:flex; flex-direction:column; align-items:center; gap:8px; }
+.activity-btn { width:38px; height:54px; border:0; border-left:2px solid transparent; background:transparent; color:var(--comment); cursor:pointer; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:4px; font-size:8px; }
+.activity-btn svg { width:19px; height:19px; }
+.activity-btn:hover,.activity-btn.active { color:var(--fg); border-left-color:var(--blue); background:var(--bg-highlight); }
+.workspace-sidebar { min-width:0; background:var(--bg-dark); border-right:1px solid var(--border); overflow:auto; }
+.workspace-sidebar-header,.debug-header { height:38px; padding:0 10px; display:flex; align-items:center; justify-content:space-between; color:var(--fg-dark); font-size:11px; letter-spacing:.04em; }
+.icon-btn,.sidebar-actions button,.tree-heading button { border:0; background:transparent; color:var(--comment); cursor:pointer; padding:5px; border-radius:4px; }
+.icon-btn:hover,.sidebar-actions button:hover,.tree-heading button:hover { color:var(--fg); background:var(--bg-highlight); }
+.icon-btn svg,.sidebar-actions svg,.tree-heading svg { width:15px; height:15px; }
+.sidebar-actions { display:flex; gap:2px; padding:0 8px 8px; border-bottom:1px solid var(--border); }
+.workspace-search { margin:8px; padding:5px 8px; display:flex; gap:6px; align-items:center; background:var(--bg-darker); border-radius:5px; color:var(--comment); }
+.workspace-search svg { width:15px; }
+.workspace-search input { width:100%; background:transparent; border:0; outline:0; color:var(--fg); font-size:11px; }
+.tree-heading { display:flex; align-items:center; justify-content:space-between; padding:8px 10px 5px; color:var(--comment); font-size:10px; }
+.tree-heading span { display:flex; align-items:center; gap:4px; }
+.tree-heading span svg { width:12px; }
+.docs-tree { margin-top:14px; border-top:1px solid var(--border); }
+.file-item,.doc-item { display:flex; align-items:center; gap:8px; margin:2px 7px; padding:7px 8px; color:var(--fg-dark); border-radius:4px; cursor:pointer; font-size:12px; }
+.file-item:hover,.doc-item:hover,.file-item.active { background:var(--bg-highlight); color:var(--fg); }
+.file-item.active { border-left:2px solid var(--green); padding-left:6px; }
+.file-item svg { width:14px; color:var(--green); }
+.file-item .file-close { margin-left:auto; opacity:.5; }
+.doc-item { font-size:11px; }
+.editor-column { min-width:0; min-height:0; display:flex; flex-direction:column; background:var(--bg); }
+.tab-bar { height:38px; flex-shrink:0; background:var(--bg-dark); border-bottom:1px solid var(--border); }
+.tab-item { max-width:230px; }
+.editor-panel { flex:1; min-height:0; }
+.right-sidebar { min-width:0; min-height:0; display:flex; flex-direction:column; background:var(--bg-dark); border-left:1px solid var(--border); overflow:hidden; }
+.debug-header { border-bottom:1px solid var(--border); }
+.debug-controls { display:flex; gap:8px; padding:10px 12px; border-bottom:1px solid var(--border); }
+.debug-controls button { width:27px; height:27px; border:0; border-radius:50%; display:grid; place-items:center; background:var(--bg-highlight); color:var(--fg); cursor:pointer; }
+.debug-controls button:first-child { color:var(--green); }
+.debug-controls button:hover { background:var(--blue); color:var(--bg-dark); }
+.debug-controls svg { width:15px; }
+.problems-panel { min-height:105px; max-height:190px; overflow:auto; border-bottom:1px solid var(--border); }
+.right-section-title { display:flex; justify-content:space-between; padding:10px 12px 7px; color:var(--comment); font-size:10px; letter-spacing:.05em; }
+.right-section-title span:last-child { background:var(--bg-highlight); border-radius:8px; padding:1px 6px; }
+.empty-state { display:flex; align-items:center; gap:7px; padding:10px 12px; color:var(--comment); font-size:11px; }
+.empty-state svg { width:14px; color:var(--green); }
+.right-sidebar .variables-panel,.right-sidebar .terminal-panel { width:auto; height:auto; min-height:0; border:0; border-bottom:1px solid var(--border); border-radius:0; box-shadow:none; }
+.right-sidebar .variables-panel { flex:0 0 165px; }
+.right-sidebar .terminal-panel { flex:1; }
+.right-sidebar .panel-header { height:34px; font-size:10px; letter-spacing:.05em; }
+.right-sidebar .panel-body { overflow:auto; }
+.footer { height:25px; min-height:25px; font-size:10px; }
+.footer-item { padding:3px 8px; }
+.grid-container { display:contents; }
+.section-hidden { display:none !important; }
+body.sidebar-left-collapsed .ide-shell { grid-template-columns:42px minmax(360px,1fr) 310px; }
+body.sidebar-left-collapsed .workspace-sidebar { display:none; }
+body.sidebar-right-collapsed .ide-shell { grid-template-columns:42px 250px minmax(360px,1fr); }
+body.sidebar-right-collapsed .right-sidebar { display:none; }
+@media (max-width: 1050px) { .ide-shell { grid-template-columns:38px 210px minmax(300px,1fr) 260px; } .top-menu { display:none; } .header-logo { min-width:145px; } }
+@media (max-width: 760px) { .ide-shell { display:flex; } .activity-bar { display:none; } .workspace-sidebar,.right-sidebar { display:none; } .editor-column { width:100%; } .command-bar { display:none; } .header-controls { display:none; } }
+
 [data-theme="dark-monokai"] {
     /* Dark Monokai */
     --bg:            #272822;
@@ -2081,3 +2237,22 @@ body.resizing {
         background: rgba(0, 0, 0, 0.5);
     }
 }
+
+/* Final workspace precedence */
+.header { height:48px; padding:0 12px; gap:14px; background:var(--bg-dark); border-bottom:1px solid var(--border); }
+.header-logo { min-width:188px; } .header-logo .logo-img { height:30px !important; }
+.top-menu { display:flex; gap:2px; } .top-menu-btn { border:0; background:transparent; color:var(--fg-dark); padding:7px 8px; border-radius:5px; font-size:12px; cursor:pointer; } .top-menu-btn:hover { background:var(--bg-highlight); color:var(--fg); }
+.command-bar { display:flex; align-items:center; gap:8px; height:30px; flex:1; max-width:620px; margin:auto; padding:0 9px; background:var(--bg-highlight); border:1px solid var(--border); border-radius:5px; color:var(--comment); } .command-bar svg { width:15px; } .command-bar input { flex:1; min-width:0; border:0; outline:0; background:transparent; color:var(--fg); font-size:12px; } .command-bar kbd { color:var(--comment); font-size:10px; white-space:nowrap; }
+.header-controls { display:flex; gap:5px; order:3; } .controls-file { display:none; } .header-actions { order:4; }
+.main-content { padding:0; min-height:0; } .ide-shell { display:grid; grid-template-columns:42px 250px minmax(360px,1fr) 310px; height:100%; min-height:0; background:var(--bg-darker); gap:0; }
+.activity-bar { background:var(--bg-dark); border-right:1px solid var(--border); padding-top:8px; display:flex; flex-direction:column; align-items:center; gap:8px; } .activity-btn { width:38px; height:54px; border:0; border-left:2px solid transparent; background:transparent; color:var(--comment); cursor:pointer; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:4px; font-size:8px; } .activity-btn svg { width:19px; height:19px; } .activity-btn:hover,.activity-btn.active { color:var(--fg); border-left-color:var(--blue); background:var(--bg-highlight); }
+.workspace-sidebar { min-width:0; background:var(--bg-dark); border-right:1px solid var(--border); overflow:auto; } .workspace-sidebar-header,.debug-header { height:38px; padding:0 10px; display:flex; align-items:center; justify-content:space-between; color:var(--fg-dark); font-size:11px; letter-spacing:.04em; } .icon-btn,.sidebar-actions button,.tree-heading button { border:0; background:transparent; color:var(--comment); cursor:pointer; padding:5px; border-radius:4px; } .icon-btn:hover,.sidebar-actions button:hover,.tree-heading button:hover { color:var(--fg); background:var(--bg-highlight); } .icon-btn svg,.sidebar-actions svg,.tree-heading svg { width:15px; height:15px; }
+.sidebar-actions { display:flex; gap:2px; padding:0 8px 8px; border-bottom:1px solid var(--border); } .workspace-search { margin:8px; padding:5px 8px; display:flex; gap:6px; align-items:center; background:var(--bg-darker); border-radius:5px; color:var(--comment); } .workspace-search svg { width:15px; } .workspace-search input { width:100%; background:transparent; border:0; outline:0; color:var(--fg); font-size:11px; } .tree-heading { display:flex; align-items:center; justify-content:space-between; padding:8px 10px 5px; color:var(--comment); font-size:10px; } .tree-heading span { display:flex; align-items:center; gap:4px; } .tree-heading span svg { width:12px; }
+.docs-tree { margin-top:14px; border-top:1px solid var(--border); } .file-item,.doc-item { display:flex; align-items:center; gap:8px; margin:2px 7px; padding:7px 8px; color:var(--fg-dark); border-radius:4px; cursor:pointer; font-size:12px; } .file-item:hover,.doc-item:hover,.file-item.active { background:var(--bg-highlight); color:var(--fg); } .file-item.active { border-left:2px solid var(--green); padding-left:6px; } .file-item svg { width:14px; color:var(--green); } .file-item .file-close { margin-left:auto; opacity:.5; } .doc-item { font-size:11px; }
+.editor-column { grid-column:auto; grid-row:auto; min-width:0; min-height:0; display:flex; flex-direction:column; background:var(--bg); } .tab-bar { height:38px; flex-shrink:0; background:var(--bg-dark); border-bottom:1px solid var(--border); } .editor-panel { flex:1; min-height:0; }
+.right-sidebar { min-width:0; min-height:0; display:flex; flex-direction:column; background:var(--bg-dark); border-left:1px solid var(--border); overflow:hidden; } .debug-header { border-bottom:1px solid var(--border); } .debug-controls { display:flex; gap:8px; padding:10px 12px; border-bottom:1px solid var(--border); } .debug-controls button { width:27px; height:27px; border:0; border-radius:50%; display:grid; place-items:center; background:var(--bg-highlight); color:var(--fg); cursor:pointer; } .debug-controls button:first-child { color:var(--green); } .debug-controls button:hover { background:var(--blue); color:var(--bg-dark); } .debug-controls svg { width:15px; }
+.problems-panel { min-height:105px; max-height:190px; overflow:auto; border-bottom:1px solid var(--border); } .right-section-title { display:flex; justify-content:space-between; padding:10px 12px 7px; color:var(--comment); font-size:10px; letter-spacing:.05em; } .right-section-title span:last-child { background:var(--bg-highlight); border-radius:8px; padding:1px 6px; } .empty-state { display:flex; align-items:center; gap:7px; padding:10px 12px; color:var(--comment); font-size:11px; } .empty-state svg { width:14px; color:var(--green); }
+.right-sidebar .variables-panel,.right-sidebar .terminal-panel { width:auto; height:auto; min-height:0; border:0; border-bottom:1px solid var(--border); border-radius:0; box-shadow:none; } .right-sidebar .variables-panel { flex:0 0 165px; } .right-sidebar .terminal-panel { flex:1; } .right-sidebar .panel-header { height:34px; font-size:10px; letter-spacing:.05em; } .right-sidebar .panel-body { overflow:auto; }
+.footer { height:25px; min-height:25px; font-size:10px; } .footer-item { padding:3px 8px; } .grid-container { display:contents; } .section-hidden { display:none !important; }
+body.sidebar-left-collapsed .ide-shell { grid-template-columns:42px minmax(360px,1fr) 310px; } body.sidebar-left-collapsed .workspace-sidebar { display:none; } body.sidebar-right-collapsed .ide-shell { grid-template-columns:42px 250px minmax(360px,1fr); } body.sidebar-right-collapsed .right-sidebar { display:none; }
+@media (max-width:1050px) { .ide-shell { grid-template-columns:38px 210px minmax(300px,1fr) 260px; } .top-menu { display:none; } .header-logo { min-width:145px; } } @media (max-width:760px) { .ide-shell { display:flex; } .activity-bar,.workspace-sidebar,.right-sidebar { display:none; } .editor-column { width:100%; } .command-bar,.header-controls { display:none; } }
