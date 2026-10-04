@@ -22,6 +22,10 @@
     var SECTION_VISIBILITY_KEY = 'visualg-section-visibility-v1';
     var sectionVisibility = { editor: true, variables: true, terminal: true };
 
+    function isCompactInterface() {
+        return window.innerWidth <= 760 || (window.innerWidth <= 950 && window.innerHeight <= 500);
+    }
+
     document.addEventListener('DOMContentLoaded', function () {
         // Initialize modules
         editor.init(document.getElementById('codemirror-host'));
@@ -69,6 +73,7 @@
         initTheme();
         initSettings();
         initSettingsWheelControls();
+        initMobileEditing();
 
         // Initialize tab manager and make its persistence visible to the user.
         tabManager.init();
@@ -118,12 +123,21 @@
         // Mobile menu
         var mobileMenu = document.getElementById('mobile-menu');
         var btnMenu = document.getElementById('btn-menu');
+        new MutationObserver(function () {
+            var open = mobileMenu.classList.contains('open');
+            btnMenu.setAttribute('aria-expanded', String(open));
+            btnMenu.setAttribute('aria-label', open ? 'Fechar menu' : 'Abrir menu');
+        }).observe(mobileMenu, { attributes: true, attributeFilter: ['class'] });
         btnMenu.addEventListener('click', function (e) {
             e.stopPropagation();
             mobileMenu.classList.toggle('open');
+            btnMenu.setAttribute('aria-expanded', String(mobileMenu.classList.contains('open')));
         });
         document.addEventListener('pointerdown', function (event) {
-            if (!event.target.closest('#mobile-menu, #btn-menu')) mobileMenu.classList.remove('open');
+            if (!event.target.closest('#mobile-menu, #btn-menu')) {
+                mobileMenu.classList.remove('open');
+                btnMenu.setAttribute('aria-expanded', 'false');
+            }
         });
         mobileMenu.addEventListener('click', function (e) {
             e.stopPropagation();
@@ -147,6 +161,18 @@
         document.getElementById('mobile-settings').addEventListener('click', function () {
             mobileMenu.classList.remove('open');
             openSettings();
+        });
+        document.getElementById('mobile-run').addEventListener('click', function () {
+            mobileMenu.classList.remove('open');
+            btnRun.click();
+        });
+        document.getElementById('mobile-step').addEventListener('click', function () {
+            mobileMenu.classList.remove('open');
+            btnStep.click();
+        });
+        document.getElementById('mobile-stop').addEventListener('click', function () {
+            mobileMenu.classList.remove('open');
+            btnStop.click();
         });
         btnClearTerminal = document.getElementById('btn-clear-terminal');
         btnClearTerminal.addEventListener('click', function () {
@@ -703,8 +729,8 @@
                 }
                 if (index !== control.selectedIndex) {
                     control.selectedIndex = index;
-                    control.dispatchEvent(new Event('input', { bubbles: true }));
-                    control.dispatchEvent(new Event('change', { bubbles: true }));
+                    control.dispatchEvent(new window.Event('input', { bubbles: true }));
+                    control.dispatchEvent(new window.Event('change', { bubbles: true }));
                 }
                 return;
             }
@@ -720,9 +746,197 @@
                 var max = control.max === '' ? Infinity : Number(control.max);
                 control.value = String(Math.max(min, Math.min(max, value - steps * step)));
             }
-            control.dispatchEvent(new Event('input', { bubbles: true }));
-            control.dispatchEvent(new Event('change', { bubbles: true }));
+            control.dispatchEvent(new window.Event('input', { bubbles: true }));
+            control.dispatchEvent(new window.Event('change', { bubbles: true }));
         }, { passive: false, capture: true });
+    }
+
+    function initMobileEditing() {
+        var toolbar = document.getElementById('mobile-code-toolbar');
+        var suggestions = document.getElementById('mobile-autocomplete-suggestions');
+        var loupe = document.getElementById('mobile-cursor-loupe');
+        var cursorRevealTimers = [];
+        var mobileInputField = editor.instance.getInputField();
+        var mobileInputComposing = false;
+        var lastMobileInputAt = 0;
+        var loupeTimer = null;
+        var loupeStart = null;
+        if (!toolbar || !editor.instance) return;
+
+        function usesMobileLayout() {
+            return isCompactInterface();
+        }
+
+        function syncCompactWordWrap() {
+            var saved = localStorage.getItem('visualg-word-wrap') || 'off';
+            var effective = usesMobileLayout() ? 'on' : saved;
+            var enabled = effective === 'on';
+            if (editor.instance.getOption('lineWrapping') !== enabled) editor.instance.setOption('lineWrapping', enabled);
+            if (settingWordWrap) settingWordWrap.value = effective;
+        }
+
+        function cancelCursorReveal() {
+            cursorRevealTimers.forEach(window.clearTimeout);
+            cursorRevealTimers = [];
+        }
+
+        function updateViewport() {
+            var viewport = window.visualViewport;
+            var height = viewport ? viewport.height : window.innerHeight;
+            var top = viewport ? viewport.offsetTop : 0;
+            var bottom = top + height;
+            document.documentElement.style.setProperty('--visual-viewport-height', Math.round(height) + 'px');
+            document.documentElement.style.setProperty('--visual-viewport-top', Math.round(top) + 'px');
+            document.documentElement.style.setProperty('--visual-viewport-bottom', Math.round(bottom) + 'px');
+            document.body.classList.toggle('mobile-keyboard-open', usesMobileLayout() && window.innerHeight - height > 100);
+            syncCompactWordWrap();
+            if (usesMobileLayout()) scheduleCursorReveal();
+        }
+
+        function revealCursor() {
+            var panel = document.getElementById('editorPanel');
+            if (!usesMobileLayout() || !editor.instance.hasFocus() || !panel || panel.classList.contains('hidden')) return;
+            if (mobileInputComposing || Date.now() - lastMobileInputAt < 250) return;
+            var cm = editor.instance;
+            var viewport = window.visualViewport;
+            var viewportTop = viewport ? viewport.offsetTop : 0;
+            var viewportHeight = viewport ? viewport.height : window.innerHeight;
+            var visibleTop = viewportTop + 96;
+            var visibleBottom = viewportTop + viewportHeight - 54;
+            cm.scrollIntoView(cm.getCursor(), Math.min(90, Math.max(42, viewportHeight * .18)));
+            var coordinates = cm.cursorCoords(cm.getCursor(), 'window');
+            var scroller = cm.getScrollerElement();
+            if (coordinates.bottom > visibleBottom) scroller.scrollTop += coordinates.bottom - visibleBottom + 10;
+            else if (coordinates.top < visibleTop) scroller.scrollTop -= visibleTop - coordinates.top + 10;
+        }
+
+        function scheduleCursorReveal() {
+            cancelCursorReveal();
+            if (mobileInputComposing || Date.now() - lastMobileInputAt < 250) return;
+            cursorRevealTimers = [60, 220].map(function (delay) {
+                return window.setTimeout(function () { window.requestAnimationFrame(revealCursor); }, delay);
+            });
+        }
+
+        function showToolbar() {
+            if (!usesMobileLayout()) return;
+            document.body.classList.add('mobile-editor-focused');
+            toolbar.setAttribute('aria-hidden', 'false');
+            updateViewport();
+        }
+
+        function hideToolbar() {
+            document.body.classList.remove('mobile-editor-focused');
+            toolbar.setAttribute('aria-hidden', 'true');
+        }
+
+        editor.instance.on('focus', showToolbar);
+        mobileInputField.addEventListener('compositionstart', function () {
+            mobileInputComposing = true;
+            cancelCursorReveal();
+        });
+        mobileInputField.addEventListener('compositionend', function () {
+            mobileInputComposing = false;
+            lastMobileInputAt = Date.now();
+            cancelCursorReveal();
+        });
+        mobileInputField.addEventListener('input', function () {
+            lastMobileInputAt = Date.now();
+            cancelCursorReveal();
+        });
+        editor.instance.on('blur', function () {
+            window.setTimeout(function () {
+                if (!toolbar.contains(document.activeElement) && !document.activeElement.closest('.CodeMirror')) hideToolbar();
+            }, 120);
+        });
+        document.addEventListener('focusin', function (event) {
+            if (!event.target.closest('.CodeMirror, #mobile-code-toolbar')) hideToolbar();
+            if (usesMobileLayout() && event.target.matches('input, textarea, select, [contenteditable="true"]')) {
+                window.setTimeout(function () { event.target.scrollIntoView({ block: 'nearest', inline: 'nearest' }); }, 80);
+            }
+        });
+        toolbar.addEventListener('pointerdown', function (event) { event.preventDefault(); });
+        toolbar.addEventListener('click', function (event) {
+            var button = event.target.closest('button');
+            if (!button) return;
+            if (button.dataset.autocompleteIndex !== undefined) editor.acceptAutocomplete(Number(button.dataset.autocompleteIndex));
+            else if (button.dataset.editorPair) editor.insertPair(button.dataset.editorPair);
+            else if (button.dataset.editorText) editor.insertText(button.dataset.editorText);
+            else if (button.dataset.editorAction === 'indent') editor.indent();
+            else if (button.dataset.editorAction === 'cursor-left') editor.moveCursor(-1);
+            else if (button.dataset.editorAction === 'cursor-right') editor.moveCursor(1);
+            showToolbar();
+        });
+        document.addEventListener('visualg:autocomplete-suggestions', function (event) {
+            if (!suggestions) return;
+            var items = event.detail && event.detail.items ? event.detail.items : [];
+            suggestions.replaceChildren();
+            items.forEach(function (item, index) {
+                var button = document.createElement('button');
+                button.type = 'button';
+                button.className = 'mobile-autocomplete-item';
+                button.dataset.autocompleteIndex = String(index);
+                button.textContent = item;
+                if (index === event.detail.selectedIndex) button.classList.add('selected');
+                suggestions.appendChild(button);
+            });
+            suggestions.hidden = !items.length;
+            if (items.length) toolbar.scrollTo({ left: 0, behavior: 'smooth' });
+        });
+        function touchPoint(event) {
+            var touch = event.touches && event.touches[0] ? event.touches[0] : event.changedTouches && event.changedTouches[0];
+            return touch ? { x: touch.clientX, y: touch.clientY } : null;
+        }
+        function hideLoupe() {
+            window.clearTimeout(loupeTimer);
+            loupeTimer = null;
+            loupeStart = null;
+            if (loupe) { loupe.hidden = true; loupe.setAttribute('aria-hidden', 'true'); }
+        }
+        function updateLoupe(point) {
+            if (!loupe || !point || !usesMobileLayout()) return;
+            var cm = editor.instance;
+            var position = cm.coordsChar({ left: point.x, top: point.y }, 'window');
+            var line = cm.getLine(position.line) || '';
+            var start = Math.max(0, position.ch - 13);
+            var end = Math.min(line.length, position.ch + 13);
+            loupe.querySelector('.mobile-cursor-loupe-line').textContent = 'Linha ' + (position.line + 1);
+            loupe.querySelector('.mobile-cursor-loupe-code').textContent = (start ? '…' : '') + line.slice(start, position.ch) + '│' + line.slice(position.ch, end) + (end < line.length ? '…' : '');
+            loupe.hidden = false;
+            loupe.setAttribute('aria-hidden', 'false');
+            var viewport = window.visualViewport;
+            var leftLimit = viewport ? viewport.offsetLeft : 0;
+            var topLimit = viewport ? viewport.offsetTop : 0;
+            var viewportWidth = viewport ? viewport.width : window.innerWidth;
+            var loupeWidth = loupe.offsetWidth;
+            loupe.style.left = Math.max(leftLimit + 8, Math.min(point.x - loupeWidth / 2, leftLimit + viewportWidth - loupeWidth - 8)) + 'px';
+            loupe.style.top = Math.max(topLimit + 8, point.y - 142) + 'px';
+        }
+        var editorWrapper = editor.instance.getWrapperElement();
+        editorWrapper.addEventListener('touchstart', function (event) {
+            if (!usesMobileLayout() || !event.touches || event.touches.length !== 1) return;
+            hideLoupe();
+            loupeStart = touchPoint(event);
+            loupeTimer = window.setTimeout(function () { updateLoupe(loupeStart); }, 260);
+        }, { passive: true });
+        editorWrapper.addEventListener('touchmove', function (event) {
+            var point = touchPoint(event);
+            if (!point || !loupeStart) return;
+            if (loupe && !loupe.hidden) updateLoupe(point);
+            else if (Math.hypot(point.x - loupeStart.x, point.y - loupeStart.y) > 12) hideLoupe();
+        }, { passive: true });
+        editorWrapper.addEventListener('touchend', hideLoupe, { passive: true });
+        editorWrapper.addEventListener('touchcancel', hideLoupe, { passive: true });
+        new MutationObserver(function () {
+            if (document.getElementById('editorPanel').classList.contains('hidden')) hideToolbar();
+        }).observe(document.getElementById('editorPanel'), { attributes: true, attributeFilter: ['class'] });
+        window.addEventListener('resize', updateViewport);
+        window.addEventListener('orientationchange', function () { window.setTimeout(updateViewport, 120); });
+        if (window.visualViewport) {
+            window.visualViewport.addEventListener('resize', updateViewport);
+            window.visualViewport.addEventListener('scroll', updateViewport);
+        }
+        updateViewport();
     }
 
     function initSettings() {
@@ -799,9 +1013,10 @@
     }
 
     function applyWordWrap(value) {
-        editor.instance.setOption('lineWrapping', value === 'on');
+        var effective = isCompactInterface() ? 'on' : value;
+        editor.instance.setOption('lineWrapping', effective === 'on');
         localStorage.setItem('visualg-word-wrap', value);
-        if (settingWordWrap) settingWordWrap.value = value;
+        if (settingWordWrap) settingWordWrap.value = effective;
     }
 
     function applyTabSize(value) {
@@ -992,6 +1207,12 @@
         if (debugRun) debugRun.disabled = false;
         if (debugStart) debugStart.disabled = running;
         btnStop.disabled = !running;
+        var mobileRun = document.getElementById('mobile-run');
+        var mobileStep = document.getElementById('mobile-step');
+        var mobileStop = document.getElementById('mobile-stop');
+        if (mobileRun) mobileRun.disabled = btnRun.disabled;
+        if (mobileStep) mobileStep.disabled = btnStep.disabled;
+        if (mobileStop) mobileStop.disabled = btnStop.disabled;
         btnClearTerminal.disabled = running;
         btnClearVars.disabled = running;
         var debugControls = document.getElementById('debug-session-controls');

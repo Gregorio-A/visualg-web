@@ -3,7 +3,7 @@
 
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, interactive-widget=resizes-content">
     <meta http-equiv="Content-Security-Policy" content="default-src 'self'; base-uri 'none'; object-src 'none'; frame-ancestors 'none'; form-action 'none'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; font-src 'self'; connect-src 'self'">
     <title>VisuAlg Web - Editor Online de Portugol e Pseudocódigo</title>
 
@@ -81,10 +81,19 @@
             <button id="btn-toggle-left" class="toolbar-btn panel-toggle left-toggle" title="Ocultar arquivos" aria-label="Ocultar arquivos" aria-pressed="true"><i data-lucide="panel-left-close"></i></button>
             <button id="btn-toggle-right" class="toolbar-btn panel-toggle right-toggle" title="Ocultar depuração" aria-label="Ocultar depuração" aria-pressed="true"><i data-lucide="panel-right-close"></i></button>
             <button id="btn-settings" class="toolbar-btn" title="Configurações" aria-label="Configurações" aria-pressed="false"><i data-lucide="sliders-horizontal"></i></button>
-            <button id="btn-menu" class="toolbar-btn btn-menu" title="Menu"><i data-lucide="menu"></i></button>
+            <button id="btn-menu" class="toolbar-btn btn-menu" title="Menu" aria-label="Abrir menu" aria-expanded="false" aria-controls="mobile-menu"><i data-lucide="menu"></i></button>
         </div>
         <!-- Mobile menu -->
         <div class="mobile-menu" id="mobile-menu">
+            <div class="mobile-menu-shortcuts" aria-label="Ações rápidas de execução">
+                <button class="mobile-menu-shortcut" id="mobile-run" type="button"><i data-lucide="play"></i><span>Executar</span></button>
+                <button class="mobile-menu-shortcut" id="mobile-step" type="button"><i data-lucide="skip-forward"></i><span>Passo</span></button>
+                <button class="mobile-menu-shortcut mobile-stop" id="mobile-stop" type="button" disabled><i data-lucide="square"></i><span>Parar</span></button>
+            </div>
+            <div class="mobile-menu-shortcuts mobile-history-shortcuts" aria-label="Histórico de navegação">
+                <button class="mobile-menu-shortcut" id="mobile-nav-back" type="button" disabled><i data-lucide="arrow-left"></i><span>Voltar</span></button>
+                <button class="mobile-menu-shortcut" id="mobile-nav-forward" type="button" disabled><i data-lucide="arrow-right"></i><span>Avançar</span></button>
+            </div>
             <button class="mobile-menu-item" id="mobile-files"><i data-lucide="folder"></i> Arquivos e documentação</button>
             <button class="mobile-menu-item" id="mobile-editor"><i data-lucide="code-2"></i> Editor</button>
             <button class="mobile-menu-item" id="mobile-debug"><i data-lucide="play"></i> Execução e variáveis</button>
@@ -216,6 +225,25 @@
             </div>
         </div>
     </main>
+
+    <div class="mobile-code-toolbar" id="mobile-code-toolbar" role="toolbar" aria-label="Atalhos de programação" aria-hidden="true">
+        <div class="mobile-autocomplete-suggestions" id="mobile-autocomplete-suggestions" aria-label="Sugestões do autocomplete" hidden></div>
+        <button type="button" data-editor-action="indent" title="Indentar">Tab</button>
+        <button type="button" data-editor-pair="()" title="Inserir parênteses">( )</button>
+        <button type="button" data-editor-pair="&quot;&quot;" title="Inserir aspas">&quot; &quot;</button>
+        <button type="button" data-editor-text=":=" title="Atribuição">:=</button>
+        <button type="button" data-editor-text="&lt;&gt;" title="Diferente">&lt;&gt;</button>
+        <button type="button" data-editor-text="+" title="Soma">+</button>
+        <button type="button" data-editor-text="-" title="Subtração">−</button>
+        <button type="button" data-editor-text="*" title="Multiplicação">×</button>
+        <button type="button" data-editor-text="/" title="Divisão">÷</button>
+        <button type="button" data-editor-action="cursor-left" title="Mover cursor para a esquerda" aria-label="Mover cursor para a esquerda"><i data-lucide="arrow-left"></i></button>
+        <button type="button" data-editor-action="cursor-right" title="Mover cursor para a direita" aria-label="Mover cursor para a direita"><i data-lucide="arrow-right"></i></button>
+    </div>
+    <div class="mobile-cursor-loupe" id="mobile-cursor-loupe" aria-hidden="true" hidden>
+        <span class="mobile-cursor-loupe-line"></span>
+        <code class="mobile-cursor-loupe-code"></code>
+    </div>
 
     <!-- Settings Modal -->
     <div class="modal-overlay hidden" id="settingsOverlay">

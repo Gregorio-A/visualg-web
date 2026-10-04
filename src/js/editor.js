@@ -104,38 +104,157 @@
     var hintItems = [];
     var hintIndex = 0;
     var hintStart = null;
+    var mobileHintTimer = null;
+    var variableSourceCache = null;
+    var variableCompletionCache = [];
 
-    function closeHints() { if (hintMenu) hintMenu.remove(); hintMenu = null; hintItems = []; }
+    var IDENTIFIER_CHARS = 'A-Za-z0-9_' + ACCENT_CHARS;
+    var IDENTIFIER_PATTERN = '[A-Za-z_' + ACCENT_CHARS + '][' + IDENTIFIER_CHARS + ']*';
+    var DECLARED_NAMES_PATTERN = '(' + IDENTIFIER_PATTERN + '(?:\\s*,\\s*' + IDENTIFIER_PATTERN + ')*)';
+    var VARIABLE_TYPE_PATTERN = '(?:inteiro|real|numerico|numérico|caractere|caracter|caráter|literal|logico|lógico|vetor)';
+
+    function addDeclaredNames(group, result, seen) {
+        group.split(',').forEach(function (rawName) {
+            var name = rawName.trim();
+            var key = name.toLocaleLowerCase('pt-BR');
+            if (name && !seen[key]) {
+                seen[key] = true;
+                result.push(name);
+            }
+        });
+    }
+
+    function getDeclaredVariables(cm) {
+        var source = cm.getValue();
+        if (source === variableSourceCache) return variableCompletionCache;
+
+        var variables = [];
+        var seen = {};
+        var declarationPattern = new RegExp('^\\s*' + DECLARED_NAMES_PATTERN + '\\s*:\\s*' + VARIABLE_TYPE_PATTERN + '(?![' + IDENTIFIER_CHARS + '])', 'i');
+        var headerPattern = new RegExp('^\\s*(?:procedimento|funcao|função)\\s+' + IDENTIFIER_PATTERN + '\\s*\\((.*)\\)', 'i');
+
+        source.split('\n').forEach(function (sourceLine) {
+            var line = sourceLine.replace(/\/\/.*$/, '');
+            var declaration = declarationPattern.exec(line);
+            if (declaration) addDeclaredNames(declaration[1], variables, seen);
+
+            var header = headerPattern.exec(line);
+            if (!header) return;
+            var parameterPattern = new RegExp('(?:^|[;,])\\s*(?:var\\s+)?' + DECLARED_NAMES_PATTERN + '\\s*:\\s*' + VARIABLE_TYPE_PATTERN + '(?![' + IDENTIFIER_CHARS + '])', 'gi');
+            var parameter;
+            while ((parameter = parameterPattern.exec(header[1]))) addDeclaredNames(parameter[1], variables, seen);
+        });
+
+        variableSourceCache = source;
+        variableCompletionCache = variables;
+        return variables;
+    }
+
+    function usesMobileAutocomplete() {
+        return window.innerWidth <= 760 || (window.innerWidth <= 950 && window.innerHeight <= 500);
+    }
+    function publishMobileHints() {
+        document.dispatchEvent(new window.CustomEvent('visualg:autocomplete-suggestions', { detail: { items: hintItems.slice(), selectedIndex: hintIndex } }));
+    }
+    function closeHints() {
+        if (hintMenu) hintMenu.remove();
+        hintMenu = null;
+        hintItems = [];
+        hintStart = null;
+        publishMobileHints();
+    }
     function acceptHint(cm) {
-        if (!hintMenu || !hintItems.length) return false;
+        if (!hintItems.length || !hintStart) return false;
         var cursor = cm.getCursor(); cm.replaceRange(hintItems[hintIndex], hintStart, cursor); closeHints(); return true;
     }
     function showHints(cm, explicit) {
         closeHints();
         var cursor = cm.getCursor(); var before = cm.getLine(cursor.line).slice(0, cursor.ch);
         var match = /[A-Za-zÀ-ÿ][A-Za-zÀ-ÿ0-9_]*$/.exec(before);
-        if (!match || (!explicit && match[0].length < 2)) return;
-        var word = match[0].toLocaleLowerCase('pt-BR');
-        hintItems = completions.filter(function (entry) { return entry.startsWith(word) && entry !== word; }).slice(0, 8);
-        if (!hintItems.length) return;
-        hintStart = { line: cursor.line, ch: cursor.ch - match[0].length }; hintIndex = 0;
+        if (!match && !explicit) return false;
+        if (match && !explicit && match[0].length < (usesMobileAutocomplete() ? 1 : 2)) return false;
+        var word = match ? match[0].toLocaleLowerCase('pt-BR') : '';
+        var candidates = getDeclaredVariables(cm).concat(completions);
+        var seen = {};
+        hintItems = candidates.filter(function (entry) {
+            var normalized = entry.toLocaleLowerCase('pt-BR');
+            if (!normalized.startsWith(word) || normalized === word || seen[normalized]) return false;
+            seen[normalized] = true;
+            return true;
+        }).slice(0, 8);
+        if (!hintItems.length) return false;
+        hintStart = { line: cursor.line, ch: cursor.ch - (match ? match[0].length : 0) }; hintIndex = 0;
+        if (usesMobileAutocomplete()) {
+            publishMobileHints();
+            return true;
+        }
         hintMenu = document.createElement('div'); hintMenu.className = 'visualg-hints'; hintMenu.setAttribute('role', 'listbox');
         hintItems.forEach(function (entry, index) {
             var option = document.createElement('button'); option.type = 'button'; option.textContent = entry;
             if (index === 0) option.classList.add('selected');
-            option.addEventListener('mousedown', function (event) { event.preventDefault(); hintIndex = index; acceptHint(cm); cm.focus(); });
+            option.addEventListener('pointerdown', function (event) { event.preventDefault(); });
+            option.addEventListener('click', function () { hintIndex = index; acceptHint(cm); cm.focus(); });
             hintMenu.appendChild(option);
         });
         document.body.appendChild(hintMenu);
-        var coords = cm.cursorCoords(cursor, 'page');
-        hintMenu.style.left = Math.max(0, Math.min(coords.left, window.innerWidth - 200)) + 'px';
-        hintMenu.style.top = Math.min(coords.bottom + 4, window.innerHeight - hintMenu.offsetHeight - 8) + 'px';
+        var coords = cm.cursorCoords(cursor, 'window');
+        var viewport = window.visualViewport;
+        var viewportLeft = viewport ? viewport.offsetLeft : 0;
+        var viewportTop = viewport ? viewport.offsetTop : 0;
+        var viewportWidth = viewport ? viewport.width : window.innerWidth;
+        var viewportHeight = viewport ? viewport.height : window.innerHeight;
+        var toolbarSpace = document.body.classList.contains('mobile-editor-focused') ? 52 : 8;
+        hintMenu.style.left = Math.max(viewportLeft + 8, Math.min(coords.left, viewportLeft + viewportWidth - hintMenu.offsetWidth - 8)) + 'px';
+        hintMenu.style.top = Math.max(viewportTop + 8, Math.min(coords.bottom + 4, viewportTop + viewportHeight - hintMenu.offsetHeight - toolbarSpace)) + 'px';
+        return true;
     }
     function moveHint(delta) {
-        if (!hintMenu) return false;
+        if (!hintItems.length) return false;
         hintIndex = (hintIndex + delta + hintItems.length) % hintItems.length;
-        Array.prototype.forEach.call(hintMenu.children, function (item, index) { item.classList.toggle('selected', index === hintIndex); });
+        if (hintMenu) Array.prototype.forEach.call(hintMenu.children, function (item, index) { item.classList.toggle('selected', index === hintIndex); });
+        else publishMobileHints();
         return true;
+    }
+
+    function scheduleMobileHints(cm) {
+        if (!usesMobileAutocomplete()) return;
+        window.clearTimeout(mobileHintTimer);
+        mobileHintTimer = window.setTimeout(function () {
+            if (cm.hasFocus()) showHints(cm, false);
+        }, 45);
+    }
+
+    function completePairAfterMobileInput(cm, change) {
+        var mobileLayout = window.innerWidth <= 760 || (window.innerWidth <= 950 && window.innerHeight <= 500);
+        if (!mobileLayout || !change || change.origin !== '+input' || !change.text || change.text.length !== 1 || change.text[0].length !== 1) return;
+        var opening = change.text[0];
+        var pairs = { '(': ')', '[': ']', '{': '}', '"': '"' };
+        var closing = pairs[opening];
+        if (!closing) return;
+        var cursor = cm.getCursor();
+        var line = cm.getLine(cursor.line) || '';
+        if (line.charAt(cursor.ch) === closing) return;
+        if (opening === '"') {
+            var beforeQuote = line.slice(0, Math.max(0, cursor.ch - 1));
+            var quoteCount = (beforeQuote.match(/(^|[^\\])"/g) || []).length;
+            if (quoteCount % 2 === 1) return;
+        }
+        cm.operation(function () {
+            cm.replaceRange(closing, cursor, cursor, '+input');
+            cm.setCursor(cursor);
+        });
+    }
+
+    function replaceSelection(cm, text, cursorOffset) {
+        var selections = cm.listSelections();
+        cm.operation(function () {
+            cm.replaceSelections(selections.map(function () { return text; }), 'end', '+input');
+            if (selections.length === 1 && typeof cursorOffset === 'number') {
+                var cursor = cm.getCursor();
+                cm.setCursor({ line: cursor.line, ch: Math.max(0, cursor.ch - cursorOffset) });
+            }
+        });
+        cm.focus();
     }
 
     window.VisualGEditor = {
@@ -166,8 +285,19 @@
                 },
                 value: DEFAULT_PROGRAM
             });
-            this.instance.on('inputRead', function (cm) { showHints(cm, false); });
-            this.instance.on('blur', function () { window.setTimeout(closeHints, 150); });
+            this.instance.on('inputRead', function (cm, change) {
+                completePairAfterMobileInput(cm, change);
+                if (usesMobileAutocomplete()) scheduleMobileHints(cm);
+                else showHints(cm, false);
+            });
+            this.instance.on('change', function (cm, change) {
+                if (usesMobileAutocomplete() && change && change.origin !== 'setValue') scheduleMobileHints(cm);
+            });
+            this.instance.getInputField().addEventListener('compositionend', function () { scheduleMobileHints(window.VisualGEditor.instance); });
+            this.instance.getInputField().addEventListener('input', function () { scheduleMobileHints(window.VisualGEditor.instance); });
+            this.instance.on('blur', function (cm) {
+                window.setTimeout(function () { if (!cm.hasFocus()) closeHints(); }, 180);
+            });
 
             this.instance.on('renderLine', function (cm, line, el) {
                 if (!_guideColors) {
@@ -223,6 +353,43 @@
 
         setValue: function (code) {
             this.instance.setValue(code);
+        },
+
+        showAutocomplete: function () {
+            this.instance.focus();
+            return showHints(this.instance, true);
+        },
+
+        acceptAutocomplete: function (index) {
+            if (typeof index === 'number' && index >= 0 && index < hintItems.length) hintIndex = index;
+            var accepted = acceptHint(this.instance);
+            this.instance.focus();
+            return accepted;
+        },
+
+        insertText: function (text) {
+            replaceSelection(this.instance, text);
+        },
+
+        insertPair: function (pair) {
+            var cm = this.instance;
+            var selected = cm.getSelection();
+            if (selected) {
+                cm.replaceSelection(pair.charAt(0) + selected + pair.charAt(1), 'around', '+input');
+                cm.focus();
+                return;
+            }
+            replaceSelection(cm, pair, 1);
+        },
+
+        indent: function () {
+            this.instance.execCommand('insertSoftTab');
+            this.instance.focus();
+        },
+
+        moveCursor: function (direction) {
+            this.instance.execCommand(direction < 0 ? 'goCharLeft' : 'goCharRight');
+            this.instance.focus();
         },
 
         highlightLine: function (lineNumber, className) {

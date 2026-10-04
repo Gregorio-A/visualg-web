@@ -18,7 +18,14 @@ async function run() {
       value: { '2': 5 },
     },
   );
-  if (!/\[1\.\.2\]/.test(vectorPreview) || !/1: 0/.test(vectorPreview) || !/2: 5/.test(vectorPreview)) {
+  const vectorKeys = [];
+  window.VariablesPanel.collectVectorKeys([{ low: 1, high: 2 }], 0, [], vectorKeys);
+  const emptyVectorSignature = window.VariablesPanel.vectorValueSignature({});
+  const populatedVectorSignature = window.VariablesPanel.vectorValueSignature({ '2': 5 });
+  if (!/\[1\.\.2\]/.test(vectorPreview) ||
+      vectorKeys.join(',') !== '1,2' ||
+      window.VariablesPanel.defaultValue('inteiro') !== 0 ||
+      emptyVectorSignature === populatedVectorSignature) {
     throw new Error('painel de variaveis nao formatou vetor de forma inspecionavel');
   }
 

@@ -11,6 +11,12 @@ function createClassList() {
     add(...names) { names.forEach((name) => values.add(name)); },
     remove(...names) { names.forEach((name) => values.delete(name)); },
     contains(name) { return values.has(name); },
+    toggle(name, force) {
+      const enabled = force === undefined ? !values.has(name) : Boolean(force);
+      if (enabled) values.add(name);
+      else values.delete(name);
+      return enabled;
+    },
   };
 }
 
@@ -26,6 +32,8 @@ function createElement() {
     setAttribute(name, value) { this.attributes[name] = String(value); },
     getAttribute(name) { return this.attributes[name] || null; },
     appendChild(child) { this.children.push(child); return child; },
+    replaceChildren(...children) { this.children = children; },
+    scrollIntoView() {},
     closest() { return null; },
     querySelectorAll() { return []; },
   };
@@ -48,6 +56,7 @@ global.document = {
     return elements.get(id);
   },
   createElement,
+  createElementNS(namespace, name) { return createElement(name); },
   addEventListener() {},
 };
 

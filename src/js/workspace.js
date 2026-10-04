@@ -434,7 +434,14 @@
         viewHistory = viewHistory.slice(0, historyPosition + 1); viewHistory.push(next); historyPosition++;
         setView(next);
     }
-    function updateHistoryButtons() { get('btn-nav-back').disabled = historyPosition === 0; get('btn-nav-forward').disabled = historyPosition === viewHistory.length - 1; }
+    function updateHistoryButtons() {
+        var backDisabled = historyPosition === 0;
+        var forwardDisabled = historyPosition === viewHistory.length - 1;
+        get('btn-nav-back').disabled = backDisabled;
+        get('btn-nav-forward').disabled = forwardDisabled;
+        if (get('mobile-nav-back')) get('mobile-nav-back').disabled = backDisabled;
+        if (get('mobile-nav-forward')) get('mobile-nav-forward').disabled = forwardDisabled;
+    }
     function restoreHistoricalView() {
         var target = viewHistory[historyPosition]; setView(target);
         if (target.type === 'docs') showDoc(target.docId, true);
@@ -708,6 +715,12 @@
                 var group = document.createElement('label'); group.className = 'workspace-setting-group';
                 var text = document.createElement('span'); text.textContent = field[0];
                 var control = source.cloneNode(true); control.id = 'workspace-' + field[1]; control.value = source.value;
+                var compactInterface = window.innerWidth <= 760 || (window.innerWidth <= 950 && window.innerHeight <= 500);
+                if (field[1] === 'setting-word-wrap' && compactInterface) {
+                    text.textContent += ' (sempre ativa em telas compactas)';
+                    control.value = 'on';
+                    control.disabled = true;
+                }
                 control.addEventListener(source.tagName === 'SELECT' ? 'change' : 'input', function () {
                     source.value = control.value; source.dispatchEvent(new window.Event(source.tagName === 'SELECT' ? 'change' : 'input', { bubbles: true }));
                     updateFontLabels();
@@ -893,7 +906,16 @@
                 var button = document.createElement('button'); button.type = 'button'; button.textContent = option ? option.textContent.replace(/ \(.+\)$/, '') : id;
                 if (id === current) button.classList.add('selected');
                 button.addEventListener('mouseenter', function () { previewTheme(id, lightThemeIds.includes(id) ? 'light' : 'dark'); });
-                button.addEventListener('click', function () { var select = get('setting-theme'); select.value = id; select.dispatchEvent(new window.Event('change', { bubbles: true })); menu.remove(); get('btn-scale').setAttribute('aria-pressed', 'false'); document.removeEventListener('pointerdown', dismiss); });
+                button.addEventListener('click', function () {
+                    var select = get('setting-theme');
+                    current = id;
+                    currentMode = lightThemeIds.includes(id) ? 'light' : 'dark';
+                    select.value = id;
+                    select.dispatchEvent(new window.Event('change', { bubbles: true }));
+                    menu.remove();
+                    get('btn-scale').setAttribute('aria-pressed', 'false');
+                    document.removeEventListener('pointerdown', dismiss);
+                });
                 subgroup.appendChild(button);
             });
             menu.appendChild(subgroup);
@@ -1021,7 +1043,7 @@
         document.addEventListener('keydown', function (event) {
             if (event.key === 'Escape' && !menu.hidden) { closeMenu(); trigger.focus(); }
         });
-        if (window.ResizeObserver) new ResizeObserver(update).observe(toolbar);
+        if (window.ResizeObserver) new window.ResizeObserver(update).observe(toolbar);
         else window.addEventListener('resize', update);
         update();
         refreshIcons(toolbar);
@@ -1103,6 +1125,8 @@
         get('mobile-files').addEventListener('click', function () { var shell = document.querySelector('.ide-shell'); shell.classList.remove('mobile-debug'); shell.classList.add('mobile-files'); get('mobile-menu').classList.remove('open'); });
         get('mobile-editor').addEventListener('click', function () { showEditor(); get('mobile-menu').classList.remove('open'); });
         get('mobile-debug').addEventListener('click', function () { var shell = document.querySelector('.ide-shell'); shell.classList.remove('mobile-files'); shell.classList.add('mobile-debug'); get('mobile-menu').classList.remove('open'); });
+        get('mobile-nav-back').addEventListener('click', function () { get('mobile-menu').classList.remove('open'); get('btn-nav-back').click(); });
+        get('mobile-nav-forward').addEventListener('click', function () { get('mobile-menu').classList.remove('open'); get('btn-nav-forward').click(); });
         get('btn-toggle-left').addEventListener('click', function () { document.body.classList.toggle('sidebar-left-collapsed'); updatePanelButtons(); saveLayout(); window.requestAnimationFrame(function () { window.VisualGEditor.instance.refresh(); }); });
         get('btn-toggle-right').addEventListener('click', function () { document.body.classList.toggle('sidebar-right-collapsed'); updatePanelButtons(); saveLayout(); window.requestAnimationFrame(function () { window.VisualGEditor.instance.refresh(); }); });
         get('btn-scale').addEventListener('click', openThemeMenu);
@@ -1200,12 +1224,12 @@
         var heading = document.createElement('h3'); heading.textContent = 'Arquivos removidos (30 dias)'; section.appendChild(heading);
         trash.forEach(function (item, index) {
             var row = document.createElement('button'); row.type = 'button'; row.textContent = 'Restaurar ' + item.fileName + ' · ' + new Date(item.at).toLocaleDateString('pt-BR');
-            row.addEventListener('click', function () { var restored = window.TabManager.createTab(item.code, { fileName: item.fileName }); if (restored && item.folderId) assignments[restored.id] = item.folderId; trash.splice(index, 1); saveTrash(); saveFolders(); renderFiles(); overlay.dispatchEvent(new Event('visualg:close-recovery')); showEditor(); }); section.appendChild(row);
+            row.addEventListener('click', function () { var restored = window.TabManager.createTab(item.code, { fileName: item.fileName }); if (restored && item.folderId) assignments[restored.id] = item.folderId; trash.splice(index, 1); saveTrash(); saveFolders(); renderFiles(); overlay.dispatchEvent(new window.Event('visualg:close-recovery')); showEditor(); }); section.appendChild(row);
         });
         var versionsHeading = document.createElement('h3'); versionsHeading.textContent = 'Versões anteriores das abas (30 dias)'; section.appendChild(versionsHeading);
         window.TabManager.getVersionHistory().forEach(function (version) {
             var row = document.createElement('button'); row.type = 'button'; row.textContent = 'Restaurar versão de ' + new Date(version.updatedAt).toLocaleString('pt-BR') + ' · ' + version.tabCount + ' aba(s)';
-            row.addEventListener('click', function () { if (window.TabManager.restoreVersion(version.index)) { overlay.dispatchEvent(new Event('visualg:close-recovery')); renderFiles(); showEditor(); } }); section.appendChild(row);
+            row.addEventListener('click', function () { if (window.TabManager.restoreVersion(version.index)) { overlay.dispatchEvent(new window.Event('visualg:close-recovery')); renderFiles(); showEditor(); } }); section.appendChild(row);
         });
         modal.appendChild(section);
     }
