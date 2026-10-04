@@ -97,6 +97,7 @@
 
     var highlightedLine = null;
     var highlightedLineClass = null;
+    var debugLine = null;
     var _guideColors = null;
     var completions = ['algoritmo', 'var', 'inicio', 'fimalgoritmo', 'escreva', 'escreval', 'leia', 'se', 'entao', 'senao', 'fimse', 'enquanto', 'faca', 'fimenquanto', 'para', 'de', 'ate', 'passo', 'fimpara', 'repita', 'escolha', 'caso', 'outrocaso', 'fimescolha', 'funcao', 'fimfuncao', 'procedimento', 'fimprocedimento', 'inteiro', 'real', 'caractere', 'logico', 'verdadeiro', 'falso'];
     var hintMenu = null;
@@ -151,7 +152,7 @@
                 lineWrapping: false,
                 matchBrackets: true,
                 autoCloseBrackets: true,
-                styleActiveLine: true,
+                styleActiveLine: false,
                 extraKeys: {
                     'Ctrl-Space': function (cm) { showHints(cm, true); },
                     'Enter': function (cm) { if (!acceptHint(cm)) cm.execCommand('newlineAndIndent'); },
@@ -230,6 +231,14 @@
                 highlightedLine = lineNumber;
                 highlightedLineClass = className || 'cm-highlight-line';
                 this.instance.addLineClass(lineNumber, 'background', highlightedLineClass);
+                if (highlightedLineClass === 'cm-debug-line') {
+                    debugLine = lineNumber;
+                    var marker = document.createElement('span');
+                    marker.className = 'debug-current-marker';
+                    marker.textContent = '▶';
+                    marker.setAttribute('aria-label', 'Linha atual do debugger');
+                    this.instance.setGutterMarker(lineNumber, 'debug-current', marker);
+                }
                 this.instance.scrollIntoView({ line: lineNumber, ch: 0 }, 50);
             }
         },
@@ -251,6 +260,10 @@
                 this.instance.removeLineClass(highlightedLine, 'background', highlightedLineClass || 'cm-highlight-line');
                 highlightedLine = null;
                 highlightedLineClass = null;
+            }
+            if (debugLine !== null) {
+                this.instance.setGutterMarker(debugLine, 'debug-current', null);
+                debugLine = null;
             }
         }
     };

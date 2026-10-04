@@ -119,8 +119,8 @@
         terminal.setAttribute('role', 'log');
         terminal.setAttribute('aria-live', 'polite');
         terminal.setAttribute('aria-relevant', 'additions text');
-        document.getElementById('compiler-status').setAttribute('role', 'status');
-        document.getElementById('compiler-status').setAttribute('aria-live', 'polite');
+        document.getElementById('debug-status').setAttribute('role', 'status');
+        document.getElementById('debug-status').setAttribute('aria-live', 'polite');
         document.getElementById('variables-table').setAttribute('aria-label', 'Variáveis do programa');
 
         var observer = new MutationObserver(function (changes) {

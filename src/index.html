@@ -35,6 +35,7 @@
 
     <!-- Lucide Icons -->
     <script src="unpk/lucide.min.js"></script>
+    <script src="js/lucide-helper.js"></script>
     <!-- Marked (Markdown parser) -->
     <script src="jsdelivr/marked.min.js"></script>
 </head>
@@ -43,7 +44,7 @@
     <!-- Header / Toolbar -->
     <header class="header">
         <div class="header-logo">
-            <button id="btn-home" class="logo-home" type="button" title="Voltar ao editor"><img class="logo-img" src="images/figma-reference/logo.png" alt="VisuAlg" /><span class="logo-text">gregorialves.com/visualg</span></button>
+            <button id="btn-home" class="logo-home" type="button" title="Voltar ao editor"><img class="logo-img" src="images/figma-reference/logo.png" alt="" /><span class="logo-text">VisuAlg</span><span class="logo-version">3.0.7</span></button>
             <button type="button" class="beta-tag" title="Abrir status do projeto">Beta</button>
         </div>
         <div class="header-history"><button id="btn-nav-back" title="Voltar"><img src="images/figma-reference/back.svg" alt=""></button><button id="btn-nav-forward" title="Avançar"><img src="images/figma-reference/forward.svg" alt=""></button></div>
@@ -53,9 +54,9 @@
         </div>
         <div class="header-controls">
             <div class="controls-exec">
-                <button id="btn-run" class="toolbar-btn btn-run" title="Executar (F9)"><i data-lucide="play"></i> Executar</button>
-                <button id="btn-step" class="toolbar-btn btn-step" title="Passo a passo (F8)"><i data-lucide="skip-forward"></i> Passo a passo</button>
-                <button id="btn-stop" class="toolbar-btn btn-stop" title="Parar" disabled><i data-lucide="square"></i> Parar</button>
+                <button id="btn-run" class="toolbar-btn btn-run" title="Executar — F5"><i data-lucide="play"></i> Executar</button>
+                <button id="btn-step" class="toolbar-btn btn-step" title="Próxima linha — F10"><i data-lucide="skip-forward"></i> Próxima linha</button>
+                <button id="btn-stop" class="toolbar-btn btn-stop" title="Parar — Shift + F5" disabled><i data-lucide="square"></i> Parar</button>
             </div>
             <span class="toolbar-separator"></span>
             <div class="controls-file">
@@ -74,12 +75,12 @@
             </div>
         </div>
         <div class="header-actions">
-            <button id="btn-show-console" class="toolbar-btn" title="Console"><img src="images/figma-reference/top-theme.svg" alt=""></button>
-            <button id="btn-theme" class="toolbar-btn btn-theme" title="Alternar modo claro/escuro" aria-label="Alternar modo claro/escuro"><i data-lucide="sun"></i></button>
-            <button id="btn-scale" class="toolbar-btn" title="Escolher tema" aria-label="Escolher tema"><img src="images/figma-reference/top-console.svg" alt=""></button>
-            <button id="btn-toggle-left" class="toolbar-btn panel-toggle left-toggle" title="Mostrar ou ocultar arquivos"><i data-lucide="panel-left"></i></button>
-            <button id="btn-toggle-right" class="toolbar-btn panel-toggle right-toggle" title="Mostrar ou ocultar depuração"><i data-lucide="panel-right"></i></button>
-            <button id="btn-settings" class="toolbar-btn" title="Configurações"><img src="images/figma-reference/gear.svg" alt=""></button>
+            <button id="btn-show-console" class="toolbar-btn" title="Abrir console" aria-label="Abrir console" aria-pressed="false"><i data-lucide="terminal"></i></button>
+            <button id="btn-theme" class="toolbar-btn" title="Alternar modo claro/escuro" aria-label="Alternar modo claro/escuro"><i data-lucide="sun"></i></button>
+            <button id="btn-scale" class="toolbar-btn" title="Escolher paleta de cores" aria-label="Escolher paleta de cores" aria-pressed="false"><i data-lucide="palette"></i></button>
+            <button id="btn-toggle-left" class="toolbar-btn panel-toggle left-toggle" title="Ocultar arquivos" aria-label="Ocultar arquivos" aria-pressed="true"><i data-lucide="panel-left-close"></i></button>
+            <button id="btn-toggle-right" class="toolbar-btn panel-toggle right-toggle" title="Ocultar depuração" aria-label="Ocultar depuração" aria-pressed="true"><i data-lucide="panel-right-close"></i></button>
+            <button id="btn-settings" class="toolbar-btn" title="Configurações" aria-label="Configurações" aria-pressed="false"><i data-lucide="sliders-horizontal"></i></button>
             <button id="btn-menu" class="toolbar-btn btn-menu" title="Menu"><i data-lucide="menu"></i></button>
         </div>
         <!-- Mobile menu -->
@@ -100,21 +101,25 @@
     <main class="main-content">
         <div class="ide-shell">
             <aside class="workspace-sidebar" id="workspace-sidebar">
-                <div class="sidebar-actions" aria-label="Ações de arquivos">
-                    <button id="btn-upload-workspace" title="Enviar arquivo"><img src="images/figma-reference/upload.svg" alt=""></button>
-                    <button id="btn-download-workspace" title="Baixar arquivo"><img src="images/figma-reference/download.svg" alt=""></button>
-                    <button id="btn-new-workspace-file" title="Novo arquivo"><img src="images/figma-reference/new-file.svg" alt=""></button>
-                    <button id="btn-new-workspace-folder" title="Nova pasta"><img src="images/figma-reference/new-folder.svg" alt=""></button>
-                    <button id="btn-duplicate-workspace" title="Duplicar arquivo"><img src="images/figma-reference/copy.svg" alt=""></button>
-                    <button id="btn-search-workspace" title="Pesquisar arquivos"><img src="images/figma-reference/search.svg" alt=""></button>
+                <div class="sidebar-tabs" role="tablist" aria-label="Conteúdo da lateral">
+                    <button id="btn-sidebar-files" class="sidebar-tab active" type="button" role="tab" aria-selected="true" aria-controls="sidebar-files-panel">Arquivos</button>
+                    <button id="btn-sidebar-docs" class="sidebar-tab" type="button" role="tab" aria-selected="false" aria-controls="sidebar-docs-panel">Documentação</button>
                 </div>
-                <section class="file-tree" aria-label="Arquivos">
+                <section class="file-tree sidebar-tab-panel active" id="sidebar-files-panel" role="tabpanel" aria-label="Arquivos">
+                    <div class="sidebar-actions" aria-label="Ações de arquivos">
+                        <button id="btn-upload-workspace" title="Importar arquivo" aria-label="Importar arquivo"><img src="images/figma-reference/upload.svg" alt=""></button>
+                        <button id="btn-download-workspace" title="Exportar arquivo" aria-label="Exportar arquivo"><img src="images/figma-reference/download.svg" alt=""></button>
+                        <button id="btn-new-workspace-file" title="Novo arquivo" aria-label="Criar novo arquivo"><img src="images/figma-reference/new-file.svg" alt=""></button>
+                        <button id="btn-new-workspace-folder" title="Nova pasta" aria-label="Criar nova pasta"><img src="images/figma-reference/new-folder.svg" alt=""></button>
+                        <button id="btn-duplicate-workspace" title="Duplicar arquivo" aria-label="Duplicar arquivo"><img src="images/figma-reference/copy.svg" alt=""></button>
+                        <button id="sidebar-actions-more" class="sidebar-actions-more" type="button" title="Mais ações" aria-label="Mais ações" aria-expanded="false" aria-haspopup="menu" hidden><i data-lucide="ellipsis"></i></button>
+                        <div id="sidebar-actions-menu" class="sidebar-actions-menu" role="menu" aria-label="Mais ações de arquivos" hidden></div>
+                    </div>
                     <div class="workspace-search"><img src="images/figma-reference/search-large.svg" alt=""><input id="workspace-file-search" type="search" aria-label="Pesquisar arquivos"></div>
                     <div id="workspace-file-list"></div>
                     <button id="btn-history" class="history-link" title="Histórico de recuperação"><i data-lucide="history"></i> Histórico</button>
                 </section>
-                <div class="sidebar-divider" id="sidebar-divider" role="separator" aria-label="Redimensionar documentação"></div>
-                <section class="docs-tree" aria-label="Documentação">
+                <section class="docs-tree sidebar-tab-panel" id="sidebar-docs-panel" role="tabpanel" aria-label="Documentação" hidden>
                     <div class="docs-title">Documentação <button id="btn-docs-sidebar" title="Introdução"><i data-lucide="book-open"></i></button></div>
                     <div class="workspace-search"><img src="images/figma-reference/search-large.svg" alt=""><input id="docs-search" type="search" aria-label="Pesquisar documentação"></div>
                     <div id="workspace-doc-list"></div>
@@ -126,16 +131,23 @@
             <div class="editor-column">
                 <div class="tab-bar" role="tablist" aria-label="Abas abertas">
                     <div class="tab-list" id="tab-list"></div>
-                    <div id="view-tabs" class="view-tabs"></div>
-                    <button class="tab-add" id="btn-add-tab" title="Novo arquivo">+</button>
-                    <div class="editor-font-controls" aria-label="Tamanho da fonte do editor"><button id="editor-font-decrease" type="button" title="Diminuir fonte do editor">−</button><span id="editor-font-value">14px</span><button id="editor-font-increase" type="button" title="Aumentar fonte do editor">+</button></div>
-                    <button id="btn-split-editor" class="tab-action" title="Dividir editor"><i data-lucide="columns-2"></i></button>
+                    <button id="btn-tab-overview" class="tab-overview-trigger" type="button" title="Localizar e fechar abas" aria-label="Localizar e fechar abas" aria-expanded="false" aria-haspopup="dialog"><i data-lucide="list"></i></button>
+                    <button class="tab-add" id="btn-add-tab" title="Nova aba">+</button>
                     <button class="tab-bar-indent" id="btn-tab-indent" title="Autoindentar código">
                         <i data-lucide="indent-increase"></i>
                         <span class="tab-bar-indent-label">Indentar</span>
                     </button>
                 </div>
                 <div class="editor-panel" id="editorPanel">
+                    <div id="editor-empty-state" class="editor-empty-state" hidden>
+                        <i data-lucide="file-code-2" aria-hidden="true"></i>
+                        <h2>O que deseja fazer?</h2>
+                        <p>Comece com um arquivo novo ou importe um código existente.</p>
+                        <div class="editor-empty-actions">
+                            <button id="btn-empty-new" type="button"><i data-lucide="file-plus-2"></i> Novo arquivo</button>
+                            <button id="btn-empty-import" type="button"><i data-lucide="folder-up"></i> Importar código</button>
+                        </div>
+                    </div>
                     <div class="resize-handle-horizontal" id="resizeHandleHorizontal"></div>
                     <div class="resize-handle-vertical" id="resizeHandleVertical"></div>
                     <div id="codemirror-host"></div>
@@ -144,21 +156,36 @@
             </div>
             <div class="column-resizer" id="right-resizer" role="separator" aria-label="Redimensionar depuração"></div>
             <aside class="right-sidebar" id="right-sidebar">
-                <div class="debug-header"><span>Controle / Debug</span></div>
-                <div class="debug-controls">
-                    <div class="debug-control-pill"><button id="debug-run" title="Executar (F9)"><img src="images/figma-reference/play.svg" alt=""></button><button id="debug-stop" title="Parar"><img src="images/figma-reference/stop.svg" alt=""></button><button id="debug-step" title="Passo a passo (F8)"><img src="images/figma-reference/step.svg" alt=""></button><button id="debug-more" title="Opções avançadas"><img src="images/figma-reference/more.svg" alt=""></button></div>
-                </div>
-                <div id="debug-menu" class="debug-menu hidden"><button id="btn-toggle-breakpoints">Alternar ponto na linha atual</button><button id="btn-clear-problems">Limpar mensagens</button><button id="btn-open-console">Abrir console</button></div>
-                <section class="problems-panel" id="problems-panel" aria-label="Mensagens da execução"><div id="problems-list"></div></section>
-                <div class="right-divider" id="right-divider" role="separator" aria-label="Redimensionar mensagens e variáveis"></div>
+                <div class="debug-header"><span>Controle / Debug</span><button id="debug-more" type="button" title="Mais opções" aria-label="Mais opções"><i data-lucide="ellipsis"></i></button></div>
+                <section class="debug-controls" aria-label="Execução e depuração">
+                    <div class="debug-section-label">EXECUÇÃO</div>
+                    <div class="debug-launch-actions">
+                        <button id="debug-run" class="debug-run-primary" type="button" title="Executar — F5"><i data-lucide="play"></i><span>Executar</span></button>
+                        <button id="debug-start" class="debug-start-button" type="button" title="Iniciar depuração"><i data-lucide="bug"></i><span>Debug</span></button>
+                    </div>
+                    <div class="debug-status-block"><span class="debug-section-label">STATUS</span><span id="debug-status-state" class="debug-status-value is-ready"><span class="debug-status-dot" aria-hidden="true"></span><span id="debug-status" role="status" aria-live="polite">Pronto</span></span></div>
+                    <section class="problems-panel" id="problems-panel" aria-label="Mensagens da execução"><div class="right-section-title">MENSAGENS</div><div id="problems-list"></div></section>
+                    <div id="debug-session-controls" class="debug-session-controls hidden" aria-label="Controles de depuração">
+                        <div class="debug-section-label">DEBUG</div>
+                        <button id="debug-continue" class="debug-icon-button" type="button" title="Continuar — F5" aria-label="Continuar — F5" disabled><i data-lucide="play"></i></button>
+                        <button id="debug-pause" class="debug-icon-button" type="button" title="Pausar" aria-label="Pausar" disabled><i data-lucide="pause"></i></button>
+                        <button id="debug-next" class="debug-icon-button" type="button" title="Próxima linha — F10" aria-label="Próxima linha — F10" disabled><i data-lucide="arrow-down"></i></button>
+                        <button id="debug-into" class="debug-icon-button" type="button" title="Entrar na função — F11" aria-label="Entrar na função — F11" disabled><i data-lucide="corner-down-right"></i></button>
+                        <button id="debug-out" class="debug-icon-button" type="button" title="Sair da função — Shift + F11" aria-label="Sair da função — Shift + F11" disabled><i data-lucide="corner-up-left"></i></button>
+                    </div>
+                    <div id="debug-breakpoints" class="debug-subsection" hidden><span class="debug-section-label">BREAKPOINTS</span><div id="debug-breakpoint-list"></div></div>
+                    <div id="debug-callstack" class="debug-subsection" hidden><span class="debug-section-label">CALL STACK</span><div id="debug-callstack-list"></div></div>
+                </section>
+                <div class="right-divider debug-divider" id="debug-divider" role="separator" aria-label="Redimensionar controles de depuração e variáveis"></div>
+                <div id="debug-menu" class="debug-menu hidden"><button id="btn-toggle-breakpoints">Alternar ponto na linha atual</button><button id="btn-clear-breakpoints">Limpar breakpoints</button><button id="btn-clear-problems">Limpar mensagens</button><button id="btn-open-console">Abrir console</button></div>
                 <!-- Painel de variáveis -->
                 <div class="variables-panel" id="variablesPanel">
                 <div class="panel-header">
                     VARIÁVEIS
-                    <button id="btn-clear-vars" class="panel-header-btn" title="Limpar variáveis"><i data-lucide="brush-cleaning"></i></button>
+                    <button id="btn-clear-vars" class="panel-header-btn" type="button" title="Limpar valores exibidos" aria-label="Limpar valores exibidos"><i data-lucide="brush-cleaning"></i></button>
                 </div>
-                <div class="panel-body">
-                    <table id="variables-table">
+                <div class="panel-body variables-wrapper">
+                    <table id="variables-table" class="variables-table">
                         <thead>
                             <tr>
                                 <th>Nome</th>
@@ -189,26 +216,6 @@
             </div>
         </div>
     </main>
-
-    <!-- Footer / Status bar -->
-    <footer class="footer">
-        <span class="footer-item" id="compiler-status"><i data-lucide="circle-check" class="footer-icon"></i> Pronto</span>
-        <span class="footer-item"><i data-lucide="cpu" class="footer-icon"></i> VisuAlg 3.0.7</span>
-        <button type="button" class="footer-item footer-version" id="footer-version" title="Abrir status do projeto"><i data-lucide="code" class="footer-icon"></i> VisuAlg Web v0.14</button>
-        <button class="footer-item footer-credits" id="footer-credits" type="button" title="Conheça a origem e os créditos do VisuAlg Web"><i data-lucide="user" class="footer-icon"></i> Origem e créditos</button>
-        <span class="footer-spacer"></span>
-        <button class="footer-item autosave-status" id="autosave-status" type="button" title="Ver opções de recuperação"><i data-lucide="cloud-check" class="footer-icon"></i><span>Salvo localmente</span></button>
-        <div class="section-visibility">
-            <button class="footer-item section-visibility-trigger" id="btn-sections" type="button" aria-expanded="false" aria-controls="sections-menu"><i data-lucide="panel-top" class="footer-icon"></i> Seções</button>
-            <div class="sections-menu hidden" id="sections-menu">
-                <span class="sections-menu-title">Mostrar na tela</span>
-                <label><input type="checkbox" data-section="editor" checked> Editor</label>
-                <label><input type="checkbox" data-section="variables" checked> Variáveis</label>
-                <label><input type="checkbox" data-section="terminal" checked> Console</label>
-                <button type="button" id="btn-show-all-sections">Mostrar todas</button>
-            </div>
-        </div>
-    </footer>
 
     <!-- Settings Modal -->
     <div class="modal-overlay hidden" id="settingsOverlay">
@@ -246,6 +253,14 @@
                             <option value="catppuccin-latte">Catppuccin Latte (claro)</option>
                             <option value="gruvbox-light">Gruvbox (claro)</option>
                             <option value="paper">Paper & Ink (claro)</option>
+                            <option value="visualg-classic">VisuAlg Clássico</option>
+                            <option value="visualg-3">VisuAlg 3.0</option>
+                            <option value="visualg-agua">Agua</option>
+                            <option value="visualg-metal">Metal</option>
+                            <option value="visualg-notas">Notas</option>
+                            <option value="visualg-aluminio">aluminio</option>
+                            <option value="visualg-madeira">Madeira</option>
+                            <option value="visualg-plastico">Plastico</option>
                         </select>
                     </div>
                     <div class="setting-group">
@@ -276,6 +291,9 @@
                             <option value="jetbrains">JetBrains Mono</option>
                             <option value="fira-code">Fira Code</option>
                             <option value="ibm-plex">IBM Plex Mono</option>
+                            <option value="source-code-pro">Source Code Pro</option>
+                            <option value="roboto-mono">Roboto Mono</option>
+                            <option value="inconsolata">Inconsolata</option>
                             <option value="system">Fonte monoespaçada do sistema</option>
                         </select>
                     </div>
@@ -352,6 +370,9 @@
                             <option value="jetbrains">JetBrains Mono</option>
                             <option value="fira-code">Fira Code</option>
                             <option value="ibm-plex">IBM Plex Mono</option>
+                            <option value="source-code-pro">Source Code Pro</option>
+                            <option value="roboto-mono">Roboto Mono</option>
+                            <option value="inconsolata">Inconsolata</option>
                             <option value="system">Fonte monoespaçada do sistema</option>
                         </select>
                     </div>

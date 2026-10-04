@@ -13,6 +13,7 @@
     var tabs = [];
     var activeTabId = null;
     var tabListEl = null;
+    var startScreenRequested = false;
     var pendingCloseTabId = null;
     var WORKSPACE_STORAGE_KEY = 'visualg-workspace-v1';
     var RECOVERY_STORAGE_KEY = 'visualg-workspace-recovery-v1';
@@ -77,13 +78,12 @@
         tabs.splice(idx, 1);
 
         if (tabs.length === 0) {
-            var newTab = createTabData(getDefaultCode());
-            tabs.push(newTab);
-            activeTabId = newTab.id;
-            restoreState(newTab);
-            if (window.TabManager.onSwitch) {
-                window.TabManager.onSwitch(newTab);
-            }
+            activeTabId = null;
+            window.VisualGEditor.setValue('');
+            window.VisualGEditor.clearHighlight();
+            window.Terminal.clear();
+            window.VariablesPanel.clear();
+            document.dispatchEvent(new window.CustomEvent('visualg:workspace-empty'));
         } else if (id === activeTabId) {
             var newIdx = Math.min(idx, tabs.length - 1);
             activeTabId = tabs[newIdx].id;
@@ -135,7 +135,7 @@
         if (!raw) return null;
 
         var data = JSON.parse(raw);
-        if (!data || !Array.isArray(data.tabs) || data.tabs.length === 0) return null;
+        if (!data || !Array.isArray(data.tabs)) return null;
 
         var restoredTabs = [];
         for (var i = 0; i < data.tabs.length; i++) {
@@ -143,11 +143,9 @@
             if (!savedTab || typeof savedTab.code !== 'string') continue;
             restoredTabs.push(createTabData(savedTab.code, { id: savedTab.id, fileName: savedTab.fileName, dirty: savedTab.dirty }));
         }
-        if (restoredTabs.length === 0) return null;
-
         return {
             tabs: restoredTabs,
-            activeTabId: data.activeTabId,
+            activeTabId: restoredTabs.length ? data.activeTabId : null,
             updatedAt: data.updatedAt || null
         };
     }
@@ -162,7 +160,6 @@
 
     function persistWorkspaceNow() {
         try {
-            if (!tabs.length) return;
             saveCurrentState();
 
             var previousRaw = localStorage.getItem(WORKSPACE_STORAGE_KEY);
@@ -264,12 +261,12 @@
             tabs = recovered.tabs;
             activeTabId = getTab(recovered.activeTabId)
                 ? recovered.activeTabId
-                : tabs[0].id;
+                : (tabs.length ? tabs[0].id : null);
             renderTabs();
-            restoreState(getTab(activeTabId));
+            if (activeTabId) restoreState(getTab(activeTabId));
             notifyPersistence('restored', recovered.updatedAt);
 
-            if (window.TabManager.onSwitch) {
+            if (activeTabId && window.TabManager.onSwitch) {
                 window.TabManager.onSwitch(getTab(activeTabId));
             }
             return true;
@@ -299,8 +296,24 @@
     }
 
     function renderTabs() {
-        tabListEl.innerHTML = '';
+        // Do not keep file tab elements whose model was closed. Retaining these
+        // stale nodes made the X appear to do nothing and left dead tabs visible.
+        var previousItems = Array.prototype.slice.call(tabListEl.children).filter(function (item) {
+            return item.classList.contains('view-tab') || !!getTab(item.dataset.tabId);
+        });
+        var previousOrder = previousItems.map(function (item) {
+            return item.classList.contains('view-tab') ? 'view:' + item.dataset.type + ':' + (item.dataset.docId || '') : 'file:' + item.dataset.tabId;
+        });
+        var orderedItems = Object.create(null);
+        previousItems.forEach(function (item, index) { orderedItems[previousOrder[index]] = item; });
+        tabListEl.replaceChildren();
         tabListEl.setAttribute('role', 'presentation');
+        var editorPanel = document.getElementById('editorPanel');
+        var emptyState = document.getElementById('editor-empty-state');
+        var showStartScreen = tabs.length === 0 || startScreenRequested;
+        if (editorPanel) editorPanel.classList.toggle('no-active-file', showStartScreen);
+        if (emptyState) emptyState.hidden = !showStartScreen;
+        var activeElement = null;
         for (var i = 0; i < tabs.length; i++) {
             var tab = tabs[i];
             var el = document.createElement('div');
@@ -310,6 +323,22 @@
             el.setAttribute('role', 'tab');
             el.setAttribute('aria-selected', tab.id === activeTabId ? 'true' : 'false');
             el.tabIndex = tab.id === activeTabId ? 0 : -1;
+
+            var fileIcon = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+            fileIcon.setAttribute('class', 'tab-file-icon');
+            fileIcon.setAttribute('viewBox', '0 0 24 24');
+            fileIcon.setAttribute('fill', 'none');
+            fileIcon.setAttribute('stroke', 'currentColor');
+            fileIcon.setAttribute('stroke-width', '2');
+            fileIcon.setAttribute('stroke-linecap', 'round');
+            fileIcon.setAttribute('stroke-linejoin', 'round');
+            fileIcon.setAttribute('aria-hidden', 'true');
+            [['path', { d: 'M10 12.5 8 15l2 2.5' }], ['path', { d: 'm14 12.5 2 2.5-2 2.5' }], ['path', { d: 'M14 2v4a2 2 0 0 0 2 2h4' }], ['path', { d: 'M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7z' }]].forEach(function (shape) {
+                var part = document.createElementNS('http://www.w3.org/2000/svg', shape[0]);
+                Object.keys(shape[1]).forEach(function (attribute) { part.setAttribute(attribute, shape[1][attribute]); });
+                fileIcon.appendChild(part);
+            });
+            el.appendChild(fileIcon);
 
             var nameSpan = document.createElement('span');
             nameSpan.className = 'tab-name';
@@ -321,14 +350,20 @@
 
             var closeBtn = document.createElement('button');
             closeBtn.className = 'tab-close';
+            closeBtn.type = 'button';
             closeBtn.title = 'Fechar tab';
             closeBtn.setAttribute('aria-label', 'Fechar ' + (tab.fileName || tab.name + '.alg'));
             closeBtn.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>';
             closeBtn.dataset.tabId = tab.id;
             el.appendChild(closeBtn);
 
-            tabListEl.appendChild(el);
+            orderedItems['file:' + tab.id] = el;
+            if (tab.id === activeTabId) activeElement = el;
         }
+        var keys = previousOrder.slice();
+        Object.keys(orderedItems).forEach(function (key) { if (keys.indexOf(key) === -1) keys.push(key); });
+        keys.forEach(function (key) { if (orderedItems[key]) tabListEl.appendChild(orderedItems[key]); });
+        if (activeElement && !startScreenRequested) activeElement.scrollIntoView({ block:'nearest', inline:'nearest' });
     }
 
     function saveCurrentState() {
@@ -380,7 +415,8 @@
             tabListEl.addEventListener('click', function (e) {
                 var closeBtn = e.target.closest('.tab-close');
                 if (closeBtn) {
-                    e.stopPropagation();
+                    e.preventDefault();
+                    e.stopImmediatePropagation();
                     self.closeTab(closeBtn.dataset.tabId);
                     return;
                 }
@@ -388,25 +424,29 @@
                 if (tabItem) {
                     self.switchTab(tabItem.dataset.tabId);
                 }
-            });
+            }, true);
 
             document.getElementById('btn-add-tab').addEventListener('click', function () {
-                self.createTab();
+                startScreenRequested = true;
+                if (window.VisualGWorkspace) window.VisualGWorkspace.showEditor();
+                renderTabs();
             });
+            document.getElementById('btn-empty-new').addEventListener('click', function () { startScreenRequested = false; self.createTab(); });
+            document.getElementById('btn-empty-import').addEventListener('click', function () { document.getElementById('file-input').click(); });
 
-            // Drag-and-drop reordering
-            var dragTabId = null;
-
+            // Drag-and-drop reordering across files and auxiliary views.
+            var draggedItem = null;
             tabListEl.addEventListener('dragstart', function (e) {
-                var tabItem = e.target.closest('.tab-item');
-                if (!tabItem) return;
+                var tabItem = e.target.closest('.tab-item, .view-tab');
+                if (!tabItem || e.target.closest('button')) { e.preventDefault(); return; }
                 if (blockWhenRunning()) {
                     e.preventDefault();
                     return;
                 }
-                dragTabId = tabItem.dataset.tabId;
+                draggedItem = tabItem;
                 tabItem.classList.add('dragging');
                 e.dataTransfer.effectAllowed = 'move';
+                e.dataTransfer.setData('text/plain', tabItem.classList.contains('tab-item') ? 'file:' + tabItem.dataset.tabId : 'view:' + tabItem.dataset.type + ':' + (tabItem.dataset.docId || ''));
             });
 
             tabListEl.addEventListener('keydown', function (e) {
@@ -428,16 +468,23 @@
                     items[index].focus();
                 }
             });
+            tabListEl.addEventListener('auxclick', function (e) {
+                if (e.button !== 1) return;
+                var tabItem = e.target.closest('.tab-item');
+                if (!tabItem) return;
+                e.preventDefault();
+                self.closeTab(tabItem.dataset.tabId);
+            });
 
             tabListEl.addEventListener('dragover', function (e) {
                 e.preventDefault();
-                var tabItem = e.target.closest('.tab-item');
-                if (!tabItem || tabItem.dataset.tabId === dragTabId) return;
+                var tabItem = e.target.closest('.tab-item, .view-tab');
+                if (!tabItem || tabItem === draggedItem) return;
 
                 var rect = tabItem.getBoundingClientRect();
                 var midX = rect.left + rect.width / 2;
 
-                var items = tabListEl.querySelectorAll('.tab-item');
+                var items = tabListEl.querySelectorAll('.tab-item, .view-tab');
                 for (var i = 0; i < items.length; i++) {
                     items[i].classList.remove('drag-over-left', 'drag-over-right');
                 }
@@ -450,7 +497,7 @@
             });
 
             tabListEl.addEventListener('dragleave', function (e) {
-                var tabItem = e.target.closest('.tab-item');
+                var tabItem = e.target.closest('.tab-item, .view-tab');
                 if (tabItem) {
                     tabItem.classList.remove('drag-over-left', 'drag-over-right');
                 }
@@ -458,38 +505,21 @@
 
             tabListEl.addEventListener('drop', function (e) {
                 e.preventDefault();
-                var targetItem = e.target.closest('.tab-item');
-                if (!targetItem || !dragTabId) return;
-
-                var targetId = targetItem.dataset.tabId;
-                if (targetId === dragTabId) return;
+                var targetItem = e.target.closest('.tab-item, .view-tab');
+                if (!targetItem || !draggedItem || targetItem === draggedItem) return;
 
                 var rect = targetItem.getBoundingClientRect();
                 var midX = rect.left + rect.width / 2;
                 var insertBefore = e.clientX < midX;
 
-                var fromIdx = -1, toIdx = -1;
-                for (var i = 0; i < tabs.length; i++) {
-                    if (tabs[i].id === dragTabId) fromIdx = i;
-                    if (tabs[i].id === targetId) toIdx = i;
-                }
-                if (fromIdx === -1 || toIdx === -1) return;
-
-                var moved = tabs.splice(fromIdx, 1)[0];
-                toIdx = -1;
-                for (var j = 0; j < tabs.length; j++) {
-                    if (tabs[j].id === targetId) { toIdx = j; break; }
-                }
-                var insertIdx = insertBefore ? toIdx : toIdx + 1;
-                tabs.splice(insertIdx, 0, moved);
-
-                renderTabs();
+                tabListEl.insertBefore(draggedItem, insertBefore ? targetItem : targetItem.nextSibling);
+                tabs = Array.prototype.map.call(tabListEl.querySelectorAll('.tab-item'), function (item) { return getTab(item.dataset.tabId); }).filter(Boolean);
                 schedulePersist();
             });
 
             tabListEl.addEventListener('dragend', function () {
-                dragTabId = null;
-                var items = tabListEl.querySelectorAll('.tab-item');
+                draggedItem = null;
+                var items = tabListEl.querySelectorAll('.tab-item, .view-tab');
                 for (var i = 0; i < items.length; i++) {
                     items[i].classList.remove('dragging', 'drag-over-left', 'drag-over-right');
                 }
@@ -501,9 +531,9 @@
                 tabs = persistedWorkspace.tabs;
                 activeTabId = getTab(persistedWorkspace.activeTabId)
                     ? persistedWorkspace.activeTabId
-                    : tabs[0].id;
+                    : (tabs.length ? tabs[0].id : null);
                 renderTabs();
-                restoreState(getTab(activeTabId));
+                if (activeTabId) restoreState(getTab(activeTabId));
                 notifyPersistence('saved', persistedWorkspace.updatedAt);
             } else {
                 var initialTab = createTabData(window.VisualGEditor.getValue());
@@ -526,6 +556,7 @@
 
         createTab: function (code, options) {
             if (blockWhenRunning()) return null;
+            startScreenRequested = false;
             saveCurrentState();
             var tab = createTabData(code || getDefaultCode(), options);
             tabs.push(tab);
@@ -543,10 +574,14 @@
         },
 
         switchTab: function (id) {
-            if (id === activeTabId) return;
+            if (id === activeTabId) {
+                if (startScreenRequested) { startScreenRequested = false; renderTabs(); }
+                return;
+            }
             if (blockWhenRunning()) return;
             var tab = getTab(id);
             if (!tab) return;
+            startScreenRequested = false;
 
             saveCurrentState();
             activeTabId = id;
@@ -559,8 +594,13 @@
             schedulePersist();
         },
 
+        dismissStartScreen: function () {
+            if (!startScreenRequested) return;
+            startScreenRequested = false;
+            renderTabs();
+        },
+
         closeTab: function (id) {
-            if (blockWhenRunning()) return;
             var tab = getTab(id);
             if (!tab) return;
 

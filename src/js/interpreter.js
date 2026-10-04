@@ -1976,7 +1976,12 @@
         this.running = false;
         this.stepMode = false;
         this.stepResolve = null;
+        this.stepDepth = null;
+        this.stepOutDepth = null;
+        this.debugMode = false;
+        this.currentLine = null;
         this.callStack = [];
+        this.callStackNames = [];
         this.breakFlag = false;
         this.returnValue = undefined;
         this.timerDelay = 0;
@@ -1991,6 +1996,7 @@
             this.breakFlag = false;
             this.returnValue = undefined;
             this.callStack = [];
+            this.callStackNames = [];
             this.variables = new Map();
             this.procedures = {};
             this.functions = {};
@@ -2115,22 +2121,28 @@
 
         if (this.timerDelay > 0) {
             if (stmt.line !== undefined && window.VisualGEditor) {
-                window.VisualGEditor.highlightLine(stmt.line - 1);
+                window.VisualGEditor.highlightLine(stmt.line - 1, 'cm-debug-line');
             }
             await this.sleep(this.timerDelay);
             this.checkRunning();
         }
 
         var onBreakpoint = !this.stepMode && this.breakpointLines && this.breakpointLines.has(stmt.line);
-        if ((this.stepMode || onBreakpoint) && stmt.line !== undefined) {
+        var depthAllowsPause = this.stepOutDepth !== null ? this.callStack.length < this.stepOutDepth : (this.stepDepth === null || this.callStack.length <= this.stepDepth);
+        this.currentLine = stmt.line;
+        if (((this.stepMode && depthAllowsPause) || onBreakpoint) && stmt.line !== undefined) {
             if (window.VisualGEditor) {
-                window.VisualGEditor.highlightLine(stmt.line - 1);
+                window.VisualGEditor.highlightLine(stmt.line - 1, 'cm-debug-line');
             }
+            this.stepDepth = null;
+            this.stepOutDepth = null;
             var stepPromise = this.waitForStep();
+            document.dispatchEvent(new window.CustomEvent('visualg:debug-paused', { detail: { line: stmt.line, callStack: this.callStackNames.slice() } }));
             if (onBreakpoint) {
                 document.dispatchEvent(new window.CustomEvent('visualg:breakpoint', { detail: { line: stmt.line } }));
             }
             await stepPromise;
+            this.checkRunning();
         }
 
         try {
@@ -2619,12 +2631,14 @@
 
             var previousReturnValue = this.returnValue;
             this.callStack.push(localScope);
+            this.callStackNames.push(name + '()');
             this.returnValue = undefined;
             try {
                 await this.execBlock(proc.body);
             } finally {
                 this.returnValue = previousReturnValue;
                 this.callStack.pop();
+                this.callStackNames.pop();
             }
         };
 
@@ -2657,6 +2671,7 @@
 
             var previousReturnValue = this.returnValue;
             this.callStack.push(localScope);
+            this.callStackNames.push(name + '()');
             this.returnValue = undefined;
             try {
                 await this.execBlock(func.body);
@@ -2665,6 +2680,7 @@
             } finally {
                 this.returnValue = previousReturnValue;
                 this.callStack.pop();
+                this.callStackNames.pop();
             }
         };
 

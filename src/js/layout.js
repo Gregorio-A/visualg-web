@@ -1,7 +1,7 @@
 (function () {
     'use strict';
 
-    if (window.lucide) window.lucide.createIcons();
+    if (window.renderLucideIcons) window.renderLucideIcons(document);
 
     var editorPanel = document.getElementById('editorPanel');
     var resizableBlock = editorPanel.closest('.editor-column');

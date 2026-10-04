@@ -40,7 +40,7 @@
         fileInput = document.getElementById('file-input');
         btnTheme = document.getElementById('btn-theme');
         btnSettings = document.getElementById('btn-settings');
-        statusEl = document.getElementById('compiler-status');
+        statusEl = document.getElementById('debug-status');
 
         // Settings modal elements
         settingsOverlay = document.getElementById('settingsOverlay');
@@ -68,9 +68,9 @@
         // Initialize theme and settings
         initTheme();
         initSettings();
+        initSettingsWheelControls();
 
         // Initialize tab manager and make its persistence visible to the user.
-        tabManager.onPersistenceChange = updateAutosaveStatus;
         tabManager.init();
         tabManager.onSwitch = function (tab) {
             document.dispatchEvent(new window.CustomEvent('visualg:tab-switched', { detail: { id: tab.id } }));
@@ -86,11 +86,10 @@
             setStatus('Executando...', 'running');
             statusEl.title = message;
         };
-        updateAutosaveStatus(tabManager.getPersistenceState());
 
         // Button events
         btnRun.addEventListener('click', runProgram);
-        btnStep.addEventListener('click', stepProgram);
+        btnStep.addEventListener('click', function () { advanceDebugger('over'); });
         btnStop.addEventListener('click', stopProgram);
         btnSave.addEventListener('click', saveProgram);
 
@@ -160,8 +159,24 @@
         });
 
         btnSettings.addEventListener('click', function () {
-            if (window.VisualGWorkspace && window.VisualGWorkspace.showSettings) window.VisualGWorkspace.showSettings();
-            else openSettings();
+            if (window.VisualGWorkspace && window.VisualGWorkspace.toggleSettings) window.VisualGWorkspace.toggleSettings();
+            else if (settingsOverlay.classList.contains('hidden')) openSettings();
+            else closeSettings();
+        });
+
+        document.getElementById('debug-start').addEventListener('click', stepProgram);
+        document.getElementById('debug-continue').addEventListener('click', runProgram);
+        document.getElementById('debug-pause').addEventListener('click', pauseProgram);
+        document.getElementById('debug-next').addEventListener('click', function () { advanceDebugger('over'); });
+        document.getElementById('debug-into').addEventListener('click', function () { advanceDebugger('into'); });
+        document.getElementById('debug-out').addEventListener('click', function () { advanceDebugger('out'); });
+        document.addEventListener('visualg:debug-paused', function (event) {
+            var tab = tabManager.getActiveTab();
+            if (tab && tab.executor) tab.executor.debugMode = true;
+            document.body.classList.add('debug-session-active');
+            document.getElementById('debug-session-controls').classList.remove('hidden');
+            setStatus('Pausado na linha ' + event.detail.line, 'paused');
+            setRunning(true);
         });
 
         initExamples();
@@ -201,17 +216,6 @@
 
         betaTag.addEventListener('click', function () {
             openProjectStatus();
-        });
-
-        // Footer version click opens the same source of truth.
-        var footerVersion = document.getElementById('footer-version');
-        footerVersion.addEventListener('click', function () {
-            openProjectStatus();
-        });
-
-        var footerCredits = document.getElementById('footer-credits');
-        footerCredits.addEventListener('click', function () {
-            DocsPanel.open('historia');
         });
 
         betaTag.addEventListener('mouseenter', function () {
@@ -342,14 +346,25 @@
             if (e.key === 'F9') {
                 e.preventDefault();
                 var activeTab = tabManager.getActiveTab();
-                if (!activeTab.executor || !activeTab.executor.running) {
-                    runProgram();
-                }
+                if (!activeTab) return;
+                if (e.shiftKey) stopProgram();
+                else if (activeTab.executor && activeTab.executor.running && activeTab.executor.stepResolve) runProgram();
+                else if (!activeTab.executor || !activeTab.executor.running) runProgram();
+            }
+            if (e.key === 'F5') {
+                e.preventDefault();
+                var currentTab = tabManager.getActiveTab();
+                if (!currentTab) return;
+                if (e.shiftKey) stopProgram();
+                else if (currentTab.executor && currentTab.executor.running && currentTab.executor.stepResolve) runProgram();
+                else if (!currentTab.executor || !currentTab.executor.running) runProgram();
             }
             if (e.key === 'F8') {
                 e.preventDefault();
                 stepProgram();
             }
+            if (e.key === 'F10') { e.preventDefault(); advanceDebugger('over'); }
+            if (e.key === 'F11') { e.preventDefault(); advanceDebugger(e.shiftKey ? 'out' : 'into'); }
             if (e.key === 'Escape') {
                 if (!settingsOverlay.classList.contains('hidden')) closeSettings();
                 if (!docsOverlay.classList.contains('hidden')) DocsPanel.close();
@@ -418,7 +433,7 @@
             grid.appendChild(card);
         });
 
-        if (window.lucide) lucide.createIcons({ nodes: [grid] });
+        if (window.renderLucideIcons) window.renderLucideIcons(grid);
     }
 
     function openExamples() {
@@ -510,29 +525,6 @@
         });
     }
 
-    function updateAutosaveStatus(state) {
-        state = state || { status: 'idle' };
-        var button = document.getElementById('autosave-status');
-        if (!button) return;
-
-        var labels = {
-            saving: { icon: 'cloud-upload', text: 'Salvando...' },
-            saved: { icon: 'cloud-check', text: 'Salvo localmente' },
-            restored: { icon: 'history', text: 'Cópia restaurada' },
-            error: { icon: 'cloud-alert', text: 'Falha ao salvar' },
-            idle: { icon: 'cloud', text: 'Autosave local' }
-        };
-        var view = labels[state.status] || labels.idle;
-        button.classList.toggle('is-saving', state.status === 'saving');
-        button.classList.toggle('is-error', state.status === 'error');
-        button.classList.toggle('is-restored', state.status === 'restored');
-        button.innerHTML = '<i data-lucide="' + view.icon + '" class="footer-icon"></i><span>' + view.text + '</span>';
-        button.title = state.updatedAt
-            ? view.text + ' em ' + formatLocalDate(state.updatedAt) + '. Clique para recuperar uma versão anterior.'
-            : view.text + '. Clique para ver as opções de recuperação.';
-        if (window.lucide) lucide.createIcons({ nodes: [button] });
-    }
-
     function refreshRecoveryModal() {
         var state = tabManager.getPersistenceState();
         var recovery = tabManager.getRecoveryInfo();
@@ -556,16 +548,46 @@
 
     function initRecovery() {
         var overlay = document.getElementById('recoveryOverlay');
-        document.getElementById('autosave-status').addEventListener('click', function () {
+        var closeTimer = null;
+        var closeAnimationHandler = null;
+        function closeRecoveryModal() {
+            if (!overlay || overlay.classList.contains('hidden') || overlay.classList.contains('is-closing')) return;
+            if (window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+                overlay.classList.add('hidden');
+                return;
+            }
+            overlay.classList.add('is-closing');
+            var finishClose = function () {
+                if (closeTimer) window.clearTimeout(closeTimer);
+                closeTimer = null;
+                if (closeAnimationHandler) overlay.removeEventListener('animationend', closeAnimationHandler);
+                closeAnimationHandler = null;
+                overlay.classList.remove('is-closing');
+                overlay.classList.add('hidden');
+            };
+            closeAnimationHandler = function (event) {
+                if (event.target !== overlay || !overlay.classList.contains('is-closing')) return;
+                finishClose();
+            };
+            overlay.addEventListener('animationend', closeAnimationHandler);
+            closeTimer = window.setTimeout(finishClose, 240);
+        }
+        document.getElementById('btn-history').addEventListener('click', function () {
             refreshRecoveryModal();
+            if (closeTimer) window.clearTimeout(closeTimer);
+            closeTimer = null;
+            if (closeAnimationHandler) overlay.removeEventListener('animationend', closeAnimationHandler);
+            closeAnimationHandler = null;
+            overlay.classList.remove('is-closing');
             overlay.classList.remove('hidden');
         });
         document.getElementById('btn-close-recovery').addEventListener('click', function () {
-            overlay.classList.add('hidden');
+            closeRecoveryModal();
         });
         overlay.addEventListener('click', function (event) {
-            if (event.target === overlay) overlay.classList.add('hidden');
+            if (event.target === overlay) closeRecoveryModal();
         });
+        overlay.addEventListener('visualg:close-recovery', closeRecoveryModal);
         document.getElementById('btn-restore-recovery').addEventListener('click', function () {
             if (tabManager.getRunningTab()) {
                 setStatus('Executando...', 'running');
@@ -573,7 +595,7 @@
                 return;
             }
             if (tabManager.restoreRecovery()) {
-                overlay.classList.add('hidden');
+                closeRecoveryModal();
                 setStatus('Pronto');
             }
         });
@@ -600,8 +622,6 @@
         Object.keys(elements).forEach(function (name) {
             elements[name].classList.toggle('section-hidden', !sectionVisibility[name]);
             grid.classList.toggle('section-' + name + '-hidden', !sectionVisibility[name]);
-            var checkbox = document.querySelector('#sections-menu [data-section="' + name + '"]');
-            if (checkbox) checkbox.checked = sectionVisibility[name];
         });
 
         if (sectionVisibility.editor && editor.instance) {
@@ -617,44 +637,9 @@
     }
 
     function initSectionVisibility() {
-        var raw = getStoredValue(SECTION_VISIBILITY_KEY);
-        if (raw) {
-            try {
-                var stored = JSON.parse(raw);
-                Object.keys(sectionVisibility).forEach(function (name) {
-                    if (typeof stored[name] === 'boolean') sectionVisibility[name] = stored[name];
-                });
-            } catch (e) {
-                sectionVisibility = { editor: true, variables: true, terminal: true };
-            }
-        }
+        sectionVisibility = { editor: true, variables: true, terminal: true };
         applySectionVisibility();
-
-        var trigger = document.getElementById('btn-sections');
-        var menu = document.getElementById('sections-menu');
-        trigger.addEventListener('click', function (event) {
-            event.stopPropagation();
-            var willOpen = menu.classList.contains('hidden');
-            menu.classList.toggle('hidden');
-            trigger.setAttribute('aria-expanded', willOpen ? 'true' : 'false');
-        });
-        menu.addEventListener('click', function (event) {
-            event.stopPropagation();
-        });
-        menu.querySelectorAll('[data-section]').forEach(function (checkbox) {
-            checkbox.addEventListener('change', function () {
-                setSectionVisible(this.dataset.section, this.checked);
-            });
-        });
-        document.getElementById('btn-show-all-sections').addEventListener('click', function () {
-            sectionVisibility = { editor: true, variables: true, terminal: true };
-            applySectionVisibility();
-            persistSectionVisibility();
-        });
-        document.addEventListener('click', function () {
-            menu.classList.add('hidden');
-            trigger.setAttribute('aria-expanded', 'false');
-        });
+        persistSectionVisibility();
     }
 
     // === Theme ===
@@ -671,7 +656,7 @@
     }
 
     function applyTheme(theme) {
-        var lightThemes = ['light', 'github-light', 'solarized-light', 'high-contrast', 'catppuccin-latte', 'gruvbox-light', 'paper'];
+        var lightThemes = ['light', 'github-light', 'solarized-light', 'high-contrast', 'catppuccin-latte', 'gruvbox-light', 'paper', 'visualg-classic', 'visualg-3', 'visualg-agua', 'visualg-metal', 'visualg-notas', 'visualg-aluminio', 'visualg-madeira', 'visualg-plastico'];
         document.documentElement.setAttribute('data-theme', theme);
         document.documentElement.dataset.colorMode = lightThemes.includes(theme) ? 'light' : 'dark';
         localStorage.setItem('visualg-theme', theme);
@@ -680,7 +665,7 @@
             btnTheme.innerHTML = '<i data-lucide="' + (isLight ? 'moon' : 'sun') + '"></i>';
             btnTheme.title = isLight ? 'Ativar modo escuro' : 'Ativar modo claro';
             btnTheme.setAttribute('aria-label', btnTheme.title);
-            if (window.lucide) lucide.createIcons({ nodes: [btnTheme] });
+            if (window.renderLucideIcons) window.renderLucideIcons(btnTheme);
         }
         if (settingTheme) settingTheme.value = theme;
         var guidesEnabled = localStorage.getItem('visualg-indent-guides') !== 'off';
@@ -691,6 +676,55 @@
     }
 
     // === Settings ===
+    function initSettingsWheelControls() {
+        var wheelRemainders = new WeakMap();
+        document.addEventListener('wheel', function (event) {
+            var target = event.target;
+            if (!target || !target.closest) return;
+            var control = target.closest('select,input[type="number"],input[type="range"]');
+            if (!control || !control.closest('#settingsOverlay,.workspace-settings,.editor-quick-menu') || (document.activeElement !== control && !control.matches(':hover')) || control.disabled || control.readOnly) return;
+            event.preventDefault();
+            var delta = event.deltaY;
+            if (event.deltaMode === 1) delta *= 40;
+            else if (event.deltaMode === 2) delta *= 40;
+            var accumulated = (wheelRemainders.get(control) || 0) + delta / 100;
+            var steps = accumulated < 0 ? Math.ceil(accumulated) : Math.floor(accumulated);
+            wheelRemainders.set(control, accumulated - steps);
+            if (!steps) return;
+
+            if (control.tagName === 'SELECT') {
+                var direction = Math.sign(steps);
+                var index = control.selectedIndex;
+                for (var i = 0; i < Math.abs(steps); i++) {
+                    var nextIndex = index + direction;
+                    while (nextIndex >= 0 && nextIndex < control.options.length && control.options[nextIndex].disabled) nextIndex += direction;
+                    if (nextIndex < 0 || nextIndex >= control.options.length) break;
+                    index = nextIndex;
+                }
+                if (index !== control.selectedIndex) {
+                    control.selectedIndex = index;
+                    control.dispatchEvent(new Event('input', { bubbles: true }));
+                    control.dispatchEvent(new Event('change', { bubbles: true }));
+                }
+                return;
+            }
+
+            var step = control.step === 'any' ? 1 : Number(control.step) || 1;
+            var count = Math.abs(steps);
+            try {
+                if (steps < 0) control.stepUp(count);
+                else control.stepDown(count);
+            } catch (error) {
+                var value = Number(control.value) || 0;
+                var min = control.min === '' ? -Infinity : Number(control.min);
+                var max = control.max === '' ? Infinity : Number(control.max);
+                control.value = String(Math.max(min, Math.min(max, value - steps * step)));
+            }
+            control.dispatchEvent(new Event('input', { bubbles: true }));
+            control.dispatchEvent(new Event('change', { bubbles: true }));
+        }, { passive: false, capture: true });
+    }
+
     function initSettings() {
         applyFontFamily('editor', localStorage.getItem('visualg-editor-font-family') || 'jetbrains');
         applyFontFamily('console', localStorage.getItem('visualg-console-font-family') || 'jetbrains');
@@ -745,7 +779,7 @@
     }
 
     function applyFontFamily(area, value) {
-        if (!['jetbrains', 'fira-code', 'ibm-plex', 'system'].includes(value)) value = 'jetbrains';
+        if (!['jetbrains', 'fira-code', 'ibm-plex', 'source-code-pro', 'roboto-mono', 'inconsolata', 'system'].includes(value)) value = 'jetbrains';
         document.documentElement.setAttribute('data-' + area + '-font', value);
         localStorage.setItem('visualg-' + area + '-font-family', value);
         (area === 'editor' ? settingEditorFontFamily : settingConsoleFontFamily).value = value;
@@ -941,22 +975,9 @@
     }
 
     // === Status ===
-    var statusIcons = {
-        'Pronto': 'circle-check',
-        'Executando...': 'play',
-        'Passo a passo...': 'skip-forward',
-        'Execução finalizada': 'circle-check-big',
-        'Erro': 'circle-x',
-        'Execução interrompida': 'circle-stop'
-    };
-
     function setStatus(text, type) {
-        var icon = statusIcons[text] || 'circle-check';
-        statusEl.innerHTML = '<i data-lucide="' + icon + '" class="footer-icon"></i> ' + text;
+        statusEl.textContent = text;
         statusEl.title = '';
-        statusEl.style.color = type === 'error' ? 'var(--red)' :
-                               type === 'running' ? 'var(--yellow)' : 'var(--green)';
-        if (window.lucide) lucide.createIcons({ nodes: [statusEl] });
         document.dispatchEvent(new window.CustomEvent('visualg:status', { detail: { text: text, type: type || 'success', at: Date.now() } }));
     }
 
@@ -966,11 +987,49 @@
         var paused = !!(tab && tab.executor && tab.executor.stepResolve);
         btnRun.disabled = running && !paused;
         btnStep.disabled = running && !stepping && !paused;
+        var debugRun = document.getElementById('debug-run');
+        var debugStart = document.getElementById('debug-start');
+        if (debugRun) debugRun.disabled = false;
+        if (debugStart) debugStart.disabled = running;
         btnStop.disabled = !running;
         btnClearTerminal.disabled = running;
         btnClearVars.disabled = running;
+        var debugControls = document.getElementById('debug-session-controls');
+        if (debugControls && tab && tab.executor && tab.executor.debugMode) {
+            debugControls.classList.remove('hidden');
+            document.getElementById('debug-continue').disabled = !paused;
+            document.getElementById('debug-pause').disabled = !running || paused;
+            document.getElementById('debug-next').disabled = !paused;
+            document.getElementById('debug-into').disabled = !paused;
+            document.getElementById('debug-out').disabled = !paused || !tab.executor.callStack.length;
+        }
         if (editor.instance) editor.instance.setOption('readOnly', running ? 'nocursor' : false);
         document.dispatchEvent(new window.CustomEvent('visualg:running', { detail: { running: running, stepping: !!stepping } }));
+    }
+
+    function pauseProgram() {
+        var tab = tabManager.getActiveTab();
+        var executor = tab && tab.executor;
+        if (!executor || !executor.running) return;
+        executor.stepMode = true;
+        executor.stepDepth = null;
+        executor.stepOutDepth = null;
+        if (executor.stepResolve) { setStatus('Pausado' + (executor.currentLine ? ' na linha ' + executor.currentLine : ''), 'paused'); setRunning(true); }
+    }
+
+    function advanceDebugger(mode) {
+        var tab = tabManager.getActiveTab();
+        var executor = tab && tab.executor;
+        if (!executor || !executor.running) { if (mode !== 'out') stepProgram(); return; }
+        if (mode === 'out' && !executor.callStack.length) return;
+        executor.stepMode = true;
+        executor.stepDepth = mode === 'over' ? executor.callStack.length : null;
+        executor.stepOutDepth = mode === 'out' ? executor.callStack.length : null;
+        if (executor.stepResolve) {
+            setStatus('Executando...', 'running');
+            setRunning(true);
+            executor.nextStep();
+        }
     }
 
     function getRunningTab() {
@@ -1013,6 +1072,7 @@
     // === Execution ===
     async function runProgram() {
         var tab = tabManager.getActiveTab();
+        if (!tab) return;
         if (blockIfAnotherTabRunning(tab)) return;
         if (tab.executor && tab.executor.running) {
             if (tab.executor.stepResolve) { tab.executor.stepMode = false; tab.executor.nextStep(); setRunning(true); }
@@ -1021,7 +1081,7 @@
 
         var source = editor.getValue();
         terminal.clear();
-        document.dispatchEvent(new window.CustomEvent('visualg:execution-start'));
+        document.dispatchEvent(new window.CustomEvent('visualg:execution-start', { detail: { debug: false } }));
         varsPanel.clear();
         editor.clearHighlight();
         setStatus('Executando...', 'running');
@@ -1035,7 +1095,7 @@
             tab.executor.breakpointLines = new Set(window.VisualGWorkspace ? window.VisualGWorkspace.getBreakpoints() : []);
             tab.running = true;
             await tab.executor.run(ast);
-            setStatus('Execução finalizada');
+            setStatus('Finalizado');
         } catch (e) {
             if (e.message !== '__STOP__') {
                 hadError = true;
@@ -1049,10 +1109,12 @@
         setRunning(false);
         tab.executor = null;
         tab.running = false;
+        document.dispatchEvent(new window.CustomEvent('visualg:execution-end'));
     }
 
     async function stepProgram() {
         var tab = tabManager.getActiveTab();
+        if (!tab) return;
         if (blockIfAnotherTabRunning(tab)) return;
         if (tab.executor && tab.executor.running) {
             if (tab.executor.stepResolve) { tab.executor.stepMode = true; tab.executor.nextStep(); setRunning(true); }
@@ -1061,7 +1123,7 @@
 
         var source = editor.getValue();
         terminal.clear();
-        document.dispatchEvent(new window.CustomEvent('visualg:execution-start'));
+        document.dispatchEvent(new window.CustomEvent('visualg:execution-start', { detail: { debug: true } }));
         varsPanel.clear();
         editor.clearHighlight();
         setStatus('Passo a passo...', 'running');
@@ -1074,10 +1136,11 @@
             tab.executor = new window.VisuAlgExecutor(terminal, varsPanel);
             tab.executor.breakpointLines = new Set(window.VisualGWorkspace ? window.VisualGWorkspace.getBreakpoints() : []);
             tab.executor.stepMode = true;
+            tab.executor.debugMode = true;
             tab.running = true;
             setRunning(true);
             await tab.executor.run(ast);
-            setStatus('Execução finalizada');
+            setStatus('Finalizado');
         } catch (e) {
             if (e.message !== '__STOP__') {
                 hadError = true;
@@ -1091,10 +1154,12 @@
         setRunning(false);
         tab.executor = null;
         tab.running = false;
+        document.dispatchEvent(new window.CustomEvent('visualg:execution-end'));
     }
 
     function stopProgram() {
         var tab = tabManager.getActiveTab();
+        if (!tab) return;
         if (tab.executor) {
             tab.executor.running = false;
             if (tab.executor.stepResolve) {
@@ -1108,12 +1173,13 @@
         terminal.inputArea.classList.add('hidden');
         var consoleInputOverlay = document.getElementById('consoleInputOverlay');
         if (consoleInputOverlay) consoleInputOverlay.classList.add('hidden');
-        setStatus('Pronto');
+        setStatus('Finalizado');
         setRunning(false);
     }
 
     function newProgram() {
         var tab = tabManager.getActiveTab();
+        if (!tab) { tabManager.createTab(window.gerarTemplate()); return; }
         if (tab.executor && tab.executor.running) {
             stopProgram();
         }
@@ -1185,13 +1251,17 @@
 
             // Parar execução se estiver rodando
             var tab = tabManager.getActiveTab();
-            if (tab.executor && tab.executor.running) {
+            if (!tab) {
+                tab = tabManager.createTab(content, { fileName:file.name });
+                if (!tab) return;
+            } else {
+                if (tab.executor && tab.executor.running) {
                 stopProgram();
+                }
+                editor.setValue(content);
+                if (tabManager.setFileName) tabManager.setFileName(tab.id, file.name);
+                if (tabManager.markActiveClean) tabManager.markActiveClean();
             }
-
-            editor.setValue(content);
-            if (tabManager.setFileName) tabManager.setFileName(tab.id, file.name);
-            if (tabManager.markActiveClean) tabManager.markActiveClean();
             if (window.VisualGWorkspace) window.VisualGWorkspace.showEditor();
             terminal.clear();
             varsPanel.clear();

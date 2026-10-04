@@ -32,17 +32,17 @@
                     var code = pre.querySelector('code');
                     navigator.clipboard.writeText(code ? code.textContent : pre.textContent);
                     this.innerHTML = '<i data-lucide="check"></i>';
-                    if (window.lucide) lucide.createIcons({ nodes: [this] });
+                    if (window.renderLucideIcons) window.renderLucideIcons(this);
                     var self = this;
                     setTimeout(function () {
                         self.innerHTML = '<i data-lucide="copy"></i>';
-                        if (window.lucide) lucide.createIcons({ nodes: [self] });
+                        if (window.renderLucideIcons) window.renderLucideIcons(self);
                     }, 1500);
                 };
             })(pres[i]));
             pres[i].appendChild(btn);
         }
-        if (window.lucide) lucide.createIcons({ nodes: [panel] });
+        if (window.renderLucideIcons) window.renderLucideIcons(panel);
     }
 
     function loadTab(tabId) {

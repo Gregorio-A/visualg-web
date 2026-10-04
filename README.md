@@ -19,7 +19,15 @@ Documentação e Configurações ocupam a área principal em abas que podem ser 
 
 ![Documentação aberta em uma aba central](img/interface-documentacao-2026.png)
 
-![Configurações abertas em uma aba central](img/interface-configuracoes-2026.png)
+Redefinição de todas as preferências ou de uma categoria específica, sem apagar arquivos:
+
+![Opções para redefinir as configurações](img/interface-configuracoes-2026.png)
+
+Fontes do editor e temas clássicos do VisuAlg 3.0:
+
+![Opções de fonte do editor](img/interface-fontes-editor-2026.png)
+
+![Seletor de temas com as peles clássicas](img/interface-temas-classicos-2026.png)
 
 A interface também se adapta a telas estreitas e roda como aplicativo Electron:
 
@@ -94,10 +102,12 @@ eles entram no documento de status com identificador e criterio de conclusao.
 - Autoindentacao do codigo.
 - Comentario/descomentario com `Ctrl+/` ou `Cmd+/`.
 - Botão sol/lua para alternar diretamente entre VisuAlg Light e Dark; botão de paleta para escolher também Catppuccin Mocha/Latte, Rosé Pine, Gruvbox Dark/Light e Paper & Ink, além dos temas anteriores, com cores próprias para toda a interface e sintaxe.
-- Fontes independentes no editor e Console (JetBrains Mono, Fira Code, IBM Plex Mono ou fonte do sistema), distribuídas com a aplicação, com botões discretos, `Ctrl++`, `Ctrl+-`, `Ctrl+0` e `Ctrl+roda do mouse` sobre a área desejada.
+- Fontes independentes no editor e Console (JetBrains Mono, Fira Code, IBM Plex Mono, Inconsolata, Roboto Mono, Source Code Pro ou fonte do sistema), distribuídas com a aplicação, com botões discretos, `Ctrl++`, `Ctrl+-`, `Ctrl+0` e `Ctrl+roda do mouse` sobre a área desejada.
+- Temas clássicos inspirados no VisuAlg: Clássico, VisuAlg 3.0 e as peles Agua, Metal, Notas, aluminio, Madeira e Plastico.
 - O espaçamento entre letras e linhas continua configurável; ao mudar o tamanho da fonte do editor, ambos acompanham proporcionalmente o valor escolhido.
 - Pontos de parada no editor e controles reais para pausar, avançar e continuar.
 - Configuracoes persistidas no `localStorage`.
+- Redefinição de todas as configurações ou de categorias individuais, preservando arquivos, códigos e histórico de recuperação.
 - Deteccao de possivel loop infinito apos 1.000 iteracoes, com opcao de continuar ou parar.
 
 ## Linguagem suportada
