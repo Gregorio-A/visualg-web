@@ -757,6 +757,7 @@
         var loupe = document.getElementById('mobile-cursor-loupe');
         var cursorRevealTimers = [];
         var mobileInputField = editor.instance.getInputField();
+        var editorWrapper = editor.instance.getWrapperElement();
         var mobileInputComposing = false;
         var lastMobileInputAt = 0;
         var loupeTimer = null;
@@ -790,7 +791,13 @@
             document.documentElement.style.setProperty('--visual-viewport-bottom', Math.round(bottom) + 'px');
             document.body.classList.toggle('mobile-keyboard-open', usesMobileLayout() && window.innerHeight - height > 100);
             syncCompactWordWrap();
-            if (usesMobileLayout()) scheduleCursorReveal();
+            if (usesMobileLayout()) {
+                if (editor.instance.hasFocus()) {
+                    document.body.classList.add('mobile-editor-focused');
+                    toolbar.setAttribute('aria-hidden', 'false');
+                }
+                scheduleCursorReveal();
+            }
         }
 
         function revealCursor() {
@@ -831,6 +838,7 @@
         }
 
         editor.instance.on('focus', showToolbar);
+        mobileInputField.addEventListener('focus', showToolbar);
         mobileInputField.addEventListener('compositionstart', function () {
             mobileInputComposing = true;
             cancelCursorReveal();
@@ -843,6 +851,7 @@
         mobileInputField.addEventListener('input', function () {
             lastMobileInputAt = Date.now();
             cancelCursorReveal();
+            showToolbar();
         });
         editor.instance.on('blur', function () {
             window.setTimeout(function () {
@@ -881,7 +890,10 @@
                 suggestions.appendChild(button);
             });
             suggestions.hidden = !items.length;
-            if (items.length) toolbar.scrollTo({ left: 0, behavior: 'smooth' });
+            if (items.length) {
+                showToolbar();
+                toolbar.scrollTo({ left: 0, behavior: 'smooth' });
+            }
         });
         function touchPoint(event) {
             var touch = event.touches && event.touches[0] ? event.touches[0] : event.changedTouches && event.changedTouches[0];
@@ -912,7 +924,7 @@
             loupe.style.left = Math.max(leftLimit + 8, Math.min(point.x - loupeWidth / 2, leftLimit + viewportWidth - loupeWidth - 8)) + 'px';
             loupe.style.top = Math.max(topLimit + 8, point.y - 142) + 'px';
         }
-        var editorWrapper = editor.instance.getWrapperElement();
+        editorWrapper.addEventListener('pointerdown', showToolbar, { capture: true, passive: true });
         editorWrapper.addEventListener('touchstart', function (event) {
             if (!usesMobileLayout() || !event.touches || event.touches.length !== 1) return;
             hideLoupe();

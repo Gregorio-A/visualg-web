@@ -1,4 +1,4 @@
-var CACHE_NAME = 'visualg-web-shell-v2';
+var CACHE_NAME = 'visualg-web-shell-v3';
 var APP_SHELL = [
     './',
     './index.html',
@@ -11,7 +11,11 @@ var APP_SHELL = [
 self.addEventListener('install', function (event) {
     event.waitUntil(
         caches.open(CACHE_NAME)
-            .then(function (cache) { return cache.addAll(APP_SHELL); })
+            .then(function (cache) {
+                return cache.addAll(APP_SHELL.map(function (url) {
+                    return new Request(url, { cache: 'reload' });
+                }));
+            })
             .then(function () { return self.skipWaiting(); })
     );
 });
@@ -39,7 +43,7 @@ self.addEventListener('fetch', function (event) {
     if (url.origin !== self.location.origin) return;
 
     event.respondWith(
-        fetch(request)
+        fetch(request.mode === 'navigate' ? new Request(request, { cache: 'no-store' }) : request)
             .then(function (response) {
                 if (response.ok) {
                     var copy = response.clone();

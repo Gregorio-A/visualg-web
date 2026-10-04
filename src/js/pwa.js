@@ -45,7 +45,7 @@
 
     if ('serviceWorker' in navigator) {
         window.addEventListener('load', function () {
-            navigator.serviceWorker.register('sw.js', { scope: './' }).catch(function () {
+            navigator.serviceWorker.register('sw.js', { scope: './', updateViaCache: 'none' }).catch(function () {
                 // Installation remains available through the manifest if caching is unavailable.
             });
         });

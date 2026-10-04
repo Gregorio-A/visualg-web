@@ -801,7 +801,8 @@ html[data-theme] .editor-panel .CodeMirror-code span.cm-error { color:var(--ide-
     .mobile-code-toolbar {
         position:fixed;
         z-index:190;
-        top:calc(var(--visual-viewport-bottom,100dvh) - 46px);
+        top:auto;
+        bottom:max(env(keyboard-inset-height,0px),env(safe-area-inset-bottom));
         right:0;
         left:0;
         display:flex;
