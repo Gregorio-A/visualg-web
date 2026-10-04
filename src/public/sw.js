@@ -1,8 +1,8 @@
-var CACHE_NAME = 'visualg-web-shell-v1';
+var CACHE_NAME = 'visualg-web-shell-v2';
 var APP_SHELL = [
     './',
     './index.html',
-    './manifest.webmanifest',
+    './manifest.json',
     './icons/visualg-192.png',
     './icons/visualg-512.png',
     './icons/visualg-maskable-512.png'
