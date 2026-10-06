@@ -1,0 +1,18 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1120" height="410" viewBox="0 0 1120 410" role="img" aria-labelledby="title desc">
+  <title id="title">Linha do tempo do VisuAlg e do VisuAlg Web</title>
+  <desc id="desc">Evolução ilustrativa: VisuAlg 2.0, VisuAlg 2.5, VisuAlg 3.0 e revisões intermediárias, VisuAlg.dev de Conrado Salomé Ribeiro e VisuAlg Web de 0.10 a 0.14.</desc>
+  <rect width="1120" height="410" rx="24" fill="#f4f7fc"/>
+  <text x="48" y="54" font-family="system-ui,sans-serif" font-size="24" font-weight="700" fill="#16365f">Uma ferramenta, várias etapas de continuidade</text>
+  <text x="48" y="82" font-family="system-ui,sans-serif" font-size="14" fill="#4c6078">Representação editorial (não é captura das interfaces históricas)</text>
+  <path d="M110 190 H1010" stroke="#7897ba" stroke-width="5" stroke-linecap="round"/>
+  <g font-family="system-ui,sans-serif" text-anchor="middle">
+    <g transform="translate(110 0)"><circle cy="190" r="12" fill="#23578b"/><rect x="-78" y="124" width="156" height="43" rx="8" fill="#23578b"/><text y="151" font-size="16" font-weight="700" fill="white">VisuAlg 2.0</text><text y="224" font-size="13" font-weight="700" fill="#16365f">Captura preservada</text><text y="249" font-size="12" fill="#4c6078">editor clássico</text><text y="267" font-size="12" fill="#4c6078">(imagem acima)</text></g>
+    <g transform="translate(335 0)"><circle cy="190" r="12" fill="#287c77"/><rect x="-78" y="124" width="156" height="43" rx="8" fill="#287c77"/><text y="151" font-size="16" font-weight="700" fill="white">VisuAlg 2.5</text><text y="224" font-size="13" font-weight="700" fill="#16365f">Linha inicial</text><text y="249" font-size="12" fill="#4c6078">Cláudio Morgado</text><text y="267" font-size="12" fill="#4c6078">e Antonio Nicolodi</text></g>
+    <g transform="translate(560 0)"><circle cy="190" r="12" fill="#a36b18"/><rect x="-78" y="124" width="156" height="43" rx="8" fill="#a36b18"/><text y="151" font-size="16" font-weight="700" fill="white">VisuAlg 3.0</text><text y="224" font-size="13" font-weight="700" fill="#16365f">Reformulação</text><text y="249" font-size="12" fill="#4c6078">3.0.5.6 · 3.0.6.5</text><text y="267" font-size="12" fill="#4c6078">· 3.0.7.0</text></g>
+    <g transform="translate(785 0)"><circle cy="190" r="12" fill="#7655a6"/><rect x="-78" y="124" width="156" height="43" rx="8" fill="#7655a6"/><text y="151" font-size="16" font-weight="700" fill="white">VisuAlg.dev</text><text y="224" font-size="13" font-weight="700" fill="#16365f">Etapa web</text><text y="249" font-size="12" fill="#4c6078">Prof. Conrado</text><text y="267" font-size="12" fill="#4c6078">Salomé Ribeiro</text></g>
+    <g transform="translate(1010 0)"><circle cy="190" r="12" fill="#b13e61"/><rect x="-82" y="124" width="164" height="43" rx="8" fill="#9c3152"/><text y="151" font-size="16" font-weight="700" fill="white">VisuAlg Web</text><text y="224" font-size="13" font-weight="700" fill="#16365f">Fork independente</text><text y="249" font-size="12" fill="#4c6078">0.10 → 0.14</text><text y="267" font-size="12" fill="#4c6078">Murilo Gregorio Alves</text></g>
+  </g>
+  <rect x="48" y="310" width="1024" height="66" rx="12" fill="#fff" stroke="#cfdae8"/>
+  <text x="72" y="338" font-family="system-ui,sans-serif" font-size="14" font-weight="700" fill="#16365f">Sobre as datas</text>
+  <text x="72" y="360" font-family="system-ui,sans-serif" font-size="12" fill="#4c6078">Marcos reunidos de fontes públicas. A captura 2.0 é de 2018; as versões 2.5, 3.x e as etapas web aparecem separadas para evitar falsa equivalência.</text>
+</svg>

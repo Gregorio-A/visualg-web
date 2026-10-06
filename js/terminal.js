@@ -1,0 +1,189 @@
+// ============================================
+// VisuAlg Web IDE - Terminal / Console
+// ============================================
+
+(function () {
+    'use strict';
+
+    window.Terminal = {
+        outputEl: null,
+        inputArea: null,
+        inputEl: null,
+        inputResolve: null,
+        _modalSubmit: null,
+        _modalCancel: null,
+        _modalKeydown: null,
+
+        init: function () {
+            this.outputEl = document.getElementById('terminal-output');
+            this.inputArea = document.getElementById('terminal-input-area');
+            this.inputEl = document.getElementById('terminal-input');
+
+            var self = this;
+            document.getElementById('terminal-input-ok').addEventListener('click', function () {
+                self.submitInput();
+            });
+            this.inputEl.addEventListener('keydown', function (e) {
+                if (e.key === 'Enter') {
+                    self.submitInput();
+                }
+            });
+        },
+
+        write: function (text) {
+            this.outputEl.appendChild(document.createTextNode(String(text)));
+            // Auto-scroll to bottom
+            var panel = this.outputEl.closest('.panel-body');
+            if (panel) {
+                panel.scrollTop = panel.scrollHeight;
+            }
+        },
+
+        writeln: function (text) {
+            this.write(text + '\n');
+        },
+
+        writelnError: function (message, location, onNavigate) {
+            var row = document.createElement('div');
+            row.className = 'console-error';
+
+            var prefix = document.createElement('span');
+            prefix.textContent = 'ERRO: ';
+            row.appendChild(prefix);
+
+            if (location && typeof onNavigate === 'function') {
+                var link = document.createElement('button');
+                link.type = 'button';
+                link.className = 'console-error-link';
+                link.textContent = message;
+                link.title = 'Ir para a linha ' + location.line;
+                link.addEventListener('click', onNavigate);
+                row.appendChild(link);
+            } else {
+                row.appendChild(document.createTextNode(message));
+            }
+
+            this.outputEl.appendChild(row);
+            var panel = this.outputEl.closest('.panel-body');
+            if (panel) panel.scrollTop = panel.scrollHeight;
+        },
+        readInput: function (prompt) {
+            if (prompt) {
+                this.write(prompt);
+            }
+
+            var mode = localStorage.getItem('visualg-console-input-mode') || 'inline';
+
+            if (mode === 'modal') {
+                return this._readInputModal(prompt);
+            }
+            return this._readInputInline();
+        },
+
+        waitForContinue: function (message) {
+            var mode = localStorage.getItem('visualg-console-input-mode') || 'inline';
+            if (mode === 'modal') {
+                return this._readInputModal(message || 'Pressione Enter para continuar.');
+            }
+
+            var previousPlaceholder = this.inputEl.placeholder;
+            this.inputEl.placeholder = message || 'Pressione Enter para continuar.';
+            var self = this;
+            return this._readInputInline().then(function (value) {
+                self.inputEl.placeholder = previousPlaceholder;
+                return value;
+            });
+        },
+
+        _readInputInline: function () {
+            this.inputArea.classList.remove('hidden');
+            this.inputEl.value = '';
+            this.inputEl.focus();
+
+            var input = this.inputEl;
+            setTimeout(function () {
+                input.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            }, 300);
+
+            var self = this;
+            return new Promise(function (resolve) {
+                self.inputResolve = resolve;
+            });
+        },
+
+        _readInputModal: function (prompt) {
+            var overlay = document.getElementById('consoleInputOverlay');
+            var input = document.getElementById('console-input-modal');
+            var label = document.getElementById('console-input-modal-label');
+            var btnOk = document.getElementById('console-input-modal-ok');
+            var btnCancel = document.getElementById('console-input-modal-cancel');
+
+            label.textContent = prompt || 'Digite a entrada:';
+            input.value = '';
+            overlay.classList.remove('hidden');
+            input.focus();
+
+            var self = this;
+            return new Promise(function (resolve, reject) {
+                self.inputResolve = resolve;
+
+                self._modalSubmit = function () {
+                    var val = input.value;
+                    overlay.classList.add('hidden');
+                    self._cleanupModal(input, btnOk, btnCancel);
+                    resolve(val);
+                };
+                self._modalCancel = function () {
+                    overlay.classList.add('hidden');
+                    self._cleanupModal(input, btnOk, btnCancel);
+                    reject(new Error('__STOP__'));
+                };
+                self._modalKeydown = function (e) {
+                    if (e.key === 'Enter') self._modalSubmit();
+                    if (e.key === 'Escape') self._modalCancel();
+                };
+
+                btnOk.addEventListener('click', self._modalSubmit);
+                btnCancel.addEventListener('click', self._modalCancel);
+                input.addEventListener('keydown', self._modalKeydown);
+            });
+        },
+
+        _cleanupModal: function (input, btnOk, btnCancel) {
+            if (this._modalSubmit) btnOk.removeEventListener('click', this._modalSubmit);
+            if (this._modalCancel) btnCancel.removeEventListener('click', this._modalCancel);
+            if (this._modalKeydown) input.removeEventListener('keydown', this._modalKeydown);
+            this._modalSubmit = null;
+            this._modalCancel = null;
+            this._modalKeydown = null;
+            this.inputResolve = null;
+        },
+
+        submitInput: function () {
+            var val = this.inputEl.value;
+            this.inputArea.classList.add('hidden');
+            if (this.inputResolve) {
+                var resolve = this.inputResolve;
+                this.inputResolve = null;
+                resolve(val);
+            }
+        },
+
+        cancelPendingInput: function () {
+            if (this._modalCancel) {
+                this._modalCancel();
+                return;
+            }
+            this.inputArea.classList.add('hidden');
+            if (this.inputResolve) {
+                var resolve = this.inputResolve;
+                this.inputResolve = null;
+                resolve('');
+            }
+        },
+
+        clear: function () {
+            this.outputEl.textContent = '';
+        }
+    };
+})();

@@ -1,0 +1,1531 @@
+// ============================================
+// VisuAlg Web IDE - Main / App Wiring
+// ============================================
+
+(function () {
+    'use strict';
+
+    var editor = window.VisualGEditor;
+    var terminal = window.Terminal;
+    var varsPanel = window.VariablesPanel;
+    var tabManager = window.TabManager;
+
+    var btnRun, btnStep, btnStop, btnSave, btnSaveDropdown, saveMenu, btnOpen, btnExamples, fileInput, btnTheme, btnSettings, btnClearTerminal, btnClearVars, statusEl;
+    var settingsOverlay, settingTheme, settingFontSize, settingFontSizeSlider, settingWordWrap, settingTabSize, settingIndentGuides;
+    var settingEditorFontFamily, settingConsoleFontFamily;
+    var settingVarsFontSize, settingVarsFontSizeSlider, settingConsoleFontSize, settingConsoleFontSizeSlider, settingConsoleInputMode;
+    var settingVarsColNome, settingVarsColTipo, settingVarsColValor;
+    var settingLoopDetection;
+    var ONBOARDING_STORAGE_KEY = 'visualg-onboarding-complete-v1';
+    var SECTION_VISIBILITY_KEY = 'visualg-section-visibility-v1';
+    var sectionVisibility = { editor: true, variables: true, terminal: true };
+
+    function isCompactInterface() {
+        return window.innerWidth <= 760 || (window.innerWidth <= 950 && window.innerHeight <= 500);
+    }
+
+    function shortcutEnabled(name) {
+        return localStorage.getItem('visualg-shortcut-' + name) !== 'off';
+    }
+
+    document.addEventListener('DOMContentLoaded', function () {
+        // Initialize modules
+        editor.init(document.getElementById('codemirror-host'));
+        terminal.init();
+        varsPanel.init();
+
+        // Get toolbar elements
+        btnRun = document.getElementById('btn-run');
+        btnStep = document.getElementById('btn-step');
+        btnStop = document.getElementById('btn-stop');
+        btnSave = document.getElementById('btn-save');
+        btnSaveDropdown = document.getElementById('btn-save-dropdown');
+        saveMenu = document.getElementById('save-menu');
+        btnOpen = document.getElementById('btn-open');
+        btnExamples = document.getElementById('btn-examples');
+        fileInput = document.getElementById('file-input');
+        btnTheme = document.getElementById('btn-theme');
+        btnSettings = document.getElementById('btn-settings');
+        statusEl = document.getElementById('debug-status');
+
+        // Settings modal elements
+        settingsOverlay = document.getElementById('settingsOverlay');
+        settingTheme = document.getElementById('setting-theme');
+        settingFontSize = document.getElementById('setting-font-size');
+        settingFontSizeSlider = document.getElementById('setting-font-size-slider');
+        settingEditorFontFamily = document.getElementById('setting-editor-font-family');
+        settingConsoleFontFamily = document.getElementById('setting-console-font-family');
+        settingWordWrap = document.getElementById('setting-word-wrap');
+        settingTabSize = document.getElementById('setting-tab-size');
+        settingIndentGuides = document.getElementById('setting-indent-guides');
+        settingVarsFontSize = document.getElementById('setting-vars-font-size');
+        settingVarsFontSizeSlider = document.getElementById('setting-vars-font-size-slider');
+        settingConsoleFontSize = document.getElementById('setting-console-font-size');
+        settingConsoleFontSizeSlider = document.getElementById('setting-console-font-size-slider');
+        settingConsoleInputMode = document.getElementById('setting-console-input-mode');
+        settingVarsColNome = document.getElementById('setting-vars-col-nome');
+        settingVarsColTipo = document.getElementById('setting-vars-col-tipo');
+        settingVarsColValor = document.getElementById('setting-vars-col-valor');
+        settingLoopDetection = document.getElementById('setting-loop-detection');
+
+        // Initialize theme and settings
+        initTheme();
+        initSettings();
+        initSettingsWheelControls();
+        initMobileEditing();
+
+        // Initialize tab manager and make its persistence visible to the user.
+        tabManager.init();
+        tabManager.onSwitch = function (tab) {
+            document.dispatchEvent(new window.CustomEvent('visualg:tab-switched', { detail: { id: tab.id } }));
+            var running = tab.executor && tab.executor.running;
+            setRunning(!!running);
+            if (running) {
+                setStatus(tab.executor.stepMode ? 'Passo a passo...' : 'Executando...', 'running');
+            } else {
+                setStatus('Pronto');
+            }
+        };
+        tabManager.onActionBlocked = function (message) {
+            setStatus('Executando...', 'running');
+            statusEl.title = message;
+        };
+
+        // Button events
+        btnRun.addEventListener('click', function () { if (getRunningTab()) stopProgram(); else runProgram(); });
+        btnStep.addEventListener('click', function () { advanceDebugger('over'); });
+        btnStop.addEventListener('click', stopProgram);
+        btnSave.addEventListener('click', saveProgram);
+
+        // Save dropdown events
+        btnSaveDropdown.addEventListener('click', function(e) {
+            e.stopPropagation();
+            saveMenu.classList.toggle('hidden');
+        });
+        document.addEventListener('click', function() {
+            saveMenu.classList.add('hidden');
+        });
+        saveMenu.addEventListener('click', function(e) {
+            if (e.target.classList.contains('dropdown-item')) {
+                var format = e.target.dataset.format;
+                saveProgramAs(format);
+                saveMenu.classList.add('hidden');
+            }
+        });
+
+        btnOpen.addEventListener('click', openProgram);
+        btnExamples.addEventListener('click', openExamples);
+        fileInput.addEventListener('change', handleFileOpen);
+        document.getElementById('btn-tab-indent').addEventListener('click', autoIndent);
+        btnTheme.addEventListener('click', toggleTheme);
+
+        // Mobile menu
+        var mobileMenu = document.getElementById('mobile-menu');
+        var btnMenu = document.getElementById('btn-menu');
+        new MutationObserver(function () {
+            var open = mobileMenu.classList.contains('open');
+            btnMenu.setAttribute('aria-expanded', String(open));
+            btnMenu.setAttribute('aria-label', open ? 'Fechar menu' : 'Abrir menu');
+        }).observe(mobileMenu, { attributes: true, attributeFilter: ['class'] });
+        btnMenu.addEventListener('click', function (e) {
+            e.stopPropagation();
+            mobileMenu.classList.toggle('open');
+            btnMenu.setAttribute('aria-expanded', String(mobileMenu.classList.contains('open')));
+        });
+        document.addEventListener('pointerdown', function (event) {
+            if (!event.target.closest('#mobile-menu, #btn-menu')) {
+                mobileMenu.classList.remove('open');
+                btnMenu.setAttribute('aria-expanded', 'false');
+            }
+        });
+        mobileMenu.addEventListener('click', function (e) {
+            e.stopPropagation();
+        });
+        document.getElementById('mobile-open').addEventListener('click', function () {
+            mobileMenu.classList.remove('open');
+            openProgram();
+        });
+        document.getElementById('mobile-save-alg').addEventListener('click', function () {
+            mobileMenu.classList.remove('open');
+            saveProgramAs('alg');
+        });
+        document.getElementById('mobile-save-txt').addEventListener('click', function () {
+            mobileMenu.classList.remove('open');
+            saveProgramAs('txt');
+        });
+        document.getElementById('mobile-examples').addEventListener('click', function () {
+            mobileMenu.classList.remove('open');
+            openExamples();
+        });
+        document.getElementById('mobile-settings').addEventListener('click', function () {
+            mobileMenu.classList.remove('open');
+            openSettings();
+        });
+        document.getElementById('mobile-run').addEventListener('click', function () {
+            mobileMenu.classList.remove('open');
+            btnRun.click();
+        });
+        document.getElementById('mobile-step').addEventListener('click', function () {
+            mobileMenu.classList.remove('open');
+            btnStep.click();
+        });
+        document.getElementById('mobile-stop').addEventListener('click', function () {
+            mobileMenu.classList.remove('open');
+            btnStop.click();
+        });
+        btnClearTerminal = document.getElementById('btn-clear-terminal');
+        btnClearTerminal.addEventListener('click', function () {
+            terminal.clear();
+        });
+
+        btnClearVars = document.getElementById('btn-clear-vars');
+        btnClearVars.addEventListener('click', function () {
+            varsPanel.clear();
+        });
+
+        btnSettings.addEventListener('click', function () {
+            if (window.VisualGWorkspace && window.VisualGWorkspace.toggleSettings) window.VisualGWorkspace.toggleSettings();
+            else if (settingsOverlay.classList.contains('hidden')) openSettings();
+            else closeSettings();
+        });
+
+        document.getElementById('debug-start').addEventListener('click', stepProgram);
+        document.getElementById('debug-continue').addEventListener('click', runProgram);
+        document.getElementById('debug-pause').addEventListener('click', pauseProgram);
+        document.getElementById('debug-next').addEventListener('click', function () { advanceDebugger('over'); });
+        document.getElementById('debug-into').addEventListener('click', function () { advanceDebugger('into'); });
+        document.getElementById('debug-out').addEventListener('click', function () { advanceDebugger('out'); });
+        document.addEventListener('visualg:debug-paused', function (event) {
+            var tab = tabManager.getActiveTab();
+            if (tab && tab.executor) tab.executor.debugMode = true;
+            document.body.classList.add('debug-session-active');
+            document.getElementById('debug-session-controls').classList.remove('hidden');
+            setStatus('Pausado na linha ' + event.detail.line, 'paused');
+            setRunning(true);
+        });
+
+        initExamples();
+        initOnboarding();
+        initRecovery();
+        initSectionVisibility();
+
+        // Docs modal events
+        var docsOverlay = document.getElementById('docsOverlay');
+        document.getElementById('btn-docs').addEventListener('click', function () {
+            DocsPanel.open();
+        });
+        document.getElementById('mobile-docs').addEventListener('click', function () {
+            mobileMenu.classList.remove('open');
+            DocsPanel.open();
+        });
+        document.getElementById('btn-close-docs').addEventListener('click', function () {
+            DocsPanel.close();
+        });
+        docsOverlay.addEventListener('click', function (e) {
+            if (e.target === docsOverlay) DocsPanel.close();
+            var tab = e.target.closest('.modal-tab');
+            if (tab) {
+                var tabId = tab.getAttribute('data-tab');
+                DocsPanel.activateTab(tabId);
+                DocsPanel.loadTab(tabId);
+            }
+        });
+
+        // The version indicators open the canonical project status.
+        var betaTag = document.querySelector('.beta-tag');
+        var betaHoverTimer = null;
+
+        function openProjectStatus() {
+            DocsPanel.open('status');
+        }
+
+        betaTag.addEventListener('click', function () {
+            openProjectStatus();
+        });
+
+        betaTag.addEventListener('mouseenter', function () {
+            betaHoverTimer = setTimeout(function () {
+                openProjectStatus();
+            }, 5000);
+        });
+        betaTag.addEventListener('mouseleave', function () {
+            clearTimeout(betaHoverTimer);
+        });
+
+        // Settings modal events
+        document.getElementById('btn-close-settings').addEventListener('click', closeSettings);
+        settingsOverlay.addEventListener('click', function (e) {
+            if (e.target === settingsOverlay) closeSettings();
+            var tab = e.target.closest('.modal-tab');
+            if (tab) {
+                var tabId = tab.getAttribute('data-tab');
+                var modal = tab.closest('.modal');
+                modal.querySelectorAll('.modal-tab').forEach(function (t) { t.classList.remove('active'); });
+                modal.querySelectorAll('.modal-tab-panel').forEach(function (p) { p.classList.remove('active'); });
+                tab.classList.add('active');
+                modal.querySelector('[data-tab-panel="' + tabId + '"]').classList.add('active');
+            }
+        });
+
+        // Close tab confirmation modal events
+        var closeTabOverlay = document.getElementById('closeTabOverlay');
+        document.getElementById('btn-confirm-close').addEventListener('click', function () {
+            tabManager.confirmClose();
+        });
+        document.getElementById('btn-cancel-close').addEventListener('click', function () {
+            tabManager.cancelClose();
+        });
+        document.getElementById('btn-cancel-close-tab').addEventListener('click', function () {
+            tabManager.cancelClose();
+        });
+        closeTabOverlay.addEventListener('click', function (e) {
+            if (e.target === closeTabOverlay) tabManager.cancelClose();
+        });
+
+        settingTheme.addEventListener('change', function () {
+            applyTheme(this.value);
+        });
+        settingEditorFontFamily.addEventListener('change', function () { applyFontFamily('editor', this.value); });
+        settingConsoleFontFamily.addEventListener('change', function () { applyFontFamily('console', this.value); });
+        settingFontSize.addEventListener('input', function () {
+            var val = parseInt(this.value, 10);
+            if (val >= 1) applyFontSize(val);
+        });
+        settingFontSizeSlider.addEventListener('input', function () {
+            applyFontSize(this.value);
+        });
+        settingWordWrap.addEventListener('change', function () {
+            applyWordWrap(this.value);
+        });
+        settingTabSize.addEventListener('change', function () {
+            applyTabSize(this.value);
+        });
+        settingIndentGuides.addEventListener('change', function () {
+            applyIndentGuides(this.value);
+        });
+        settingVarsFontSize.addEventListener('input', function () {
+            var val = parseInt(this.value, 10);
+            if (val >= 1) applyVarsFontSize(val);
+        });
+        settingVarsFontSizeSlider.addEventListener('input', function () {
+            applyVarsFontSize(this.value);
+        });
+        settingConsoleFontSize.addEventListener('input', function () {
+            var val = parseInt(this.value, 10);
+            if (val >= 1) applyConsoleFontSize(val);
+        });
+        settingConsoleFontSizeSlider.addEventListener('input', function () {
+            applyConsoleFontSize(this.value);
+        });
+        settingConsoleInputMode.addEventListener('change', function () {
+            applyConsoleInputMode(this.value);
+        });
+        settingLoopDetection.addEventListener('change', function () {
+            applyLoopDetection(settingLoopDetection.value);
+        });
+
+        function onVarsColChange() {
+            applyVarsColumns({
+                nome: settingVarsColNome.checked,
+                tipo: settingVarsColTipo.checked,
+                valor: settingVarsColValor.checked
+            });
+        }
+        settingVarsColNome.addEventListener('change', onVarsColChange);
+        settingVarsColTipo.addEventListener('change', onVarsColChange);
+        settingVarsColValor.addEventListener('change', onVarsColChange);
+
+        // Keyboard shortcuts
+        document.addEventListener('keydown', function (e) {
+            if ((e.key === 'F9' || e.key === 'F5') && shortcutEnabled('run')) {
+                e.preventDefault();
+                var runningTab = getRunningTab();
+                if (e.shiftKey || (runningTab && !(runningTab.executor && runningTab.executor.stepResolve))) stopProgram();
+                else if (runningTab) runProgram();
+                else runProgram();
+            }
+            if (e.key === 'F8' && shortcutEnabled('step')) {
+                e.preventDefault();
+                stepProgram();
+            }
+            if (e.key === 'F10' && shortcutEnabled('debug')) { e.preventDefault(); advanceDebugger('over'); }
+            if (e.key === 'F11' && shortcutEnabled('debug')) { e.preventDefault(); advanceDebugger(e.shiftKey ? 'out' : 'into'); }
+            if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 's' && shortcutEnabled('save')) { e.preventDefault(); saveProgram(); }
+            if (e.key === 'Escape') {
+                if (!settingsOverlay.classList.contains('hidden')) closeSettings();
+                if (!docsOverlay.classList.contains('hidden')) DocsPanel.close();
+                if (!closeTabOverlay.classList.contains('hidden')) tabManager.cancelClose();
+                closeProductModals();
+            }
+        });
+    });
+
+    // === First-use experience & examples ===
+    function getStoredValue(key) {
+        try {
+            return localStorage.getItem(key);
+        } catch (e) {
+            return null;
+        }
+    }
+
+    function setStoredValue(key, value) {
+        try {
+            localStorage.setItem(key, value);
+        } catch (e) {
+            // The app remains usable when storage is blocked by the browser.
+        }
+    }
+
+    function getExampleById(id) {
+        var examples = window.VisuAlgExamples || [];
+        for (var i = 0; i < examples.length; i++) {
+            if (examples[i].id === id) return examples[i];
+        }
+        return null;
+    }
+
+    function renderExamples() {
+        var grid = document.getElementById('examples-grid');
+        var examples = window.VisuAlgExamples || [];
+        var search = document.getElementById('examples-search');
+        var terms = search ? search.value.toLocaleLowerCase('pt-BR').normalize('NFD').replace(/[\u0300-\u036f]/g, '').trim().split(/\s+/).filter(Boolean) : [];
+        grid.textContent = '';
+
+        examples.filter(function (example) { var searchable = (example.title + ' ' + example.level + ' ' + example.description + ' ' + example.source).toLocaleLowerCase('pt-BR').normalize('NFD').replace(/[\u0300-\u036f]/g, ''); return terms.every(function (term) { return searchable.includes(term); }); }).forEach(function (example) {
+            var card = document.createElement('article');
+            card.className = 'example-card';
+
+            var header = document.createElement('div');
+            header.className = 'example-card-header';
+            var title = document.createElement('h3');
+            title.textContent = example.title;
+            var level = document.createElement('span');
+            level.className = 'example-level';
+            level.textContent = example.level;
+            header.appendChild(title);
+            header.appendChild(level);
+
+            var description = document.createElement('p');
+            description.textContent = example.description;
+
+            var actions = document.createElement('div');
+            actions.className = 'example-actions';
+            actions.innerHTML =
+                '<button type="button" class="modal-btn modal-btn-secondary" data-example-action="open" data-example-id="' + example.id + '"><i data-lucide="code-2"></i> Abrir código</button>' +
+                '<button type="button" class="modal-btn modal-btn-primary" data-example-action="run" data-example-id="' + example.id + '"><i data-lucide="play"></i> Executar</button>';
+
+            card.appendChild(header);
+            card.appendChild(description);
+            card.appendChild(actions);
+            grid.appendChild(card);
+        });
+
+        if (!grid.children.length) grid.textContent = 'Nenhum exemplo encontrado por título, descrição ou código.';
+
+        if (window.renderLucideIcons) window.renderLucideIcons(grid);
+    }
+
+    function openExamples() {
+        if (window.VisualGWorkspace) { window.VisualGWorkspace.showExamples(); return; }
+        document.getElementById('examplesOverlay').classList.remove('hidden');
+    }
+
+    function closeExamples() {
+        document.getElementById('examplesOverlay').classList.add('hidden');
+    }
+
+    function loadExample(id, executeNow) {
+        var example = getExampleById(id);
+        if (!example) return;
+        var tab = tabManager.createTab(example.source);
+        if (!tab) return;
+
+        closeExamples();
+        setSectionVisible('editor', true);
+        if (executeNow) {
+            setSectionVisible('terminal', true);
+            window.setTimeout(runProgram, 0);
+        } else {
+            editor.instance.focus();
+        }
+    }
+
+    function initExamples() {
+        var overlay = document.getElementById('examplesOverlay');
+        renderExamples();
+        document.getElementById('examples-search').addEventListener('input', renderExamples);
+        document.getElementById('btn-close-examples').addEventListener('click', closeExamples);
+        overlay.addEventListener('click', function (event) {
+            if (event.target === overlay) closeExamples();
+            var button = event.target.closest('[data-example-action]');
+            if (button) {
+                loadExample(button.dataset.exampleId, button.dataset.exampleAction === 'run');
+            }
+        });
+    }
+
+    function completeOnboarding(nextAction) {
+        setStoredValue(ONBOARDING_STORAGE_KEY, 'true');
+        document.getElementById('onboardingOverlay').classList.add('hidden');
+        if (nextAction === 'examples') {
+            openExamples();
+        } else if (editor.instance) {
+            editor.instance.focus();
+        }
+    }
+
+    function initOnboarding() {
+        var overlay = document.getElementById('onboardingOverlay');
+        document.getElementById('btn-skip-onboarding').addEventListener('click', function () {
+            completeOnboarding('editor');
+        });
+        document.getElementById('btn-onboarding-editor').addEventListener('click', function () {
+            completeOnboarding('editor');
+        });
+        document.getElementById('btn-onboarding-examples').addEventListener('click', function () {
+            completeOnboarding('examples');
+        });
+        overlay.addEventListener('click', function (event) {
+            if (event.target === overlay) completeOnboarding('editor');
+        });
+
+        // The workspace itself is the landing screen in the reference design.
+    }
+
+    function closeProductModals() {
+        var examplesOverlay = document.getElementById('examplesOverlay');
+        var recoveryOverlay = document.getElementById('recoveryOverlay');
+        var onboardingOverlay = document.getElementById('onboardingOverlay');
+        if (!examplesOverlay.classList.contains('hidden')) closeExamples();
+        if (!recoveryOverlay.classList.contains('hidden')) recoveryOverlay.classList.add('hidden');
+        if (!onboardingOverlay.classList.contains('hidden')) completeOnboarding('editor');
+    }
+
+    // === Autosave & recovery ===
+    function formatLocalDate(isoValue) {
+        if (!isoValue) return 'Ainda não há horário de salvamento.';
+        var date = new Date(isoValue);
+        if (Number.isNaN(date.getTime())) return 'Horário de salvamento indisponível.';
+        return date.toLocaleString('pt-BR', {
+            day: '2-digit',
+            month: '2-digit',
+            hour: '2-digit',
+            minute: '2-digit',
+            second: '2-digit'
+        });
+    }
+
+    function refreshRecoveryModal() {
+        var state = tabManager.getPersistenceState();
+        var recovery = tabManager.getRecoveryInfo();
+        var restoreButton = document.getElementById('btn-restore-recovery');
+
+        document.getElementById('recovery-current-status').textContent =
+            state.status === 'error' ? 'Não foi possível salvar neste dispositivo' : 'Código salvo automaticamente neste dispositivo';
+        document.getElementById('recovery-current-time').textContent = formatLocalDate(state.updatedAt);
+
+        if (recovery) {
+            document.getElementById('recovery-copy-description').textContent =
+                'Cópia de ' + formatLocalDate(recovery.updatedAt) + ', com ' + recovery.tabCount +
+                (recovery.tabCount === 1 ? ' aba.' : ' abas.');
+            restoreButton.disabled = false;
+        } else {
+            document.getElementById('recovery-copy-description').textContent =
+                'Uma cópia anterior será criada automaticamente conforme você editar.';
+            restoreButton.disabled = true;
+        }
+    }
+
+    function initRecovery() {
+        var overlay = document.getElementById('recoveryOverlay');
+        // Keep the recovery dialog at the document root; malformed or dynamically
+        // inserted workspace markup must not trap it inside another hidden modal.
+        if (overlay && overlay.parentElement !== document.body) document.body.appendChild(overlay);
+        var closeTimer = null;
+        var closeAnimationHandler = null;
+        function closeRecoveryModal() {
+            if (!overlay || overlay.classList.contains('hidden') || overlay.classList.contains('is-closing')) return;
+            if (window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+                overlay.classList.add('hidden');
+                return;
+            }
+            overlay.classList.add('is-closing');
+            var finishClose = function () {
+                if (closeTimer) window.clearTimeout(closeTimer);
+                closeTimer = null;
+                if (closeAnimationHandler) overlay.removeEventListener('animationend', closeAnimationHandler);
+                closeAnimationHandler = null;
+                overlay.classList.remove('is-closing');
+                overlay.classList.add('hidden');
+            };
+            closeAnimationHandler = function (event) {
+                if (event.target !== overlay || !overlay.classList.contains('is-closing')) return;
+                finishClose();
+            };
+            overlay.addEventListener('animationend', closeAnimationHandler);
+            closeTimer = window.setTimeout(finishClose, 240);
+        }
+        document.addEventListener('visualg:open-recovery', function () {
+            refreshRecoveryModal();
+            if (closeTimer) window.clearTimeout(closeTimer);
+            closeTimer = null;
+            if (closeAnimationHandler) overlay.removeEventListener('animationend', closeAnimationHandler);
+            closeAnimationHandler = null;
+            overlay.classList.remove('is-closing');
+            overlay.classList.remove('hidden');
+        });
+        document.getElementById('btn-close-recovery').addEventListener('click', function () {
+            closeRecoveryModal();
+        });
+        overlay.addEventListener('click', function (event) {
+            if (event.target === overlay) closeRecoveryModal();
+        });
+        overlay.addEventListener('visualg:close-recovery', closeRecoveryModal);
+        document.getElementById('btn-restore-recovery').addEventListener('click', function () {
+            if (tabManager.getRunningTab()) {
+                setStatus('Executando...', 'running');
+                statusEl.title = 'Interrompa a execução antes de restaurar uma cópia.';
+                return;
+            }
+            if (tabManager.restoreRecovery()) {
+                closeRecoveryModal();
+                setStatus('Pronto');
+            }
+        });
+    }
+
+    // === Section visibility ===
+    function persistSectionVisibility() {
+        setStoredValue(SECTION_VISIBILITY_KEY, JSON.stringify(sectionVisibility));
+    }
+
+    function applySectionVisibility() {
+        var grid = document.querySelector('.ide-shell') || document.querySelector('.grid-container');
+        var elements = {
+            editor: document.querySelector('.editor-column'),
+            variables: document.getElementById('variablesPanel'),
+            terminal: document.getElementById('terminalPanel')
+        };
+
+        // Inline sizes come from drag-resizing; reset them when changing the grid.
+        elements.editor.style.width = '';
+        elements.variables.style.width = '';
+        elements.terminal.style.width = '';
+
+        Object.keys(elements).forEach(function (name) {
+            elements[name].classList.toggle('section-hidden', !sectionVisibility[name]);
+            grid.classList.toggle('section-' + name + '-hidden', !sectionVisibility[name]);
+        });
+
+        if (sectionVisibility.editor && editor.instance) {
+            window.setTimeout(function () { editor.instance.refresh(); }, 0);
+        }
+    }
+
+    function setSectionVisible(name, visible) {
+        if (!Object.prototype.hasOwnProperty.call(sectionVisibility, name)) return;
+        sectionVisibility[name] = !!visible;
+        applySectionVisibility();
+        persistSectionVisibility();
+    }
+
+    function initSectionVisibility() {
+        sectionVisibility = { editor: true, variables: true, terminal: true };
+        applySectionVisibility();
+        persistSectionVisibility();
+    }
+
+    // === Theme ===
+    function initTheme() {
+        var saved = localStorage.getItem('visualg-theme');
+        if (!saved) saved = 'dark';
+        applyTheme(saved);
+    }
+
+    function toggleTheme() {
+        var next = document.documentElement.dataset.colorMode === 'light' ? 'dark' : 'light';
+        applyTheme(next);
+        if (settingTheme) settingTheme.value = next;
+    }
+
+    function applyTheme(theme) {
+        if (theme === 'visualg-classic-high-contrast') theme = 'visualg-classic';
+        var lightThemes = ['light', 'github-light', 'solarized-light', 'high-contrast', 'catppuccin-latte', 'gruvbox-light', 'paper', 'visualg-classic', 'visualg-3', 'visualg-agua', 'visualg-metal', 'visualg-notas', 'visualg-aluminio', 'visualg-madeira', 'visualg-plastico'];
+        document.documentElement.setAttribute('data-theme', theme);
+        document.documentElement.dataset.colorMode = lightThemes.includes(theme) ? 'light' : 'dark';
+        localStorage.setItem('visualg-theme', theme);
+        if (btnTheme) {
+            var isLight = lightThemes.includes(theme);
+            btnTheme.innerHTML = '<i data-lucide="' + (isLight ? 'moon' : 'sun') + '"></i>';
+            btnTheme.title = isLight ? 'Ativar modo escuro' : 'Ativar modo claro';
+            btnTheme.setAttribute('aria-label', btnTheme.title);
+            if (window.renderLucideIcons) window.renderLucideIcons(btnTheme);
+        }
+        if (settingTheme) settingTheme.value = theme;
+        var guidesEnabled = localStorage.getItem('visualg-indent-guides') !== 'off';
+        if (guidesEnabled && editor.updateGuideColors) {
+            editor.updateGuideColors();
+        }
+        if (editor.instance) editor.instance.refresh();
+    }
+
+    // === Settings ===
+    function initSettingsWheelControls() {
+        var wheelRemainders = new WeakMap();
+        document.addEventListener('wheel', function (event) {
+            var target = event.target;
+            if (!target || !target.closest) return;
+            var control = target.closest('select,input[type="number"],input[type="range"]');
+            if (!control || !control.closest('#settingsOverlay,.workspace-settings,.editor-quick-menu') || (document.activeElement !== control && !control.matches(':hover')) || control.disabled || control.readOnly) return;
+            event.preventDefault();
+            var delta = event.deltaY;
+            if (event.deltaMode === 1) delta *= 40;
+            else if (event.deltaMode === 2) delta *= 40;
+            var accumulated = (wheelRemainders.get(control) || 0) + delta / 100;
+            var steps = accumulated < 0 ? Math.ceil(accumulated) : Math.floor(accumulated);
+            wheelRemainders.set(control, accumulated - steps);
+            if (!steps) return;
+
+            if (control.tagName === 'SELECT') {
+                var direction = Math.sign(steps);
+                var index = control.selectedIndex;
+                for (var i = 0; i < Math.abs(steps); i++) {
+                    var nextIndex = index + direction;
+                    while (nextIndex >= 0 && nextIndex < control.options.length && control.options[nextIndex].disabled) nextIndex += direction;
+                    if (nextIndex < 0 || nextIndex >= control.options.length) break;
+                    index = nextIndex;
+                }
+                if (index !== control.selectedIndex) {
+                    control.selectedIndex = index;
+                    control.dispatchEvent(new window.Event('input', { bubbles: true }));
+                    control.dispatchEvent(new window.Event('change', { bubbles: true }));
+                }
+                return;
+            }
+
+            var step = control.step === 'any' ? 1 : Number(control.step) || 1;
+            var count = Math.abs(steps);
+            try {
+                if (steps < 0) control.stepUp(count);
+                else control.stepDown(count);
+            } catch (error) {
+                var value = Number(control.value) || 0;
+                var min = control.min === '' ? -Infinity : Number(control.min);
+                var max = control.max === '' ? Infinity : Number(control.max);
+                control.value = String(Math.max(min, Math.min(max, value - steps * step)));
+            }
+            control.dispatchEvent(new window.Event('input', { bubbles: true }));
+            control.dispatchEvent(new window.Event('change', { bubbles: true }));
+        }, { passive: false, capture: true });
+    }
+
+    function initMobileEditing() {
+        var toolbar = document.getElementById('mobile-code-toolbar');
+        var suggestions = document.getElementById('mobile-autocomplete-suggestions');
+        var loupe = document.getElementById('mobile-cursor-loupe');
+        var cursorRevealTimers = [];
+        var mobileInputField = editor.instance.getInputField();
+        var editorWrapper = editor.instance.getWrapperElement();
+        var mobileInputComposing = false;
+        var lastMobileInputAt = 0;
+        var loupeTimer = null;
+        var loupeStart = null;
+        if (!toolbar || !editor.instance) return;
+
+        function usesMobileLayout() {
+            return isCompactInterface();
+        }
+
+        function syncCompactWordWrap() {
+            var saved = localStorage.getItem('visualg-word-wrap') || 'off';
+            var effective = usesMobileLayout() ? 'on' : saved;
+            var enabled = effective === 'on';
+            if (editor.instance.getOption('lineWrapping') !== enabled) editor.instance.setOption('lineWrapping', enabled);
+            if (settingWordWrap) settingWordWrap.value = effective;
+        }
+
+        function cancelCursorReveal() {
+            cursorRevealTimers.forEach(window.clearTimeout);
+            cursorRevealTimers = [];
+        }
+
+        function updateViewport() {
+            var viewport = window.visualViewport;
+            var height = viewport ? viewport.height : window.innerHeight;
+            var top = viewport ? viewport.offsetTop : 0;
+            var bottom = top + height;
+            document.documentElement.style.setProperty('--visual-viewport-height', Math.round(height) + 'px');
+            document.documentElement.style.setProperty('--visual-viewport-top', Math.round(top) + 'px');
+            document.documentElement.style.setProperty('--visual-viewport-bottom', Math.round(bottom) + 'px');
+            document.body.classList.toggle('mobile-keyboard-open', usesMobileLayout() && window.innerHeight - height > 100);
+            syncCompactWordWrap();
+            if (usesMobileLayout()) {
+                if (editor.instance.hasFocus()) {
+                    document.body.classList.add('mobile-editor-focused');
+                    toolbar.setAttribute('aria-hidden', 'false');
+                }
+                scheduleCursorReveal();
+            }
+        }
+
+        function revealCursor() {
+            var panel = document.getElementById('editorPanel');
+            if (!usesMobileLayout() || !editor.instance.hasFocus() || !panel || panel.classList.contains('hidden')) return;
+            if (mobileInputComposing || Date.now() - lastMobileInputAt < 250) return;
+            var cm = editor.instance;
+            var viewport = window.visualViewport;
+            var viewportTop = viewport ? viewport.offsetTop : 0;
+            var viewportHeight = viewport ? viewport.height : window.innerHeight;
+            var visibleTop = viewportTop + 96;
+            var visibleBottom = viewportTop + viewportHeight - 54;
+            cm.scrollIntoView(cm.getCursor(), Math.min(90, Math.max(42, viewportHeight * .18)));
+            var coordinates = cm.cursorCoords(cm.getCursor(), 'window');
+            var scroller = cm.getScrollerElement();
+            if (coordinates.bottom > visibleBottom) scroller.scrollTop += coordinates.bottom - visibleBottom + 10;
+            else if (coordinates.top < visibleTop) scroller.scrollTop -= visibleTop - coordinates.top + 10;
+        }
+
+        function scheduleCursorReveal() {
+            cancelCursorReveal();
+            if (mobileInputComposing || Date.now() - lastMobileInputAt < 250) return;
+            cursorRevealTimers = [60, 220].map(function (delay) {
+                return window.setTimeout(function () { window.requestAnimationFrame(revealCursor); }, delay);
+            });
+        }
+
+        function showToolbar() {
+            if (!usesMobileLayout()) return;
+            document.body.classList.add('mobile-editor-focused');
+            toolbar.setAttribute('aria-hidden', 'false');
+            updateViewport();
+        }
+
+        function hideToolbar() {
+            document.body.classList.remove('mobile-editor-focused');
+            toolbar.setAttribute('aria-hidden', 'true');
+        }
+
+        editor.instance.on('focus', showToolbar);
+        mobileInputField.addEventListener('focus', showToolbar);
+        mobileInputField.addEventListener('compositionstart', function () {
+            mobileInputComposing = true;
+            cancelCursorReveal();
+        });
+        mobileInputField.addEventListener('compositionend', function () {
+            mobileInputComposing = false;
+            lastMobileInputAt = Date.now();
+            cancelCursorReveal();
+        });
+        mobileInputField.addEventListener('input', function () {
+            lastMobileInputAt = Date.now();
+            cancelCursorReveal();
+            showToolbar();
+        });
+        editor.instance.on('blur', function () {
+            window.setTimeout(function () {
+                if (!toolbar.contains(document.activeElement) && !document.activeElement.closest('.CodeMirror')) hideToolbar();
+            }, 120);
+        });
+        document.addEventListener('focusin', function (event) {
+            if (!event.target.closest('.CodeMirror, #mobile-code-toolbar')) hideToolbar();
+            if (usesMobileLayout() && event.target.matches('input, textarea, select, [contenteditable="true"]')) {
+                window.setTimeout(function () { event.target.scrollIntoView({ block: 'nearest', inline: 'nearest' }); }, 80);
+            }
+        });
+        toolbar.addEventListener('pointerdown', function (event) { event.preventDefault(); });
+        toolbar.addEventListener('click', function (event) {
+            var button = event.target.closest('button');
+            if (!button) return;
+            if (button.dataset.autocompleteIndex !== undefined) editor.acceptAutocomplete(Number(button.dataset.autocompleteIndex));
+            else if (button.dataset.editorPair) editor.insertPair(button.dataset.editorPair);
+            else if (button.dataset.editorText) editor.insertText(button.dataset.editorText);
+            else if (button.dataset.editorAction === 'indent') editor.indent();
+            else if (button.dataset.editorAction === 'cursor-left') editor.moveCursor(-1);
+            else if (button.dataset.editorAction === 'cursor-right') editor.moveCursor(1);
+            showToolbar();
+        });
+        document.addEventListener('visualg:autocomplete-suggestions', function (event) {
+            if (!suggestions) return;
+            var items = event.detail && event.detail.items ? event.detail.items : [];
+            suggestions.replaceChildren();
+            items.forEach(function (item, index) {
+                var button = document.createElement('button');
+                button.type = 'button';
+                button.className = 'mobile-autocomplete-item';
+                button.dataset.autocompleteIndex = String(index);
+                button.textContent = item;
+                if (index === event.detail.selectedIndex) button.classList.add('selected');
+                suggestions.appendChild(button);
+            });
+            suggestions.hidden = !items.length;
+            if (items.length) {
+                showToolbar();
+                toolbar.scrollTo({ left: 0, behavior: 'smooth' });
+            }
+        });
+        function touchPoint(event) {
+            var touch = event.touches && event.touches[0] ? event.touches[0] : event.changedTouches && event.changedTouches[0];
+            return touch ? { x: touch.clientX, y: touch.clientY } : null;
+        }
+        function hideLoupe() {
+            window.clearTimeout(loupeTimer);
+            loupeTimer = null;
+            loupeStart = null;
+            if (loupe) { loupe.hidden = true; loupe.setAttribute('aria-hidden', 'true'); }
+        }
+        function updateLoupe(point) {
+            if (!loupe || !point || !usesMobileLayout()) return;
+            var cm = editor.instance;
+            var position = cm.coordsChar({ left: point.x, top: point.y }, 'window');
+            var line = cm.getLine(position.line) || '';
+            var start = Math.max(0, position.ch - 13);
+            var end = Math.min(line.length, position.ch + 13);
+            loupe.querySelector('.mobile-cursor-loupe-line').textContent = 'Linha ' + (position.line + 1);
+            loupe.querySelector('.mobile-cursor-loupe-code').textContent = (start ? '…' : '') + line.slice(start, position.ch) + '│' + line.slice(position.ch, end) + (end < line.length ? '…' : '');
+            loupe.hidden = false;
+            loupe.setAttribute('aria-hidden', 'false');
+            var viewport = window.visualViewport;
+            var leftLimit = viewport ? viewport.offsetLeft : 0;
+            var topLimit = viewport ? viewport.offsetTop : 0;
+            var viewportWidth = viewport ? viewport.width : window.innerWidth;
+            var loupeWidth = loupe.offsetWidth;
+            loupe.style.left = Math.max(leftLimit + 8, Math.min(point.x - loupeWidth / 2, leftLimit + viewportWidth - loupeWidth - 8)) + 'px';
+            loupe.style.top = Math.max(topLimit + 8, point.y - 142) + 'px';
+        }
+        editorWrapper.addEventListener('pointerdown', showToolbar, { capture: true, passive: true });
+        editorWrapper.addEventListener('touchstart', function (event) {
+            if (!usesMobileLayout() || !event.touches || event.touches.length !== 1) return;
+            hideLoupe();
+            loupeStart = touchPoint(event);
+            loupeTimer = window.setTimeout(function () { updateLoupe(loupeStart); }, 260);
+        }, { passive: true });
+        editorWrapper.addEventListener('touchmove', function (event) {
+            var point = touchPoint(event);
+            if (!point || !loupeStart) return;
+            if (loupe && !loupe.hidden) updateLoupe(point);
+            else if (Math.hypot(point.x - loupeStart.x, point.y - loupeStart.y) > 12) hideLoupe();
+        }, { passive: true });
+        editorWrapper.addEventListener('touchend', hideLoupe, { passive: true });
+        editorWrapper.addEventListener('touchcancel', hideLoupe, { passive: true });
+        new MutationObserver(function () {
+            if (document.getElementById('editorPanel').classList.contains('hidden')) hideToolbar();
+        }).observe(document.getElementById('editorPanel'), { attributes: true, attributeFilter: ['class'] });
+        window.addEventListener('resize', updateViewport);
+        window.addEventListener('orientationchange', function () { window.setTimeout(updateViewport, 120); });
+        if (window.visualViewport) {
+            window.visualViewport.addEventListener('resize', updateViewport);
+            window.visualViewport.addEventListener('scroll', updateViewport);
+        }
+        updateViewport();
+    }
+
+    function initSettings() {
+        applyFontFamily('editor', localStorage.getItem('visualg-editor-font-family') || 'jetbrains');
+        applyFontFamily('console', localStorage.getItem('visualg-console-font-family') || 'jetbrains');
+        // Font size
+        var fontSize = localStorage.getItem('visualg-font-size') || '14';
+        applyFontSize(fontSize);
+
+        // Word wrap
+        var wordWrap = localStorage.getItem('visualg-word-wrap') || 'off';
+        applyWordWrap(wordWrap);
+
+        // Tab size
+        var tabSize = localStorage.getItem('visualg-tab-size') || '2';
+        applyTabSize(tabSize);
+
+        // Indent guides
+        var indentGuides = localStorage.getItem('visualg-indent-guides') || 'on';
+        applyIndentGuides(indentGuides);
+
+        // Variables font size
+        var varsFontSize = localStorage.getItem('visualg-vars-font-size') || '12';
+        applyVarsFontSize(varsFontSize);
+
+        // Console font size
+        var consoleFontSize = localStorage.getItem('visualg-console-font-size') || '13';
+        applyConsoleFontSize(consoleFontSize);
+
+        // Console input mode
+        var consoleInputMode = localStorage.getItem('visualg-console-input-mode') || 'inline';
+        applyConsoleInputMode(consoleInputMode);
+
+        // Variables column visibility
+        var varsColumns = JSON.parse(localStorage.getItem('visualg-vars-columns') || '{"nome":true,"tipo":true,"valor":true}');
+        applyVarsColumns(varsColumns);
+
+        // Loop detection
+        var loopDetection = localStorage.getItem('visualg-loop-detection') || 'on';
+        applyLoopDetection(loopDetection);
+    }
+
+    function applyFontSize(size) {
+        size = parseInt(size, 10);
+        if (isNaN(size) || size < 1) return;
+        var px = size + 'px';
+        editor.instance.getWrapperElement().style.fontSize = px;
+        document.documentElement.style.setProperty('--ide-editor-font-size', px);
+        editor.instance.refresh();
+        localStorage.setItem('visualg-font-size', size);
+        if (settingFontSize) settingFontSize.value = size;
+        if (settingFontSizeSlider) settingFontSizeSlider.value = Math.min(size, 50);
+        document.dispatchEvent(new window.CustomEvent('visualg:editor-font-size'));
+    }
+
+    function applyFontFamily(area, value) {
+        if (!['jetbrains', 'fira-code', 'ibm-plex', 'source-code-pro', 'roboto-mono', 'inconsolata', 'comic-neue', 'fredoka', 'patrick-hand', 'system'].includes(value)) value = 'jetbrains';
+        document.documentElement.setAttribute('data-' + area + '-font', value);
+        localStorage.setItem('visualg-' + area + '-font-family', value);
+        (area === 'editor' ? settingEditorFontFamily : settingConsoleFontFamily).value = value;
+        if (area === 'editor' && editor.instance) editor.instance.refresh();
+        document.dispatchEvent(new window.CustomEvent('visualg:font-family-changed', { detail: { area: area } }));
+    }
+
+    function applyIndentGuides(value) {
+        localStorage.setItem('visualg-indent-guides', value);
+        if (value === 'on') {
+            editor.updateGuideColors();
+        } else {
+            editor.clearGuideColors();
+        }
+        editor.instance.refresh();
+        if (settingIndentGuides) settingIndentGuides.value = value;
+    }
+
+    function applyWordWrap(value) {
+        var effective = isCompactInterface() ? 'on' : value;
+        editor.instance.setOption('lineWrapping', effective === 'on');
+        document.documentElement.dataset.wordWrap = effective;
+        localStorage.setItem('visualg-word-wrap', value);
+        if (settingWordWrap) settingWordWrap.value = effective;
+    }
+
+    function applyTabSize(value) {
+        var n = parseInt(value, 10);
+        var oldSize = editor.instance.getOption('tabSize') || 2;
+
+        // Atualizar opções do editor
+        editor.instance.setOption('tabSize', n);
+        editor.instance.setOption('indentUnit', n);
+        document.documentElement.style.setProperty('--ide-tab-size', n);
+        localStorage.setItem('visualg-tab-size', value);
+        if (settingTabSize) settingTabSize.value = value;
+
+        // Reformatar código existente
+        if (oldSize !== n) {
+            var code = editor.getValue();
+            var lines = code.split('\n');
+            var newLines = [];
+
+            for (var i = 0; i < lines.length; i++) {
+                var line = lines[i];
+                // Contar espaços no início da linha
+                var match = line.match(/^(\s*)/);
+                if (match && match[1].length > 0) {
+                    var leadingSpaces = match[1];
+                    // Calcular nível de indentação baseado no tamanho antigo
+                    var indentLevel = Math.floor(leadingSpaces.length / oldSize);
+                    // Criar nova indentação com o novo tamanho
+                    var newIndent = '';
+                    for (var j = 0; j < indentLevel * n; j++) {
+                        newIndent += ' ';
+                    }
+                    line = newIndent + line.substring(leadingSpaces.length);
+                }
+                newLines.push(line);
+            }
+
+            editor.setValue(newLines.join('\n'));
+        }
+    }
+
+    function applyVarsFontSize(size) {
+        size = parseInt(size, 10);
+        if (isNaN(size) || size < 1) return;
+        var table = document.getElementById('variables-table');
+        table.style.fontSize = size + 'px';
+        document.documentElement.style.setProperty('--ide-vars-font-size', size + 'px');
+        var ths = table.querySelectorAll('th');
+        for (var i = 0; i < ths.length; i++) {
+            ths[i].style.fontSize = size + 'px';
+        }
+        localStorage.setItem('visualg-vars-font-size', size);
+        if (settingVarsFontSize) settingVarsFontSize.value = size;
+        if (settingVarsFontSizeSlider) settingVarsFontSizeSlider.value = Math.min(size, 50);
+    }
+
+    function applyVarsColumns(columns) {
+        localStorage.setItem('visualg-vars-columns', JSON.stringify(columns));
+        var table = document.getElementById('variables-table');
+        ['nome', 'tipo', 'valor'].forEach(function (col) {
+            var cells = table.querySelectorAll('.col-' + col);
+            cells.forEach(function (cell) {
+                cell.classList.toggle('col-hidden', !columns[col]);
+            });
+        });
+        if (settingVarsColNome) settingVarsColNome.checked = columns.nome;
+        if (settingVarsColTipo) settingVarsColTipo.checked = columns.tipo;
+        if (settingVarsColValor) settingVarsColValor.checked = columns.valor;
+    }
+
+    function applyConsoleFontSize(size) {
+        size = parseInt(size, 10);
+        if (isNaN(size) || size < 1) return;
+        var px = size + 'px';
+        document.getElementById('terminal-output').style.fontSize = px;
+        document.getElementById('terminal-input').style.fontSize = px;
+        document.documentElement.style.setProperty('--ide-console-font-size', px);
+        localStorage.setItem('visualg-console-font-size', size);
+        if (settingConsoleFontSize) settingConsoleFontSize.value = size;
+        if (settingConsoleFontSizeSlider) settingConsoleFontSizeSlider.value = Math.min(size, 50);
+        document.dispatchEvent(new window.CustomEvent('visualg:console-font-size'));
+    }
+
+    function applyConsoleInputMode(value) {
+        localStorage.setItem('visualg-console-input-mode', value);
+        if (settingConsoleInputMode) settingConsoleInputMode.value = value;
+    }
+
+    function applyLoopDetection(value) {
+        localStorage.setItem('visualg-loop-detection', value);
+        settingLoopDetection.value = value;
+    }
+
+    function openSettings() {
+        if (window.VisualGWorkspace) { window.VisualGWorkspace.showSettings(); return; }
+        // Sync current values
+        settingTheme.value = document.documentElement.getAttribute('data-theme');
+        var savedFontSize = localStorage.getItem('visualg-font-size') || '14';
+        settingFontSize.value = savedFontSize;
+        settingFontSizeSlider.value = Math.min(parseInt(savedFontSize, 10), 50);
+        settingWordWrap.value = localStorage.getItem('visualg-word-wrap') || 'off';
+        settingTabSize.value = localStorage.getItem('visualg-tab-size') || '2';
+        settingIndentGuides.value = localStorage.getItem('visualg-indent-guides') || 'on';
+        var savedVarsFontSize = localStorage.getItem('visualg-vars-font-size') || '12';
+        settingVarsFontSize.value = savedVarsFontSize;
+        settingVarsFontSizeSlider.value = Math.min(parseInt(savedVarsFontSize, 10), 50);
+        var savedConsoleFontSize = localStorage.getItem('visualg-console-font-size') || '13';
+        settingConsoleFontSize.value = savedConsoleFontSize;
+        settingConsoleFontSizeSlider.value = Math.min(parseInt(savedConsoleFontSize, 10), 50);
+        settingConsoleInputMode.value = localStorage.getItem('visualg-console-input-mode') || 'inline';
+        settingLoopDetection.value = localStorage.getItem('visualg-loop-detection') || 'on';
+        var varsColumns = JSON.parse(localStorage.getItem('visualg-vars-columns') || '{"nome":true,"tipo":true,"valor":true}');
+        settingVarsColNome.checked = varsColumns.nome;
+        settingVarsColTipo.checked = varsColumns.tipo;
+        settingVarsColValor.checked = varsColumns.valor;
+        // Reset to first tab
+        var modal = settingsOverlay.querySelector('.modal');
+        modal.querySelectorAll('.modal-tab').forEach(function (t) { t.classList.remove('active'); });
+        modal.querySelectorAll('.modal-tab-panel').forEach(function (p) { p.classList.remove('active'); });
+        modal.querySelector('.modal-tab').classList.add('active');
+        modal.querySelector('.modal-tab-panel').classList.add('active');
+        settingsOverlay.classList.remove('hidden');
+    }
+
+    function closeSettings() {
+        settingsOverlay.classList.add('hidden');
+    }
+
+    // === Status ===
+    function setStatus(text, type) {
+        statusEl.textContent = text;
+        statusEl.title = '';
+        document.dispatchEvent(new window.CustomEvent('visualg:status', { detail: { text: text, type: type || 'success', at: Date.now() } }));
+    }
+
+    function setRunning(running) {
+        var tab = getRunningTab() || tabManager.getActiveTab();
+        var stepping = tab && tab.executor && tab.executor.running && tab.executor.stepMode;
+        var paused = !!(tab && tab.executor && tab.executor.stepResolve);
+        btnRun.disabled = false;
+        btnRun.classList.toggle('is-stop', !!running);
+        btnRun.title = running ? 'Parar execução — Shift + F5' : 'Executar — F5';
+        btnRun.setAttribute('aria-label', btnRun.title);
+        btnRun.innerHTML = '<i data-lucide="' + (running ? 'square' : 'play') + '"></i> ' + (running ? 'Parar' : 'Executar');
+        if (window.renderLucideIcons) window.renderLucideIcons(btnRun);
+        btnStep.disabled = running && !stepping && !paused;
+        var debugRun = document.getElementById('debug-run');
+        var debugStart = document.getElementById('debug-start');
+        if (debugRun) debugRun.disabled = false;
+        if (debugStart) debugStart.disabled = running;
+        btnStop.disabled = !running;
+        var mobileRun = document.getElementById('mobile-run');
+        var mobileStep = document.getElementById('mobile-step');
+        var mobileStop = document.getElementById('mobile-stop');
+        if (mobileRun) {
+            mobileRun.disabled = false;
+            mobileRun.classList.toggle('is-stop', !!running);
+            mobileRun.innerHTML = '<i data-lucide="' + (running ? 'square' : 'play') + '"></i><span>' + (running ? 'Parar' : 'Executar') + '</span>';
+            if (window.renderLucideIcons) window.renderLucideIcons(mobileRun);
+        }
+        if (mobileStep) mobileStep.disabled = btnStep.disabled;
+        if (mobileStop) mobileStop.disabled = btnStop.disabled;
+        btnClearTerminal.disabled = running;
+        btnClearVars.disabled = running;
+        var debugControls = document.getElementById('debug-session-controls');
+        if (debugControls && tab && tab.executor && tab.executor.debugMode) {
+            debugControls.classList.remove('hidden');
+            document.getElementById('debug-continue').disabled = !paused;
+            document.getElementById('debug-pause').disabled = !running || paused;
+            document.getElementById('debug-next').disabled = !paused;
+            document.getElementById('debug-into').disabled = !paused;
+            document.getElementById('debug-out').disabled = !paused || !tab.executor.callStack.length;
+        }
+        if (editor.instance) editor.instance.setOption('readOnly', running ? 'nocursor' : false);
+        document.dispatchEvent(new window.CustomEvent('visualg:running', { detail: { running: running, stepping: !!stepping, tabId: running && tab ? tab.id : null } }));
+    }
+
+    function pauseProgram() {
+        var tab = tabManager.getActiveTab();
+        var executor = tab && tab.executor;
+        if (!executor || !executor.running) return;
+        executor.stepMode = true;
+        executor.stepDepth = null;
+        executor.stepOutDepth = null;
+        if (executor.stepResolve) { setStatus('Pausado' + (executor.currentLine ? ' na linha ' + executor.currentLine : ''), 'paused'); setRunning(true); }
+    }
+
+    function advanceDebugger(mode) {
+        var tab = tabManager.getActiveTab();
+        var executor = tab && tab.executor;
+        if (!executor || !executor.running) { if (mode !== 'out') stepProgram(); return; }
+        if (mode === 'out' && !executor.callStack.length) return;
+        executor.stepMode = true;
+        executor.stepDepth = mode === 'over' ? executor.callStack.length : null;
+        executor.stepOutDepth = mode === 'out' ? executor.callStack.length : null;
+        if (executor.stepResolve) {
+            setStatus('Executando...', 'running');
+            setRunning(true);
+            executor.nextStep();
+        }
+    }
+
+    function getRunningTab() {
+        return tabManager.getRunningTab ? tabManager.getRunningTab() : null;
+    }
+
+    function blockIfAnotherTabRunning(tab) {
+        var runningTab = getRunningTab();
+        if (!runningTab || runningTab.id === tab.id) return false;
+        setStatus('Executando...', 'running');
+        statusEl.title = 'Ja existe uma execucao ativa em outra aba.';
+        setRunning(true);
+        return true;
+    }
+
+    function getErrorLocation(message) {
+        var match = /Linha\s+(\d+)(?:\s*,\s*coluna\s+(\d+))?/i.exec(message || '');
+        if (!match) return null;
+        return {
+            line: parseInt(match[1], 10),
+            column: match[2] ? parseInt(match[2], 10) : 1
+        };
+    }
+
+    function reportExecutionError(error, tabId) {
+        var message = error && error.message ? error.message : String(error);
+        var location = getErrorLocation(message);
+        document.dispatchEvent(new window.CustomEvent('visualg:diagnostic', { detail: { message: message, location: location, tabId: tabId, at: Date.now() } }));
+        terminal.writelnError(message, location, function () {
+            if (!location) return;
+            setSectionVisible('editor', true);
+            if (window.VisualGWorkspace && window.VisualGWorkspace.navigateToLocation) {
+                window.VisualGWorkspace.navigateToLocation(tabId, location.line, location.column);
+            } else {
+                if (window.VisualGWorkspace) window.VisualGWorkspace.showEditor();
+                editor.revealLocation(location.line, location.column);
+            }
+        });
+        setStatus('Erro', 'error');
+    }
+
+    // === Execution ===
+    async function runProgram() {
+        var tab = tabManager.getActiveTab();
+        if (!tab) return;
+        if (blockIfAnotherTabRunning(tab)) return;
+        if (tab.executor && tab.executor.running) {
+            if (tab.executor.stepResolve) { tab.executor.stepMode = false; tab.executor.nextStep(); setRunning(true); }
+            return;
+        }
+
+        var source = editor.getValue();
+        tab.running = true;
+        terminal.clear();
+        document.dispatchEvent(new window.CustomEvent('visualg:execution-start', { detail: { debug: false } }));
+        varsPanel.clear();
+        editor.clearHighlight();
+        setStatus('Executando...', 'running');
+        setRunning(true);
+        var hadError = false;
+
+        try {
+            var tokens = new window.VisuAlgLexer(source).tokenize();
+            var ast = new window.VisuAlgParser(tokens).parse();
+            tab.executor = new window.VisuAlgExecutor(terminal, varsPanel);
+            tab.executor.breakpointLines = new Set(window.VisualGWorkspace ? window.VisualGWorkspace.getBreakpoints() : []);
+            tab.running = true;
+            await tab.executor.run(ast);
+            setStatus('Finalizado');
+        } catch (e) {
+            if (e.message !== '__STOP__') {
+                hadError = true;
+                reportExecutionError(e, tab.id);
+            } else {
+                setStatus('Execução interrompida');
+            }
+        }
+
+        if (!hadError) editor.clearHighlight();
+        tab.executor = null;
+        tab.running = false;
+        setRunning(false);
+        document.dispatchEvent(new window.CustomEvent('visualg:execution-end'));
+    }
+
+    async function stepProgram() {
+        var tab = tabManager.getActiveTab();
+        if (!tab) return;
+        if (blockIfAnotherTabRunning(tab)) return;
+        if (tab.executor && tab.executor.running) {
+            if (tab.executor.stepResolve) { tab.executor.stepMode = true; tab.executor.nextStep(); setRunning(true); }
+            return;
+        }
+
+        var source = editor.getValue();
+        tab.running = true;
+        terminal.clear();
+        document.dispatchEvent(new window.CustomEvent('visualg:execution-start', { detail: { debug: true } }));
+        varsPanel.clear();
+        editor.clearHighlight();
+        setStatus('Passo a passo...', 'running');
+        setRunning(true);
+        var hadError = false;
+
+        try {
+            var tokens = new window.VisuAlgLexer(source).tokenize();
+            var ast = new window.VisuAlgParser(tokens).parse();
+            tab.executor = new window.VisuAlgExecutor(terminal, varsPanel);
+            tab.executor.breakpointLines = new Set(window.VisualGWorkspace ? window.VisualGWorkspace.getBreakpoints() : []);
+            tab.executor.stepMode = true;
+            tab.executor.debugMode = true;
+            tab.running = true;
+            setRunning(true);
+            await tab.executor.run(ast);
+            setStatus('Finalizado');
+        } catch (e) {
+            if (e.message !== '__STOP__') {
+                hadError = true;
+                reportExecutionError(e);
+            } else {
+                setStatus('Execução interrompida');
+            }
+        }
+
+        if (!hadError) editor.clearHighlight();
+        tab.executor = null;
+        tab.running = false;
+        setRunning(false);
+        document.dispatchEvent(new window.CustomEvent('visualg:execution-end'));
+    }
+
+    function stopProgram() {
+        var tab = getRunningTab();
+        if (!tab) return;
+        if (tab.executor) {
+            tab.executor.running = false;
+            if (tab.executor.stepResolve) {
+                tab.executor.stepResolve();
+                tab.executor.stepResolve = null;
+            }
+        }
+        if (terminal.cancelPendingInput) terminal.cancelPendingInput();
+        tab.executor = null;
+        tab.running = false;
+        terminal.inputArea.classList.add('hidden');
+        var consoleInputOverlay = document.getElementById('consoleInputOverlay');
+        if (consoleInputOverlay) consoleInputOverlay.classList.add('hidden');
+        setStatus('Execução interrompida');
+        setRunning(false);
+    }
+
+    function newProgram() {
+        var tab = tabManager.getActiveTab();
+        if (!tab) { tabManager.createTab(window.gerarTemplate()); return; }
+        if (tab.executor && tab.executor.running) {
+            stopProgram();
+        }
+        editor.setValue(window.gerarTemplate());
+        terminal.clear();
+        varsPanel.clear();
+        editor.clearHighlight();
+        setStatus('Pronto');
+    }
+
+    function saveProgramAs(format) {
+        var code = editor.getValue();
+        var fileName = 'programa';
+
+        // Extrai o nome do algoritmo usando regex
+        var match = code.match(/algoritmo\s+"([^"]+)"/i);
+        if (match && match[1]) {
+            fileName = match[1];
+        }
+
+        // Cria o blob com o conteúdo do código
+        var blob = new Blob([code], { type: 'text/plain' });
+
+        // Cria um link temporário para download
+        var link = document.createElement('a');
+        link.href = URL.createObjectURL(blob);
+        link.download = fileName + '.' + format;
+
+        // Dispara o download
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+
+        // Libera o objeto URL
+        URL.revokeObjectURL(link.href);
+        if (tabManager.markActiveClean) tabManager.markActiveClean();
+    }
+
+    function saveProgram() {
+        saveProgramAs('alg');
+    }
+
+    function openProgram() {
+        fileInput.click();
+    }
+
+    function handleFileOpen(event) {
+        var file = event.target.files[0];
+        if (!file) return;
+
+        // Validar extensão
+        var fileName = file.name.toLowerCase();
+        if (!fileName.endsWith('.alg') && !fileName.endsWith('.txt')) {
+            alert('Apenas arquivos .alg ou .txt são permitidos.');
+            fileInput.value = '';
+            return;
+        }
+
+        var reader = new FileReader();
+        reader.onload = function(e) {
+            var content = e.target.result;
+
+            // Sanitização: bloquear conteúdo JavaScript malicioso
+            if (containsJavaScript(content)) {
+                alert('O arquivo contém código JavaScript e não pode ser aberto por segurança.');
+                fileInput.value = '';
+                return;
+            }
+
+            var importedName = window.VisualGWorkspace && window.VisualGWorkspace.uniqueFileName
+                ? window.VisualGWorkspace.uniqueFileName(file.name, null, null)
+                : file.name;
+            var tab = tabManager.createTab(content, { fileName:importedName });
+            if (!tab) return;
+            if (tabManager.markActiveClean) tabManager.markActiveClean();
+            if (window.VisualGWorkspace) window.VisualGWorkspace.showEditor();
+            terminal.clear();
+            varsPanel.clear();
+            editor.clearHighlight();
+            setStatus('Arquivo carregado: ' + file.name);
+        };
+
+        reader.readAsText(file);
+        fileInput.value = ''; // Reset para permitir reabrir mesmo arquivo
+    }
+
+    function containsJavaScript(content) {
+        var patterns = [
+            /<script[\s\S]*?>/i,           // Tags <script>
+            /<\/script>/i,                  // Fechamento </script>
+            /javascript:/i,                 // URLs javascript:
+            /on\w+\s*=/i,                   // Event handlers (onclick=, onerror=, etc)
+            /<iframe[\s\S]*?>/i,           // Tags <iframe>
+            /<object[\s\S]*?>/i,           // Tags <object>
+            /<embed[\s\S]*?>/i,            // Tags <embed>
+            /<link[\s\S]*?>/i,             // Tags <link>
+            /<style[\s\S]*?>/i,            // Tags <style>
+            /expression\s*\(/i,            // CSS expression()
+            /url\s*\(\s*["']?javascript:/i // CSS url(javascript:)
+        ];
+
+        for (var i = 0; i < patterns.length; i++) {
+            if (patterns[i].test(content)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    function autoIndent() {
+        var code = editor.getValue();
+        var lines = code.split('\n');
+        var tabSize = editor.instance.getOption('tabSize') || 2;
+        var indentLevel = 0;
+        var result = [];
+
+        var ACCENT_MAP = {
+            'então': 'entao',
+            'senão': 'senao',
+            'até': 'ate',
+            'faça': 'faca',
+            'início': 'inicio',
+            'lógico': 'logico',
+            'não': 'nao'
+        };
+
+        function normalize(word) {
+            var lower = word.toLowerCase();
+            return ACCENT_MAP.hasOwnProperty(lower) ? ACCENT_MAP[lower] : lower;
+        }
+
+        // Primeira palavra da linha diminui indentação
+        var indentDecrease = ['fimse', 'senao', 'fimenquanto', 'fimpara', 'fimrepita', 'fimescolha', 'fimalgoritmo', 'fimprocedimento', 'fimfuncao', 'caso', 'outrocaso', 'inicio'];
+
+        // Primeira palavra da linha aumenta indentação
+        var indentIncreaseFirst = ['inicio', 'var', 'senao', 'repita', 'escolha', 'caso', 'outrocaso'];
+
+        // Última palavra da linha aumenta indentação
+        var indentIncreaseLast = ['entao', 'faca'];
+
+        for (var i = 0; i < lines.length; i++) {
+            var trimmed = lines[i].trim();
+            if (trimmed === '') {
+                result.push('');
+                continue;
+            }
+
+            // Extrair primeira e última palavras
+            var words = trimmed.split(/\s+/);
+            var firstWord = normalize(words[0].split(/[^a-zA-ZáàâãéèêíìîóòôõúùûçÁÀÂÃÉÈÊÍÌÎÓÒÔÕÚÙÛÇ_]/)[0]);
+            var lastToken = words[words.length - 1];
+            var lastWord = normalize(lastToken.split(/[^a-zA-ZáàâãéèêíìîóòôõúùûçÁÀÂÃÉÈÊÍÌÎÓÒÔÕÚÙÛÇ_]/)[0]);
+
+            // Diminuir ANTES de escrever a linha
+            if (indentDecrease.indexOf(firstWord) !== -1) {
+                indentLevel = Math.max(0, indentLevel - 1);
+            }
+
+            // Escrever linha com indentação
+            var indent = '';
+            for (var j = 0; j < indentLevel * tabSize; j++) {
+                indent += ' ';
+            }
+            result.push(indent + trimmed);
+
+            // Aumentar DEPOIS de escrever a linha
+            if (indentIncreaseFirst.indexOf(firstWord) !== -1) {
+                indentLevel++;
+            } else if (indentIncreaseLast.indexOf(lastWord) !== -1) {
+                indentLevel++;
+            }
+        }
+
+        editor.setValue(result.join('\n'));
+    }
+})();
