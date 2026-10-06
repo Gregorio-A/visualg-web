@@ -14,6 +14,8 @@
     var activeTabId = null;
     var tabListEl = null;
     var startScreenRequested = false;
+    var pendingSessionRaw = null;
+    var startupSessionProtected = false;
     var pendingCloseTabId = null;
     var WORKSPACE_STORAGE_KEY = 'visualg-workspace-v1';
     var RECOVERY_STORAGE_KEY = 'visualg-workspace-recovery-v1';
@@ -46,9 +48,14 @@
 
     function getRunningTab() {
         for (var i = 0; i < tabs.length; i++) {
-            if (tabs[i].executor && tabs[i].executor.running) return tabs[i];
+            if (tabs[i].running || (tabs[i].executor && tabs[i].executor.running)) return tabs[i];
         }
         return null;
+    }
+
+    function isReusableTab(tab) {
+        if (!tab || tab.fileName || tab.dirty || tab.executor || tab.running) return false;
+        return tab.code.trim() === getDefaultCode().trim();
     }
 
     function blockWhenRunning() {
@@ -159,6 +166,7 @@
     }
 
     function persistWorkspaceNow() {
+        if (startupSessionProtected || pendingSessionRaw) return;
         try {
             saveCurrentState();
 
@@ -309,15 +317,19 @@
         tabListEl.replaceChildren();
         tabListEl.setAttribute('role', 'presentation');
         var editorPanel = document.getElementById('editorPanel');
+        var editorColumn = document.querySelector ? document.querySelector('.editor-column') : null;
         var emptyState = document.getElementById('editor-empty-state');
         var showStartScreen = tabs.length === 0 || startScreenRequested;
         if (editorPanel) editorPanel.classList.toggle('no-active-file', showStartScreen);
+        if (editorColumn) editorColumn.classList.toggle('start-screen-active', showStartScreen);
         if (emptyState) emptyState.hidden = !showStartScreen;
+        var restoreSessionButton = document.getElementById('btn-empty-restore-tabs');
+        if (restoreSessionButton) restoreSessionButton.disabled = !pendingSessionRaw;
         var activeElement = null;
         for (var i = 0; i < tabs.length; i++) {
             var tab = tabs[i];
             var el = document.createElement('div');
-            el.className = 'tab-item' + (tab.id === activeTabId ? ' active' : '') + (tab.dirty ? ' modified' : '');
+            el.className = 'tab-item' + (tab.id === activeTabId ? ' active' : '') + (tab.dirty ? ' modified' : '') + (tab.running || (tab.executor && tab.executor.running) ? ' running' : '');
             el.dataset.tabId = tab.id;
             el.draggable = true;
             el.setAttribute('role', 'tab');
@@ -339,6 +351,13 @@
                 fileIcon.appendChild(part);
             });
             el.appendChild(fileIcon);
+            if (tab.running || (tab.executor && tab.executor.running)) {
+                var runningMarker = document.createElement('span');
+                runningMarker.className = 'tab-running-indicator';
+                runningMarker.title = 'Arquivo em execução';
+                runningMarker.setAttribute('aria-label', 'Em execução');
+                el.appendChild(runningMarker);
+            }
 
             var nameSpan = document.createElement('span');
             nameSpan.className = 'tab-name';
@@ -367,6 +386,9 @@
     }
 
     function saveCurrentState() {
+        // Until the user chooses a session or file, the editor still contains its
+        // startup template; never let that placeholder overwrite a saved tab.
+        if (startupSessionProtected || pendingSessionRaw) return;
         var tab = getTab(activeTabId);
         if (!tab) return;
 
@@ -427,12 +449,14 @@
             }, true);
 
             document.getElementById('btn-add-tab').addEventListener('click', function () {
+                if (blockWhenRunning()) return;
                 startScreenRequested = true;
                 if (window.VisualGWorkspace) window.VisualGWorkspace.showEditor();
                 renderTabs();
             });
             document.getElementById('btn-empty-new').addEventListener('click', function () { startScreenRequested = false; self.createTab(); });
             document.getElementById('btn-empty-import').addEventListener('click', function () { document.getElementById('file-input').click(); });
+            document.getElementById('btn-empty-restore-tabs').addEventListener('click', function () { self.restorePreviousSession(); });
 
             // Drag-and-drop reordering across files and auxiliary views.
             var draggedItem = null;
@@ -525,20 +549,25 @@
                 }
             });
 
+            var persistedRaw = null;
+            try { persistedRaw = localStorage.getItem(WORKSPACE_STORAGE_KEY); } catch (error) { persistedRaw = null; }
             var persistedWorkspace = loadPersistedWorkspace();
             this.freshWorkspace = !persistedWorkspace;
             if (persistedWorkspace) {
+                pendingSessionRaw = persistedRaw;
+                startupSessionProtected = true;
                 tabs = persistedWorkspace.tabs;
                 activeTabId = getTab(persistedWorkspace.activeTabId)
                     ? persistedWorkspace.activeTabId
                     : (tabs.length ? tabs[0].id : null);
+                startScreenRequested = true;
                 renderTabs();
-                if (activeTabId) restoreState(getTab(activeTabId));
                 notifyPersistence('saved', persistedWorkspace.updatedAt);
             } else {
                 var initialTab = createTabData(window.VisualGEditor.getValue());
                 tabs.push(initialTab);
                 activeTabId = initialTab.id;
+                startScreenRequested = true;
                 renderTabs();
                 persistWorkspaceNow();
             }
@@ -556,9 +585,35 @@
 
         createTab: function (code, options) {
             if (blockWhenRunning()) return null;
+            options = options || {};
+            var startupSessionPending = !!pendingSessionRaw;
+            if (pendingSessionRaw) {
+                try { localStorage.setItem(RECOVERY_STORAGE_KEY, pendingSessionRaw); } catch (error) { /* keep new editing available */ }
+                pendingSessionRaw = null;
+            }
+            startupSessionProtected = false;
             startScreenRequested = false;
-            saveCurrentState();
-            var tab = createTabData(code || getDefaultCode(), options);
+            if (startupSessionPending) options.forceNew = true;
+            else saveCurrentState();
+            var reusable = !options.forceNew && isReusableTab(getTab(activeTabId)) ? getTab(activeTabId) : null;
+            var nextCode = typeof code === 'string' ? code : getDefaultCode();
+            if (!options.fileName && window.VisualGWorkspace && window.VisualGWorkspace.uniqueFileName) {
+                options.fileName = window.VisualGWorkspace.uniqueFileName(extractName(nextCode) + '.alg', reusable ? reusable.id : null, null);
+            }
+            if (reusable) {
+                reusable.code = nextCode;
+                reusable.name = extractName(nextCode);
+                reusable.fileName = options.fileName || null;
+                reusable.dirty = !!options.dirty;
+                reusable.terminalHTML = '';
+                reusable.previousValues = {};
+                restoreState(reusable);
+                renderTabs();
+                if (window.TabManager.onSwitch) window.TabManager.onSwitch(reusable);
+                schedulePersist();
+                return reusable;
+            }
+            var tab = createTabData(nextCode, options);
             tabs.push(tab);
             activeTabId = tab.id;
             restoreState(tab);
@@ -573,17 +628,54 @@
             return tab;
         },
 
+        replaceActiveTab: function (code, options) {
+            if (blockWhenRunning()) return null;
+            var tab = getTab(activeTabId);
+            if (!tab) return this.createTab(code, options);
+            options = options || {};
+            if (pendingSessionRaw) {
+                try { localStorage.setItem(RECOVERY_STORAGE_KEY, pendingSessionRaw); } catch (error) { /* keep file opening available */ }
+                pendingSessionRaw = null;
+            } else saveCurrentState();
+            startupSessionProtected = false;
+            startScreenRequested = false;
+            tab.code = typeof code === 'string' ? code : getDefaultCode();
+            tab.name = extractName(tab.code);
+            tab.fileName = options.fileName || null;
+            tab.dirty = !!options.dirty;
+            tab.terminalHTML = '';
+            tab.previousValues = {};
+            tab.executor = null;
+            tab.running = false;
+            restoreState(tab);
+            renderTabs();
+            if (window.TabManager.onSwitch) window.TabManager.onSwitch(tab);
+            schedulePersist();
+            return tab;
+        },
+
         switchTab: function (id) {
             if (id === activeTabId) {
-                if (startScreenRequested) { startScreenRequested = false; renderTabs(); }
+                if (startScreenRequested) {
+                    var activeTab = getTab(id);
+                    if (activeTab) restoreState(activeTab);
+                    pendingSessionRaw = null;
+                    startupSessionProtected = false;
+                    startScreenRequested = false;
+                    renderTabs();
+                    if (activeTab && window.TabManager.onSwitch) window.TabManager.onSwitch(activeTab);
+                    schedulePersist();
+                }
                 return;
             }
             if (blockWhenRunning()) return;
             var tab = getTab(id);
             if (!tab) return;
             startScreenRequested = false;
-
-            saveCurrentState();
+            if (startupSessionProtected || pendingSessionRaw) {
+                startupSessionProtected = false;
+                pendingSessionRaw = null;
+            } else saveCurrentState();
             activeTabId = id;
             restoreState(tab);
             renderTabs();
@@ -600,9 +692,24 @@
             renderTabs();
         },
 
+        restorePreviousSession: function () {
+            if (!pendingSessionRaw) return false;
+            var activeTab = getTab(activeTabId);
+            pendingSessionRaw = null;
+            startupSessionProtected = false;
+            startScreenRequested = false;
+            if (!activeTab) return false;
+            restoreState(activeTab);
+            renderTabs();
+            if (window.TabManager.onSwitch) window.TabManager.onSwitch(activeTab);
+            schedulePersist();
+            return true;
+        },
+
         closeTab: function (id) {
             var tab = getTab(id);
             if (!tab) return;
+            if (blockWhenRunning()) return;
 
             // Atualizar código da aba ativa antes de verificar
             if (tab.id === activeTabId) {
@@ -632,7 +739,7 @@
         },
 
         getTabs: function () {
-            saveCurrentState();
+            if (!startupSessionProtected && !pendingSessionRaw) saveCurrentState();
             return tabs.slice();
         },
 
@@ -659,7 +766,26 @@
 
         getRunningTab: getRunningTab,
 
+        refresh: renderTabs,
+
+        clearAllFiles: function () {
+            if (blockWhenRunning()) return false;
+            tabs = [];
+            activeTabId = null;
+            startScreenRequested = false;
+            window.VisualGEditor.setValue('');
+            window.VisualGEditor.clearHighlight();
+            window.Terminal.clear();
+            window.VariablesPanel.clear();
+            [WORKSPACE_STORAGE_KEY, RECOVERY_STORAGE_KEY, RECOVERY_CHECKPOINT_KEY, VERSIONS_STORAGE_KEY].forEach(function (key) { localStorage.removeItem(key); });
+            renderTabs();
+            document.dispatchEvent(new window.CustomEvent('visualg:workspace-empty'));
+            notifyPersistence('saved', new Date().toISOString());
+            return true;
+        },
+
         updateActiveTabName: function () {
+            if (startupSessionProtected || pendingSessionRaw) return;
             var tab = getTab(activeTabId);
             if (!tab) return;
             var code = window.VisualGEditor.getValue();

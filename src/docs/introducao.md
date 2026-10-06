@@ -6,6 +6,16 @@ O VisuAlg Web executa pseudocódigo em português no estilo do VisuAlg 3.0.7, di
 > correções, pendências e itens em validação; a aba **Compatibilidade** descreve
 > o contrato funcional da linguagem e as extensões próprias do Web.
 
+## Conheça a interface
+
+A barra lateral esquerda reúne arquivos e documentação. O centro mantém uma única área de trabalho para o arquivo, a documentação, os exemplos, o console ou as configurações. À direita ficam execução, mensagens e variáveis. Durante a execução, o botão **Executar** se transforma em **Parar**, e o arquivo ativo recebe um indicador animado.
+
+![Visão geral do editor, arquivos, execução e variáveis](screenshots/interface-visualg-2026.png)
+
+A documentação abre na mesma aba de documentação ao trocar de assunto. A pesquisa considera títulos e o texto das páginas e também mostra exemplos encontrados em um bloco separado.
+
+![Documentação integrada à área central](screenshots/interface-documentacao-2026.png)
+
 ## Estrutura mínima
 
 Todo programa começa com `algoritmo`, pode declarar variáveis em `var`, executa comandos a partir de `inicio` e termina em `fimalgoritmo`.
@@ -84,6 +94,13 @@ inicio
   escreval("Canto da matriz: ", matriz[1,1])
 fimalgoritmo
 ```
+
+Durante a execução, expanda o valor na seção **Variáveis** para inspecionar as posições do vetor ou da matriz. Vetores grandes são exibidos em páginas para manter a interface responsiva.
+
+![Vetor expandido no painel de variáveis](images/docs/variables-vector.svg)
+
+O console mantém as mensagens na largura disponível, oferece entrada inline ou modal e preserva, à direita, o status e os valores calculados.
+
 
 ## Constantes e atribuição
 

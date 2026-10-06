@@ -2,6 +2,8 @@
 
 Use condicionais para executar comandos somente quando uma expressão lógica for verdadeira.
 
+![Fluxo de decisão se/senao](images/docs/fluxo-condicional.svg)
+
 ## se...entao
 
 ```visualg

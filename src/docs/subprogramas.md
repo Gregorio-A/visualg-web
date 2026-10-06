@@ -2,6 +2,8 @@
 
 Subprogramas dividem o algoritmo em partes menores. No VisuAlg Web, procedimentos e funções são declarados depois da seção `var` global e antes do `inicio` do programa principal.
 
+![Chamada de um subprograma e retorno ao programa principal](images/docs/chamada-subprograma.svg)
+
 Esta aba cobre procedimentos, que executam comandos e não retornam valor. Para subprogramas com retorno, veja a aba `Funções`.
 
 ## Procedimento sem parâmetros

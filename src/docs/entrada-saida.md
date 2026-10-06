@@ -2,6 +2,8 @@
 
 Use `escreva` e `escreval` para mostrar valores no console. Use `leia` para receber dados digitados pelo usuário no campo de entrada do console.
 
+![Console do VisuAlg Web durante uma execução](screenshots/interface-console-2026.png)
+
 ## Saída com escreva
 
 ```visualg

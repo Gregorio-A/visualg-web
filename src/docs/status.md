@@ -7,15 +7,19 @@
 
 **Versão revisada:** `0.14.0`
 
-**Última revisão:** 2 de outubro de 2026
-**Base funcional auditada:** árvore de trabalho local da versão `0.14.0`, incluindo a nova interface
+**Última revisão:** 6 de outubro de 2026
+**Base funcional auditada:** versão `0.14.0` e árvore de trabalho local; os resultados abaixo são das verificações executadas nesta revisão.
+
+![Temas clássicos da interface atual](screenshots/interface-temas-classicos-2026.png)
+
+![Aplicativo desktop Electron](screenshots/interface-electron-2026.png)
 
 ## Leitura rápida
 
 | Área | Estado atual | O que falta |
 | --- | --- | --- |
 | Linguagem | O conjunto documentado está implementado e coberto por regressões. Não há incompatibilidade de linguagem reproduzida registrada como aberta nesta revisão. | Novas diferenças em relação ao VisuAlg 3.0.7 precisam de programa mínimo e teste de reprodução. |
-| Aplicação Web | Build, lint, regressões e os principais fluxos de interface possuem automação. A versão continua Beta. As abas, painéis, temas, Console e fontes foram exercitados em Chromium e Firefox. | Reforçar recuperação de dados, concluir validações manuais e realizar uso acompanhado em sala de aula. |
+| Aplicação Web | A versão continua Beta. Build, lint e regressões principais passaram nesta revisão; a navegação Anterior/Próxima da documentação foi verificada em Chromium. Há 26 temas agrupados em claros e escuros. | Reforçar recuperação de dados, concluir validações manuais e realizar uso acompanhado em sala de aula. |
 | Abas e autosave | Abas de código e conteúdos auxiliares podem ser fechadas; códigos, aba ativa, estado modificado e uma cópia de recuperação são persistidos e testados. Falhas de salvamento geram aviso visível. | Tratar armazenamento cheio/bloqueado, workspace corrompido, migração e fechamento inesperado; oferecer backup completo. |
 | Acessibilidade | Atalhos, navegação por teclado em abas e modais, foco inicial e preso em modais, retorno do foco, ARIA e anúncios de estado foram implementados. | Validar com leitor de tela, zoom de 200%, todos os temas e tamanhos mínimos de alvos de toque. |
 | Electron | Isolamento, sandbox, CSP, IPC e proteção de caminhos possuem regressões automatizadas. O aplicativo iniciou em desenvolvimento, abriu a janela permitida do Console e sincronizou a saída. | Preparar e validar a distribuição pública dos instaladores. |
@@ -27,7 +31,7 @@ ser reproduzido e verificado antes de ser classificado.
 
 ## Evidência da revisão
 
-Na revisão desta versão, `npm run test:ci` passou com:
+Na revisão de 6 de outubro de 2026, `npm run test:ci` passou com:
 
 - ESLint sobre interface, Electron e testes;
 - 31 programas completos extraídos da documentação;
@@ -36,13 +40,13 @@ Na revisão desta versão, `npm run test:ci` passou com:
 - 37 exemplos da galeria;
 - autosave e troca segura da cópia de recuperação;
 - segurança Electron;
-- build Web de produção.
+- build Web de produção. A build ainda informa avisos de scripts globais sem `type="module"`.
 
-A suíte Playwright cobre os principais fluxos da interface. Localmente, ela roda
-separada de `npm run test:ci`, por meio de `npm run test:e2e`; o CI executa
-projetos separados para Chrome, Edge e Firefox. Nesta revisão, foram executados
-27 cenários em Chromium e Firefox (54 execuções), incluindo as dez paletas,
-abas, atalhos de fonte, layout e os cinco modos de Console.
+A suíte Playwright contém 39 cenários por projeto e roda separada de
+`npm run test:ci`, por meio de `npm run test:e2e`. Nesta revisão, o cenário de
+navegação entre páginas da documentação passou em Chromium; não foi executada a
+suíte E2E completa. As capturas de temas e do desktop acima são evidência visual,
+não substituem validação manual em dispositivos reais.
 
 ## Como interpretar os estados
 
@@ -69,7 +73,7 @@ Prioridade **alta** indica risco para dados, acessibilidade ou publicação;
 | FILE-001 | Média | Pendente | **Falsos positivos ao abrir `.alg`.** O filtro textual bloqueia palavras parecidas com HTML/JavaScript mesmo que estejam em comentários ou strings. Concluir com validação adequada ao fato de o arquivo ser exibido como texto no editor. |
 | ERROR-001 | Média | Pendente | **Mensagens de erro uniformes.** Nem todo erro semântico ou de execução possui linha, coluna e trecho. Concluir quando a localização e a orientação didática forem consistentes nas fases do interpretador. |
 | MOBILE-001 | Média | Em validação | **Interface móvel.** Há teste de viewport estreita e captura visual. Ainda é necessário validar em dispositivos reais o editor, teclado virtual, áreas de toque e janelas auxiliares. |
-| RELEASE-001 | Média | Pendente | **Versão em uma única fonte.** A versão ainda é repetida no `package.json`, na interface e em formulários. Concluir quando a build derivar esses valores de uma fonte única e a retirada da etiqueta Beta tiver critério explícito. |
+| RELEASE-001 | Média | Pendente | **Versão em uma única fonte.** A versão ainda é repetida no `package.json` e na interface. Concluir quando a build derivar esses valores de uma fonte única e a retirada da etiqueta Beta tiver critério explícito. |
 | DOCS-001 | Baixa | Pendente | **Carregamento seguro da documentação.** Verificar `response.ok` e definir uma fronteira de sanitização antes de aceitar qualquer Markdown que não faça parte do pacote local. |
 | TECH-001 | Baixa | Planejado | **Scripts clássicos e globais.** Modularizar gradualmente o runtime e permitir que o Vite empacote o código sem os avisos atuais, preservando os testes existentes. |
 
@@ -88,7 +92,7 @@ incompatibilidades ou regressões conhecidas:
 
 | Versão | Principais entregas consolidadas | Evidência atual |
 | --- | --- | --- |
-| `0.14` | Identidade própria do fork; nova interface com abas unificadas, painéis responsivos, dez paletas e destaque de sintaxe; Console em painel/aba/modal/janela/aba externa; fontes independentes; teclado, foco e ARIA; segurança Electron; lint, CI e testes E2E. | `npm run test:ci`, 27 cenários Playwright em Chromium e Firefox e capturas em `img/`. |
+| `0.14` | Identidade própria do fork; nova interface com abas unificadas, painéis responsivos, 26 temas claros e escuros e destaque de sintaxe; Console em painel/aba/modal/janela/aba externa; fontes independentes; teclado, foco e ARIA; segurança Electron; lint, CI e testes E2E. | `npm run test:ci` passou em 6/10/2026; navegação de documentação verificada em Chromium. Suíte E2E completa não executada nesta revisão. |
 | `0.13` | Onboarding e galeria; erro clicável; estado visível do autosave e recuperação; controle dos painéis; `senao se`; E/S sem parênteses; funções sem `()`; `pi`; entrada inválida repetida; comandos especiais e semântica avançada. | `npm run test:compat`, `npm run test:standard`, `npm run test:examples`, `npm run test:workspace` e testes E2E. |
 | `0.12` | Persistência das abas e códigos, restauração da sessão, programas padrão e documentação de história/autoria. | `npm run test:workspace` e `npm run test:standard`. |
 | `0.11` | Erro para tokens inválidos e blocos abertos; análise semântica de nomes, tipos, aridade e contexto; limites de vetores; divisão por zero; domínios matemáticos; isolamento da execução entre abas. | Regressões semânticas em `npm run test:p0`; bloqueio de ações entre abas implementado no gerenciador de abas. |
@@ -107,7 +111,7 @@ origem e autoria fica na aba **História**.
 | Quais regras uma mudança incompatível deve seguir? | `COMPATIBILITY.md`, na raiz do repositório. |
 | Quais navegadores e sistemas recebem suporte? | `SUPPORT.md`, na raiz do repositório. |
 | Quais passos uma publicação precisa cumprir? | `RELEASE_CHECKLIST.md`, na raiz do repositório. |
-| Onde relatar um caso novo? | Formulário de bug do repositório, com versão, ambiente e programa `.alg` mínimo. |
+| Onde relatar um caso novo? | Página de Issues do GitHub, com versão, ambiente e programa `.alg` mínimo. |
 
 O checklist de release é um procedimento: caixas desmarcadas nele não são
 automaticamente defeitos atuais. Issues são usadas para discussão e execução;

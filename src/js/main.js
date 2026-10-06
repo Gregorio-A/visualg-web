@@ -14,16 +14,18 @@
     var settingsOverlay, settingTheme, settingFontSize, settingFontSizeSlider, settingWordWrap, settingTabSize, settingIndentGuides;
     var settingEditorFontFamily, settingConsoleFontFamily;
     var settingVarsFontSize, settingVarsFontSizeSlider, settingConsoleFontSize, settingConsoleFontSizeSlider, settingConsoleInputMode;
-    var settingGlobalFontSize, settingGlobalFontSizeSlider, settingGlobalFontUnit;
     var settingVarsColNome, settingVarsColTipo, settingVarsColValor;
     var settingLoopDetection;
-    var _globalFontBase = { editor: 14, vars: 12, console: 13 };
     var ONBOARDING_STORAGE_KEY = 'visualg-onboarding-complete-v1';
     var SECTION_VISIBILITY_KEY = 'visualg-section-visibility-v1';
     var sectionVisibility = { editor: true, variables: true, terminal: true };
 
     function isCompactInterface() {
         return window.innerWidth <= 760 || (window.innerWidth <= 950 && window.innerHeight <= 500);
+    }
+
+    function shortcutEnabled(name) {
+        return localStorage.getItem('visualg-shortcut-' + name) !== 'off';
     }
 
     document.addEventListener('DOMContentLoaded', function () {
@@ -61,9 +63,6 @@
         settingConsoleFontSize = document.getElementById('setting-console-font-size');
         settingConsoleFontSizeSlider = document.getElementById('setting-console-font-size-slider');
         settingConsoleInputMode = document.getElementById('setting-console-input-mode');
-        settingGlobalFontSize = document.getElementById('setting-global-font-size');
-        settingGlobalFontSizeSlider = document.getElementById('setting-global-font-size-slider');
-        settingGlobalFontUnit = document.getElementById('setting-global-font-unit');
         settingVarsColNome = document.getElementById('setting-vars-col-nome');
         settingVarsColTipo = document.getElementById('setting-vars-col-tipo');
         settingVarsColValor = document.getElementById('setting-vars-col-valor');
@@ -93,7 +92,7 @@
         };
 
         // Button events
-        btnRun.addEventListener('click', runProgram);
+        btnRun.addEventListener('click', function () { if (getRunningTab()) stopProgram(); else runProgram(); });
         btnStep.addEventListener('click', function () { advanceDebugger('over'); });
         btnStop.addEventListener('click', stopProgram);
         btnSave.addEventListener('click', saveProgram);
@@ -324,37 +323,6 @@
         settingLoopDetection.addEventListener('change', function () {
             applyLoopDetection(settingLoopDetection.value);
         });
-        settingGlobalFontSize.addEventListener('input', function () {
-            var val = parseFloat(this.value);
-            if (val >= 1) applyGlobalFontSize(val);
-        });
-        settingGlobalFontSizeSlider.addEventListener('input', function () {
-            applyGlobalFontSize(this.value);
-        });
-        settingGlobalFontUnit.addEventListener('change', function () {
-            var unit = this.value;
-            if (unit === 'percent') {
-                settingGlobalFontSize.value = 100;
-                settingGlobalFontSizeSlider.min = 25;
-                settingGlobalFontSizeSlider.max = 300;
-                settingGlobalFontSizeSlider.value = 100;
-                _globalFontBase = {
-                    editor: parseInt(localStorage.getItem('visualg-font-size') || '14', 10),
-                    vars: parseInt(localStorage.getItem('visualg-vars-font-size') || '12', 10),
-                    console: parseInt(localStorage.getItem('visualg-console-font-size') || '13', 10)
-                };
-                localStorage.setItem('visualg-global-font-unit', 'percent');
-                localStorage.setItem('visualg-global-font-value', '100');
-            } else {
-                var current = parseInt(localStorage.getItem('visualg-font-size') || '14', 10);
-                settingGlobalFontSize.value = current;
-                settingGlobalFontSizeSlider.min = 1;
-                settingGlobalFontSizeSlider.max = 50;
-                settingGlobalFontSizeSlider.value = Math.min(current, 50);
-                localStorage.setItem('visualg-global-font-unit', 'px');
-                localStorage.setItem('visualg-global-font-value', current);
-            }
-        });
 
         function onVarsColChange() {
             applyVarsColumns({
@@ -369,28 +337,20 @@
 
         // Keyboard shortcuts
         document.addEventListener('keydown', function (e) {
-            if (e.key === 'F9') {
+            if ((e.key === 'F9' || e.key === 'F5') && shortcutEnabled('run')) {
                 e.preventDefault();
-                var activeTab = tabManager.getActiveTab();
-                if (!activeTab) return;
-                if (e.shiftKey) stopProgram();
-                else if (activeTab.executor && activeTab.executor.running && activeTab.executor.stepResolve) runProgram();
-                else if (!activeTab.executor || !activeTab.executor.running) runProgram();
+                var runningTab = getRunningTab();
+                if (e.shiftKey || (runningTab && !(runningTab.executor && runningTab.executor.stepResolve))) stopProgram();
+                else if (runningTab) runProgram();
+                else runProgram();
             }
-            if (e.key === 'F5') {
-                e.preventDefault();
-                var currentTab = tabManager.getActiveTab();
-                if (!currentTab) return;
-                if (e.shiftKey) stopProgram();
-                else if (currentTab.executor && currentTab.executor.running && currentTab.executor.stepResolve) runProgram();
-                else if (!currentTab.executor || !currentTab.executor.running) runProgram();
-            }
-            if (e.key === 'F8') {
+            if (e.key === 'F8' && shortcutEnabled('step')) {
                 e.preventDefault();
                 stepProgram();
             }
-            if (e.key === 'F10') { e.preventDefault(); advanceDebugger('over'); }
-            if (e.key === 'F11') { e.preventDefault(); advanceDebugger(e.shiftKey ? 'out' : 'into'); }
+            if (e.key === 'F10' && shortcutEnabled('debug')) { e.preventDefault(); advanceDebugger('over'); }
+            if (e.key === 'F11' && shortcutEnabled('debug')) { e.preventDefault(); advanceDebugger(e.shiftKey ? 'out' : 'into'); }
+            if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 's' && shortcutEnabled('save')) { e.preventDefault(); saveProgram(); }
             if (e.key === 'Escape') {
                 if (!settingsOverlay.classList.contains('hidden')) closeSettings();
                 if (!docsOverlay.classList.contains('hidden')) DocsPanel.close();
@@ -428,9 +388,11 @@
     function renderExamples() {
         var grid = document.getElementById('examples-grid');
         var examples = window.VisuAlgExamples || [];
+        var search = document.getElementById('examples-search');
+        var terms = search ? search.value.toLocaleLowerCase('pt-BR').normalize('NFD').replace(/[\u0300-\u036f]/g, '').trim().split(/\s+/).filter(Boolean) : [];
         grid.textContent = '';
 
-        examples.forEach(function (example) {
+        examples.filter(function (example) { var searchable = (example.title + ' ' + example.level + ' ' + example.description + ' ' + example.source).toLocaleLowerCase('pt-BR').normalize('NFD').replace(/[\u0300-\u036f]/g, ''); return terms.every(function (term) { return searchable.includes(term); }); }).forEach(function (example) {
             var card = document.createElement('article');
             card.className = 'example-card';
 
@@ -458,6 +420,8 @@
             card.appendChild(actions);
             grid.appendChild(card);
         });
+
+        if (!grid.children.length) grid.textContent = 'Nenhum exemplo encontrado por título, descrição ou código.';
 
         if (window.renderLucideIcons) window.renderLucideIcons(grid);
     }
@@ -490,6 +454,7 @@
     function initExamples() {
         var overlay = document.getElementById('examplesOverlay');
         renderExamples();
+        document.getElementById('examples-search').addEventListener('input', renderExamples);
         document.getElementById('btn-close-examples').addEventListener('click', closeExamples);
         overlay.addEventListener('click', function (event) {
             if (event.target === overlay) closeExamples();
@@ -574,6 +539,9 @@
 
     function initRecovery() {
         var overlay = document.getElementById('recoveryOverlay');
+        // Keep the recovery dialog at the document root; malformed or dynamically
+        // inserted workspace markup must not trap it inside another hidden modal.
+        if (overlay && overlay.parentElement !== document.body) document.body.appendChild(overlay);
         var closeTimer = null;
         var closeAnimationHandler = null;
         function closeRecoveryModal() {
@@ -598,7 +566,7 @@
             overlay.addEventListener('animationend', closeAnimationHandler);
             closeTimer = window.setTimeout(finishClose, 240);
         }
-        document.getElementById('btn-history').addEventListener('click', function () {
+        document.addEventListener('visualg:open-recovery', function () {
             refreshRecoveryModal();
             if (closeTimer) window.clearTimeout(closeTimer);
             closeTimer = null;
@@ -682,6 +650,7 @@
     }
 
     function applyTheme(theme) {
+        if (theme === 'visualg-classic-high-contrast') theme = 'visualg-classic';
         var lightThemes = ['light', 'github-light', 'solarized-light', 'high-contrast', 'catppuccin-latte', 'gruvbox-light', 'paper', 'visualg-classic', 'visualg-3', 'visualg-agua', 'visualg-metal', 'visualg-notas', 'visualg-aluminio', 'visualg-madeira', 'visualg-plastico'];
         document.documentElement.setAttribute('data-theme', theme);
         document.documentElement.dataset.colorMode = lightThemes.includes(theme) ? 'light' : 'dark';
@@ -1005,7 +974,7 @@
     }
 
     function applyFontFamily(area, value) {
-        if (!['jetbrains', 'fira-code', 'ibm-plex', 'source-code-pro', 'roboto-mono', 'inconsolata', 'system'].includes(value)) value = 'jetbrains';
+        if (!['jetbrains', 'fira-code', 'ibm-plex', 'source-code-pro', 'roboto-mono', 'inconsolata', 'comic-neue', 'fredoka', 'patrick-hand', 'system'].includes(value)) value = 'jetbrains';
         document.documentElement.setAttribute('data-' + area + '-font', value);
         localStorage.setItem('visualg-' + area + '-font-family', value);
         (area === 'editor' ? settingEditorFontFamily : settingConsoleFontFamily).value = value;
@@ -1027,6 +996,7 @@
     function applyWordWrap(value) {
         var effective = isCompactInterface() ? 'on' : value;
         editor.instance.setOption('lineWrapping', effective === 'on');
+        document.documentElement.dataset.wordWrap = effective;
         localStorage.setItem('visualg-word-wrap', value);
         if (settingWordWrap) settingWordWrap.value = effective;
     }
@@ -1038,6 +1008,7 @@
         // Atualizar opções do editor
         editor.instance.setOption('tabSize', n);
         editor.instance.setOption('indentUnit', n);
+        document.documentElement.style.setProperty('--ide-tab-size', n);
         localStorage.setItem('visualg-tab-size', value);
         if (settingTabSize) settingTabSize.value = value;
 
@@ -1074,6 +1045,7 @@
         if (isNaN(size) || size < 1) return;
         var table = document.getElementById('variables-table');
         table.style.fontSize = size + 'px';
+        document.documentElement.style.setProperty('--ide-vars-font-size', size + 'px');
         var ths = table.querySelectorAll('th');
         for (var i = 0; i < ths.length; i++) {
             ths[i].style.fontSize = size + 'px';
@@ -1103,6 +1075,7 @@
         var px = size + 'px';
         document.getElementById('terminal-output').style.fontSize = px;
         document.getElementById('terminal-input').style.fontSize = px;
+        document.documentElement.style.setProperty('--ide-console-font-size', px);
         localStorage.setItem('visualg-console-font-size', size);
         if (settingConsoleFontSize) settingConsoleFontSize.value = size;
         if (settingConsoleFontSizeSlider) settingConsoleFontSizeSlider.value = Math.min(size, 50);
@@ -1117,29 +1090,6 @@
     function applyLoopDetection(value) {
         localStorage.setItem('visualg-loop-detection', value);
         settingLoopDetection.value = value;
-    }
-
-    function applyGlobalFontSize(value) {
-        value = parseFloat(value);
-        if (isNaN(value) || value < 1) return;
-        var unit = settingGlobalFontUnit ? settingGlobalFontUnit.value : 'percent';
-
-        if (unit === 'percent') {
-            var factor = value / 100;
-            applyFontSize(Math.round(_globalFontBase.editor * factor));
-            applyVarsFontSize(Math.round(_globalFontBase.vars * factor));
-            applyConsoleFontSize(Math.round(_globalFontBase.console * factor));
-        } else {
-            var px = Math.round(value);
-            applyFontSize(px);
-            applyVarsFontSize(px);
-            applyConsoleFontSize(px);
-        }
-
-        if (settingGlobalFontSize) settingGlobalFontSize.value = Math.round(value);
-        if (settingGlobalFontSizeSlider) settingGlobalFontSizeSlider.value = Math.min(Math.round(value), parseInt(settingGlobalFontSizeSlider.max, 10));
-        localStorage.setItem('visualg-global-font-value', Math.round(value));
-        localStorage.setItem('visualg-global-font-unit', unit);
     }
 
     function openSettings() {
@@ -1164,30 +1114,6 @@
         settingVarsColNome.checked = varsColumns.nome;
         settingVarsColTipo.checked = varsColumns.tipo;
         settingVarsColValor.checked = varsColumns.valor;
-        // Restore global font size
-        var savedUnit = localStorage.getItem('visualg-global-font-unit') || 'percent';
-        var savedGlobalValue = localStorage.getItem('visualg-global-font-value') || '100';
-        settingGlobalFontUnit.value = savedUnit;
-        if (savedUnit === 'percent') {
-            var factor = parseInt(savedGlobalValue, 10) / 100;
-            if (factor > 0) {
-                _globalFontBase = {
-                    editor: Math.round(parseInt(savedFontSize, 10) / factor),
-                    vars: Math.round(parseInt(savedVarsFontSize, 10) / factor),
-                    console: Math.round(parseInt(savedConsoleFontSize, 10) / factor)
-                };
-            } else {
-                _globalFontBase = { editor: parseInt(savedFontSize, 10), vars: parseInt(savedVarsFontSize, 10), console: parseInt(savedConsoleFontSize, 10) };
-            }
-            settingGlobalFontSizeSlider.min = 25;
-            settingGlobalFontSizeSlider.max = 300;
-        } else {
-            _globalFontBase = { editor: parseInt(savedFontSize, 10), vars: parseInt(savedVarsFontSize, 10), console: parseInt(savedConsoleFontSize, 10) };
-            settingGlobalFontSizeSlider.min = 1;
-            settingGlobalFontSizeSlider.max = 50;
-        }
-        settingGlobalFontSize.value = savedGlobalValue;
-        settingGlobalFontSizeSlider.value = Math.min(parseInt(savedGlobalValue, 10), parseInt(settingGlobalFontSizeSlider.max, 10));
         // Reset to first tab
         var modal = settingsOverlay.querySelector('.modal');
         modal.querySelectorAll('.modal-tab').forEach(function (t) { t.classList.remove('active'); });
@@ -1209,10 +1135,15 @@
     }
 
     function setRunning(running) {
-        var tab = tabManager.getActiveTab();
+        var tab = getRunningTab() || tabManager.getActiveTab();
         var stepping = tab && tab.executor && tab.executor.running && tab.executor.stepMode;
         var paused = !!(tab && tab.executor && tab.executor.stepResolve);
-        btnRun.disabled = running && !paused;
+        btnRun.disabled = false;
+        btnRun.classList.toggle('is-stop', !!running);
+        btnRun.title = running ? 'Parar execução — Shift + F5' : 'Executar — F5';
+        btnRun.setAttribute('aria-label', btnRun.title);
+        btnRun.innerHTML = '<i data-lucide="' + (running ? 'square' : 'play') + '"></i> ' + (running ? 'Parar' : 'Executar');
+        if (window.renderLucideIcons) window.renderLucideIcons(btnRun);
         btnStep.disabled = running && !stepping && !paused;
         var debugRun = document.getElementById('debug-run');
         var debugStart = document.getElementById('debug-start');
@@ -1222,7 +1153,12 @@
         var mobileRun = document.getElementById('mobile-run');
         var mobileStep = document.getElementById('mobile-step');
         var mobileStop = document.getElementById('mobile-stop');
-        if (mobileRun) mobileRun.disabled = btnRun.disabled;
+        if (mobileRun) {
+            mobileRun.disabled = false;
+            mobileRun.classList.toggle('is-stop', !!running);
+            mobileRun.innerHTML = '<i data-lucide="' + (running ? 'square' : 'play') + '"></i><span>' + (running ? 'Parar' : 'Executar') + '</span>';
+            if (window.renderLucideIcons) window.renderLucideIcons(mobileRun);
+        }
         if (mobileStep) mobileStep.disabled = btnStep.disabled;
         if (mobileStop) mobileStop.disabled = btnStop.disabled;
         btnClearTerminal.disabled = running;
@@ -1237,7 +1173,7 @@
             document.getElementById('debug-out').disabled = !paused || !tab.executor.callStack.length;
         }
         if (editor.instance) editor.instance.setOption('readOnly', running ? 'nocursor' : false);
-        document.dispatchEvent(new window.CustomEvent('visualg:running', { detail: { running: running, stepping: !!stepping } }));
+        document.dispatchEvent(new window.CustomEvent('visualg:running', { detail: { running: running, stepping: !!stepping, tabId: running && tab ? tab.id : null } }));
     }
 
     function pauseProgram() {
@@ -1287,18 +1223,20 @@
         };
     }
 
-    function reportExecutionError(error) {
+    function reportExecutionError(error, tabId) {
         var message = error && error.message ? error.message : String(error);
         var location = getErrorLocation(message);
-        document.dispatchEvent(new window.CustomEvent('visualg:diagnostic', { detail: { message: message, location: location, at: Date.now() } }));
+        document.dispatchEvent(new window.CustomEvent('visualg:diagnostic', { detail: { message: message, location: location, tabId: tabId, at: Date.now() } }));
         terminal.writelnError(message, location, function () {
+            if (!location) return;
             setSectionVisible('editor', true);
-            editor.revealLocation(location.line, location.column);
+            if (window.VisualGWorkspace && window.VisualGWorkspace.navigateToLocation) {
+                window.VisualGWorkspace.navigateToLocation(tabId, location.line, location.column);
+            } else {
+                if (window.VisualGWorkspace) window.VisualGWorkspace.showEditor();
+                editor.revealLocation(location.line, location.column);
+            }
         });
-        if (location) {
-            setSectionVisible('editor', true);
-            editor.revealLocation(location.line, location.column);
-        }
         setStatus('Erro', 'error');
     }
 
@@ -1313,6 +1251,7 @@
         }
 
         var source = editor.getValue();
+        tab.running = true;
         terminal.clear();
         document.dispatchEvent(new window.CustomEvent('visualg:execution-start', { detail: { debug: false } }));
         varsPanel.clear();
@@ -1332,16 +1271,16 @@
         } catch (e) {
             if (e.message !== '__STOP__') {
                 hadError = true;
-                reportExecutionError(e);
+                reportExecutionError(e, tab.id);
             } else {
                 setStatus('Execução interrompida');
             }
         }
 
         if (!hadError) editor.clearHighlight();
-        setRunning(false);
         tab.executor = null;
         tab.running = false;
+        setRunning(false);
         document.dispatchEvent(new window.CustomEvent('visualg:execution-end'));
     }
 
@@ -1355,6 +1294,7 @@
         }
 
         var source = editor.getValue();
+        tab.running = true;
         terminal.clear();
         document.dispatchEvent(new window.CustomEvent('visualg:execution-start', { detail: { debug: true } }));
         varsPanel.clear();
@@ -1384,14 +1324,14 @@
         }
 
         if (!hadError) editor.clearHighlight();
-        setRunning(false);
         tab.executor = null;
         tab.running = false;
+        setRunning(false);
         document.dispatchEvent(new window.CustomEvent('visualg:execution-end'));
     }
 
     function stopProgram() {
-        var tab = tabManager.getActiveTab();
+        var tab = getRunningTab();
         if (!tab) return;
         if (tab.executor) {
             tab.executor.running = false;
@@ -1406,7 +1346,7 @@
         terminal.inputArea.classList.add('hidden');
         var consoleInputOverlay = document.getElementById('consoleInputOverlay');
         if (consoleInputOverlay) consoleInputOverlay.classList.add('hidden');
-        setStatus('Finalizado');
+        setStatus('Execução interrompida');
         setRunning(false);
     }
 
@@ -1482,19 +1422,12 @@
                 return;
             }
 
-            // Parar execução se estiver rodando
-            var tab = tabManager.getActiveTab();
-            if (!tab) {
-                tab = tabManager.createTab(content, { fileName:file.name });
-                if (!tab) return;
-            } else {
-                if (tab.executor && tab.executor.running) {
-                stopProgram();
-                }
-                editor.setValue(content);
-                if (tabManager.setFileName) tabManager.setFileName(tab.id, file.name);
-                if (tabManager.markActiveClean) tabManager.markActiveClean();
-            }
+            var importedName = window.VisualGWorkspace && window.VisualGWorkspace.uniqueFileName
+                ? window.VisualGWorkspace.uniqueFileName(file.name, null, null)
+                : file.name;
+            var tab = tabManager.createTab(content, { fileName:importedName });
+            if (!tab) return;
+            if (tabManager.markActiveClean) tabManager.markActiveClean();
             if (window.VisualGWorkspace) window.VisualGWorkspace.showEditor();
             terminal.clear();
             varsPanel.clear();

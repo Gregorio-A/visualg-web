@@ -32,7 +32,8 @@ try {
 
   const mainSource = await fs.readFile(new URL('../electron/main.js', import.meta.url), 'utf8');
   for (const required of ['contextIsolation: true', 'nodeIntegration: false', 'sandbox: true', 'webSecurity: true',
-    'setWindowOpenHandler', "on('will-navigate'", 'assertTrustedIpcSender', 'Content-Security-Policy']) {
+    'setWindowOpenHandler', "on('will-navigate'", 'assertTrustedIpcSender', 'Content-Security-Policy',
+    "https://github.com/Gregorio-A/visualg-web/issues", 'shell.openExternal']) {
     assert.ok(mainSource.includes(required), `electron/main.js deve conter: ${required}`);
   }
 
@@ -45,6 +46,8 @@ try {
   const inlineScripts = [...rendererSource.matchAll(/<script(?![^>]+src=)[^>]*>([\s\S]*?)<\/script>/gi)]
     .filter((match) => match[1].trim() !== '');
   assert.equal(inlineScripts.length, 0, 'A CSP nao permite JavaScript inline');
+  assert.doesNotMatch(await fs.readFile(new URL('../src/index.html', import.meta.url), 'utf8'), /bugReportOverlay|bug-report-description|bug-report-image/,
+    'A interface nao deve conter formulario proprio de relato');
   console.log('OK: CSP, isolamento Electron, IPC, caminhos e links simbolicos verificados.');
 } finally {
   await fs.rm(temporary, { recursive: true, force: true });

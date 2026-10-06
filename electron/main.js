@@ -1,4 +1,4 @@
-import { app, BrowserWindow, ipcMain } from 'electron';
+import { app, BrowserWindow, ipcMain, shell } from 'electron';
 import path from 'node:path';
 import { pathToFileURL } from 'node:url';
 import started from 'electron-squirrel-startup';
@@ -20,6 +20,7 @@ const CSP = [
   "img-src 'self' data:",
   "font-src 'self'",
   "connect-src 'self'",
+  "frame-src https://www.youtube-nocookie.com",
 ].join('; ');
 
 let mainWindow = null;
@@ -67,6 +68,10 @@ const createWindow = () => {
 
   const allowedConsole = new URL('console-window.html', allowedEntry).href;
   mainWindow.webContents.setWindowOpenHandler((details) => {
+    if (details.url === 'https://github.com/Gregorio-A/visualg-web/issues') {
+      shell.openExternal(details.url).catch(() => {});
+      return { action: 'deny' };
+    }
     if (details.url !== allowedConsole) return { action: 'deny' };
     return {
       action: 'allow',

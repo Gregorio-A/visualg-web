@@ -2,6 +2,8 @@
 
 O VisuAlg Web implementa os laços `para`, `enquanto` e `repita`. Todos podem usar `interrompa` para sair antes do fim normal do laço.
 
+![Ciclo de teste e repetição](images/docs/ciclo-repeticao.svg)
+
 ## para...ate...faca
 
 Use `para` quando a quantidade de repetições é controlada por uma variável inteira.

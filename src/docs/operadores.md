@@ -2,6 +2,8 @@
 
 Operadores formam expressões numéricas, lógicas e de texto. O VisuAlg Web segue a precedência do VisuAlg clássico sempre que o comportamento já foi validado.
 
+![Escala visual de precedência dos operadores](images/docs/precedencia-operadores.svg)
+
 ## Precedência e associatividade
 
 | Ordem | Operadores | Associatividade |

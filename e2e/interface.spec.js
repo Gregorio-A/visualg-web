@@ -8,9 +8,165 @@ const programs = {
 
 async function openApp(page) {
   await page.goto('/');
+  await expect(page.locator('#editor-empty-state')).toBeVisible();
+  if (await page.locator('#btn-empty-restore-tabs').isEnabled()) await page.locator('#btn-empty-restore-tabs').click();
+  else await page.locator('#btn-empty-new').click();
   await expect(page.locator('.CodeMirror')).toBeVisible();
   await expect.poll(() => page.evaluate(() => Boolean(window.VisualGWorkspace))).toBe(true);
 }
+
+test('inicia na tela de boas-vindas e permite restaurar as abas salvas', async ({ page }) => {
+  await page.addInitScript(() => {
+    if (!localStorage.getItem('visualg-workspace-v1')) localStorage.setItem('visualg-workspace-v1', JSON.stringify({
+      version: 1, activeTabId: 'saved-1', updatedAt: new Date().toISOString(),
+      tabs: [{ id: 'saved-1', name: 'Sessão anterior', fileName: 'sessao.alg', code: 'Algoritmo "Sessão anterior"\nInicio\nfimalgoritmo', dirty: false }],
+    }));
+  });
+  await page.goto('/');
+  await expect(page.locator('#editor-empty-state')).toBeVisible();
+  await expect(page.locator('#workspace-file-list')).toContainText('sessao.alg');
+  await expect(page.locator('.tab-item')).toBeHidden();
+  await expect(page.locator('#btn-empty-new')).toBeVisible();
+  await expect(page.locator('#btn-empty-import')).toBeVisible();
+  await expect(page.locator('#btn-empty-docs')).toBeVisible();
+  await expect(page.locator('#btn-empty-restore-section')).toHaveCount(0);
+  await expect(page.locator('#btn-empty-restore-tabs')).toBeEnabled();
+  const savedTabsBeforeReload = await page.evaluate(() => JSON.parse(localStorage.getItem('visualg-workspace-v1')).tabs);
+  await page.reload();
+  await expect(page.locator('#editor-empty-state')).toBeVisible();
+  await expect(page.locator('#workspace-file-list')).toContainText('sessao.alg');
+  await expect.poll(() => page.evaluate(() => JSON.parse(localStorage.getItem('visualg-workspace-v1')).tabs)).toEqual(savedTabsBeforeReload);
+  await page.locator('#btn-empty-restore-tabs').click();
+  await expect(page.locator('.tab-item')).toContainText('sessao.alg');
+  await expect(page.locator('#editor-empty-state')).toBeHidden();
+});
+
+test('selecionar arquivo na lateral fecha a tela inicial e abre seu conteúdo', async ({ page }) => {
+  const code = 'Algoritmo "Arquivo visível"\nInicio\n  escreval("conteúdo preservado")\nfimalgoritmo';
+  await page.addInitScript((source) => localStorage.setItem('visualg-workspace-v1', JSON.stringify({
+    version: 1, activeTabId: 'saved-file', updatedAt: new Date().toISOString(),
+    tabs: [{ id: 'saved-file', name: 'Arquivo visível', fileName: 'arquivo-visivel.alg', code: source, dirty: false }],
+  })), code);
+  await page.goto('/');
+  await expect(page.locator('#editor-empty-state')).toBeVisible();
+  await expect(page.locator('.tab-item')).toBeHidden();
+  await page.locator('.file-item').filter({ hasText: 'arquivo-visivel.alg' }).click();
+  await expect(page.locator('#editor-empty-state')).toBeHidden();
+  await expect.poll(() => page.evaluate(() => window.VisualGEditor.getValue())).toBe(code);
+});
+
+test('selecionar outro arquivo aberto na lateral também sai da tela inicial', async ({ page }) => {
+  const first = 'Algoritmo "Primeiro"\nInicio\nfimalgoritmo';
+  const second = 'Algoritmo "Segundo"\nInicio\n  escreval("segundo arquivo")\nfimalgoritmo';
+  await page.addInitScript(({ firstCode, secondCode }) => localStorage.setItem('visualg-workspace-v1', JSON.stringify({
+    version: 1, activeTabId: 'first-tab', updatedAt: new Date().toISOString(),
+    tabs: [
+      { id: 'first-tab', name: 'Primeiro', fileName: 'primeiro.alg', code: firstCode, dirty: false },
+      { id: 'second-tab', name: 'Segundo', fileName: 'segundo.alg', code: secondCode, dirty: false },
+    ],
+  })), { firstCode: first, secondCode: second });
+  await page.goto('/');
+  await expect(page.locator('#editor-empty-state')).toBeVisible();
+  await page.locator('.file-item').filter({ hasText: 'segundo.alg' }).click();
+  await expect(page.locator('#editor-empty-state')).toBeHidden();
+  await expect.poll(() => page.evaluate(() => window.VisualGEditor.getValue())).toBe(second);
+});
+
+test('menu de ações rápidas permanece acima dos arquivos e mostra todas as ações excedentes', async ({ page }) => {
+  await openApp(page);
+  const toolbar = page.locator('.sidebar-actions');
+  await toolbar.evaluate((element) => { element.style.width = '100px'; element.style.flex = '0 0 100px'; });
+  const trigger = page.locator('#sidebar-actions-more');
+  await expect(trigger).toBeVisible();
+  await trigger.click();
+  const menu = page.locator('#sidebar-actions-menu');
+  await expect(menu).toBeVisible();
+  await expect(menu.getByRole('menuitem')).toHaveCount(4);
+  await expect(menu).toContainText('Exportar arquivo');
+  await expect(menu).toContainText('Criar novo arquivo');
+  await expect(menu).toContainText('Criar nova pasta');
+  await expect(menu).toContainText('Duplicar arquivo');
+  await expect(menu.locator('.sidebar-actions-menu-heading')).toHaveText('Ações rápidas');
+  const menuStyle = await menu.evaluate((element) => {
+    const style = window.getComputedStyle(element);
+    return { background: style.backgroundColor, borderRadius: style.borderRadius, shadow: style.boxShadow };
+  });
+  expect(menuStyle.background).not.toBe('rgba(0, 0, 0, 0)');
+  expect(menuStyle.borderRadius).toBe('9px');
+  expect(menuStyle.shadow).not.toBe('none');
+  expect(await menu.evaluate((element) => element.parentElement === element.ownerDocument.body)).toBe(true);
+  expect(await menu.evaluate((element) => {
+    const rect = element.getBoundingClientRect();
+    return element.ownerDocument.elementFromPoint(rect.left + 12, rect.top + 12)?.closest('#sidebar-actions-menu') === element;
+  })).toBe(true);
+});
+
+test('ações rápidas são recalculadas ao voltar da documentação para Arquivos', async ({ page }) => {
+  await openApp(page);
+  await page.locator('.sidebar-actions').evaluate((element) => { element.style.width = '100px'; element.style.flex = '0 0 100px'; });
+  await expect(page.locator('#sidebar-actions-more')).toBeVisible();
+  await page.locator('#btn-sidebar-docs').click();
+  await expect(page.locator('#sidebar-docs-panel')).toBeVisible();
+  await page.locator('#btn-sidebar-files').click();
+  await expect(page.locator('#sidebar-files-panel')).toBeVisible();
+  const trigger = page.locator('#sidebar-actions-more');
+  await expect(trigger).toBeVisible();
+  await trigger.click();
+  const menu = page.locator('#sidebar-actions-menu');
+  await expect(menu).toBeVisible();
+  await expect(menu.getByRole('menuitem')).toHaveCount(4);
+  await expect(menu).toContainText('Duplicar arquivo');
+});
+
+test('restaura laterais recolhidas ao arrastar para dentro a partir da borda, sem botões extras', async ({ page }) => {
+  await openApp(page);
+  await expect(page.locator('#restore-left-edge, #restore-right-edge')).toHaveCount(0);
+  const leftDivider = await page.locator('#left-resizer').boundingBox();
+  await page.mouse.move(leftDivider.x + leftDivider.width / 2, leftDivider.y + 100);
+  await page.mouse.down();
+  await page.mouse.move(4, leftDivider.y + 100, { steps: 5 });
+  await page.mouse.up();
+  await expect(page.locator('body')).toHaveClass(/sidebar-left-collapsed/);
+  await page.mouse.move(4, 420);
+  await page.mouse.down();
+  await page.mouse.move(64, 420, { steps: 4 });
+  await page.mouse.up();
+  await expect(page.locator('body')).not.toHaveClass(/sidebar-left-collapsed/);
+
+  const rightDivider = await page.locator('#right-resizer').boundingBox();
+  const viewportWidth = await page.evaluate(() => window.innerWidth);
+  await page.mouse.move(rightDivider.x + rightDivider.width / 2, rightDivider.y + 100);
+  await page.mouse.down();
+  await page.mouse.move(viewportWidth - 4, rightDivider.y + 100, { steps: 5 });
+  await page.mouse.up();
+  await expect(page.locator('body')).toHaveClass(/sidebar-right-collapsed/);
+  const width = viewportWidth;
+  await page.mouse.move(width - 4, 420);
+  await page.mouse.down();
+  await page.mouse.move(width - 64, 420, { steps: 4 });
+  await page.mouse.up();
+  await expect(page.locator('body')).not.toHaveClass(/sidebar-right-collapsed/);
+});
+
+test('abrir um arquivo fechado na lateral sai da tela inicial e reutiliza a aba', async ({ page }) => {
+  const previous = 'Algoritmo "Anterior"\nInicio\nfimalgoritmo';
+  const archived = 'Algoritmo "Arquivado"\nInicio\n  escreval("arquivo arquivado")\nfimalgoritmo';
+  await page.addInitScript(({ previousCode, archivedCode }) => {
+    localStorage.setItem('visualg-workspace-v1', JSON.stringify({
+      version: 1, activeTabId: 'active-tab', updatedAt: new Date().toISOString(),
+      tabs: [{ id: 'active-tab', name: 'Anterior', fileName: 'anterior.alg', code: previousCode, dirty: false }],
+    }));
+    localStorage.setItem('visualg-closed-files-v1', JSON.stringify([
+      { id: 'closed-tab', name: 'Arquivado', fileName: 'arquivado.alg', code: archivedCode, closed: true },
+    ]));
+  }, { previousCode: previous, archivedCode: archived });
+  await page.goto('/');
+  await expect(page.locator('#editor-empty-state')).toBeVisible();
+  await page.locator('.file-item').filter({ hasText: 'arquivado.alg' }).click();
+  await expect(page.locator('#editor-empty-state')).toBeHidden();
+  await expect.poll(() => page.evaluate(() => window.VisualGEditor.getValue())).toBe(archived);
+  await expect(page.locator('.tab-item')).toHaveCount(1);
+});
 
 async function setCode(page, code) {
   await page.evaluate((source) => window.VisualGEditor.setValue(source), code);
@@ -33,10 +189,112 @@ test('abre a documentação no centro e navega de volta ao editor', async ({ pag
   await page.locator('.doc-item', { hasText: 'Introdução' }).click();
   await expect(page.locator('#workspace-aux-view')).toBeVisible();
   await expect(page.locator('#workspace-aux-view')).toContainText('VisuAlg');
+  await page.locator('.docs-page-navigation-next').click();
+  await expect(page.locator('#workspace-aux-view')).toContainText('VisuAlg.dev');
+  await expect(page.locator('.view-tab[data-type="docs"]')).toHaveCount(1);
+  await expect(page.locator('.docs-article img')).toHaveCount(4);
+  await expect.poll(() => page.locator('.docs-article img').evaluateAll((images) => images.every((image) => image.complete && image.naturalWidth > 0))).toBe(true);
+  await page.locator('#btn-nav-back').click();
+  await expect(page.locator('.docs-article')).toContainText('Introdução ao VisuAlg Web');
   await page.locator('#btn-nav-back').click();
   await expect(page.locator('#editorPanel')).toBeVisible();
   await page.locator('#btn-nav-forward').click();
   await expect(page.locator('#workspace-aux-view')).toBeVisible();
+  await page.locator('.doc-item', { hasText: 'Status do projeto' }).click();
+  await expect(page.locator('.docs-article')).toContainText('6 de outubro de 2026');
+  await expect(page.locator('.docs-article img')).toHaveCount(2);
+  await expect.poll(() => page.locator('.docs-article img').evaluateAll((images) => images.every((image) => image.complete && image.naturalWidth > 0))).toBe(true);
+});
+
+test('a documentação começa pelo sumário e seus links abrem os artigos', async ({ page }) => {
+  await openApp(page);
+  await page.locator('#btn-sidebar-docs').click();
+  await expect(page.locator('.doc-item').first()).toContainText('Sumário');
+  await page.locator('.docs-title').hover();
+  await page.locator('#btn-docs-sidebar').click();
+  await expect(page.locator('.docs-article')).toContainText('Sumário');
+  await page.locator('.docs-article a[href="#doc:introducao"]').click();
+  await expect(page.locator('.docs-article')).toContainText('Introdução ao VisuAlg Web');
+  await page.locator('.docs-page-navigation-previous').click();
+  await expect(page.locator('.docs-article')).toContainText('Sumário');
+});
+
+test('relatar problema abre Issues em nova guia sem formulário próprio', async ({ page }) => {
+  await openApp(page);
+  await expect(page.locator('#bugReportOverlay, .bug-report-field, form')).toHaveCount(0);
+  await page.evaluate(() => {
+    window.__openedIssueTabs = [];
+    window.open = (url, target, features) => { window.__openedIssueTabs.push({ url, target, features }); return null; };
+  });
+  await page.locator('#btn-report-bug').click();
+  await expect.poll(() => page.evaluate(() => window.__openedIssueTabs.length)).toBe(1);
+  await expect.poll(() => page.evaluate(() => window.__openedIssueTabs[0])).toEqual({
+    url: 'https://github.com/Gregorio-A/visualg-web/issues', target: '_blank', features: 'noopener,noreferrer',
+  });
+});
+
+test('configurações usam fontes em px e abrem o console em modal grande por padrão', async ({ page }) => {
+  await openApp(page);
+  await expect(page.locator('#setting-console-presentation')).toHaveValue('modal');
+  await page.locator('#btn-settings').click();
+  await page.locator('.settings-categories button', { hasText: 'Aparência' }).click();
+  await expect(page.locator('.settings-content')).not.toContainText('Tamanho geral');
+  await expect(page.locator('.settings-content .settings-preview')).toHaveCount(0);
+  await page.locator('.settings-categories button', { hasText: 'Editor' }).click();
+  const fontOptions = page.locator('#workspace-setting-editor-font-family option');
+  await expect(fontOptions.filter({ hasText: 'Comic Neue (divertida)' })).toHaveCount(1);
+  await expect(fontOptions.filter({ hasText: 'Fredoka (arredondada)' })).toHaveCount(1);
+  await expect(fontOptions.filter({ hasText: 'Patrick Hand (manuscrita)' })).toHaveCount(1);
+});
+
+test('temas claros mantêm contraste legível e o Clássico substitui sua variante separada', async ({ page }, testInfo) => {
+  await openApp(page);
+  await expect(page.locator('#setting-theme option[value="visualg-classic-high-contrast"]')).toHaveCount(0);
+  await page.evaluate(() => {
+    window.VisualGEditor.setValue('Algoritmo "Contraste"\nInicio\n  escreval("Teste (visual)")\nfimalgoritmo');
+    window.VisualGEditor.instance.setCursor({ line: 2, ch: 10 });
+  });
+  const themes = ['light', 'github-light', 'solarized-light', 'high-contrast', 'catppuccin-latte', 'gruvbox-light', 'paper', 'visualg-classic', 'visualg-3', 'visualg-agua', 'visualg-metal', 'visualg-notas', 'visualg-aluminio', 'visualg-madeira', 'visualg-plastico'];
+  for (const theme of themes) {
+    await page.evaluate((id) => {
+      const select = window.document.getElementById('setting-theme');
+      select.value = id;
+      select.dispatchEvent(new window.Event('change', { bubbles: true }));
+    }, theme);
+    if (theme.startsWith('visualg-')) {
+      await expect(page.locator('body > .main-content')).toHaveCSS('padding-top', '8px');
+    }
+    const ratios = await page.evaluate(() => {
+      const root = window.getComputedStyle(window.document.documentElement);
+      const parse = (value) => {
+        const text = value.trim();
+        if (text.startsWith('#')) {
+          const hex = text.slice(1);
+          return hex.length === 3 ? hex.split('').map((part) => parseInt(part + part, 16)) : [0, 2, 4].map((index) => parseInt(hex.slice(index, index + 2), 16));
+        }
+        const parts = text.match(/[\d.]+/g);
+        return parts ? parts.slice(0, 3).map(Number) : null;
+      };
+      const luminance = (color) => color.map((channel) => { const value = channel / 255; return value <= .04045 ? value / 12.92 : ((value + .055) / 1.055) ** 2.4; }).reduce((sum, value, index) => sum + value * [.2126, .7152, .0722][index], 0);
+      const contrast = (first, second) => { const values = [luminance(parse(first)), luminance(parse(second))].sort((a, b) => b - a); return (values[0] + .05) / (values[1] + .05); };
+      const token = (name) => root.getPropertyValue('--' + name);
+      const canvas = token('ide-canvas');
+      const panel = token('ide-panel');
+      return {
+        foreground: contrast(token('ide-foreground'), canvas),
+        muted: contrast(token('ide-muted'), panel),
+        accent: contrast(token('ide-accent'), canvas),
+        error: contrast(token('ide-error'), canvas),
+        selection: contrast(token('ide-selected-foreground'), token('ide-selected')),
+        syntax: ['syn-keyword', 'syn-type', 'syn-string', 'syn-number', 'syn-comment', 'syn-operator', 'syn-builtin', 'syn-atom', 'syn-variable'].map((name) => [name, contrast(token(name), canvas)])
+      };
+    });
+    for (const [name, value] of Object.entries(ratios)) {
+      if (name === 'syntax') for (const [token, ratio] of value) expect(ratio, `${theme} ${token}`).toBeGreaterThanOrEqual(4.5);
+      else expect(value, `${theme} ${name}`).toBeGreaterThanOrEqual(4.5);
+    }
+    await page.screenshot({ path: testInfo.outputPath(`${theme}.png`) });
+  }
 });
 
 test('alterna dois arquivos e preserva a edição', async ({ page }) => {
@@ -50,6 +308,20 @@ test('alterna dois arquivos e preserva a edição', async ({ page }) => {
   await page.reload();
   await page.locator('.file-item').filter({ hasText: 'idade.alg' }).click();
   await expect.poll(() => page.evaluate(() => window.VisualGEditor.getValue())).toBe(updated);
+});
+
+test('reabre arquivo fechado na aba atual e reutiliza a aba de documentação', async ({ page }) => {
+  await openApp(page);
+  await page.evaluate(() => window.TabManager.getTabs().slice().forEach((tab) => window.TabManager.closeTab(tab.id)));
+  await expect(page.locator('.tab-item')).toHaveCount(0);
+  await page.locator('.file-item').filter({ hasText: 'idade.alg' }).click();
+  await expect(page.locator('.tab-item')).toHaveCount(1);
+
+  await page.locator('#btn-sidebar-docs').click();
+  await page.locator('.doc-item', { hasText: 'Introdução' }).click();
+  await page.locator('.doc-item', { hasText: 'História' }).click();
+  await expect(page.locator('.view-tab[data-type="docs"]')).toHaveCount(1);
+  await expect(page.locator('.docs-article')).toContainText('história');
 });
 
 test('executa com F9, avança com F8 e permite parar', async ({ page }) => {
@@ -147,10 +419,17 @@ test('mostra, esconde e persiste painéis', async ({ page }) => {
 test('erro clicável reabre o editor e leva à linha correta', async ({ page }) => {
   await openApp(page);
   await setCode(page, programs.invalid);
+  const activeTabId = await page.evaluate(() => window.TabManager.getActiveTab().id);
   await page.keyboard.press('F9');
   const errorLink = page.locator('.console-error-link');
   await expect(errorLink).toBeVisible();
+  const debugMessage = page.locator('#problems-list .message-card.error > span').first();
+  await expect.poll(() => debugMessage.evaluate((element) => element.getBoundingClientRect().width)).toBeGreaterThan(150);
+  await expect(debugMessage).toHaveCSS('word-break', 'normal');
+  await expect(page.locator('.console-overlay')).toBeVisible();
   await errorLink.click();
+  await expect(page.locator('.console-overlay')).toBeHidden();
+  await expect.poll(() => page.evaluate(() => window.TabManager.getActiveTab().id)).toBe(activeTabId);
   await expect.poll(() => page.evaluate(() => window.VisualGEditor.instance.getCursor().line)).toBe(2);
 });
 
@@ -191,6 +470,14 @@ test('fechar aba preserva arquivo, excluir envia ao histórico e restaura', asyn
   await page.locator('#btn-history').click();
   await page.locator('#workspace-trash button').filter({ hasText: 'Atalhos.alg' }).click();
   await expect(page.locator('#workspace-file-list')).toContainText('Atalhos.alg');
+});
+
+test('botão Histórico abre a janela de recuperação', async ({ page }) => {
+  await openApp(page);
+  await page.locator('#btn-history').click();
+  await expect(page.locator('#recoveryOverlay')).toBeVisible();
+  await expect(page.locator('#workspace-trash')).toContainText('Arquivos removidos (30 dias)');
+  await expect(page.locator('#workspace-trash')).toContainText('Versões anteriores das abas (30 dias)');
 });
 
 test('histórico restaura uma versão anterior do código', async ({ page }) => {

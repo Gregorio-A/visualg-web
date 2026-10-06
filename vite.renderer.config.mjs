@@ -6,6 +6,8 @@ import { fileURLToPath } from 'node:url';
 
 const configDir = path.dirname(fileURLToPath(import.meta.url));
 const sourceRoot = path.resolve(configDir, 'src');
+const appVersion = JSON.parse(fs.readFileSync(path.join(configDir, 'package.json'), 'utf8')).version;
+const documentationImages = ['interface-visualg-2026.png', 'interface-configuracoes-2026.png', 'interface-documentacao-2026.png', 'interface-console-2026.png', 'interface-temas-classicos-2026.png', 'interface-electron-2026.png'];
 
 function fingerprintScriptReferences(outDir) {
   ['index.html', 'console-window.html'].forEach(function (htmlName) {
@@ -39,6 +41,16 @@ function fingerprintScriptReferences(outDir) {
 function copyRuntimeAssets(outDir) {
   return {
     name: 'copy-runtime-assets',
+    configureServer: function (server) {
+      server.middlewares.use('/screenshots', function (request, response, next) {
+        var name = decodeURIComponent(request.url.split('?', 1)[0]).replace(/^\/+/, '');
+        if (!documentationImages.includes(name)) { next(); return; }
+        var source = path.join(configDir, 'img', name);
+        if (!fs.existsSync(source)) { next(); return; }
+        response.setHeader('Content-Type', 'image/png');
+        fs.createReadStream(source).pipe(response);
+      });
+    },
     closeBundle: function () {
       ['js', 'vendor', 'jsdelivr', 'unpk', 'images', 'docs'].forEach(function (dir) {
         var source = path.join(sourceRoot, dir);
@@ -52,6 +64,11 @@ function copyRuntimeAssets(outDir) {
       fs.mkdirSync(licensesDir, { recursive: true });
       ['jetbrains-mono', 'fira-code', 'ibm-plex-mono'].forEach(function (font) {
         fs.copyFileSync(path.join(configDir, 'node_modules', '@fontsource', font, 'LICENSE'), path.join(licensesDir, font + '.txt'));
+      });
+      const screenshotsDir = path.join(outDir, 'screenshots');
+      fs.mkdirSync(screenshotsDir, { recursive: true });
+      documentationImages.forEach(function (name) {
+        fs.copyFileSync(path.join(configDir, 'img', name), path.join(screenshotsDir, name));
       });
       fingerprintScriptReferences(outDir);
     },
@@ -81,6 +98,12 @@ export default defineConfig((env) => {
       },
     },
     plugins: [
+      {
+        name: 'inject-app-version',
+        transformIndexHtml: function (html) {
+          return html.replaceAll('__VISUALG_WEB_VERSION__', appVersion);
+        },
+      },
       copyRuntimeAssets(outDir),
     ],
   };

@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, interactive-widget=resizes-content">
-    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; base-uri 'none'; object-src 'none'; frame-ancestors 'none'; form-action 'none'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; font-src 'self'; connect-src 'self'">
+    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; base-uri 'none'; object-src 'none'; frame-ancestors 'none'; form-action 'none'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; font-src 'self'; connect-src 'self'; frame-src https://www.youtube-nocookie.com">
     <title>VisuAlg Web - Editor Online de Portugol e Pseudocódigo</title>
 
     <!-- SEO -->
@@ -47,10 +47,10 @@
     <!-- Header / Toolbar -->
     <header class="header">
         <div class="header-logo">
-            <button id="btn-home" class="logo-home" type="button" title="Voltar ao editor"><img class="logo-img" src="images/figma-reference/logo.png" alt="" /><span class="logo-text">VisuAlg</span><span class="logo-version">3.0.7</span></button>
+            <button id="btn-home" class="logo-home" type="button" title="Voltar ao editor"><img class="logo-img" src="images/figma-reference/logo.png" alt="" /><span class="logo-text">VisuAlg Web</span><span class="logo-version">__VISUALG_WEB_VERSION__</span></button>
             <button type="button" class="beta-tag" title="Abrir status do projeto">Beta</button>
         </div>
-        <div class="header-history"><button id="btn-nav-back" title="Voltar"><img src="images/figma-reference/back.svg" alt=""></button><button id="btn-nav-forward" title="Avançar"><img src="images/figma-reference/forward.svg" alt=""></button></div>
+        <div class="header-history"><button id="btn-nav-back" title="Voltar" aria-label="Voltar"><i data-lucide="arrow-left"></i></button><button id="btn-nav-forward" title="Avançar" aria-label="Avançar"><i data-lucide="arrow-right"></i></button></div>
         <div class="command-bar" role="search">
             <input id="command-input" type="search" placeholder="" aria-label="Pesquisar comandos" title="Comandos (Ctrl+Shift+P)">
             <div id="command-results" class="command-results hidden"></div>
@@ -84,6 +84,7 @@
             <button id="btn-toggle-left" class="toolbar-btn panel-toggle left-toggle" title="Ocultar arquivos" aria-label="Ocultar arquivos" aria-pressed="true"><i data-lucide="panel-left-close"></i></button>
             <button id="btn-toggle-right" class="toolbar-btn panel-toggle right-toggle" title="Ocultar depuração" aria-label="Ocultar depuração" aria-pressed="true"><i data-lucide="panel-right-close"></i></button>
             <button id="btn-settings" class="toolbar-btn" title="Configurações" aria-label="Configurações" aria-pressed="false"><i data-lucide="sliders-horizontal"></i></button>
+            <button id="btn-report-bug" class="toolbar-btn" title="Relatar um problema" aria-label="Relatar um problema"><i data-lucide="message-circle-warning"></i></button>
             <button id="btn-menu" class="toolbar-btn btn-menu" title="Menu" aria-label="Abrir menu" aria-expanded="false" aria-controls="mobile-menu"><i data-lucide="menu"></i></button>
         </div>
         <!-- Mobile menu -->
@@ -106,6 +107,7 @@
             <button class="mobile-menu-item" id="mobile-examples"><i data-lucide="library-big"></i> Exemplos</button>
             <button class="mobile-menu-item" id="mobile-docs"><i data-lucide="book-open"></i> Documentação</button>
             <button class="mobile-menu-item" id="mobile-settings"><i data-lucide="settings"></i> Configurações</button>
+            <button class="mobile-menu-item" id="mobile-report-bug"><i data-lucide="message-circle-warning"></i> Relatar um problema</button>
             <button class="mobile-menu-item" id="mobile-install-app" type="button" hidden><i data-lucide="download"></i> Instalar aplicativo</button>
         </div>
     </header>
@@ -120,21 +122,21 @@
                 </div>
                 <section class="file-tree sidebar-tab-panel active" id="sidebar-files-panel" role="tabpanel" aria-label="Arquivos">
                     <div class="sidebar-actions" aria-label="Ações de arquivos">
-                        <button id="btn-upload-workspace" title="Importar arquivo" aria-label="Importar arquivo"><img src="images/figma-reference/upload.svg" alt=""></button>
-                        <button id="btn-download-workspace" title="Exportar arquivo" aria-label="Exportar arquivo"><img src="images/figma-reference/download.svg" alt=""></button>
-                        <button id="btn-new-workspace-file" title="Novo arquivo" aria-label="Criar novo arquivo"><img src="images/figma-reference/new-file.svg" alt=""></button>
-                        <button id="btn-new-workspace-folder" title="Nova pasta" aria-label="Criar nova pasta"><img src="images/figma-reference/new-folder.svg" alt=""></button>
-                        <button id="btn-duplicate-workspace" title="Duplicar arquivo" aria-label="Duplicar arquivo"><img src="images/figma-reference/copy.svg" alt=""></button>
-                        <button id="sidebar-actions-more" class="sidebar-actions-more" type="button" title="Mais ações" aria-label="Mais ações" aria-expanded="false" aria-haspopup="menu" hidden><i data-lucide="ellipsis"></i></button>
+                        <button id="btn-upload-workspace" type="button" title="Importar arquivo" aria-label="Importar arquivo"><i data-lucide="file-up" aria-hidden="true"></i></button>
+                        <button id="btn-download-workspace" type="button" title="Exportar arquivo" aria-label="Exportar arquivo"><i data-lucide="file-down" aria-hidden="true"></i></button>
+                        <button id="btn-new-workspace-file" type="button" title="Novo arquivo" aria-label="Criar novo arquivo"><i data-lucide="file-plus-2" aria-hidden="true"></i></button>
+                        <button id="btn-new-workspace-folder" type="button" title="Nova pasta" aria-label="Criar nova pasta"><i data-lucide="folder-plus" aria-hidden="true"></i></button>
+                        <button id="btn-duplicate-workspace" type="button" title="Duplicar arquivo" aria-label="Duplicar arquivo"><i data-lucide="copy" aria-hidden="true"></i></button>
+                        <button id="sidebar-actions-more" class="sidebar-actions-more" type="button" title="Mais ações" aria-label="Mais ações" aria-expanded="false" aria-haspopup="menu" hidden><i data-lucide="ellipsis-vertical" aria-hidden="true"></i></button>
                         <div id="sidebar-actions-menu" class="sidebar-actions-menu" role="menu" aria-label="Mais ações de arquivos" hidden></div>
                     </div>
-                    <div class="workspace-search"><img src="images/figma-reference/search-large.svg" alt=""><input id="workspace-file-search" type="search" aria-label="Pesquisar arquivos"></div>
+                    <div class="workspace-search"><i data-lucide="search" aria-hidden="true"></i><input id="workspace-file-search" type="search" aria-label="Pesquisar arquivos"></div>
                     <div id="workspace-file-list"></div>
                     <button id="btn-history" class="history-link" title="Histórico de recuperação"><i data-lucide="history"></i> Histórico</button>
                 </section>
                 <section class="docs-tree sidebar-tab-panel" id="sidebar-docs-panel" role="tabpanel" aria-label="Documentação" hidden>
-                    <div class="docs-title">Documentação <button id="btn-docs-sidebar" title="Introdução"><i data-lucide="book-open"></i></button></div>
-                    <div class="workspace-search"><img src="images/figma-reference/search-large.svg" alt=""><input id="docs-search" type="search" aria-label="Pesquisar documentação"></div>
+                    <div class="docs-title">Documentação <button id="btn-docs-sidebar" title="Sumário"><i data-lucide="book-open"></i></button></div>
+                    <div class="workspace-search"><i data-lucide="search" aria-hidden="true"></i><input id="docs-search" type="search" aria-label="Pesquisar documentação e exemplos"></div>
                     <div id="workspace-doc-list"></div>
                     <button id="btn-examples-sidebar" class="docs-example-link"><i data-lucide="library-big"></i> Exemplos</button>
                 </section>
@@ -159,6 +161,8 @@
                         <div class="editor-empty-actions">
                             <button id="btn-empty-new" type="button"><i data-lucide="file-plus-2"></i> Novo arquivo</button>
                             <button id="btn-empty-import" type="button"><i data-lucide="folder-up"></i> Importar código</button>
+                            <button id="btn-empty-docs" type="button"><i data-lucide="book-open"></i> Documentação</button>
+                            <button id="btn-empty-restore-tabs" type="button"><i data-lucide="rotate-ccw"></i> Restaurar abas anteriores</button>
                         </div>
                     </div>
                     <div class="resize-handle-horizontal" id="resizeHandleHorizontal"></div>
@@ -296,19 +300,6 @@
                         </select>
                     </div>
                     <div class="setting-group">
-                        <label>Tamanho da fonte (geral)</label>
-                        <div class="font-size-control">
-                            <div class="font-size-input-row">
-                                <input type="number" class="setting-font-input" id="setting-global-font-size" min="1" value="100">
-                                <select id="setting-global-font-unit" class="setting-font-unit-select">
-                                    <option value="percent">%</option>
-                                    <option value="px">px</option>
-                                </select>
-                            </div>
-                            <input type="range" class="setting-font-slider" id="setting-global-font-size-slider" min="25" max="300" value="100">
-                        </div>
-                    </div>
-                    <div class="setting-group">
                         <label>Detecção de loop infinito</label>
                         <select id="setting-loop-detection">
                             <option value="on">Ativada</option>
@@ -326,9 +317,11 @@
                             <option value="source-code-pro">Source Code Pro</option>
                             <option value="roboto-mono">Roboto Mono</option>
                             <option value="inconsolata">Inconsolata</option>
+                            <option value="comic-neue">Comic Neue (divertida)</option>
+                            <option value="fredoka">Fredoka (arredondada)</option>
+                            <option value="patrick-hand">Patrick Hand (manuscrita)</option>
                             <option value="system">Fonte monoespaçada do sistema</option>
                         </select>
-                    </div>
                     <div class="setting-group">
                         <label>Tamanho da fonte</label>
                         <div class="font-size-control">
@@ -405,6 +398,9 @@
                             <option value="source-code-pro">Source Code Pro</option>
                             <option value="roboto-mono">Roboto Mono</option>
                             <option value="inconsolata">Inconsolata</option>
+                            <option value="comic-neue">Comic Neue (divertida)</option>
+                            <option value="fredoka">Fredoka (arredondada)</option>
+                            <option value="patrick-hand">Patrick Hand (manuscrita)</option>
                             <option value="system">Fonte monoespaçada do sistema</option>
                         </select>
                     </div>
@@ -472,6 +468,7 @@
             </div>
             <div class="modal-body examples-body">
                 <p>Abra o código para explorar ou execute imediatamente em uma nova aba.</p>
+                <input id="examples-search" class="examples-search" type="search" placeholder="Pesquisar por título, descrição ou código" aria-label="Pesquisar exemplos">
                 <div class="examples-grid" id="examples-grid"></div>
             </div>
         </div>
@@ -556,7 +553,8 @@
                 <button id="btn-close-docs"><i data-lucide="x"></i></button>
             </div>
             <div class="modal-tabs">
-                <button class="modal-tab active" data-tab="introducao">Introdução</button>
+                <button class="modal-tab active" data-tab="sumario">Sumário</button>
+                <button class="modal-tab" data-tab="introducao">Introdução</button>
                 <button class="modal-tab" data-tab="status">Status</button>
                 <button class="modal-tab" data-tab="compatibilidade">Compatibilidade</button>
                 <button class="modal-tab" data-tab="operadores">Operadores</button>
@@ -569,7 +567,8 @@
                 <button class="modal-tab" data-tab="historia">História</button>
             </div>
             <div class="modal-body docs-body" id="docs-content">
-                <div class="modal-tab-panel active" data-tab-panel="introducao"></div>
+                <div class="modal-tab-panel active" data-tab-panel="sumario"></div>
+                <div class="modal-tab-panel" data-tab-panel="introducao"></div>
                 <div class="modal-tab-panel" data-tab-panel="status"></div>
                 <div class="modal-tab-panel" data-tab-panel="compatibilidade"></div>
                 <div class="modal-tab-panel" data-tab-panel="operadores"></div>

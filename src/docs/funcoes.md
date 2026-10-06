@@ -2,6 +2,8 @@
 
 Funções são subprogramas que retornam um valor e podem ser usadas dentro de expressões. Declare funções depois da seção `var` global e antes do `inicio` do programa principal.
 
+![Uma função recebe parâmetros e devolve um valor ao algoritmo](images/docs/chamada-subprograma.svg)
+
 ## Sintaxe
 
 ```visualg

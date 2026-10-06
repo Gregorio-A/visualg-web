@@ -26,6 +26,56 @@ Nome atribuído publicamente à primeira implementação conhecida do Portugol V
 
 ## A história do VisuAlg
 
+![Linha do tempo visual das etapas do VisuAlg](images/docs/linha-do-tempo-visualg.svg)
+
+![Símbolo gráfico atual deste fork](images/logo/logo-visualg.png)
+
+Este símbolo é a identidade do **VisuAlg Web**, não o logotipo histórico do VisuAlg original.
+
+### Captura histórica: VisuAlg 2.0
+
+![Tela principal do VisuAlg publicada em 2018](images/docs/visualg-classico-2018.jpg)
+
+O rodapé da própria imagem identifica o programa como **VisuAlg 2.0**. Captura
+de tela de **Apoio Informática**, publicada no Wikimedia Commons sob
+[CC BY-SA 4.0](https://creativecommons.org/licenses/by-sa/4.0/). A imagem foi
+mantida sem alterações. [Ver ficha, autoria e licença](https://commons.wikimedia.org/wiki/File:Tela_do_VisuAlg.jpg).
+
+### Marcos visuais e versões
+
+| Etapa | O que a documentação pública permite afirmar | Material visual |
+| --- | --- | --- |
+| VisuAlg 2.0 | Uma captura preservada mostra o editor, o quadro de variáveis e o simulador de saída da versão 2.0. | Captura licenciada acima. |
+| VisuAlg 2.5 | Linha associada a Cláudio Morgado de Souza e Antonio Carlos Nicolodi; material didático público identifica o programa 2.5. | Vídeo-aula incorporada abaixo. |
+| VisuAlg 3.0 | Nicolodi publicou a linha 3.0 com nova interface e comandos; a página oficial registra 3.0.7.0, revisada em 2019. | [Galeria e versões no SourceForge](https://sourceforge.net/projects/visualg30/). |
+| Revisões intermediárias | Registros públicos mostram, entre outras, 3.0.5.6, 3.0.6.5 e 3.0.7.0; as revisões mantêm a interface Win32 e aprimoram comandos e apresentação. | [Wiki do projeto 3.0](https://sourceforge.net/p/visualg301/wiki/Home/) e [telas comparativas das revisões](https://www.clubedohardware.com.br/forums/topic/1639070-visualg-links-para-baixar-download-25-3065-e-3070/). |
+| VisuAlg.dev | Etapa web posterior, que manteve a compatibilidade com o dialeto e recebeu melhorias de interface/documentação. O rodapé e changelog públicos identificam o professor Conrado Salomé Ribeiro. | [Acessar VisuAlg.dev](https://visualg.dev/). |
+| VisuAlg Web | Fork independente do VisuAlg.dev. A sequência de manutenção deste repositório começa na 0.10 e chega à 0.14; consulte **Status do projeto** para estado e validações atuais. | [Repositório e histórico de versões](https://github.com/Gregorio-A/visualg-web); as capturas atuais aparecem na Introdução e no Status. |
+
+### Vídeos históricos
+
+Os vídeos abaixo são incorporados do YouTube para que possam ser reproduzidos
+diretamente nesta página. O primeiro registra uma aula sobre o VisuAlg clássico;
+o segundo é uma apresentação publicada no canal do professor Antonio Carlos
+Nicolodi. Não incluímos vídeos sobre ou com o professor Conrado.
+
+#### Aula sobre o VisuAlg clássico
+
+<div class="docs-video-embed"><iframe src="https://www.youtube-nocookie.com/embed/y0sT4U73s9E" title="Vídeo-aula de introdução ao VisuAlg" loading="lazy" referrerpolicy="strict-origin-when-cross-origin" allow="accelerometer; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe></div>
+
+[Abrir vídeo no YouTube](https://www.youtube.com/watch?v=y0sT4U73s9E).
+
+#### Apresentação do VisuAlg 3 pelo professor Antonio Carlos Nicolodi
+
+<div class="docs-video-embed"><iframe src="https://www.youtube-nocookie.com/embed/k_FweppM0LE" title="Apresentando lógica de programação usando o VisuAlg 3 e o PascalZim — canal de Antonio Carlos Nicolodi" loading="lazy" referrerpolicy="strict-origin-when-cross-origin" allow="accelerometer; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe></div>
+
+[Abrir vídeo no canal de Antonio Carlos Nicolodi](https://www.youtube.com/watch?v=k_FweppM0LE).
+
+Não foi localizada uma licença de reutilização clara para os logotipos históricos
+separados. Por isso, a documentação usa a captura licenciada (que preserva a
+interface original) e uma linha do tempo ilustrada própria, sem reproduzir marcas
+ou logotipos de terceiros.
+
 O VisuAlg faz parte da família do Portugol, também chamada de Português Estruturado. A ideia é aproximar algoritmos da língua portuguesa para reduzir a barreira inicial de quem está aprendendo programação.
 
 As fontes públicas sobre a origem do Portugol e do VisuAlg nem sempre contam a história do mesmo jeito, então a forma mais responsável de registrar isso é separar os marcos principais:
@@ -98,7 +148,13 @@ ou pelo atendimento do VisuAlg Web.
 
 ## Fontes públicas consultadas
 
-- [VISUALG 3.0 no SourceForge](https://sourceforge.net/projects/visualg30/)
-- [Site público do VISUALG 3.0](https://visualg30.yolasite.com/)
-- [Artigo sobre VisuAlg na Wikipédia](https://pt.wikipedia.org/wiki/Visualg)
-- [Artigo sobre Portugol na Wikipédia](https://pt.wikipedia.org/wiki/Portugol)
+- [VISUALG 3.0 no SourceForge: autor, versão 3.0.7.0 e revisão](https://sourceforge.net/projects/visualg30/)
+- [Material didático do IMD/UFRN: atribuição e versão 2.5](https://materialpublic.imd.ufrn.br/curso/disciplina/3/13/1/8)
+- [Histórico e wiki do projeto 3.0](https://sourceforge.net/p/visualg301/wiki/Home/)
+- [Dicas de Programação: histórico resumido das linhas 2.5 e 3.0](https://dicasdeprogramacao.com.br/download-visualg/)
+- [VisuAlg.dev: identidade e changelog públicos](https://visualg.dev/)
+- [Arquivo da captura clássica e licença CC BY-SA 4.0](https://commons.wikimedia.org/wiki/File:Tela_do_VisuAlg.jpg)
+- [Canal público de Antonio Carlos Nicolodi no YouTube](https://www.youtube.com/channel/UCnKEf-1QkrwSK6R64thveQw)
+- [Apresentação do VisuAlg 3 por Antonio Carlos Nicolodi](https://www.youtube.com/watch?v=k_FweppM0LE)
+- [Vídeo-aula pública de introdução ao VisuAlg](https://www.youtube.com/watch?v=y0sT4U73s9E)
+- [Repositório do VisuAlg Web](https://github.com/Gregorio-A/visualg-web)

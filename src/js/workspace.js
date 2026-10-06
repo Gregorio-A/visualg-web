@@ -3,12 +3,13 @@
     'use strict';
 
     var DOCS = [
-        ['introducao', 'Introdução'], ['historia', 'História'], ['compatibilidade', 'Compatibilidade'],
+        ['sumario', 'Sumário'], ['introducao', 'Introdução'], ['historia', 'História'], ['compatibilidade', 'Compatibilidade'],
         ['operadores', 'Operadores'], ['entrada-saida', 'E/S'], ['condicionais', 'Condicionais'],
         ['repeticao', 'Repetição'], ['subprogramas', 'Subprogramas'], ['funcoes', 'Funções'],
         ['comandos', 'Comandos'], ['status', 'Status do projeto']
     ];
     var DOC_TAGS = {
+        sumario: 'sumário índice conteúdo tópicos navegação documentação',
         introducao: 'primeiros passos algoritmo programa estrutura inicio fimalgoritmo',
         historia: 'origem visualg versoes evolução',
         compatibilidade: 'recursos suportados limitações diferenças versão',
@@ -48,8 +49,10 @@
     var consoleWindowMode = null;
     var consoleDialog = null;
     var consolePanelOpen = false;
+    var refreshSidebarActionOverflow = function () {};
 
     function get(id) { return document.getElementById(id); }
+    function shortcutEnabled(name) { return localStorage.getItem('visualg-shortcut-' + name) !== 'off'; }
     function icon(name) { var item = document.createElement('i'); item.setAttribute('data-lucide', name); return item; }
     function refreshIcons(root) { if (window.renderLucideIcons) window.renderLucideIcons(root); }
     function readJson(key, fallback) {
@@ -105,6 +108,31 @@
             localStorage.setItem(LAYOUT_KEY, JSON.stringify({ left: document.documentElement.style.getPropertyValue('--ide-left'), right: document.documentElement.style.getPropertyValue('--ide-right'), debug: document.documentElement.style.getPropertyValue('--ide-debug-height'), messages: document.documentElement.style.getPropertyValue('--ide-message-height'), messagesResized: get('right-sidebar').classList.contains('messages-resized'), leftHidden: document.body.classList.contains('sidebar-left-collapsed'), rightHidden: document.body.classList.contains('sidebar-right-collapsed') }));
         } catch (error) { /* keep working without persistence */ }
     }
+    function restoreSidebar(side) {
+        document.body.classList.remove('sidebar-' + side + '-collapsed');
+        updatePanelButtons();
+        saveLayout();
+        window.requestAnimationFrame(function () { if (window.VisualGEditor.instance) window.VisualGEditor.instance.refresh(); });
+    }
+    function initEdgeDragRestore() {
+        var edgeDrag = null;
+        document.addEventListener('pointerdown', function (event) {
+            if (event.button !== 0) return;
+            if (document.body.classList.contains('sidebar-left-collapsed') && event.clientX <= 10) edgeDrag = { side:'left', startX:event.clientX };
+            else if (document.body.classList.contains('sidebar-right-collapsed') && event.clientX >= window.innerWidth - 10) edgeDrag = { side:'right', startX:event.clientX };
+        }, true);
+        document.addEventListener('pointermove', function (event) {
+            if (!edgeDrag) return;
+            var distance = edgeDrag.side === 'left' ? event.clientX - edgeDrag.startX : edgeDrag.startX - event.clientX;
+            if (distance >= 32) {
+                var side = edgeDrag.side;
+                edgeDrag = null;
+                restoreSidebar(side);
+            }
+        }, true);
+        document.addEventListener('pointerup', function () { edgeDrag = null; }, true);
+        document.addEventListener('pointercancel', function () { edgeDrag = null; }, true);
+    }
     function updatePanelButtons() {
         [['left', 'arquivos'], ['right', 'depuração']].forEach(function (entry) {
             var hidden = document.body.classList.contains('sidebar-' + entry[0] + '-collapsed');
@@ -127,7 +155,10 @@
             panel.classList.toggle('active', entry[2]);
             panel.hidden = !entry[2];
         });
-        if (filesActive) renderFiles(); else renderDocs();
+        if (filesActive) {
+            renderFiles();
+            window.requestAnimationFrame(function () { refreshSidebarActionOverflow(); });
+        } else renderDocs();
     }
     function updateConsoleButton() {
         var button = get('btn-show-console');
@@ -152,22 +183,65 @@
     }
 
     function fileName(tab) { return tab.fileName || tab.name + '.alg'; }
+    function uniqueFileName(requestedName, ignoredId, folderId) {
+        var clean = String(requestedName || 'Meu algoritmo.alg').trim().replace(/[\\/]/g, '-') || 'Meu algoritmo.alg';
+        if (!/\.(alg|txt)$/i.test(clean)) clean += '.alg';
+        var match = /^(.*?)(\.(?:alg|txt))$/i.exec(clean);
+        var base = match[1].replace(/ \(cópia \d+\)$/i, '');
+        var extension = match[2]; var candidate = clean; var copy = 1;
+        var records = window.TabManager.getTabs().concat(closedFiles);
+        function exists(name) {
+            return records.some(function (entry) {
+                return entry.id !== ignoredId && (assignments[entry.id] || null) === (folderId || null) && fileName(entry).toLocaleLowerCase('pt-BR') === name.toLocaleLowerCase('pt-BR');
+            });
+        }
+        while (exists(candidate)) { candidate = base + ' (cópia ' + copy + ')' + extension; copy++; }
+        return candidate;
+    }
+    function duplicateFile(tab) {
+        var folderId = assignments[tab.id] || null;
+        var copyName = uniqueFileName(fileName(tab), null, folderId);
+        var duplicate = window.TabManager.createTab(tab.code, { fileName:copyName, forceNew:true });
+        if (duplicate && folderId) { assignments[duplicate.id] = folderId; saveFolders(); }
+        renderFiles();
+        return duplicate;
+    }
     function openSavedFile(tab) {
         if (!tab.closed) {
-            if (window.TabManager.getActiveTab()?.id === tab.id) { showEditor(); return; }
+            if (window.TabManager.getActiveTab()?.id === tab.id) { window.TabManager.switchTab(tab.id); showEditor(); return; }
             if (!window.TabManager.getActiveTab()) { window.TabManager.createTab(tab.code, { fileName:fileName(tab) }); showEditor(); return; }
             activeFileAnimationId = tab.id; window.TabManager.switchTab(tab.id); showEditor();
             window.setTimeout(function () { if (activeFileAnimationId === tab.id) activeFileAnimationId = null; }, 500);
             return;
         }
-        var opened = window.TabManager.createTab(tab.code, { fileName: fileName(tab) });
+        var active = window.TabManager.getActiveTab();
+        var targetFolder = assignments[tab.id] || null;
+        var opened;
+        if (active) {
+            var defaultCode = window.gerarTemplate ? window.gerarTemplate() : '';
+            var hasSavedContent = !!active.fileName || !!active.dirty || active.code.trim() !== defaultCode.trim();
+            if (hasSavedContent) {
+                var archivedId = 'closed-preview-' + Date.now() + '-' + Math.random().toString(36).slice(2, 7);
+                closedFiles = closedFiles.filter(function (item) { return item.id !== active.id; });
+                closedFiles.push({ id: archivedId, name: active.name, fileName: fileName(active), code: active.code, closed: true });
+                if (assignments[active.id]) assignments[archivedId] = assignments[active.id];
+            }
+            delete assignments[active.id];
+            opened = window.TabManager.replaceActiveTab(tab.code, { fileName: fileName(tab) });
+            if (opened && targetFolder) assignments[opened.id] = targetFolder;
+            delete assignments[tab.id];
+        } else {
+            opened = window.TabManager.createTab(tab.code, { fileName: fileName(tab) });
+            if (opened && targetFolder) assignments[opened.id] = targetFolder;
+            delete assignments[tab.id];
+        }
         if (!opened) return;
         activeFileAnimationId = opened.id;
-        if (assignments[tab.id]) { assignments[opened.id] = assignments[tab.id]; delete assignments[tab.id]; saveFolders(); }
-        closedFiles = closedFiles.filter(function (item) { return item.id !== tab.id; }); saveClosed(); showEditor();
+        closedFiles = closedFiles.filter(function (item) { return item.id !== tab.id; }); saveClosed(); saveFolders(); renderFiles(); showEditor();
         window.setTimeout(function () { if (activeFileAnimationId === opened.id) activeFileAnimationId = null; }, 500);
     }
     function deleteFile(tab) {
+        if (window.TabManager.getRunningTab && window.TabManager.getRunningTab()) { if (window.TabManager.onActionBlocked) window.TabManager.onActionBlocked('Interrompa a execução antes de excluir arquivos.'); return; }
         if (tab.closed) {
             trash.unshift({ code: tab.code, fileName: fileName(tab), folderId: assignments[tab.id] || null, at: Date.now() });
             closedFiles = closedFiles.filter(function (item) { return item.id !== tab.id; }); saveClosed(); saveTrash();
@@ -231,11 +305,12 @@
     }
     function createFileItem(tab) {
         var item = document.createElement('button');
-        item.type = 'button'; item.className = 'file-item' + (window.TabManager.getActiveTab()?.id === tab.id ? ' active' : '');
+        var isRunning = !!(tab.running || (tab.executor && tab.executor.running));
+        item.type = 'button'; item.className = 'file-item' + (window.TabManager.getActiveTab()?.id === tab.id ? ' active' : '') + (isRunning ? ' running' : '');
         item.dataset.tabId = tab.id; item.title = fileName(tab); item.draggable = true;
         if (item.classList.contains('active') && activeFileAnimationId === tab.id) { item.classList.add('file-select-enter'); activeFileAnimationId = null; window.setTimeout(function () { item.classList.remove('file-select-enter'); }, 340); }
         if (recentlyMovedTabId === tab.id) { item.classList.add('file-drop-arrive'); recentlyMovedTabId = null; window.setTimeout(function () { item.classList.remove('file-drop-arrive'); }, 360); }
-        var fileIcon = icon('file-code-2'); fileIcon.classList.add('file-icon'); fileIcon.setAttribute('aria-hidden', 'true');
+        var fileIcon = icon(isRunning ? 'loader-circle' : 'file-code-2'); fileIcon.classList.add('file-icon'); fileIcon.setAttribute('aria-hidden', 'true');
         var label = document.createElement('span'); label.className = 'file-label'; label.textContent = fileName(tab);
         var close = icon('trash-2'); close.classList.add('file-close'); close.setAttribute('aria-hidden', 'true'); close.title = 'Excluir arquivo';
         item.append(fileIcon, label, close);
@@ -244,7 +319,7 @@
             openSavedFile(tab);
         });
         item.addEventListener('contextmenu', function (event) { event.preventDefault(); openFileMenu(event, tab); });
-        item.addEventListener('dragstart', function (event) { event.dataTransfer.setData('text/visualg-tab', tab.id); event.dataTransfer.effectAllowed = 'move'; item.classList.add('drag-source'); });
+        item.addEventListener('dragstart', function (event) { if (window.TabManager.getRunningTab && window.TabManager.getRunningTab()) { event.preventDefault(); return; } event.dataTransfer.setData('text/visualg-tab', tab.id); event.dataTransfer.effectAllowed = 'move'; item.classList.add('drag-source'); });
         item.addEventListener('dragend', function () { item.classList.remove('drag-source'); document.querySelectorAll('.file-folder.drag-over').forEach(function (folder) { folder.classList.remove('drag-over'); }); });
         return item;
     }
@@ -291,7 +366,18 @@
             });
             heading.addEventListener('dragover', function (event) { event.preventDefault(); heading.classList.add('drag-over'); });
             heading.addEventListener('dragleave', function (event) { if (!heading.contains(event.relatedTarget)) heading.classList.remove('drag-over'); });
-            heading.addEventListener('drop', function (event) { event.preventDefault(); heading.classList.remove('drag-over'); var id = event.dataTransfer.getData('text/visualg-tab'); if (id) { assignments[id] = folder.id; recentlyMovedTabId = id; saveFolders(); renderFiles(); } });
+            heading.addEventListener('drop', function (event) {
+                event.preventDefault(); heading.classList.remove('drag-over');
+                var id = event.dataTransfer.getData('text/visualg-tab'); if (!id) return;
+                var moved = tabs.find(function (entry) { return entry.id === id; });
+                assignments[id] = folder.id; recentlyMovedTabId = id;
+                if (moved) {
+                    var movedName = uniqueFileName(fileName(moved), moved.id, folder.id);
+                    if (moved.closed) { moved.fileName = movedName; saveClosed(); }
+                    else window.TabManager.setFileName(moved.id, movedName);
+                }
+                saveFolders(); renderFiles();
+            });
             heading.addEventListener('contextmenu', function (event) {
                 event.preventDefault();
                 var name = window.prompt('Renomear pasta (deixe vazio para excluir)', folder.name);
@@ -379,14 +465,17 @@
         if (!tab.closed) option('Fechar aba', function () { window.TabManager.closeTab(tab.id); });
         option('Exportar como .alg', function () { exportWorkspaceFile(tab, 'alg'); });
         option('Exportar como .txt', function () { exportWorkspaceFile(tab, 'txt'); });
-        option('Renomear', function () { var name = window.prompt('Nome do arquivo', fileName(tab)); if (!name) return; if (tab.closed) { tab.fileName = name; saveClosed(); renderFiles(); } else if (window.TabManager.setFileName(tab.id, name)) renderFiles(); });
-        option('Duplicar', function () { window.TabManager.createTab(tab.code, { fileName: fileName(tab).replace(/\.(alg|txt)$/i, '-copia.$1') }); renderFiles(); });
+        option('Renomear', function () { var name = window.prompt('Nome do arquivo', fileName(tab)); if (!name) return; name = uniqueFileName(name, tab.id, assignments[tab.id] || null); if (tab.closed) { tab.fileName = name; saveClosed(); renderFiles(); } else if (window.TabManager.setFileName(tab.id, name)) renderFiles(); });
+        option('Duplicar', function () { duplicateFile(tab); });
         option('Mover para pasta', function () {
             var name = window.prompt('Nome da pasta (vazio para mover à raiz)', folders.find(function (folder) { return folder.id === assignments[tab.id]; })?.name || '');
             if (name === null) return;
             var folder = folders.find(function (entry) { return entry.name.toLocaleLowerCase('pt-BR') === name.trim().toLocaleLowerCase('pt-BR'); });
             if (name.trim() && !folder) { folder = { id: 'folder-' + Date.now(), name: name.trim() }; folders.push(folder); }
             if (folder) assignments[tab.id] = folder.id; else delete assignments[tab.id];
+            var renamed = uniqueFileName(fileName(tab), tab.id, folder ? folder.id : null);
+            if (tab.closed) { tab.fileName = renamed; saveClosed(); }
+            else window.TabManager.setFileName(tab.id, renamed);
             saveFolders(); renderFiles();
         });
         option('Excluir', function () { deleteFile(tab); });
@@ -402,6 +491,7 @@
         var normalize = normalizeDocSearch;
         var terms = normalize(get('docs-search').value).split(' ').filter(Boolean);
         list.replaceChildren();
+        var docsHeading = document.createElement('h3'); docsHeading.className = 'doc-results-heading'; docsHeading.textContent = 'Documentação'; list.appendChild(docsHeading);
         var matches = 0;
         DOCS.forEach(function (entry) {
             var markdown = docCache[entry[0]] || '';
@@ -412,7 +502,20 @@
             var preview = document.createElement('span'); preview.className = 'doc-result-preview'; preview.textContent = docPreview(markdown, terms); button.appendChild(preview);
             button.addEventListener('click', function () { pendingDocSearch = terms.length ? { id: entry[0], terms: terms.slice() } : null; showDoc(entry[0]); }); list.appendChild(button); matches++;
         });
-        if (!matches) { var empty = document.createElement('div'); empty.className = 'docs-search-empty'; empty.textContent = 'Nenhum tópico encontrado'; list.appendChild(empty); }
+        if (!matches) { var empty = document.createElement('div'); empty.className = 'docs-search-empty'; empty.textContent = 'Nenhum tópico de documentação encontrado'; list.appendChild(empty); }
+        if (terms.length) {
+            var examplesHeading = document.createElement('h3'); examplesHeading.className = 'doc-results-heading'; examplesHeading.textContent = 'Exemplos'; list.appendChild(examplesHeading);
+            var exampleMatches = 0;
+            (window.VisuAlgExamples || []).forEach(function (example) {
+                var searchable = normalize([example.title, example.level, example.description, example.source].join(' '));
+                if (!terms.every(function (term) { return searchable.includes(term); })) return;
+                var button = document.createElement('button'); button.className = 'doc-item doc-example-result'; button.type = 'button';
+                var title = document.createElement('strong'); title.className = 'doc-result-title'; title.textContent = example.title;
+                var preview = document.createElement('span'); preview.className = 'doc-result-preview'; preview.textContent = example.description;
+                button.append(title, preview); button.addEventListener('click', function () { showExamples(terms.join(' '), example.id); }); list.appendChild(button); exampleMatches++;
+            });
+            if (!exampleMatches) { var noExamples = document.createElement('div'); noExamples.className = 'docs-search-empty'; noExamples.textContent = 'Nenhum exemplo encontrado'; list.appendChild(noExamples); }
+        }
     }
     function normalizeDocSearch(value) { return value.toLocaleLowerCase('pt-BR').normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/[`*_#>|()[\]{}.,;:!?\\-]+/g, ' ').replace(/\s+/g, ' ').trim(); }
     function docPreview(markdown, terms) {
@@ -487,6 +590,13 @@
         consoleDialog.classList.add('hidden'); editor.appendChild(terminal);
         if (wasVisible) showEditor();
     }
+    function navigateToLocation(tabId, line, column) {
+        closeConsoleDialog();
+        if (consolePanelOpen) { consolePanelOpen = false; editor.classList.remove('console-panel-visible'); }
+        if (tabId && window.TabManager.getActiveTab()?.id !== tabId) window.TabManager.switchTab(tabId);
+        showEditor();
+        window.requestAnimationFrame(function () { window.VisualGEditor.revealLocation(line, column); });
+    }
     function ensureConsoleDialog() {
         if (consoleDialog) return consoleDialog;
         consoleDialog = document.createElement('div'); consoleDialog.className = 'modal-overlay console-overlay hidden';
@@ -503,7 +613,7 @@
         consoleWindow.postMessage({ type: 'visualg-console', output: get('terminal-output').innerText, inputNeeded: !get('terminal-input-area').classList.contains('hidden') || !get('consoleInputOverlay').classList.contains('hidden'), colors: { background: style.getPropertyValue('--ide-canvas').trim(), panel: style.getPropertyValue('--ide-panel').trim(), foreground: style.getPropertyValue('--ide-foreground').trim(), border: style.getPropertyValue('--ide-border').trim() }, fontSize: get('setting-console-font-size').value, fontFamily: get('setting-console-font-family').value }, window.location.origin === 'null' ? '*' : window.location.origin);
     }
     function showConsole() {
-        var mode = localStorage.getItem('visualg-console-presentation') || 'tab';
+        var mode = localStorage.getItem('visualg-console-presentation') || 'modal';
         if (mode === 'panel') {
             closeConsoleDialog(); consolePanelOpen = true; editor.classList.add('console-panel-visible');
             showEditor(); updateConsoleButton(); window.VisualGEditor.instance.refresh(); return;
@@ -545,13 +655,15 @@
         if (view.type === 'settings') showEditor();
         else showSettings();
     }
+    function openIssueTracker() { window.open('https://github.com/Gregorio-A/visualg-web/issues', '_blank', 'noopener,noreferrer'); }
     function resetConfiguration(scope) {
         var groups = {
-            'Aparência': ['visualg-theme', 'visualg-global-font-unit', 'visualg-global-font-value'],
+            'Aparência': ['visualg-theme'],
             'Editor': ['visualg-editor-font-family', 'visualg-font-size', 'visualg-word-wrap', 'visualg-tab-size', 'visualg-indent-guides', 'visualg-editor-letter-spacing', 'visualg-editor-line-spacing', 'visualg-editor-spacing-relative-v1'],
             'Variáveis': ['visualg-vars-font-size', 'visualg-vars-columns'],
             'Console': ['visualg-console-font-family', 'visualg-console-font-size', 'visualg-console-presentation', 'visualg-console-input-mode'],
             'Execução': ['visualg-loop-detection'],
+            'Atalhos': ['visualg-shortcut-run', 'visualg-shortcut-step', 'visualg-shortcut-debug', 'visualg-shortcut-save', 'visualg-shortcut-palette', 'visualg-shortcut-font'],
             'Interface': ['visualg-layout-v2', 'visualg-section-visibility-v1']
         };
         var keys = scope === 'Todas' ? Object.keys(groups).reduce(function (all, name) { return all.concat(groups[name]); }, []) : groups[scope];
@@ -566,8 +678,16 @@
     }
     function ensureViewTab(type, label, docId) {
         var tabs = get('tab-list');
-        var existing = Array.from(tabs.querySelectorAll('.view-tab')).find(function (child) { return child.dataset.type === type && child.dataset.docId === (docId || ''); });
-        if (existing) return existing;
+        var existing = Array.from(tabs.querySelectorAll('.view-tab')).find(function (child) { return child.dataset.type === type && (type === 'docs' || child.dataset.docId === (docId || '')); });
+        if (existing) {
+            if (type === 'docs') {
+                existing.dataset.docId = docId || '';
+                var existingTitle = existing.querySelector('span');
+                if (existingTitle) existingTitle.textContent = label;
+                existing.setAttribute('aria-label', label);
+            }
+            return existing;
+        }
         var button = document.createElement('div'); button.className = 'view-tab'; button.dataset.type = type; button.dataset.docId = docId || ''; button.draggable = true;
         button.setAttribute('role', 'tab'); button.setAttribute('aria-label', label); button.tabIndex = 0;
         var glyph = icon(type === 'console' ? 'terminal' : type === 'settings' ? 'settings' : type === 'examples' ? 'library-big' : type === 'docs' ? 'book-open' : 'columns-2');
@@ -683,7 +803,21 @@
     }
     function renderDocContent(markdown) {
         var article = document.createElement('article'); article.className = 'docs-article'; article.innerHTML = window.marked.parse(markdown);
-        aux.replaceChildren(article); aux.scrollTop = 0;
+        article.addEventListener('click', function (event) {
+            var link = event.target.closest('a[href^="#doc:"]');
+            if (!link) return;
+            event.preventDefault();
+            showDoc(link.getAttribute('href').slice(5));
+        });
+        var navigation = document.createElement('nav'); navigation.className = 'docs-page-navigation'; navigation.setAttribute('aria-label', 'Navegação da documentação');
+        var docIndex = DOCS.findIndex(function (entry) { return entry[0] === activeDocument; });
+        [['previous', docIndex > 0 ? DOCS[docIndex - 1] : null], ['next', docIndex >= 0 && docIndex < DOCS.length - 1 ? DOCS[docIndex + 1] : null]].forEach(function (item) {
+            var button = document.createElement('button'); button.type = 'button'; button.className = 'docs-page-navigation-button docs-page-navigation-' + item[0];
+            if (!item[1]) { button.disabled = true; button.textContent = item[0] === 'previous' ? '← Anterior' : 'Próxima →'; }
+            else { button.textContent = (item[0] === 'previous' ? '← Anterior · ' : 'Próxima · ') + item[1][1]; button.addEventListener('click', function () { showDoc(item[1][0]); }); }
+            navigation.appendChild(button);
+        });
+        article.appendChild(navigation); aux.replaceChildren(article); aux.scrollTop = 0;
         if (!pendingDocSearch || pendingDocSearch.id !== activeDocument) return;
         var terms = pendingDocSearch.terms; pendingDocSearch = null;
         var blocks = Array.prototype.slice.call(article.querySelectorAll('h1,h2,h3,h4,p,li,pre'));
@@ -698,22 +832,65 @@
         aux.replaceChildren();
         var sidebar = document.createElement('nav'); sidebar.className = 'settings-categories'; sidebar.setAttribute('aria-label', 'Categorias de configurações');
         var content = document.createElement('section'); content.className = 'settings-content';
+        var descriptions = {
+            'setting-theme':'Altera as cores do editor, console, variáveis, botões e ícones.',
+            'setting-editor-font-family':'Define a fonte monoespaçada usada para escrever código.',
+            'setting-font-size':'Controla o tamanho do código sem alterar o restante da interface.',
+            'setting-letter-spacing':'Aumenta ou reduz a distância horizontal entre caracteres.',
+            'setting-line-spacing':'Controla a altura de cada linha e também alinha a pauta do tema Notas.',
+            'setting-word-wrap':'Quebra linhas longas dentro da largura visível do editor.',
+            'setting-tab-size':'Define quantos espaços são inseridos ao indentar.',
+            'setting-indent-guides':'Mostra linhas verticais para facilitar a leitura de blocos.',
+            'setting-console-presentation':'Escolhe onde o console aparece durante a execução.',
+            'setting-console-font-family':'Define a fonte usada nas mensagens e entradas.',
+            'setting-console-font-size':'Ajusta apenas o texto do console.',
+            'setting-console-input-mode':'Escolhe entre digitar no próprio console ou em uma janela de entrada.',
+            'setting-vars-font-size':'Ajusta a tabela de variáveis e os valores de vetores.',
+            'setting-loop-detection':'Quando ativada, pausa laços com mais de 1.000 iterações e pergunta se você deseja continuar. Isso ajuda a recuperar o controle de programas com loop infinito.'
+        };
         var categories = [
-            ['Aparência', [['Tema de cores', 'setting-theme']]],
-            ['Editor', [['Fonte', 'setting-editor-font-family'], ['Tamanho da fonte (px)', 'setting-font-size'], ['Espaçamento entre letras (px em 14px; acompanha a fonte)', 'setting-letter-spacing'], ['Espaçamento entre linhas (px em 14px; acompanha a fonte)', 'setting-line-spacing'], ['Quebra de linha', 'setting-word-wrap'], ['Tamanho da tabulação', 'setting-tab-size'], ['Guias de indentação', 'setting-indent-guides']]],
-            ['Console', [['Modo de exibição', 'setting-console-presentation'], ['Fonte', 'setting-console-font-family'], ['Tamanho da fonte (px)', 'setting-console-font-size'], ['Entrada do console', 'setting-console-input-mode']]],
-            ['Execução', [['Detecção de loop infinito', 'setting-loop-detection']]],
-            ['Arquivos', []], ['Atalhos', []],
-            ['Interface', [['Tamanho da fonte das variáveis (px)', 'setting-vars-font-size']]],
-            ['Redefinir', []]
+            { title:'Aparência', description:'Escolha as cores usadas em toda a interface.', fields:[['Tema de cores','setting-theme']] },
+            { title:'Editor', description:'Leitura, espaçamento e comportamento da área de código.', fields:[['Fonte','setting-editor-font-family'],['Tamanho da fonte (px)','setting-font-size'],['Espaçamento entre letras','setting-letter-spacing'],['Espaçamento entre linhas','setting-line-spacing'],['Quebra de linha','setting-word-wrap'],['Tamanho da tabulação','setting-tab-size'],['Guias de indentação','setting-indent-guides']], preview:'editor' },
+            { title:'Console', description:'Aparência, posição e forma de entrada do console.', fields:[['Modo de exibição','setting-console-presentation'],['Fonte','setting-console-font-family'],['Tamanho da fonte (px)','setting-console-font-size'],['Entrada do console','setting-console-input-mode']], preview:'console' },
+            { title:'Variáveis', description:'Aparência da tabela usada durante a execução e depuração.', fields:[['Tamanho da fonte (px)','setting-vars-font-size']], preview:'variables' },
+            { title:'Execução', description:'Proteções aplicadas enquanto seu algoritmo está rodando.', fields:[['Detecção de loop infinito','setting-loop-detection']] },
+            { title:'Arquivos', description:'Armazenamento local, nomes e exclusão dos seus algoritmos.', fields:[] },
+            { title:'Atalhos', description:'Ative apenas os atalhos de teclado que você deseja usar.', fields:[] },
+            { title:'Redefinir', description:'Restaure preferências específicas ou toda a configuração.', fields:[] }
         ];
+        function createPreview(kind) {
+            var preview = document.createElement('aside'); preview.className = 'settings-preview settings-preview-' + kind; preview.setAttribute('aria-label', 'Pré-visualização');
+            var caption = document.createElement('strong'); caption.textContent = 'Pré-visualização'; preview.appendChild(caption);
+            if (kind === 'editor') {
+                var code = document.createElement('pre'); code.className = 'settings-preview-code'; code.innerHTML = '<span class="cm-keyword">algoritmo</span> <span class="cm-string">"Exemplo"</span>\n<span class="cm-keyword">inicio</span>\n\t<span class="cm-command">escreval</span>(<span class="cm-string">"Uma linha longa demonstra a quebra de texto no editor"</span>)\n<span class="cm-keyword">fimalgoritmo</span>';
+                var tabHint = document.createElement('small'); tabHint.textContent = 'Tabulação e quebra de linha acompanham as opções acima.'; preview.append(code, tabHint);
+            } else if (kind === 'console') {
+                var output = document.createElement('pre'); output.className = 'settings-preview-console'; output.textContent = 'Programa iniciado\nDigite seu nome:';
+                var input = document.createElement('div'); input.className = 'settings-preview-input'; input.textContent = 'Ana'; preview.append(output, input);
+            } else if (kind === 'variables') {
+                var table = document.createElement('table'); table.innerHTML = '<thead><tr><th>Nome</th><th>Tipo</th><th>Valor</th></tr></thead><tbody><tr><td>idade</td><td>inteiro</td><td>18</td></tr><tr><td>ativo</td><td>lógico</td><td>VERDADEIRO</td></tr></tbody>'; preview.appendChild(table);
+            } else {
+                var chrome = document.createElement('div'); chrome.className = 'settings-preview-window'; chrome.innerHTML = '<div class="settings-preview-toolbar"><span></span><span></span><span></span></div><div class="settings-preview-layout"><div>Arquivos<br>programa.alg</div><pre>inicio\n  escreval("Olá")\nfimalgoritmo</pre></div>'; preview.appendChild(chrome);
+            }
+            return preview;
+        }
+        function clearAllFiles() {
+            if (!window.confirm('Apagar permanentemente todos os arquivos, pastas, itens fechados, lixeira e histórico de recuperação deste dispositivo? Esta ação não pode ser desfeita.')) return;
+            if (!window.TabManager.clearAllFiles()) return;
+            folders = []; assignments = {}; collapsedFolders = {}; closedFiles = []; trash = [];
+            [FOLDERS_KEY, CLOSED_KEY, TRASH_KEY].forEach(function (key) { localStorage.removeItem(key); });
+            renderFiles(); showEditor();
+            document.dispatchEvent(new window.CustomEvent('visualg:status', { detail:{ text:'Todos os arquivos foram apagados', type:'success', at:Date.now() } }));
+        }
         function renderCategory(entry) {
-            sidebar.querySelectorAll('button').forEach(function (button) { button.classList.toggle('active', button.textContent === entry[0]); });
-            content.replaceChildren(); var title = document.createElement('h2'); title.textContent = entry[0]; content.append(title);
-            entry[1].forEach(function (field) {
+            sidebar.querySelectorAll('button').forEach(function (button) { button.classList.toggle('active', button.textContent === entry.title); });
+            content.replaceChildren(); var title = document.createElement('h2'); title.textContent = entry.title; var intro = document.createElement('p'); intro.className = 'settings-category-description'; intro.textContent = entry.description; content.append(title, intro);
+            var layout = document.createElement('div'); layout.className = 'settings-content-layout' + (entry.preview ? '' : ' settings-content-layout-no-preview'); var form = document.createElement('div'); form.className = 'settings-fields'; layout.appendChild(form);
+            entry.fields.forEach(function (field) {
                 var source = get(field[1]); if (!source) return;
                 var group = document.createElement('label'); group.className = 'workspace-setting-group';
-                var text = document.createElement('span'); text.textContent = field[0];
+                var text = document.createElement('strong'); text.textContent = field[0];
+                var help = document.createElement('small'); help.textContent = descriptions[field[1]] || '';
                 var control = source.cloneNode(true); control.id = 'workspace-' + field[1]; control.value = source.value;
                 var compactInterface = window.innerWidth <= 760 || (window.innerWidth <= 950 && window.innerHeight <= 500);
                 if (field[1] === 'setting-word-wrap' && compactInterface) {
@@ -724,42 +901,65 @@
                 control.addEventListener(source.tagName === 'SELECT' ? 'change' : 'input', function () {
                     source.value = control.value; source.dispatchEvent(new window.Event(source.tagName === 'SELECT' ? 'change' : 'input', { bubbles: true }));
                     updateFontLabels();
-                }); group.append(text, control); content.append(group);
+                }); group.append(text, help, control); form.append(group);
             });
-            if (entry[0] === 'Arquivos') { var p = document.createElement('p'); p.textContent = 'Os arquivos ficam salvos automaticamente neste navegador. Use a barra lateral para abrir, renomear, duplicar ou excluir; use Baixar para exportar um .alg.'; content.append(p); }
-            if (entry[0] === 'Atalhos') { var p2 = document.createElement('p'); p2.textContent = 'F9 executar · F8 passo a passo · Ctrl+S salvar · Ctrl+P comandos · Ctrl+Shift+P paleta de comandos · Ctrl+ + / − / 0 e Ctrl+roda ajustam a fonte da área em foco.'; content.append(p2); }
-            if (entry[0] === 'Redefinir') {
-                var resetIntro = document.createElement('p'); resetIntro.textContent = 'Restaure todas as preferências ou apenas uma categoria. Seus arquivos, códigos e histórico de recuperação serão preservados.'; content.append(resetIntro);
+            if (entry.preview) layout.appendChild(createPreview(entry.preview));
+            content.appendChild(layout);
+            if (entry.title === 'Arquivos') {
+                var p = document.createElement('p'); p.textContent = 'Os arquivos são salvos automaticamente neste navegador. Nomes precisam ser únicos apenas dentro da mesma pasta; ao duplicar, o aplicativo cria nomes previsíveis como “programa (cópia 1).alg”.'; form.appendChild(p);
+                var erase = document.createElement('button'); erase.type = 'button'; erase.className = 'settings-danger-action'; erase.textContent = 'Apagar todos os arquivos deste dispositivo'; erase.addEventListener('click', clearAllFiles); form.appendChild(erase);
+                var eraseHelp = document.createElement('small'); eraseHelp.className = 'settings-action-help'; eraseHelp.textContent = 'Remove também pastas, lixeira e cópias de recuperação, sempre após uma confirmação explícita.'; form.appendChild(eraseHelp);
+            }
+            if (entry.title === 'Atalhos') {
+                var shortcuts = [['run','Executar ou parar','F5 / F9'],['step','Passo a passo','F8'],['debug','Navegar na depuração','F10 / F11'],['save','Salvar arquivo','Ctrl + S'],['palette','Paleta de comandos','Ctrl + Shift + P'],['font','Ajustar fonte da área','Ctrl + + / − / 0 ou roda']];
+                var shortcutList = document.createElement('div'); shortcutList.className = 'settings-shortcut-list';
+                shortcuts.forEach(function (shortcut) { var row = document.createElement('label'); var checkbox = document.createElement('input'); checkbox.type = 'checkbox'; checkbox.checked = localStorage.getItem('visualg-shortcut-' + shortcut[0]) !== 'off'; checkbox.addEventListener('change', function () { localStorage.setItem('visualg-shortcut-' + shortcut[0], checkbox.checked ? 'on' : 'off'); }); var name = document.createElement('span'); name.textContent = shortcut[1]; var keys = document.createElement('kbd'); keys.textContent = shortcut[2]; row.append(checkbox, name, keys); shortcutList.appendChild(row); });
+                form.appendChild(shortcutList);
+            }
+            if (entry.title === 'Redefinir') {
+                var resetIntro = document.createElement('p'); resetIntro.textContent = 'Redefinir preferências restaura os valores padrão. Seus arquivos e o histórico de recuperação permanecem salvos; para removê-los, use a seção Arquivos.'; form.appendChild(resetIntro);
                 var resetActions = document.createElement('div'); resetActions.className = 'settings-reset-actions';
                 var resetAll = document.createElement('button'); resetAll.type = 'button'; resetAll.className = 'settings-reset-all'; resetAll.textContent = 'Restaurar todas as configurações';
                 resetAll.addEventListener('click', function () { resetConfiguration('Todas'); }); resetActions.appendChild(resetAll);
-                ['Aparência', 'Editor', 'Variáveis', 'Console', 'Execução', 'Interface'].forEach(function (name) {
+                ['Aparência', 'Editor', 'Variáveis', 'Console', 'Execução', 'Atalhos', 'Interface'].forEach(function (name) {
+                    var resetItem = document.createElement('div'); resetItem.className = 'settings-reset-item';
                     var resetButton = document.createElement('button'); resetButton.type = 'button'; resetButton.textContent = 'Restaurar ' + name;
-                    resetButton.addEventListener('click', function () { resetConfiguration(name); }); resetActions.appendChild(resetButton);
+                    var resetHelp = document.createElement('small'); resetHelp.textContent = 'Restaura somente ' + name.toLocaleLowerCase('pt-BR') + ' e recarrega a interface.';
+                    resetButton.addEventListener('click', function () { resetConfiguration(name); }); resetItem.append(resetButton, resetHelp); resetActions.appendChild(resetItem);
                 });
-                content.append(resetActions);
+                form.append(resetActions);
             }
         }
-        categories.forEach(function (entry) { var button = document.createElement('button'); button.type = 'button'; button.textContent = entry[0]; button.addEventListener('click', function () { renderCategory(entry); }); sidebar.append(button); });
-        aux.append(sidebar, content); renderCategory(categories.find(function (entry) { return entry[0] === category; }) || categories[0]);
+        categories.forEach(function (entry) { var button = document.createElement('button'); button.type = 'button'; button.textContent = entry.title; button.addEventListener('click', function () { renderCategory(entry); }); sidebar.append(button); });
+        aux.append(sidebar, content); renderCategory(categories.find(function (entry) { return entry.title === category; }) || categories[0]);
     }
 
-    function showExamples() {
+    function showExamples(initialQuery, targetId) {
         ensureViewTab('examples', 'Exemplos'); pushView({ type: 'examples' });
         aux.replaceChildren(); aux.className = 'workspace-aux-view workspace-examples';
         var heading = document.createElement('h2'); heading.textContent = 'Exemplos para aprender fazendo'; aux.appendChild(heading);
         var filter = document.createElement('input'); filter.type = 'search'; filter.placeholder = 'Pesquisar exemplos'; filter.setAttribute('aria-label', 'Pesquisar exemplos'); aux.appendChild(filter);
+        filter.value = typeof initialQuery === 'string' ? initialQuery : '';
         var grid = document.createElement('div'); grid.className = 'workspace-examples-grid'; aux.appendChild(grid);
         function render() {
-            var query = filter.value.trim().toLocaleLowerCase('pt-BR'); grid.replaceChildren();
-            (window.VisuAlgExamples || []).filter(function (example) { return !query || (example.title + ' ' + example.level + ' ' + example.description).toLocaleLowerCase('pt-BR').includes(query); }).forEach(function (example) {
-                var card = document.createElement('article'); card.className = 'workspace-example-card';
+            var terms = normalizeDocSearch(filter.value).split(' ').filter(Boolean); grid.replaceChildren();
+            (window.VisuAlgExamples || []).filter(function (example) { var searchable = normalizeDocSearch(example.title + ' ' + example.level + ' ' + example.description + ' ' + example.source); return terms.every(function (term) { return searchable.includes(term); }); }).forEach(function (example) {
+                var card = document.createElement('article'); card.className = 'workspace-example-card' + (targetId === example.id ? ' doc-search-match' : '');
+                card.dataset.exampleId = example.id;
                 var title = document.createElement('h3'); title.textContent = example.title; card.appendChild(title);
                 var level = document.createElement('small'); level.textContent = example.level; card.appendChild(level);
                 var description = document.createElement('p'); description.textContent = example.description; card.appendChild(description);
+                if (terms.length) {
+                    var sourceLines = example.source.split('\n'); var bestLine = 0; var bestScore = -1;
+                    sourceLines.forEach(function (line, index) { var normalizedLine = normalizeDocSearch(line); var score = terms.filter(function (term) { return normalizedLine.includes(term); }).length; if (score > bestScore) { bestScore = score; bestLine = index; } });
+                    var firstLine = Math.max(0, bestLine - 2); var lastLine = Math.min(sourceLines.length, bestLine + 3);
+                    var sourcePreview = document.createElement('pre'); sourcePreview.className = 'workspace-example-source'; sourcePreview.textContent = (firstLine ? '…\n' : '') + sourceLines.slice(firstLine, lastLine).join('\n') + (lastLine < sourceLines.length ? '\n…' : ''); card.appendChild(sourcePreview);
+                }
                 function action(label, run) { var button = document.createElement('button'); button.type = 'button'; button.textContent = label; button.addEventListener('click', function () { var tab = window.TabManager.createTab(example.source); if (!tab) return; showEditor(); if (run) get('btn-run').click(); }); card.appendChild(button); }
                 action('Abrir código', false); action('Executar', true); grid.appendChild(card);
             });
+            if (!grid.children.length) { var empty = document.createElement('p'); empty.className = 'docs-search-empty'; empty.textContent = 'Nenhum exemplo encontrado por título, descrição ou código.'; grid.appendChild(empty); }
+            if (targetId) { var target = grid.querySelector('[data-example-id="' + targetId + '"]'); if (target) window.setTimeout(function () { target.scrollIntoView({ block:'center', behavior:'smooth' }); }, 0); targetId = null; }
         }
         filter.addEventListener('input', render); render();
     }
@@ -777,11 +977,11 @@
             card.className = 'message-card ' + message.kind;
             var body = document.createElement('span'); body.textContent = message.text; card.appendChild(body);
             var time = document.createElement('small'); time.textContent = new Date(message.at).toLocaleTimeString('pt-BR'); card.appendChild(time);
-            if (message.location) card.addEventListener('click', function () { showEditor(); window.VisualGEditor.revealLocation(message.location.line, message.location.column); });
+            if (message.location) card.addEventListener('click', function () { navigateToLocation(message.tabId, message.location.line, message.location.column); });
             list.appendChild(card);
         });
     }
-    function addMessage(kind, text, location, at) { messages.push({ kind: kind, text: text, location: location, at: at || Date.now() }); renderMessages(); }
+    function addMessage(kind, text, location, at, tabId) { var active = window.TabManager.getActiveTab(); messages.push({ kind: kind, text: text, location: location, at: at || Date.now(), tabId: tabId || (active && active.id) }); renderMessages(); }
     function correctionFor(message) {
         var lower = message.toLocaleLowerCase('pt-BR');
         if (lower.includes('não declarad') || lower.includes('nao declarad')) return 'Sugestão: declare a variável na seção Var antes de usá-la.';
@@ -805,6 +1005,12 @@
         });
         handle.addEventListener('pointermove', function (event) {
             if (!handle.hasPointerCapture(event.pointerId)) return;
+            if (axis === 'x' && handle.id === 'left-resizer' && event.clientX <= 8) {
+                document.body.classList.add('sidebar-left-collapsed'); updatePanelButtons(); saveLayout(); return;
+            }
+            if (axis === 'x' && handle.id === 'right-resizer' && event.clientX >= window.innerWidth - 8) {
+                document.body.classList.add('sidebar-right-collapsed'); updatePanelButtons(); saveLayout(); return;
+            }
             var delta = (axis === 'x' ? event.clientX : event.clientY) - start;
             if (property === '--ide-right') delta = -delta;
             var next = Math.max(min, Math.min(max(), original + delta));
@@ -863,9 +1069,10 @@
             ['Passo a passo', function () { get('btn-step').click(); }],
             ['Parar', function () { get('btn-stop').click(); }],
             ['Console', showConsole],
-            ['Documentação', function () { showDoc('introducao'); }],
+            ['Documentação', function () { showDoc('sumario'); }],
             ['Exemplos', showExamples],
             ['Histórico', function () { get('btn-history').click(); }],
+            ['Relatar um problema', openIssueTracker],
             ['Configurações', function () { get('btn-settings').click(); }]
         ];
         var input = get('command-input'); var results = get('command-results');
@@ -883,7 +1090,7 @@
             if (event.key === 'Enter') { event.preventDefault(); var first = results.querySelector('button'); if (first) first.click(); }
         });
         document.addEventListener('click', function (event) { if (!event.target.closest('.command-bar')) results.classList.add('hidden'); });
-        document.addEventListener('keydown', function (event) { if (event.ctrlKey && event.shiftKey && event.key.toLowerCase() === 'p') { event.preventDefault(); input.focus(); input.select(); } });
+        document.addEventListener('keydown', function (event) { if (shortcutEnabled('palette') && event.ctrlKey && event.shiftKey && event.key.toLowerCase() === 'p') { event.preventDefault(); input.focus(); input.select(); } });
     }
 
     function openThemeMenu() {
@@ -978,6 +1185,7 @@
         document.addEventListener('visualg:console-font-size', updateFontLabels);
         updateFontLabels();
         document.addEventListener('keydown', function (event) {
+            if (!shortcutEnabled('font')) return;
             if (!(event.ctrlKey || event.metaKey) || event.altKey || (event.shiftKey && event.key !== '+')) return;
             var target = event.target;
             var area = target.closest('#terminalPanel, .console-dialog') ? 'console' : target.closest('#editorPanel, .CodeMirror') ? 'editor' : view.type === 'console' ? 'console' : view.type === 'editor' ? 'editor' : null;
@@ -988,6 +1196,7 @@
         }, true);
         [get('editorPanel'), get('terminalPanel')].forEach(function (element, index) {
             element.addEventListener('wheel', function (event) {
+                if (!shortcutEnabled('font')) return;
                 if (!(event.ctrlKey || event.metaKey)) return;
                 event.preventDefault(); changeAreaFont(index === 0 ? 'editor' : 'console', event.deltaY < 0 ? 1 : -1);
             }, { passive: false });
@@ -1002,6 +1211,17 @@
         if (!toolbar || !trigger || !menu) return;
 
         function closeMenu() { menu.hidden = true; trigger.setAttribute('aria-expanded', 'false'); }
+        function positionMenu() {
+            if (menu.hidden) return;
+            var toolbarRect = toolbar.getBoundingClientRect();
+            var triggerRect = trigger.getBoundingClientRect();
+            var width = Math.min(240, Math.max(160, toolbarRect.width - 12), window.innerWidth - 16);
+            var left = Math.min(Math.max(8, toolbarRect.left + 6), window.innerWidth - width - 8);
+            var top = Math.min(triggerRect.bottom + 4, window.innerHeight - Math.min(menu.offsetHeight, window.innerHeight - 16) - 8);
+            menu.style.width = width + 'px';
+            menu.style.left = Math.max(8, left) + 'px';
+            menu.style.top = Math.max(8, top) + 'px';
+        }
         function update() {
             var styles = window.getComputedStyle(toolbar);
             var gap = parseFloat(styles.columnGap) || 0;
@@ -1020,29 +1240,45 @@
             actions.forEach(function (action, index) { action.hidden = index >= visibleCount; });
             trigger.hidden = visibleCount === actions.length;
             menu.replaceChildren();
+            if (visibleCount < actions.length) {
+                var heading = document.createElement('div');
+                heading.className = 'sidebar-actions-menu-heading';
+                heading.setAttribute('role', 'presentation');
+                heading.textContent = 'Ações rápidas';
+                menu.appendChild(heading);
+            }
             actions.slice(visibleCount).forEach(function (action) {
                 var item = document.createElement('button');
                 item.type = 'button'; item.setAttribute('role', 'menuitem');
-                var image = action.querySelector('img');
-                if (image) item.appendChild(image.cloneNode(true));
+                var actionIcon = action.querySelector('[data-lucide]');
+                if (actionIcon) item.appendChild(actionIcon.cloneNode(true));
                 var label = document.createElement('span'); label.textContent = action.getAttribute('aria-label') || action.title;
                 item.appendChild(label);
                 item.addEventListener('click', function () { closeMenu(); action.click(); });
                 menu.appendChild(item);
             });
+            refreshIcons(menu);
             if (visibleCount === actions.length) closeMenu();
+            else positionMenu();
         }
+        refreshSidebarActionOverflow = update;
 
+        // The sidebar and file list clip descendants with overflow:auto/hidden.
+        // Portal the popover to body so it can overlay the search and file rows.
+        document.body.appendChild(menu);
         trigger.addEventListener('click', function (event) {
             event.stopPropagation();
             menu.hidden = !menu.hidden;
             trigger.setAttribute('aria-expanded', String(!menu.hidden));
+            positionMenu();
         });
         menu.addEventListener('click', function (event) { event.stopPropagation(); });
         document.addEventListener('click', function () { closeMenu(); });
         document.addEventListener('keydown', function (event) {
             if (event.key === 'Escape' && !menu.hidden) { closeMenu(); trigger.focus(); }
         });
+        window.addEventListener('resize', positionMenu);
+        window.addEventListener('scroll', positionMenu, true);
         if (window.ResizeObserver) new window.ResizeObserver(update).observe(toolbar);
         else window.addEventListener('resize', update);
         update();
@@ -1066,9 +1302,11 @@
         document.body.classList.toggle('sidebar-right-collapsed', !!layout.rightHidden);
         updatePanelButtons();
         new MutationObserver(renderFiles).observe(get('tab-list'), { childList: true, subtree: true, attributes: true, attributeFilter: ['class'] });
-        renderFiles(); renderDocs(); indexDocs(); updateHistoryButtons(); renderDebugBreakpoints(); renderMessages(); initPalette(); initEditorSpacing(); initFontControls();
+        renderFiles(); renderDocs(); indexDocs(); updateHistoryButtons(); renderDebugBreakpoints(); renderMessages(); initPalette(); initEditorSpacing(); initFontControls(); initSidebarActionOverflow();
+        get('btn-report-bug').addEventListener('click', openIssueTracker);
+        get('mobile-report-bug').addEventListener('click', function () { get('mobile-menu').classList.remove('open'); openIssueTracker(); });
         get('right-sidebar').classList.toggle('messages-resized', !!layout.messagesResized);
-        var presentation = get('setting-console-presentation'); presentation.value = localStorage.getItem('visualg-console-presentation') || 'tab';
+        var presentation = get('setting-console-presentation'); presentation.value = localStorage.getItem('visualg-console-presentation') || 'modal';
         presentation.addEventListener('change', function () { localStorage.setItem('visualg-console-presentation', presentation.value); closeConsoleDialog(); if (consolePanelOpen) { consolePanelOpen = false; editor.classList.remove('console-panel-visible'); } updateConsoleButton(); });
         new MutationObserver(syncConsoleWindow).observe(get('terminal-output'), { childList: true, subtree: true, characterData: true });
         new MutationObserver(syncConsoleWindow).observe(get('terminal-input-area'), { attributes: true, attributeFilter: ['class'] });
@@ -1100,9 +1338,8 @@
         get('btn-download-workspace').addEventListener('click', function () { get('btn-save').click(); });
         get('btn-new-workspace-file').addEventListener('click', function () { window.TabManager.createTab(); showEditor(); });
         get('btn-new-workspace-folder').addEventListener('click', function () { var name = window.prompt('Nome da nova pasta'); if (name && name.trim()) { folders.push({ id: 'folder-' + Date.now(), name: name.trim() }); saveFolders(); renderFiles(); } });
-        get('btn-duplicate-workspace').addEventListener('click', function () { var tab = window.TabManager.getActiveTab(); if (tab) { window.TabManager.createTab(tab.code, { fileName: fileName(tab).replace(/\.(alg|txt)$/i, '-copia.$1') }); showEditor(); } else { window.TabManager.createTab(); showEditor(); } });
-        initSidebarActionOverflow();
-        get('btn-docs-sidebar').addEventListener('click', function () { showDoc('introducao'); });
+        get('btn-duplicate-workspace').addEventListener('click', function () { var tab = window.TabManager.getActiveTab(); if (tab) { duplicateFile(tab); showEditor(); } else { window.TabManager.createTab(); showEditor(); } });
+        get('btn-docs-sidebar').addEventListener('click', function () { showDoc('sumario'); });
         get('btn-examples-sidebar').addEventListener('click', showExamples);
         initTabOverview();
         get('debug-run').addEventListener('click', function () {
@@ -1129,6 +1366,8 @@
         get('mobile-nav-forward').addEventListener('click', function () { get('mobile-menu').classList.remove('open'); get('btn-nav-forward').click(); });
         get('btn-toggle-left').addEventListener('click', function () { document.body.classList.toggle('sidebar-left-collapsed'); updatePanelButtons(); saveLayout(); window.requestAnimationFrame(function () { window.VisualGEditor.instance.refresh(); }); });
         get('btn-toggle-right').addEventListener('click', function () { document.body.classList.toggle('sidebar-right-collapsed'); updatePanelButtons(); saveLayout(); window.requestAnimationFrame(function () { window.VisualGEditor.instance.refresh(); }); });
+        initEdgeDragRestore();
+        get('btn-empty-docs').addEventListener('click', function () { showDoc('sumario'); });
         get('btn-scale').addEventListener('click', openThemeMenu);
         get('btn-nav-back').addEventListener('click', function () { if (historyPosition > 0) { historyPosition--; restoreHistoricalView(); } });
         get('btn-nav-forward').addEventListener('click', function () { if (historyPosition < viewHistory.length - 1) { historyPosition++; restoreHistoricalView(); } });
@@ -1170,7 +1409,9 @@
             document.body.classList.remove('debug-session-active');
             get('debug-session-controls').classList.add('hidden');
             renderDebugCallStack([], false);
+            renderFiles();
         });
+        document.addEventListener('visualg:running', function () { renderFiles(); if (window.TabManager.refresh) window.TabManager.refresh(); });
         document.addEventListener('visualg:status', function (event) {
             var text = event.detail.text || '';
             var state = get('debug-status-state');
@@ -1188,7 +1429,7 @@
             else if (text === 'Execução interrompida') get('debug-status').textContent = 'Finalizado';
         });
         document.addEventListener('visualg:debug-paused', function (event) { renderDebugCallStack(event.detail.callStack, true); showEditor(); });
-        document.addEventListener('visualg:diagnostic', function (event) { var suggestion = correctionFor(event.detail.message); addMessage('error', 'ERRO: ' + event.detail.message + (suggestion ? '\n' + suggestion : ''), event.detail.location, event.detail.at); });
+        document.addEventListener('visualg:diagnostic', function (event) { var suggestion = correctionFor(event.detail.message); addMessage('error', 'ERRO: ' + event.detail.message + (suggestion ? '\n' + suggestion : ''), event.detail.location, event.detail.at, event.detail.tabId); });
         document.addEventListener('visualg:status', function (event) {
             var status = event.detail; if (status.text === 'Finalizado' || status.text === 'Execução finalizada') addMessage('success', 'Execução finalizada.', null, status.at);
             if (status.text === 'Execução interrompida') addMessage('warning', 'Execução interrompida.', null, status.at);
@@ -1209,11 +1450,14 @@
             }
             renderFiles();
         });
-        get('btn-history').addEventListener('click', function () { showTrashInRecovery(); });
+        get('btn-history').addEventListener('click', function () {
+            showTrashInRecovery();
+            document.dispatchEvent(new window.Event('visualg:open-recovery'));
+        });
         window.VisualGEditor.instance.on('gutterClick', toggleBreakpoint);
         window.VisualGEditor.instance.setOption('gutters', ['CodeMirror-linenumbers', 'debug-current', 'breakpoints']);
         window.VisualGEditor.instance.on('change', function () { if (messages.some(function (item) { return item.kind === 'error'; })) { messages = []; renderMessages(); window.VisualGEditor.clearHighlight(); } });
-        window.VisualGWorkspace = { showEditor: showEditor, showConsole: showConsole, toggleConsole: toggleConsole, showDoc: showDoc, showExamples: showExamples, showSettings: showSettings, toggleSettings: toggleSettings, openThemeMenu: openThemeMenu, getBreakpoints: getCurrentBreakpoints };
+        window.VisualGWorkspace = { showEditor: showEditor, showConsole: showConsole, toggleConsole: toggleConsole, showDoc: showDoc, showExamples: showExamples, showSettings: showSettings, toggleSettings: toggleSettings, openThemeMenu: openThemeMenu, getBreakpoints: getCurrentBreakpoints, uniqueFileName: uniqueFileName, navigateToLocation: navigateToLocation };
         refreshIcons(document.querySelector('.ide-shell'));
     }
 
@@ -1224,7 +1468,7 @@
         var heading = document.createElement('h3'); heading.textContent = 'Arquivos removidos (30 dias)'; section.appendChild(heading);
         trash.forEach(function (item, index) {
             var row = document.createElement('button'); row.type = 'button'; row.textContent = 'Restaurar ' + item.fileName + ' · ' + new Date(item.at).toLocaleDateString('pt-BR');
-            row.addEventListener('click', function () { var restored = window.TabManager.createTab(item.code, { fileName: item.fileName }); if (restored && item.folderId) assignments[restored.id] = item.folderId; trash.splice(index, 1); saveTrash(); saveFolders(); renderFiles(); overlay.dispatchEvent(new window.Event('visualg:close-recovery')); showEditor(); }); section.appendChild(row);
+            row.addEventListener('click', function () { var restoredName = uniqueFileName(item.fileName, null, item.folderId || null); var restored = window.TabManager.createTab(item.code, { fileName: restoredName }); if (restored && item.folderId) assignments[restored.id] = item.folderId; trash.splice(index, 1); saveTrash(); saveFolders(); renderFiles(); overlay.dispatchEvent(new window.Event('visualg:close-recovery')); showEditor(); }); section.appendChild(row);
         });
         var versionsHeading = document.createElement('h3'); versionsHeading.textContent = 'Versões anteriores das abas (30 dias)'; section.appendChild(versionsHeading);
         window.TabManager.getVersionHistory().forEach(function (version) {
