@@ -59,8 +59,47 @@
         try { return JSON.parse(localStorage.getItem(key) || 'null') || fallback; } catch (error) { return fallback; }
     }
     function saveFolders() { try { localStorage.setItem(FOLDERS_KEY, JSON.stringify({ folders: folders, assignments: assignments, collapsed: collapsedFolders })); } catch (error) { /* local editing stays available */ } }
-    function saveTrash() { try { localStorage.setItem(TRASH_KEY, JSON.stringify(trash)); } catch (error) { /* ignore storage quota */ } }
-    function saveClosed() { try { localStorage.setItem(CLOSED_KEY, JSON.stringify(closedFiles)); } catch (error) { /* local editing stays available */ } }
+    function saveTrash() { try { localStorage.setItem(TRASH_KEY, JSON.stringify(trash)); return true; } catch (error) { return false; } }
+    function saveClosed() { try { localStorage.setItem(CLOSED_KEY, JSON.stringify(closedFiles)); return true; } catch (error) { return false; } }
+    function reportStorageFailure() {
+        document.dispatchEvent(new window.CustomEvent('visualg:status', { detail:{ text:'Não foi possível salvar a alteração neste dispositivo. O código foi preservado.', type:'error', at:Date.now() } }));
+    }
+    function newFileId() {
+        return 'file-' + (window.crypto && window.crypto.randomUUID ? window.crypto.randomUUID() : Date.now().toString(36) + '-' + Math.random().toString(36).slice(2));
+    }
+    function normalizeClosedFiles() {
+        var openTabs = window.TabManager.getTabs();
+        var records = openTabs.slice();
+        var normalized = [];
+        var changed = false;
+        closedFiles.forEach(function (item) {
+            var folder = assignments[item.id] || null;
+            var name = fileName(item);
+            var exact = records.some(function (record) {
+                return (assignments[record.id] || null) === folder && fileName(record).toLocaleLowerCase('pt-BR') === name.toLocaleLowerCase('pt-BR') && record.code === item.code;
+            });
+            if (exact) { changed = true; return; }
+            if (records.some(function (record) { return record.id === item.id; })) {
+                var oldId = item.id;
+                item.id = newFileId();
+                if (folder) assignments[item.id] = folder;
+                // The old assignment may belong to an open tab with the same ID.
+                if (!openTabs.some(function (record) { return record.id === oldId; })) delete assignments[oldId];
+                changed = true;
+            }
+            if (records.some(function (record) { return (assignments[record.id] || null) === folder && fileName(record).toLocaleLowerCase('pt-BR') === name.toLocaleLowerCase('pt-BR'); })) {
+                var match = /^(.*?)(\.(?:alg|txt))$/i.exec(name);
+                var base = match ? match[1] : name;
+                var extension = match ? match[2] : '.alg';
+                var copy = 1;
+                do { item.fileName = base + ' (cópia ' + copy++ + ')' + extension; }
+                while (records.some(function (record) { return (assignments[record.id] || null) === folder && fileName(record).toLocaleLowerCase('pt-BR') === item.fileName.toLocaleLowerCase('pt-BR'); }));
+                changed = true;
+            }
+            normalized.push(item); records.push(item);
+        });
+        if (changed) { closedFiles = normalized; saveClosed(); saveFolders(); }
+    }
     function seedReferenceWorkspace() {
         if (!window.TabManager.freshWorkspace || localStorage.getItem(CLOSED_KEY) !== null) return;
         var starters = [
@@ -100,6 +139,7 @@
         window.VisualGEditor.setValue(starters[0][1]);
         window.TabManager.setFileName(window.TabManager.getActiveTab().id, starters[0][0]);
         window.TabManager.markActiveClean();
+        window.TabManager.saveWorkspace();
         closedFiles = starters.slice(1).map(function (entry, index) { return { id: 'starter-' + index, name: entry[0].replace(/\.alg$/i, ''), fileName: entry[0], code: entry[1], closed: true }; });
         saveClosed();
     }
@@ -206,49 +246,58 @@
         renderFiles();
         return duplicate;
     }
+    function keepOnlySelectedFile(selectedId) {
+        return window.TabManager.getTabs().filter(function (open) { return open.id !== selectedId; })
+            .every(function (open) { return window.TabManager.closeTab(open.id); });
+    }
     function openSavedFile(tab) {
         if (!tab.closed) {
-            if (window.TabManager.getActiveTab()?.id === tab.id) { window.TabManager.switchTab(tab.id); showEditor(); return; }
-            if (!window.TabManager.getActiveTab()) { window.TabManager.createTab(tab.code, { fileName:fileName(tab) }); showEditor(); return; }
-            activeFileAnimationId = tab.id; window.TabManager.switchTab(tab.id); showEditor();
+            activeFileAnimationId = tab.id;
+            window.TabManager.switchTab(tab.id);
+            if (window.TabManager.getActiveTab()?.id !== tab.id) return;
+            if (window.TabManager.saveWorkspace()) keepOnlySelectedFile(tab.id);
+            renderFiles(); showEditor();
             window.setTimeout(function () { if (activeFileAnimationId === tab.id) activeFileAnimationId = null; }, 500);
             return;
         }
-        var active = window.TabManager.getActiveTab();
-        var targetFolder = assignments[tab.id] || null;
-        var opened;
-        if (active) {
-            var defaultCode = window.gerarTemplate ? window.gerarTemplate() : '';
-            var hasSavedContent = !!active.fileName || !!active.dirty || active.code.trim() !== defaultCode.trim();
-            if (hasSavedContent) {
-                var archivedId = 'closed-preview-' + Date.now() + '-' + Math.random().toString(36).slice(2, 7);
-                closedFiles = closedFiles.filter(function (item) { return item.id !== active.id; });
-                closedFiles.push({ id: archivedId, name: active.name, fileName: fileName(active), code: active.code, closed: true });
-                if (assignments[active.id]) assignments[archivedId] = assignments[active.id];
+        var existing = window.TabManager.getTabs().find(function (open) {
+            return open.code === tab.code && fileName(open).toLocaleLowerCase('pt-BR') === fileName(tab).toLocaleLowerCase('pt-BR') && (assignments[open.id] || null) === (assignments[tab.id] || null);
+        });
+        if (existing) {
+            window.TabManager.switchTab(existing.id);
+            if (window.TabManager.getActiveTab()?.id !== existing.id) return;
+            if (window.TabManager.saveWorkspace()) {
+                keepOnlySelectedFile(existing.id);
+                closedFiles = closedFiles.filter(function (item) { return item.id !== tab.id; });
+                saveClosed();
             }
-            delete assignments[active.id];
-            opened = window.TabManager.replaceActiveTab(tab.code, { fileName: fileName(tab) });
-            if (opened && targetFolder) assignments[opened.id] = targetFolder;
-            delete assignments[tab.id];
-        } else {
-            opened = window.TabManager.createTab(tab.code, { fileName: fileName(tab) });
-            if (opened && targetFolder) assignments[opened.id] = targetFolder;
-            delete assignments[tab.id];
+            renderFiles(); showEditor(); return;
         }
+        var opened = window.TabManager.createTab(tab.code, { id:tab.id, fileName:fileName(tab), used:tab.used, forceNew:true });
         if (!opened) return;
         activeFileAnimationId = opened.id;
-        closedFiles = closedFiles.filter(function (item) { return item.id !== tab.id; }); saveClosed(); saveFolders(); renderFiles(); showEditor();
+        if (window.TabManager.saveWorkspace()) {
+            keepOnlySelectedFile(opened.id);
+            closedFiles = closedFiles.filter(function (item) { return item.id !== tab.id; });
+            saveClosed();
+        }
+        saveFolders(); renderFiles(); showEditor();
         window.setTimeout(function () { if (activeFileAnimationId === opened.id) activeFileAnimationId = null; }, 500);
     }
     function deleteFile(tab) {
         if (window.TabManager.getRunningTab && window.TabManager.getRunningTab()) { if (window.TabManager.onActionBlocked) window.TabManager.onActionBlocked('Interrompa a execução antes de excluir arquivos.'); return; }
         if (tab.closed) {
+            var previousTrash = trash;
+            trash = trash.slice();
             trash.unshift({ code: tab.code, fileName: fileName(tab), folderId: assignments[tab.id] || null, at: Date.now() });
-            closedFiles = closedFiles.filter(function (item) { return item.id !== tab.id; }); saveClosed(); saveTrash();
+            if (!saveTrash()) { trash = previousTrash; reportStorageFailure(); return; }
+            var previousClosed = closedFiles;
+            closedFiles = closedFiles.filter(function (item) { return item.id !== tab.id; });
+            if (!saveClosed()) { closedFiles = previousClosed; trash = previousTrash; saveTrash(); reportStorageFailure(); return; }
             delete assignments[tab.id]; saveFolders(); renderFiles(); return;
         }
         deletingFiles.add(tab.id);
-        window.TabManager.closeTab(tab.id);
+        if (!window.TabManager.closeTab(tab.id)) deletingFiles.delete(tab.id);
     }
     function redrawBreakpoints(tabId) {
         var cm = window.VisualGEditor.instance; if (!cm) return;
@@ -328,8 +377,16 @@
         var list = get('workspace-file-list');
         if (!list || !window.TabManager) return;
         var query = get('workspace-file-search').value.trim().toLocaleLowerCase('pt-BR');
-        var tabs = window.TabManager.getTabs().concat(closedFiles);
+        var openTabs = window.TabManager.getTabs();
+        var tabs = openTabs.concat(closedFiles.filter(function (closed) {
+            return !openTabs.some(function (open) {
+                return open.code === closed.code && fileName(open).toLocaleLowerCase('pt-BR') === fileName(closed).toLocaleLowerCase('pt-BR') && (assignments[open.id] || null) === (assignments[closed.id] || null);
+            });
+        })).sort(function (a, b) {
+            return fileName(a).localeCompare(fileName(b), 'pt-BR', { sensitivity:'base', numeric:true }) || a.id.localeCompare(b.id);
+        });
         list.replaceChildren();
+        renderRecentFiles(tabs);
         function appendGroup(target, folderId) {
             tabs.filter(function (tab) { return (assignments[tab.id] || null) === folderId && fileName(tab).toLocaleLowerCase('pt-BR').includes(query); })
                 .forEach(function (tab) { target.appendChild(createFileItem(tab)); });
@@ -391,6 +448,27 @@
         refreshIcons(list);
     }
 
+    function renderRecentFiles(tabs) {
+        var section = get('editor-recent-files');
+        var list = get('editor-recent-list');
+        if (!section || !list) return;
+        list.replaceChildren();
+        var recent = tabs.filter(function (tab) {
+            return tab && tab.lastOpenedAt && (tab.fileName || tab.used) && typeof tab.code === 'string';
+        }).sort(function (a, b) { return new Date(b.lastOpenedAt).getTime() - new Date(a.lastOpenedAt).getTime(); }).slice(0, 5);
+        section.hidden = !recent.length;
+        recent.forEach(function (tab) {
+            var button = document.createElement('button');
+            button.type = 'button';
+            button.title = 'Abrir ' + fileName(tab);
+            button.appendChild(icon('file-code-2'));
+            var name = document.createElement('span'); name.textContent = fileName(tab); button.appendChild(name);
+            button.addEventListener('click', function () { openSavedFile(tab); });
+            list.appendChild(button);
+        });
+        refreshIcons(list);
+    }
+
     function exportWorkspaceFile(tab, format) {
         if (!tab || typeof tab.code !== 'string') return;
         var baseName = fileName(tab).replace(/\.(alg|txt)$/i, '').replace(/[\\/:*?"<>|]/g, '_').trim() || 'programa';
@@ -409,8 +487,10 @@
         var old = get('editor-quick-menu'); if (old) old.remove();
         var menu = document.createElement('div'); menu.id = 'editor-quick-menu'; menu.className = 'editor-quick-menu';
         menu.setAttribute('role', 'dialog'); menu.setAttribute('aria-label', 'Ajustes rápidos do editor');
+        var listeners = new window.AbortController();
         var dismiss = null; var escape = null;
         function closeMenu() {
+            listeners.abort();
             menu.remove();
             if (dismiss) document.removeEventListener('pointerdown', dismiss);
             if (escape) document.removeEventListener('keydown', escape);
@@ -437,7 +517,25 @@
                 source.dispatchEvent(new window.Event(entry[2], { bubbles:true }));
                 control.value = source.value;
             });
-            field.append(caption, control); menu.appendChild(field);
+            field.append(caption, control);
+            if (source.type === 'number') {
+                field.classList.add('editor-quick-field-numeric');
+                var slider = document.createElement('input'); slider.type = 'range'; slider.className = 'editor-quick-slider';
+                slider.min = source.min || '1'; slider.max = source.max || '160'; slider.step = source.step || '1'; slider.value = source.value;
+                slider.setAttribute('aria-label', entry[0] + ' (controle deslizante)');
+                var limits = document.createElement('small'); limits.className = 'editor-quick-limits'; limits.textContent = slider.min + ' — ' + slider.max + ' px';
+                var sliderTimer = null;
+                function applySlider() {
+                    if (sliderTimer !== null) { window.clearTimeout(sliderTimer); sliderTimer = null; }
+                    control.value = slider.value; control.dispatchEvent(new window.Event('input', { bubbles:true }));
+                }
+                slider.addEventListener('input', function () { control.value = slider.value; if (sliderTimer === null) sliderTimer = window.setTimeout(applySlider, 45); });
+                slider.addEventListener('change', applySlider);
+                control.addEventListener('input', function () { if (control.value !== '') slider.value = control.value; });
+                source.addEventListener('input', function () { control.value = source.value; slider.value = source.value; }, { signal:listeners.signal });
+                field.append(slider, limits);
+            }
+            menu.appendChild(field);
         });
         menu.addEventListener('pointerdown', function (pointerEvent) { pointerEvent.stopPropagation(); });
         menu.addEventListener('contextmenu', function (contextEvent) { contextEvent.preventDefault(); });
@@ -803,6 +901,7 @@
     }
     function renderDocContent(markdown) {
         var article = document.createElement('article'); article.className = 'docs-article'; article.innerHTML = window.marked.parse(markdown);
+        if (window.DocsPanel) window.DocsPanel.enhanceImages(article);
         article.addEventListener('click', function (event) {
             var link = event.target.closest('a[href^="#doc:"]');
             if (!link) return;
@@ -898,10 +997,32 @@
                     control.value = 'on';
                     control.disabled = true;
                 }
+                var slider = null;
+                if (source.type === 'number') {
+                    slider = document.createElement('input'); slider.type = 'range'; slider.className = 'workspace-setting-slider';
+                    slider.min = source.min || '1'; slider.max = source.max || '50'; slider.step = source.step || '1'; slider.value = control.value;
+                    slider.setAttribute('aria-label', field[0] + ' (controle deslizante)');
+                    var limits = document.createElement('span'); limits.className = 'workspace-setting-limits';
+                    limits.textContent = slider.min + ' — ' + slider.max + (field[0].indexOf('(px)') !== -1 ? ' px' : '');
+                    var sliderTimer = null;
+                    function applySlider() {
+                        if (sliderTimer !== null) { window.clearTimeout(sliderTimer); sliderTimer = null; }
+                        control.value = slider.value;
+                        control.dispatchEvent(new window.Event('input', { bubbles:true }));
+                    }
+                    slider.addEventListener('input', function () {
+                        control.value = slider.value;
+                        if (sliderTimer === null) sliderTimer = window.setTimeout(applySlider, 45);
+                    });
+                    slider.addEventListener('change', applySlider);
+                }
                 control.addEventListener(source.tagName === 'SELECT' ? 'change' : 'input', function () {
                     source.value = control.value; source.dispatchEvent(new window.Event(source.tagName === 'SELECT' ? 'change' : 'input', { bubbles: true }));
+                    if (slider && control.value !== '') slider.value = control.value;
                     updateFontLabels();
-                }); group.append(text, help, control); form.append(group);
+                }); group.append(text, help, control);
+                if (slider) group.append(slider, limits);
+                form.append(group);
             });
             if (entry.preview) layout.appendChild(createPreview(entry.preview));
             content.appendChild(layout);
@@ -915,6 +1036,7 @@
                 var shortcutList = document.createElement('div'); shortcutList.className = 'settings-shortcut-list';
                 shortcuts.forEach(function (shortcut) { var row = document.createElement('label'); var checkbox = document.createElement('input'); checkbox.type = 'checkbox'; checkbox.checked = localStorage.getItem('visualg-shortcut-' + shortcut[0]) !== 'off'; checkbox.addEventListener('change', function () { localStorage.setItem('visualg-shortcut-' + shortcut[0], checkbox.checked ? 'on' : 'off'); }); var name = document.createElement('span'); name.textContent = shortcut[1]; var keys = document.createElement('kbd'); keys.textContent = shortcut[2]; row.append(checkbox, name, keys); shortcutList.appendChild(row); });
                 form.appendChild(shortcutList);
+                var editorKeys = document.createElement('small'); editorKeys.className = 'settings-action-help'; editorKeys.textContent = 'No editor: Tab indenta a seleção; Shift + Tab recua; Ctrl/Cmd + [ ou ] ajusta o recuo; Ctrl/Cmd + / comenta ou descomenta.'; form.appendChild(editorKeys);
             }
             if (entry.title === 'Redefinir') {
                 var resetIntro = document.createElement('p'); resetIntro.textContent = 'Redefinir preferências restaura os valores padrão. Seus arquivos e o histórico de recuperação permanecem salvos; para removê-los, use a seção Arquivos.'; form.appendChild(resetIntro);
@@ -1151,6 +1273,22 @@
         [['setting-letter-spacing', 'visualg-editor-letter-spacing', '--ide-editor-letter-spacing', -1, 10, 0.25], ['setting-line-spacing', 'visualg-editor-line-spacing', '--ide-editor-line-height', 18, 80, 27]].forEach(function (setting) {
             var field = get(setting[0]); var saved = localStorage.getItem(setting[1]);
             field.value = saved !== null ? saved : String(setting[5]);
+            var slider = get(setting[0] + '-slider');
+            if (slider) {
+                slider.value = field.value;
+                var sliderTimer = null;
+                function applySlider() {
+                    if (sliderTimer !== null) { window.clearTimeout(sliderTimer); sliderTimer = null; }
+                    field.value = slider.value;
+                    field.dispatchEvent(new window.Event('input', { bubbles:true }));
+                }
+                slider.addEventListener('input', function () {
+                    field.value = slider.value;
+                    if (sliderTimer === null) sliderTimer = window.setTimeout(applySlider, 45);
+                });
+                slider.addEventListener('change', applySlider);
+                field.addEventListener('input', function () { if (field.value !== '') slider.value = field.value; });
+            }
             function apply() {
                 var value = Number(field.value); if (!Number.isFinite(value) || value < setting[3] || value > setting[4]) return;
                 var fontSize = Number(get('setting-font-size').value) || 14;
@@ -1172,9 +1310,10 @@
     function changeAreaFont(area, action) {
         var field = get(area === 'console' ? 'setting-console-font-size' : 'setting-font-size');
         var current = Number(field.value) || (area === 'console' ? 13 : 14);
-        var next = action === 'reset' ? (area === 'console' ? 13 : 14) : Math.max(10, Math.min(40, current + action));
+        var next = action === 'reset' ? (area === 'console' ? 13 : 14) : Math.max(1, Math.min(160, current + action));
         field.value = String(next); field.dispatchEvent(new window.Event('input', { bubbles: true })); updateFontLabels();
-        var proxy = get('workspace-' + field.id); if (proxy) proxy.value = field.value;
+        var proxy = get('workspace-' + field.id);
+        if (proxy) { proxy.value = field.value; var slider = proxy.closest('.workspace-setting-group').querySelector('input[type="range"]'); if (slider) slider.value = field.value; }
     }
     function initFontControls() {
         [['console', 'console-font-decrease', -1], ['console', 'console-font-increase', 1]].forEach(function (item) {
@@ -1287,10 +1426,13 @@
 
     function init() {
         editor = document.querySelector('.editor-column'); aux = get('workspace-aux-view'); terminal = get('terminalPanel'); editor.appendChild(terminal);
-        var savedFolders = readJson(FOLDERS_KEY, {}); folders = savedFolders.folders || []; assignments = savedFolders.assignments || {}; collapsedFolders = savedFolders.collapsed || {};
-        closedFiles = readJson(CLOSED_KEY, []).filter(function (item) { return item && typeof item.code === 'string' && item.id; });
+        var savedFolders = readJson(FOLDERS_KEY, {}); folders = Array.isArray(savedFolders.folders) ? savedFolders.folders : []; assignments = savedFolders.assignments && typeof savedFolders.assignments === 'object' ? savedFolders.assignments : {}; collapsedFolders = savedFolders.collapsed && typeof savedFolders.collapsed === 'object' ? savedFolders.collapsed : {};
+        var savedClosed = readJson(CLOSED_KEY, []);
+        closedFiles = (Array.isArray(savedClosed) ? savedClosed : []).filter(function (item) { return item && typeof item.code === 'string' && typeof item.id === 'string' && item.id; });
         seedReferenceWorkspace();
-        trash = readJson(TRASH_KEY, []).filter(function (item) { return Date.now() - item.at < 30 * 86400000; }); saveTrash();
+        normalizeClosedFiles();
+        var savedTrash = readJson(TRASH_KEY, []);
+        trash = (Array.isArray(savedTrash) ? savedTrash : []).filter(function (item) { return item && Date.now() - item.at < 30 * 86400000; }); saveTrash();
         var layout = readJson(LAYOUT_KEY, {});
         if (layout.right && Number.isFinite(parseFloat(layout.right)) && parseFloat(layout.right) < 300) layout.right = '300px';
         ['left', 'right', 'debug', 'messages'].forEach(function (name) {
@@ -1440,13 +1582,24 @@
         document.addEventListener('visualg:tab-switched', function (event) { redrawBreakpoints(event.detail.id); renderDebugBreakpoints(); showEditor(); animateEditorForFileSwitch(); });
         document.addEventListener('visualg:file-closed', function (event) {
             var tab = event.detail;
-            if (deletingFiles.has(tab.id)) {
+            if (tab.unusedDraft) {
                 deletingFiles.delete(tab.id);
-                trash.unshift({ code: tab.code, fileName: fileName(tab), folderId: assignments[tab.id] || null, at: Date.now() });
-                trash = trash.slice(0, 30); saveTrash(); delete assignments[tab.id]; saveFolders();
-            } else {
                 closedFiles = closedFiles.filter(function (item) { return item.id !== tab.id; });
-                closedFiles.push({ id: tab.id, name: tab.name, fileName: tab.fileName, code: tab.code, closed: true }); saveClosed();
+                delete assignments[tab.id]; saveClosed(); saveFolders(); renderFiles(); return;
+            }
+            if (deletingFiles.has(tab.id)) {
+                var previousTrash = trash;
+                trash = trash.slice();
+                trash.unshift({ code: tab.code, fileName: fileName(tab), folderId: assignments[tab.id] || null, at: Date.now() });
+                trash = trash.slice(0, 30);
+                if (!saveTrash()) { trash = previousTrash; deletingFiles.delete(tab.id); event.preventDefault(); reportStorageFailure(); return; }
+                deletingFiles.delete(tab.id);
+                delete assignments[tab.id]; saveFolders();
+            } else {
+                var previousClosed = closedFiles;
+                closedFiles = closedFiles.filter(function (item) { return item.id !== tab.id; });
+                closedFiles.push({ id: tab.id, name: tab.name, fileName: tab.fileName, code: tab.code, used: tab.used, lastOpenedAt: tab.lastOpenedAt, closed: true });
+                if (!saveClosed()) { closedFiles = previousClosed; event.preventDefault(); reportStorageFailure(); return; }
             }
             renderFiles();
         });

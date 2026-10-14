@@ -99,7 +99,34 @@
     var highlightedLineClass = null;
     var debugLine = null;
     var _guideColors = null;
-    var completions = ['algoritmo', 'var', 'inicio', 'fimalgoritmo', 'escreva', 'escreval', 'leia', 'se', 'entao', 'senao', 'fimse', 'enquanto', 'faca', 'fimenquanto', 'para', 'de', 'ate', 'passo', 'fimpara', 'repita', 'escolha', 'caso', 'outrocaso', 'fimescolha', 'funcao', 'fimfuncao', 'procedimento', 'fimprocedimento', 'inteiro', 'real', 'caractere', 'logico', 'verdadeiro', 'falso'];
+    var completions = [
+        { label:'escreva', insert:'escreva()', cursor:8, detail:'Exibe texto ou valores na mesma linha' },
+        { label:'escreval', insert:'escreval()', cursor:9, detail:'Exibe texto ou valores e pula uma linha' },
+        { label:'leia', insert:'leia()', cursor:5, detail:'Lê um valor para uma variável' },
+        { label:'se', insert:'se  entao\n  \nfimse', cursor:3, detail:'Inicia uma condição' },
+        { label:'enquanto', insert:'enquanto  faca\n  \nfimenquanto', cursor:10, detail:'Repete enquanto a condição for verdadeira' },
+        { label:'para', insert:'para  de  ate  faca\n  \nfimpara', cursor:5, detail:'Repete usando um contador' },
+        { label:'repita', insert:'repita\n  \nate ', cursor:9, detail:'Repete até a condição ser verdadeira' },
+        { label:'escolha', insert:'escolha \n  caso \n    \nfimescolha', cursor:8, detail:'Escolhe entre casos' },
+        { label:'procedimento', insert:'procedimento \ninicio\n  \nfimprocedimento', cursor:13, detail:'Declara um procedimento' },
+        { label:'funcao', insert:'funcao : inteiro\ninicio\n  retorne \nfimfuncao', cursor:7, detail:'Declara uma função com retorno inteiro' },
+        { label:'limpatela', detail:'Limpa o console' },
+        { label:'interrompa', detail:'Sai de um laço de repetição' },
+        { label:'algoritmo', insert:'algoritmo ""', cursor:11, detail:'Declara o nome do algoritmo' },
+        { label:'var', detail:'Inicia a declaração de variáveis' },
+        { label:'inicio', detail:'Inicia os comandos do algoritmo' },
+        { label:'fimalgoritmo', detail:'Encerra o algoritmo' },
+        { label:'entao' }, { label:'senao' }, { label:'fimse' }, { label:'faca' },
+        { label:'fimenquanto' }, { label:'de' }, { label:'ate' }, { label:'passo' },
+        { label:'fimpara' }, { label:'escolha' }, { label:'caso' }, { label:'outrocaso' },
+        { label:'fimescolha' }, { label:'fimfuncao' },
+        { label:'fimprocedimento' }, { label:'inteiro' },
+        { label:'real' }, { label:'caractere' }, { label:'logico' },
+        { label:'verdadeiro' }, { label:'falso' }
+    ];
+    ['abs', 'quad', 'raizq', 'sen', 'cos', 'tan', 'int', 'compr', 'maiusc', 'minusc'].forEach(function (name) {
+        completions.push({ label:name, insert:name + '()', cursor:name.length + 1, detail:'Função integrada: informe o argumento' });
+    });
     var hintMenu = null;
     var hintItems = [];
     var hintIndex = 0;
@@ -107,6 +134,9 @@
     var mobileHintTimer = null;
     var variableSourceCache = null;
     var variableCompletionCache = [];
+    var recentPair = null;
+    var PAIRS = { '(': ')', '[': ']', '{': '}', '"': '"' };
+    var CLOSERS = ')]}';
 
     var IDENTIFIER_CHARS = 'A-Za-z0-9_' + ACCENT_CHARS;
     var IDENTIFIER_PATTERN = '[A-Za-z_' + ACCENT_CHARS + '][' + IDENTIFIER_CHARS + ']*';
@@ -165,19 +195,43 @@
     }
     function acceptHint(cm) {
         if (!hintItems.length || !hintStart) return false;
-        var cursor = cm.getCursor(); cm.replaceRange(hintItems[hintIndex], hintStart, cursor); closeHints(); return true;
+        var entry = hintItems[hintIndex];
+        var cursor = cm.getCursor();
+        var insert = entry.insert || entry.label;
+        var offset = entry.cursor;
+        if (insert.endsWith('()') && cm.getLine(cursor.line).charAt(cursor.ch) === '(') {
+            insert = entry.label;
+            offset = insert.length + 1;
+        }
+        var start = hintStart;
+        if (insert.indexOf('\n') !== -1) {
+            var indentation = /^\s*/.exec(cm.getLine(start.line))[0];
+            if (start.ch >= indentation.length) {
+                if (offset !== undefined) offset = insert.slice(0, offset).replace(/\n/g, '\n' + indentation).length;
+                insert = insert.replace(/\n/g, '\n' + indentation);
+            }
+        }
+        cm.operation(function () {
+            cm.replaceRange(insert, start, cursor);
+            if (offset !== undefined) {
+                var prefix = insert.slice(0, offset).split('\n');
+                cm.setCursor({ line:start.line + prefix.length - 1, ch:(prefix.length === 1 ? start.ch + offset : prefix[prefix.length - 1].length) });
+            }
+        });
+        closeHints(); return true;
     }
     function showHints(cm, explicit) {
         closeHints();
         var cursor = cm.getCursor(); var before = cm.getLine(cursor.line).slice(0, cursor.ch);
+        if (/comment|string/.test(cm.getTokenTypeAt(cursor) || '')) return false;
         var match = /[A-Za-zÀ-ÿ][A-Za-zÀ-ÿ0-9_]*$/.exec(before);
         if (!match && !explicit) return false;
         if (match && !explicit && match[0].length < (usesMobileAutocomplete() ? 1 : 2)) return false;
         var word = match ? match[0].toLocaleLowerCase('pt-BR') : '';
-        var candidates = getDeclaredVariables(cm).concat(completions);
+        var candidates = getDeclaredVariables(cm).map(function (name) { return { label:name, detail:'Variável declarada' }; }).concat(completions);
         var seen = {};
         hintItems = candidates.filter(function (entry) {
-            var normalized = entry.toLocaleLowerCase('pt-BR');
+            var normalized = entry.label.toLocaleLowerCase('pt-BR');
             if (!normalized.startsWith(word) || normalized === word || seen[normalized]) return false;
             seen[normalized] = true;
             return true;
@@ -190,7 +244,10 @@
         }
         hintMenu = document.createElement('div'); hintMenu.className = 'visualg-hints'; hintMenu.setAttribute('role', 'listbox');
         hintItems.forEach(function (entry, index) {
-            var option = document.createElement('button'); option.type = 'button'; option.textContent = entry;
+            var option = document.createElement('button'); option.type = 'button';
+            var name = document.createElement('strong'); name.textContent = entry.insert && entry.insert.endsWith('()') ? entry.insert : entry.label;
+            option.appendChild(name);
+            var detail = document.createElement('small'); detail.textContent = entry.detail || 'Palavra-chave do VisuAlg'; option.appendChild(detail);
             if (index === 0) option.classList.add('selected');
             option.addEventListener('pointerdown', function (event) { event.preventDefault(); });
             option.addEventListener('click', function () { hintIndex = index; acceptHint(cm); cm.focus(); });
@@ -224,26 +281,49 @@
         }, 45);
     }
 
-    function completePairAfterMobileInput(cm, change) {
-        var mobileLayout = window.innerWidth <= 760 || (window.innerWidth <= 950 && window.innerHeight <= 500);
-        if (!mobileLayout || !change || change.origin !== '+input' || !change.text || change.text.length !== 1 || change.text[0].length !== 1) return;
-        var opening = change.text[0];
-        var pairs = { '(': ')', '[': ']', '{': '}', '"': '"' };
-        var closing = pairs[opening];
-        if (!closing) return;
+    function isLiteralContext(tokenType) {
+        return /(?:^|\s)(?:comment|string)(?:\s|$)/.test(tokenType);
+    }
+
+    function handleDelimiter(cm, character) {
+        if (cm.getOption('disableInput') || cm.listSelections().length !== 1 || cm.somethingSelected()) return false;
         var cursor = cm.getCursor();
         var line = cm.getLine(cursor.line) || '';
-        if (line.charAt(cursor.ch) === closing) return;
-        if (opening === '"') {
-            var beforeQuote = line.slice(0, Math.max(0, cursor.ch - 1));
-            var quoteCount = (beforeQuote.match(/(^|[^\\])"/g) || []).length;
-            if (quoteCount % 2 === 1) return;
+        var ahead = line.charAt(cursor.ch);
+        var tokenType = cm.getTokenTypeAt(cursor) || '';
+        var literal = isLiteralContext(tokenType);
+        var freshCloser = recentPair && recentPair.line === cursor.line && recentPair.ch === cursor.ch && recentPair.closing === character;
+        var shouldSkip = freshCloser || (CLOSERS.includes(character) && !literal) || (character === '"' && /string/.test(tokenType));
+        if (ahead === character && shouldSkip) {
+            cm.setCursor({ line: cursor.line, ch: cursor.ch + 1 });
+            recentPair = null;
+            closeHints();
+            return true;
         }
+        var closing = PAIRS[character];
+        if (!closing || literal || character === '"' && line.charAt(cursor.ch - 1) === '\\') return false;
+        if (ahead === closing || ahead && !/[\s)\]},;]/.test(ahead)) return false;
         cm.operation(function () {
-            cm.replaceRange(closing, cursor, cursor, '+input');
-            cm.setCursor(cursor);
+            cm.replaceSelection(character + closing, 'end', '+input');
+            cm.setCursor({ line: cursor.line, ch: cursor.ch + 1 });
         });
+        recentPair = { line: cursor.line, ch: cursor.ch + 1, opening: character, closing: closing };
+        closeHints();
+        return true;
     }
+
+    function deleteFreshPair(cm) {
+        if (!recentPair || cm.somethingSelected() || cm.listSelections().length !== 1) return false;
+        var cursor = cm.getCursor();
+        if (cursor.line !== recentPair.line || cursor.ch !== recentPair.ch) return false;
+        var line = cm.getLine(cursor.line) || '';
+        if (line.charAt(cursor.ch - 1) !== recentPair.opening || line.charAt(cursor.ch) !== recentPair.closing) return false;
+        cm.replaceRange('', { line: cursor.line, ch: cursor.ch - 1 }, { line: cursor.line, ch: cursor.ch + 1 }, '+delete');
+        cm.setCursor({ line: cursor.line, ch: cursor.ch - 1 });
+        recentPair = null;
+        return true;
+    }
+
 
     function replaceSelection(cm, text, cursorOffset) {
         var selections = cm.listSelections();
@@ -270,27 +350,40 @@
                 indentWithTabs: false,
                 lineWrapping: false,
                 matchBrackets: true,
-                autoCloseBrackets: true,
                 styleActiveLine: false,
                 extraKeys: {
                     'Ctrl-Space': function (cm) { showHints(cm, true); },
                     'Enter': function (cm) { if (!acceptHint(cm)) cm.execCommand('newlineAndIndent'); },
-                    'Tab': function (cm) { if (!acceptHint(cm)) cm.execCommand('insertSoftTab'); },
+                    'Tab': function (cm) {
+                        if (cm.somethingSelected()) { closeHints(); cm.execCommand('indentMore'); }
+                        else if (!acceptHint(cm)) cm.execCommand('insertSoftTab');
+                    },
                     'Esc': function () { closeHints(); },
                     'Down': function (cm) { if (!moveHint(1)) cm.execCommand('goLineDown'); },
                     'Up': function (cm) { if (!moveHint(-1)) cm.execCommand('goLineUp'); },
                     'Shift-Tab': 'indentLess',
+                    'Ctrl-]': 'indentMore',
+                    'Ctrl-[': 'indentLess',
+                    'Cmd-]': 'indentMore',
+                    'Cmd-[': 'indentLess',
+                    'Backspace': function (cm) { return deleteFreshPair(cm) ? undefined : CodeMirror.Pass; },
                     'Cmd-/': 'toggleComment',
                     'Ctrl-/': 'toggleComment'
                 },
                 value: DEFAULT_PROGRAM
             });
-            this.instance.on('inputRead', function (cm, change) {
-                completePairAfterMobileInput(cm, change);
+            var cm = this.instance;
+            cm.getInputField().addEventListener('beforeinput', function (event) {
+                if (!event.cancelable || event.isComposing) return;
+                if (event.inputType === 'deleteContentBackward' && deleteFreshPair(cm)) event.preventDefault();
+                else if (event.inputType === 'insertText' && event.data && event.data.length === 1 && handleDelimiter(cm, event.data)) event.preventDefault();
+            });
+            this.instance.on('inputRead', function (cm) {
                 if (usesMobileAutocomplete()) scheduleMobileHints(cm);
                 else showHints(cm, false);
             });
             this.instance.on('change', function (cm, change) {
+                recentPair = null;
                 if (usesMobileAutocomplete() && change && change.origin !== 'setValue') scheduleMobileHints(cm);
             });
             this.instance.getInputField().addEventListener('compositionend', function () { scheduleMobileHints(window.VisualGEditor.instance); });
@@ -379,11 +472,12 @@
                 cm.focus();
                 return;
             }
-            replaceSelection(cm, pair, 1);
+            if (!handleDelimiter(cm, pair.charAt(0))) replaceSelection(cm, pair.charAt(0));
+            cm.focus();
         },
 
         indent: function () {
-            this.instance.execCommand('insertSoftTab');
+            this.instance.execCommand(this.instance.somethingSelected() ? 'indentMore' : 'insertSoftTab');
             this.instance.focus();
         },
 

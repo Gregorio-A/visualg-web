@@ -164,6 +164,10 @@
                             <button id="btn-empty-docs" type="button"><i data-lucide="book-open"></i> Documentação</button>
                             <button id="btn-empty-restore-tabs" type="button"><i data-lucide="rotate-ccw"></i> Restaurar abas anteriores</button>
                         </div>
+                        <section id="editor-recent-files" class="editor-recent-files" aria-label="Códigos recentes" hidden>
+                            <h3>Códigos recentes</h3>
+                            <div id="editor-recent-list" class="editor-recent-list"></div>
+                        </section>
                     </div>
                     <div class="resize-handle-horizontal" id="resizeHandleHorizontal"></div>
                     <div class="resize-handle-vertical" id="resizeHandleVertical"></div>
@@ -326,19 +330,23 @@
                         <label>Tamanho da fonte</label>
                         <div class="font-size-control">
                             <div class="font-size-input-row">
-                                <input type="number" class="setting-font-input" id="setting-font-size" min="1" value="14">
+                                <input type="number" class="setting-font-input" id="setting-font-size" min="1" max="160" value="14">
                                 <span class="font-size-unit">px</span>
                             </div>
-                            <input type="range" class="setting-font-slider" id="setting-font-size-slider" min="1" max="50" value="14">
+                            <input type="range" class="setting-font-slider" id="setting-font-size-slider" min="1" max="160" value="14">
                         </div>
                     </div>
                     <div class="setting-group">
                         <label for="setting-letter-spacing">Espaçamento entre letras (px em 14px; acompanha a fonte)</label>
                         <input type="number" class="setting-font-input" id="setting-letter-spacing" min="-1" max="10" step="0.25" value="0.25">
+                        <input type="range" class="setting-font-slider" id="setting-letter-spacing-slider" min="-1" max="10" step="0.25" value="0.25" aria-label="Espaçamento entre letras (controle deslizante)">
+                        <small class="setting-range-limits">−1 — 10 px</small>
                     </div>
                     <div class="setting-group">
                         <label for="setting-line-spacing">Espaçamento entre linhas (px em 14px; acompanha a fonte)</label>
                         <input type="number" class="setting-font-input" id="setting-line-spacing" min="18" max="80" step="1" value="27">
+                        <input type="range" class="setting-font-slider" id="setting-line-spacing-slider" min="18" max="80" step="1" value="27" aria-label="Espaçamento entre linhas (controle deslizante)">
+                        <small class="setting-range-limits">18 — 80 px</small>
                     </div>
                     <div class="setting-group">
                         <label>Quebra de linha</label>
@@ -367,10 +375,10 @@
                         <label>Tamanho da fonte</label>
                         <div class="font-size-control">
                             <div class="font-size-input-row">
-                                <input type="number" class="setting-font-input" id="setting-vars-font-size" min="1" value="12">
+                                <input type="number" class="setting-font-input" id="setting-vars-font-size" min="1" max="160" value="12">
                                 <span class="font-size-unit">px</span>
                             </div>
-                            <input type="range" class="setting-font-slider" id="setting-vars-font-size-slider" min="1" max="50" value="12">
+                            <input type="range" class="setting-font-slider" id="setting-vars-font-size-slider" min="1" max="160" value="12">
                         </div>
                     </div>
                     <div class="setting-group">
@@ -418,10 +426,10 @@
                         <label>Tamanho da fonte</label>
                         <div class="font-size-control">
                             <div class="font-size-input-row">
-                                <input type="number" class="setting-font-input" id="setting-console-font-size" min="1" value="13">
+                                <input type="number" class="setting-font-input" id="setting-console-font-size" min="1" max="160" value="13">
                                 <span class="font-size-unit">px</span>
                             </div>
-                            <input type="range" class="setting-font-slider" id="setting-console-font-size-slider" min="1" max="50" value="13">
+                            <input type="range" class="setting-font-slider" id="setting-console-font-size-slider" min="1" max="160" value="13">
                         </div>
                     </div>
                     <div class="setting-group">
@@ -587,7 +595,6 @@
     <script src="vendor/codemirror/codemirror.min.js"></script>
     <script src="vendor/codemirror/addon/mode/simple.min.js"></script>
     <script src="vendor/codemirror/addon/edit/matchbrackets.min.js"></script>
-    <script src="vendor/codemirror/addon/edit/closebrackets.min.js"></script>
     <script src="vendor/codemirror/addon/selection/active-line.min.js"></script>
     <script src="vendor/codemirror/addon/comment/comment.min.js"></script>
 

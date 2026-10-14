@@ -724,11 +724,8 @@
         var toolbar = document.getElementById('mobile-code-toolbar');
         var suggestions = document.getElementById('mobile-autocomplete-suggestions');
         var loupe = document.getElementById('mobile-cursor-loupe');
-        var cursorRevealTimers = [];
         var mobileInputField = editor.instance.getInputField();
         var editorWrapper = editor.instance.getWrapperElement();
-        var mobileInputComposing = false;
-        var lastMobileInputAt = 0;
         var loupeTimer = null;
         var loupeStart = null;
         if (!toolbar || !editor.instance) return;
@@ -745,53 +742,26 @@
             if (settingWordWrap) settingWordWrap.value = effective;
         }
 
-        function cancelCursorReveal() {
-            cursorRevealTimers.forEach(window.clearTimeout);
-            cursorRevealTimers = [];
-        }
-
         function updateViewport() {
             var viewport = window.visualViewport;
-            var height = viewport ? viewport.height : window.innerHeight;
-            var top = viewport ? viewport.offsetTop : 0;
+            // A pinch gesture changes visualViewport.height without resizing the layout.
+            // Applying that smaller value to the app shell clipped every screen.
+            var pinched = !!(viewport && viewport.scale > 1.01);
+            var height = viewport && !pinched ? viewport.height : window.innerHeight;
+            var top = viewport && !pinched ? viewport.offsetTop : 0;
             var bottom = top + height;
             document.documentElement.style.setProperty('--visual-viewport-height', Math.round(height) + 'px');
             document.documentElement.style.setProperty('--visual-viewport-top', Math.round(top) + 'px');
             document.documentElement.style.setProperty('--visual-viewport-bottom', Math.round(bottom) + 'px');
-            document.body.classList.toggle('mobile-keyboard-open', usesMobileLayout() && window.innerHeight - height > 100);
+            document.body.classList.toggle('mobile-keyboard-open', !pinched && usesMobileLayout() && window.innerHeight - height > 100);
+            document.body.classList.toggle('page-pinched', pinched);
             syncCompactWordWrap();
             if (usesMobileLayout()) {
                 if (editor.instance.hasFocus()) {
                     document.body.classList.add('mobile-editor-focused');
                     toolbar.setAttribute('aria-hidden', 'false');
                 }
-                scheduleCursorReveal();
             }
-        }
-
-        function revealCursor() {
-            var panel = document.getElementById('editorPanel');
-            if (!usesMobileLayout() || !editor.instance.hasFocus() || !panel || panel.classList.contains('hidden')) return;
-            if (mobileInputComposing || Date.now() - lastMobileInputAt < 250) return;
-            var cm = editor.instance;
-            var viewport = window.visualViewport;
-            var viewportTop = viewport ? viewport.offsetTop : 0;
-            var viewportHeight = viewport ? viewport.height : window.innerHeight;
-            var visibleTop = viewportTop + 96;
-            var visibleBottom = viewportTop + viewportHeight - 54;
-            cm.scrollIntoView(cm.getCursor(), Math.min(90, Math.max(42, viewportHeight * .18)));
-            var coordinates = cm.cursorCoords(cm.getCursor(), 'window');
-            var scroller = cm.getScrollerElement();
-            if (coordinates.bottom > visibleBottom) scroller.scrollTop += coordinates.bottom - visibleBottom + 10;
-            else if (coordinates.top < visibleTop) scroller.scrollTop -= visibleTop - coordinates.top + 10;
-        }
-
-        function scheduleCursorReveal() {
-            cancelCursorReveal();
-            if (mobileInputComposing || Date.now() - lastMobileInputAt < 250) return;
-            cursorRevealTimers = [60, 220].map(function (delay) {
-                return window.setTimeout(function () { window.requestAnimationFrame(revealCursor); }, delay);
-            });
         }
 
         function showToolbar() {
@@ -808,18 +778,7 @@
 
         editor.instance.on('focus', showToolbar);
         mobileInputField.addEventListener('focus', showToolbar);
-        mobileInputField.addEventListener('compositionstart', function () {
-            mobileInputComposing = true;
-            cancelCursorReveal();
-        });
-        mobileInputField.addEventListener('compositionend', function () {
-            mobileInputComposing = false;
-            lastMobileInputAt = Date.now();
-            cancelCursorReveal();
-        });
         mobileInputField.addEventListener('input', function () {
-            lastMobileInputAt = Date.now();
-            cancelCursorReveal();
             showToolbar();
         });
         editor.instance.on('blur', function () {
@@ -829,9 +788,6 @@
         });
         document.addEventListener('focusin', function (event) {
             if (!event.target.closest('.CodeMirror, #mobile-code-toolbar')) hideToolbar();
-            if (usesMobileLayout() && event.target.matches('input, textarea, select, [contenteditable="true"]')) {
-                window.setTimeout(function () { event.target.scrollIntoView({ block: 'nearest', inline: 'nearest' }); }, 80);
-            }
         });
         toolbar.addEventListener('pointerdown', function (event) { event.preventDefault(); });
         toolbar.addEventListener('click', function (event) {
@@ -854,7 +810,10 @@
                 button.type = 'button';
                 button.className = 'mobile-autocomplete-item';
                 button.dataset.autocompleteIndex = String(index);
-                button.textContent = item;
+                var name = document.createElement('strong');
+                name.textContent = item.insert && item.insert.endsWith('()') ? item.insert : item.label;
+                button.appendChild(name);
+                var detail = document.createElement('small'); detail.textContent = item.detail || 'Palavra-chave do VisuAlg'; button.appendChild(detail);
                 if (index === event.detail.selectedIndex) button.classList.add('selected');
                 suggestions.appendChild(button);
             });
@@ -893,7 +852,6 @@
             loupe.style.left = Math.max(leftLimit + 8, Math.min(point.x - loupeWidth / 2, leftLimit + viewportWidth - loupeWidth - 8)) + 'px';
             loupe.style.top = Math.max(topLimit + 8, point.y - 142) + 'px';
         }
-        editorWrapper.addEventListener('pointerdown', showToolbar, { capture: true, passive: true });
         editorWrapper.addEventListener('touchstart', function (event) {
             if (!usesMobileLayout() || !event.touches || event.touches.length !== 1) return;
             hideLoupe();
@@ -963,13 +921,14 @@
     function applyFontSize(size) {
         size = parseInt(size, 10);
         if (isNaN(size) || size < 1) return;
+        size = Math.min(size, 160);
         var px = size + 'px';
         editor.instance.getWrapperElement().style.fontSize = px;
         document.documentElement.style.setProperty('--ide-editor-font-size', px);
         editor.instance.refresh();
         localStorage.setItem('visualg-font-size', size);
         if (settingFontSize) settingFontSize.value = size;
-        if (settingFontSizeSlider) settingFontSizeSlider.value = Math.min(size, 50);
+        if (settingFontSizeSlider) settingFontSizeSlider.value = size;
         document.dispatchEvent(new window.CustomEvent('visualg:editor-font-size'));
     }
 
@@ -1043,6 +1002,7 @@
     function applyVarsFontSize(size) {
         size = parseInt(size, 10);
         if (isNaN(size) || size < 1) return;
+        size = Math.min(size, 160);
         var table = document.getElementById('variables-table');
         table.style.fontSize = size + 'px';
         document.documentElement.style.setProperty('--ide-vars-font-size', size + 'px');
@@ -1052,7 +1012,7 @@
         }
         localStorage.setItem('visualg-vars-font-size', size);
         if (settingVarsFontSize) settingVarsFontSize.value = size;
-        if (settingVarsFontSizeSlider) settingVarsFontSizeSlider.value = Math.min(size, 50);
+        if (settingVarsFontSizeSlider) settingVarsFontSizeSlider.value = size;
     }
 
     function applyVarsColumns(columns) {
@@ -1072,13 +1032,14 @@
     function applyConsoleFontSize(size) {
         size = parseInt(size, 10);
         if (isNaN(size) || size < 1) return;
+        size = Math.min(size, 160);
         var px = size + 'px';
         document.getElementById('terminal-output').style.fontSize = px;
         document.getElementById('terminal-input').style.fontSize = px;
         document.documentElement.style.setProperty('--ide-console-font-size', px);
         localStorage.setItem('visualg-console-font-size', size);
         if (settingConsoleFontSize) settingConsoleFontSize.value = size;
-        if (settingConsoleFontSizeSlider) settingConsoleFontSizeSlider.value = Math.min(size, 50);
+        if (settingConsoleFontSizeSlider) settingConsoleFontSizeSlider.value = size;
         document.dispatchEvent(new window.CustomEvent('visualg:console-font-size'));
     }
 
@@ -1098,16 +1059,16 @@
         settingTheme.value = document.documentElement.getAttribute('data-theme');
         var savedFontSize = localStorage.getItem('visualg-font-size') || '14';
         settingFontSize.value = savedFontSize;
-        settingFontSizeSlider.value = Math.min(parseInt(savedFontSize, 10), 50);
+        settingFontSizeSlider.value = Math.min(parseInt(savedFontSize, 10), 160);
         settingWordWrap.value = localStorage.getItem('visualg-word-wrap') || 'off';
         settingTabSize.value = localStorage.getItem('visualg-tab-size') || '2';
         settingIndentGuides.value = localStorage.getItem('visualg-indent-guides') || 'on';
         var savedVarsFontSize = localStorage.getItem('visualg-vars-font-size') || '12';
         settingVarsFontSize.value = savedVarsFontSize;
-        settingVarsFontSizeSlider.value = Math.min(parseInt(savedVarsFontSize, 10), 50);
+        settingVarsFontSizeSlider.value = Math.min(parseInt(savedVarsFontSize, 10), 160);
         var savedConsoleFontSize = localStorage.getItem('visualg-console-font-size') || '13';
         settingConsoleFontSize.value = savedConsoleFontSize;
-        settingConsoleFontSizeSlider.value = Math.min(parseInt(savedConsoleFontSize, 10), 50);
+        settingConsoleFontSizeSlider.value = Math.min(parseInt(savedConsoleFontSize, 10), 160);
         settingConsoleInputMode.value = localStorage.getItem('visualg-console-input-mode') || 'inline';
         settingLoopDetection.value = localStorage.getItem('visualg-loop-detection') || 'on';
         var varsColumns = JSON.parse(localStorage.getItem('visualg-vars-columns') || '{"nome":true,"tipo":true,"valor":true}');
@@ -1414,6 +1375,7 @@
         var reader = new FileReader();
         reader.onload = function(e) {
             var content = e.target.result;
+            fileInput.value = '';
 
             // Sanitização: bloquear conteúdo JavaScript malicioso
             if (containsJavaScript(content)) {
@@ -1434,6 +1396,7 @@
             editor.clearHighlight();
             setStatus('Arquivo carregado: ' + file.name);
         };
+        reader.onerror = function () { fileInput.value = ''; setStatus('Não foi possível ler o arquivo.', 'error'); };
 
         reader.readAsText(file);
         fileInput.value = ''; // Reset para permitir reabrir mesmo arquivo

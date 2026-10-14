@@ -22,6 +22,58 @@
     };
     var docOrder = ['sumario', 'introducao', 'historia', 'compatibilidade', 'operadores', 'entrada-saida', 'condicionais', 'repeticao', 'subprogramas', 'funcoes', 'comandos', 'status'];
 
+    function enhanceImages(root) {
+        root.querySelectorAll('img:not([data-doc-enhanced])').forEach(function (img) {
+            img.dataset.docEnhanced = 'true';
+            var figure = document.createElement('figure'); figure.className = 'docs-figure';
+            var frame = document.createElement('div'); frame.className = 'docs-image-frame';
+            var src = img.getAttribute('src') || '';
+            if (/\.svg(?:\?|$)|screenshots\//.test(src)) figure.classList.add('docs-figure-wide');
+            var parent = img.parentElement;
+            if (parent && parent.tagName === 'P' && parent.children.length === 1) parent.replaceWith(figure);
+            else img.replaceWith(figure);
+            frame.appendChild(img); figure.appendChild(frame);
+            if (src.indexOf('linha-do-tempo-visualg.svg') !== -1) {
+                figure.classList.add('docs-figure-timeline');
+                var timeline = document.createElement('ol'); timeline.className = 'docs-timeline-mobile';
+                [
+                    ['VisuAlg 2.0', 'Captura preservada do editor clássico (imagem acima).'],
+                    ['VisuAlg 2.5', 'Linha inicial de Cláudio Morgado e Antonio Nicolodi.'],
+                    ['VisuAlg 3.0', 'Reformulação: 3.0.5.6, 3.0.6.5 e 3.0.7.0.'],
+                    ['VisuAlg.dev', 'Etapa web do Prof. Conrado Salomé Ribeiro.'],
+                    ['VisuAlg Web', 'Fork independente, versões 0.10 a 0.14, de Murilo Gregorio Alves.']
+                ].forEach(function (step) {
+                    var row = document.createElement('li');
+                    var name = document.createElement('strong'); name.textContent = step[0];
+                    var description = document.createElement('span'); description.textContent = step[1];
+                    row.append(name, description); timeline.appendChild(row);
+                });
+                var note = document.createElement('p'); note.className = 'docs-timeline-note'; note.textContent = 'Marcos reunidos de fontes públicas. A captura 2.0 é de 2018; as versões 2.5, 3.x e as etapas web aparecem separadas para evitar falsa equivalência.';
+                figure.append(timeline, note);
+            }
+            var caption = document.createElement('figcaption'); caption.textContent = img.alt || 'Imagem da documentação';
+            var open = document.createElement('button'); open.type = 'button'; open.className = 'docs-image-open'; open.textContent = 'Ampliar imagem';
+            open.setAttribute('aria-label', 'Ampliar: ' + (img.alt || 'imagem da documentação'));
+            open.addEventListener('click', function () { openImage(img); });
+            figure.append(caption, open);
+        });
+    }
+
+    function openImage(source) {
+        var viewer = document.createElement('div'); viewer.className = 'docs-image-viewer'; viewer.setAttribute('role', 'dialog'); viewer.setAttribute('aria-modal', 'true'); viewer.setAttribute('aria-label', source.alt || 'Imagem ampliada');
+        if (source.closest('.docs-figure-wide')) viewer.classList.add('docs-image-viewer-wide');
+        var close = document.createElement('button'); close.type = 'button'; close.className = 'docs-image-close'; close.textContent = 'Fechar imagem ×';
+        var image = document.createElement('img'); image.src = source.currentSrc || source.src; image.alt = source.alt;
+        var caption = document.createElement('p'); caption.textContent = source.alt || '';
+        var content = document.createElement('div'); content.className = 'docs-image-viewer-content'; content.append(image, caption);
+        viewer.append(close, content); document.body.appendChild(viewer);
+        function dismiss() { document.removeEventListener('keydown', onKey); viewer.remove(); source.parentElement.parentElement.querySelector('.docs-image-open').focus(); }
+        function onKey(event) { if (event.key === 'Escape') dismiss(); }
+        close.addEventListener('click', dismiss);
+        viewer.addEventListener('click', function (event) { if (event.target === viewer) dismiss(); });
+        document.addEventListener('keydown', onKey); close.focus();
+    }
+
     function addPageNavigation(panel, tabId) {
         var oldNavigation = panel.querySelector('.docs-page-navigation');
         if (oldNavigation) oldNavigation.remove();
@@ -75,8 +127,10 @@
 
         if (cache[tabId]) {
             panel.innerHTML = cache[tabId];
+            enhanceImages(panel);
             addPageNavigation(panel, tabId);
             addCopyButtons(panel);
+            panel.scrollTop = 0;
             return;
         }
 
@@ -90,8 +144,10 @@
                 var html = marked.parse(md);
                 cache[tabId] = html;
                 panel.innerHTML = html;
+                enhanceImages(panel);
                 addPageNavigation(panel, tabId);
                 addCopyButtons(panel);
+                panel.scrollTop = 0;
             })
             .catch(function () {
                 panel.innerHTML = '<p style="color:var(--red)">Erro ao carregar documentação.</p>';
@@ -125,6 +181,7 @@
     }
 
     window.DocsPanel = {
+        enhanceImages: enhanceImages,
         open: function (tabId) {
             if (window.VisualGWorkspace) { window.VisualGWorkspace.showDoc(tabId || 'sumario'); return; }
             var overlay = document.getElementById('docsOverlay');
