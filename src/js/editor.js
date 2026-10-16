@@ -286,7 +286,9 @@
     }
 
     function handleDelimiter(cm, character) {
-        if (cm.getOption('disableInput') || cm.listSelections().length !== 1 || cm.somethingSelected()) return false;
+        if (cm.getOption('disableInput')) return false;
+        if (cm.somethingSelected()) return surroundSelection(cm, character);
+        if (cm.listSelections().length !== 1) return false;
         var cursor = cm.getCursor();
         var line = cm.getLine(cursor.line) || '';
         var ahead = line.charAt(cursor.ch);
@@ -322,6 +324,92 @@
         cm.setCursor({ line: cursor.line, ch: cursor.ch - 1 });
         recentPair = null;
         return true;
+    }
+
+    var searchWidget = null;
+    var searchMark = null;
+    function clearSearchMark() { if (searchMark) searchMark.clear(); searchMark = null; }
+    function openSearch(cm, withReplace) {
+        if (!searchWidget) {
+            var widget = document.createElement('div'); widget.className = 'cm-search-widget'; widget.setAttribute('role', 'search');
+            var query = document.createElement('input'); query.type = 'search'; query.placeholder = 'Localizar no código'; query.setAttribute('aria-label', 'Localizar no código');
+            var replacement = document.createElement('input'); replacement.type = 'text'; replacement.placeholder = 'Substituir por'; replacement.setAttribute('aria-label', 'Substituir por');
+            var caseLabel = document.createElement('label'); caseLabel.className = 'cm-search-case'; var caseToggle = document.createElement('input'); caseToggle.type = 'checkbox'; caseToggle.setAttribute('aria-label', 'Diferenciar maiúsculas e minúsculas'); caseLabel.append(caseToggle, document.createTextNode('Aa'));
+            var status = document.createElement('span'); status.className = 'cm-search-count'; status.setAttribute('aria-live', 'polite');
+            function action(label, title, callback) { var button = document.createElement('button'); button.type = 'button'; button.textContent = label; button.title = title; button.addEventListener('click', callback); widget.appendChild(button); return button; }
+            widget.append(query, replacement, caseLabel); var count = status; widget.appendChild(count);
+            var state = { element:widget, query:query, replacement:replacement, caseToggle:caseToggle, status:status, cm:null, replaceMode:false, replaceButtons:[] };
+            function find(direction) {
+                var editor = state.cm; var needle = query.value; clearSearchMark();
+                if (!editor || !needle) { status.textContent = needle ? '0 resultados' : ''; return; }
+                var haystack = editor.getValue(); var matchText = caseToggle.checked ? haystack : haystack.toLocaleLowerCase('pt-BR'); var searchText = caseToggle.checked ? needle : needle.toLocaleLowerCase('pt-BR');
+                var selected = editor.listSelections()[0]; var from = editor.indexFromPos(direction > 0 ? selected.to() : selected.from());
+                var at = direction > 0 ? matchText.indexOf(searchText, selected.from().line === selected.to().line && selected.from().ch !== selected.to().ch ? from : from + (editor.somethingSelected() ? 0 : 1)) : matchText.lastIndexOf(searchText, Math.max(0, from - (editor.somethingSelected() ? 0 : 1)));
+                if (at < 0) at = direction > 0 ? matchText.indexOf(searchText) : matchText.lastIndexOf(searchText);
+                if (at < 0) { status.textContent = '0 resultados'; return; }
+                var start = editor.posFromIndex(at); var end = editor.posFromIndex(at + needle.length);
+                editor.setSelection(start, end); editor.scrollIntoView({ from:start, to:end }, 80); searchMark = editor.markText(start, end, { className:'cm-search-current' });
+                var total = 0; var cursor = 0; while ((cursor = matchText.indexOf(searchText, cursor)) !== -1) { total++; cursor += Math.max(1, searchText.length); }
+                status.textContent = total + ' resultado' + (total === 1 ? '' : 's');
+            }
+            action('↑', 'Resultado anterior', function () { find(-1); }); action('↓', 'Próximo resultado', function () { find(1); });
+            var replaceOne = action('Substituir', 'Substituir ocorrência atual', function () { var editor = state.cm; if (editor && editor.somethingSelected()) { editor.replaceSelection(replacement.value, 'end', '+input'); find(1); } });
+            var replaceAll = action('Tudo', 'Substituir todas as ocorrências', function () { var editor = state.cm; var needle = query.value; if (!editor || !needle) return; var flags = caseToggle.checked ? 'g' : 'gi'; var escaped = needle.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'); var result = editor.getValue().replace(new RegExp(escaped, flags), replacement.value); var lastLine = editor.lastLine(); editor.replaceRange(result, { line:0, ch:0 }, { line:lastLine, ch:editor.getLine(lastLine).length }, '+input'); clearSearchMark(); status.textContent = 'Substituição concluída'; });
+            state.replaceButtons = [replaceOne, replaceAll];
+            action('×', 'Fechar busca', function () { clearSearchMark(); widget.remove(); searchWidget = null; state.cm.focus(); });
+            query.addEventListener('keydown', function (event) { if (event.key === 'Enter') { event.preventDefault(); find(event.shiftKey ? -1 : 1); } if (event.key === 'Escape') { event.preventDefault(); clearSearchMark(); widget.remove(); searchWidget = null; state.cm.focus(); } });
+            query.addEventListener('input', function () { find(1); }); caseToggle.addEventListener('change', function () { find(1); });
+            document.body.appendChild(widget); searchWidget = state;
+        }
+        searchWidget.cm = cm; searchWidget.replaceMode = withReplace; searchWidget.replacement.hidden = !withReplace;
+        searchWidget.replaceButtons.forEach(function (button) { button.hidden = !withReplace; });
+        searchWidget.element.classList.toggle('is-replace-mode', withReplace);
+        var selection = cm.getSelection(); if (selection && !searchWidget.query.value) searchWidget.query.value = selection;
+        searchWidget.element.hidden = false; searchWidget.query.focus(); searchWidget.query.select();
+        if (searchWidget.query.value) { var evt = new window.Event('input'); searchWidget.query.dispatchEvent(evt); }
+    }
+
+    function selectNextOccurrence(cm) {
+        var selection = cm.getSelection();
+        if (!selection) {
+            var word = cm.findWordAt(cm.getCursor()); selection = cm.getRange(word.anchor, word.head);
+            if (!selection) return;
+            cm.setSelection(word.anchor, word.head);
+        }
+        var source = cm.getValue(); var needle = selection; var start = cm.indexFromPos(cm.listSelections()[cm.listSelections().length - 1].to());
+        var next = source.indexOf(needle, start);
+        if (next < 0) next = source.indexOf(needle, 0);
+        if (next < 0) return;
+        var end = next + needle.length; var overlaps = cm.listSelections().some(function (range) { var a = cm.indexFromPos(range.from()); var b = cm.indexFromPos(range.to()); return next < b && end > a; });
+        if (overlaps) { next = source.indexOf(needle, end); if (next < 0) return; }
+        var ranges = cm.listSelections().slice(); ranges.push({ anchor:cm.posFromIndex(next), head:cm.posFromIndex(next + needle.length) });
+        cm.setSelections(ranges, ranges.length - 1); cm.focus();
+    }
+
+    function selectAllOccurrences(cm) {
+        var needle = cm.getRange(cm.getCursor('anchor'), cm.getCursor('head'));
+        if (!needle) {
+            var word = cm.findWordAt(cm.getCursor());
+            needle = cm.getRange(word.anchor, word.head);
+        }
+        if (!needle) return;
+        var source = cm.getValue(); var ranges = []; var index = 0;
+        while ((index = source.indexOf(needle, index)) !== -1) {
+            ranges.push({ anchor:cm.posFromIndex(index), head:cm.posFromIndex(index + needle.length) });
+            index += needle.length;
+        }
+        if (!ranges.length) return;
+        cm.setSelections(ranges, 0); cm.focus();
+    }
+
+    function surroundSelection(cm, opening) {
+        if (!cm.somethingSelected()) return false;
+        var closing = PAIRS[opening]; if (!closing) return false;
+        var ranges = cm.listSelections(); var selected = ranges.map(function (range) { return cm.getRange(range.from(), range.to()); });
+        var starts = ranges.map(function (range) { return cm.indexFromPos(range.from()); });
+        cm.replaceSelections(selected.map(function (text) { return opening + text + closing; }), 'around', '+input');
+        var result = ranges.map(function (range, index) { var prior = index; var start = starts[index] + prior * 2 + 1; return { anchor:cm.posFromIndex(start), head:cm.posFromIndex(start + selected[index].length) }; });
+        cm.setSelections(result, result.length - 1); recentPair = null; return true;
     }
 
 
@@ -366,6 +454,13 @@
                     'Ctrl-[': 'indentLess',
                     'Cmd-]': 'indentMore',
                     'Cmd-[': 'indentLess',
+                    'Ctrl-F': function (cm) { openSearch(cm, false); },
+                    'Cmd-F': function (cm) { openSearch(cm, false); },
+                    'Ctrl-H': function (cm) { openSearch(cm, true); },
+                    'Cmd-Alt-F': function (cm) { openSearch(cm, true); },
+                    'Ctrl-D': selectNextOccurrence,
+                    'Cmd-D': selectNextOccurrence,
+                    'Shift-Alt-F': function () { var button = document.getElementById('btn-tab-indent'); if (button) button.click(); },
                     'Backspace': function (cm) { return deleteFreshPair(cm) ? undefined : CodeMirror.Pass; },
                     'Cmd-/': 'toggleComment',
                     'Ctrl-/': 'toggleComment'
@@ -373,6 +468,20 @@
                 value: DEFAULT_PROGRAM
             });
             var cm = this.instance;
+            cm.getInputField().addEventListener('keydown', function (event) {
+                if (!(event.ctrlKey || event.metaKey) || !event.shiftKey || event.altKey || event.key.toLowerCase() !== 'l') return;
+                event.preventDefault(); event.stopImmediatePropagation(); selectAllOccurrences(cm);
+            }, true);
+            cm.getWrapperElement().addEventListener('mousedown', function (event) {
+                if (!event.altKey || event.button !== 0 || cm.getOption('readOnly')) return;
+                var position = cm.coordsChar({ left:event.clientX, top:event.clientY }, 'window');
+                var word = cm.findWordAt(position);
+                var text = cm.getRange(word.anchor, word.head);
+                event.preventDefault();
+                if (text) cm.addSelection(word.anchor, word.head);
+                else cm.setCursor(position);
+                cm.focus();
+            }, true);
             cm.getInputField().addEventListener('beforeinput', function (event) {
                 if (!event.cancelable || event.isComposing) return;
                 if (event.inputType === 'deleteContentBackward' && deleteFreshPair(cm)) event.preventDefault();

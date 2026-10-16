@@ -1,7 +1,7 @@
 {
   "name": "visualg-web",
   "productName": "VisuAlg Web",
-  "version": "0.14.0",
+  "version": "1.0.0",
   "description": "IDE web e desktop para pseudocodigo no estilo VisuAlg 3.0.7",
   "main": ".vite/build/main.js",
   "private": true,
@@ -17,11 +17,13 @@
     "test:e2e": "npm run build:web && playwright test",
     "test:e2e:chromium": "npm run build:web && playwright test --project=chromium",
     "test:examples": "node scripts/examples-check.js",
+    "test:programs": "node scripts/program-test-check.js",
+    "test:language": "node scripts/language-conformance-check.js",
     "test:workspace": "node scripts/workspace-recovery-check.js",
     "test:standard": "node scripts/standard-program-check.js",
     "test:compat": "node scripts/compatibility-check.js",
     "test:security": "node scripts/electron-security-check.mjs",
-    "test:p0": "node scripts/regression-check.js && npm run test:standard && npm run test:compat && npm run test:examples && npm run test:workspace && npm run test:security",
+    "test:p0": "node scripts/regression-check.js && npm run test:standard && npm run test:programs && npm run test:language && npm run test:compat && npm run test:examples && npm run test:workspace && npm run test:security",
     "test:ci": "npm run lint && npm run test:p0 && npm run build:web"
   },
   "keywords": [

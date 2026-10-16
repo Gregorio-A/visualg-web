@@ -20,6 +20,8 @@
             this.outputEl = document.getElementById('terminal-output');
             this.inputArea = document.getElementById('terminal-input-area');
             this.inputEl = document.getElementById('terminal-input');
+            var inputOverlay = document.getElementById('consoleInputOverlay');
+            if (inputOverlay && inputOverlay.parentElement !== document.body) document.body.appendChild(inputOverlay);
 
             var self = this;
             document.getElementById('terminal-input-ok').addEventListener('click', function () {
@@ -114,6 +116,7 @@
             if (prompt) {
                 this.write(prompt);
             }
+            document.dispatchEvent(new window.CustomEvent('visualg:input-request'));
 
             var mode = localStorage.getItem('visualg-console-input-mode') || 'inline';
 
@@ -124,6 +127,7 @@
         },
 
         waitForContinue: function (message) {
+            document.dispatchEvent(new window.CustomEvent('visualg:input-request'));
             var mode = localStorage.getItem('visualg-console-input-mode') || 'inline';
             if (mode === 'modal') {
                 return this._readInputModal(message || 'Pressione Enter para continuar.');

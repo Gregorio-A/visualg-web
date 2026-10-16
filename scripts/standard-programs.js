@@ -27,6 +27,44 @@ fimalgoritmo
 `,
   },
   {
+    name: 'escolha sem outrocaso segue apos o bloco',
+    expected: 'depois',
+    source: `
+algoritmo "escolha-sem-padrao"
+var
+  opcao: inteiro
+inicio
+  opcao <- 3
+  escolha opcao
+    caso 1
+      escreval("um")
+    caso 2
+      escreval("dois")
+  fimescolha
+  escreval("depois")
+fimalgoritmo
+`,
+  },
+  {
+    name: 'escolha sem outrocaso executa o caso correspondente',
+    expected: 'dois\ndepois',
+    source: `
+algoritmo "escolha-caso-sem-padrao"
+var
+  opcao: inteiro
+inicio
+  opcao <- 2
+  escolha opcao
+    caso 1
+      escreval("um")
+    caso 2
+      escreval("dois")
+  fimescolha
+  escreval("depois")
+fimalgoritmo
+`,
+  },
+  {
     name: 'condicional simples',
     expected: 'Aprovado',
     source: `

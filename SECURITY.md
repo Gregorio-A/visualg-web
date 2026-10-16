@@ -3,7 +3,7 @@
 ## Versões cobertas
 
 Somente a versão mais recente publicada recebe correções de segurança. Não há
-backports para versões anteriores durante a fase beta.
+backports para versões anteriores.
 
 | Versão | Suporte de segurança |
 | --- | --- |

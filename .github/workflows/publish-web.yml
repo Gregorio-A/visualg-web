@@ -28,6 +28,20 @@ jobs:
       - name: Gerar build web
         run: npm run build:web
 
+      - name: Validar arquivos do site
+        run: |
+          test -s dist/index.html
+          test -s dist/console-window.html
+          test -s dist/manifest.json
+          test -d dist/docs
+          test -d dist/js
+          test -d dist/vendor
+          grep -q 'class="logo-version">1.0<' dist/index.html
+          if grep -R --include='*.html' -n '__VISUALG_WEB_VERSION__' dist; then
+            echo 'A build ainda contém um marcador de versão sem substituição.'
+            exit 1
+          fi
+
       - name: Publicar branch da Hostinger
         uses: peaceiris/actions-gh-pages@v4
         with:

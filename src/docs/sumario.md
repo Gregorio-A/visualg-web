@@ -9,6 +9,7 @@ projeto. Se preferir, navegue pelas páginas usando os botões **Anterior** e
 
 - [Introdução](#doc:introducao) — conheça a interface e escreva seu primeiro algoritmo.
 - [História](#doc:historia) — acompanhe a evolução do VisuAlg e deste projeto.
+- [Editor e arquivos](#doc:editor) — consulte os atalhos, a organização dos arquivos e os controles de execução.
 - [Status do projeto](#doc:status) — veja o estado atual, as validações e as pendências conhecidas.
 
 ## Linguagem VisuAlg

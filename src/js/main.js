@@ -16,6 +16,7 @@
     var settingVarsFontSize, settingVarsFontSizeSlider, settingConsoleFontSize, settingConsoleFontSizeSlider, settingConsoleInputMode;
     var settingVarsColNome, settingVarsColTipo, settingVarsColValor;
     var settingLoopDetection;
+    var editorRefreshFrame = 0;
     var ONBOARDING_STORAGE_KEY = 'visualg-onboarding-complete-v1';
     var SECTION_VISIBILITY_KEY = 'visualg-section-visibility-v1';
     var sectionVisibility = { editor: true, variables: true, terminal: true };
@@ -23,6 +24,16 @@
     function isCompactInterface() {
         return window.innerWidth <= 760 || (window.innerWidth <= 950 && window.innerHeight <= 500);
     }
+
+    function scheduleEditorRefresh() {
+        if (editorRefreshFrame) return;
+        editorRefreshFrame = window.requestAnimationFrame(function () {
+            editorRefreshFrame = 0;
+            if (editor.instance) editor.instance.refresh();
+        });
+    }
+
+    document.addEventListener('visualg:request-editor-refresh', scheduleEditorRefresh);
 
     function shortcutEnabled(name) {
         return localStorage.getItem('visualg-shortcut-' + name) !== 'off';
@@ -291,7 +302,7 @@
             var val = parseInt(this.value, 10);
             if (val >= 1) applyFontSize(val);
         });
-        settingFontSizeSlider.addEventListener('input', function () {
+        if (settingFontSizeSlider) settingFontSizeSlider.addEventListener('input', function () {
             applyFontSize(this.value);
         });
         settingWordWrap.addEventListener('change', function () {
@@ -307,14 +318,14 @@
             var val = parseInt(this.value, 10);
             if (val >= 1) applyVarsFontSize(val);
         });
-        settingVarsFontSizeSlider.addEventListener('input', function () {
+        if (settingVarsFontSizeSlider) settingVarsFontSizeSlider.addEventListener('input', function () {
             applyVarsFontSize(this.value);
         });
         settingConsoleFontSize.addEventListener('input', function () {
             var val = parseInt(this.value, 10);
             if (val >= 1) applyConsoleFontSize(val);
         });
-        settingConsoleFontSizeSlider.addEventListener('input', function () {
+        if (settingConsoleFontSizeSlider) settingConsoleFontSizeSlider.addEventListener('input', function () {
             applyConsoleFontSize(this.value);
         });
         settingConsoleInputMode.addEventListener('change', function () {
@@ -349,7 +360,8 @@
                 stepProgram();
             }
             if (e.key === 'F10' && shortcutEnabled('debug')) { e.preventDefault(); advanceDebugger('over'); }
-            if (e.key === 'F11' && shortcutEnabled('debug')) { e.preventDefault(); advanceDebugger(e.shiftKey ? 'out' : 'into'); }
+            // F11 belongs to the browser's fullscreen control. Use the visible
+            // debug buttons for step-into/step-out so the page never blocks it.
             if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 's' && shortcutEnabled('save')) { e.preventDefault(); saveProgram(); }
             if (e.key === 'Escape') {
                 if (!settingsOverlay.classList.contains('hidden')) closeSettings();
@@ -652,7 +664,7 @@
 
     function applyTheme(theme) {
         if (theme === 'visualg-classic-high-contrast') theme = 'visualg-classic';
-        var lightThemes = ['light', 'github-light', 'solarized-light', 'high-contrast', 'catppuccin-latte', 'gruvbox-light', 'paper', 'visualg-classic', 'visualg-3', 'visualg-agua', 'visualg-metal', 'visualg-notas', 'visualg-aluminio', 'visualg-madeira', 'visualg-plastico'];
+        var lightThemes = ['light', 'github-light', 'solarized-light', 'high-contrast', 'catppuccin-latte', 'gruvbox-light', 'paper', 'nord-light', 'one-light', 'rose-pine-dawn', 'kanagawa-lotus', 'visualg-classic', 'visualg-3', 'visualg-agua', 'visualg-metal', 'visualg-notas', 'visualg-aluminio', 'visualg-madeira', 'visualg-plastico'];
         document.documentElement.setAttribute('data-theme', theme);
         document.documentElement.dataset.colorMode = lightThemes.includes(theme) ? 'light' : 'dark';
         localStorage.setItem('visualg-theme', theme);
@@ -926,7 +938,7 @@
         var px = size + 'px';
         editor.instance.getWrapperElement().style.fontSize = px;
         document.documentElement.style.setProperty('--ide-editor-font-size', px);
-        editor.instance.refresh();
+        scheduleEditorRefresh();
         localStorage.setItem('visualg-font-size', size);
         if (settingFontSize) settingFontSize.value = size;
         if (settingFontSizeSlider) settingFontSizeSlider.value = size;
@@ -1060,16 +1072,16 @@
         settingTheme.value = document.documentElement.getAttribute('data-theme');
         var savedFontSize = localStorage.getItem('visualg-font-size') || '14';
         settingFontSize.value = savedFontSize;
-        settingFontSizeSlider.value = Math.min(parseInt(savedFontSize, 10), 160);
+        if (settingFontSizeSlider) settingFontSizeSlider.value = Math.min(parseInt(savedFontSize, 10), 160);
         settingWordWrap.value = localStorage.getItem('visualg-word-wrap') || 'off';
         settingTabSize.value = localStorage.getItem('visualg-tab-size') || '2';
         settingIndentGuides.value = localStorage.getItem('visualg-indent-guides') || 'on';
         var savedVarsFontSize = localStorage.getItem('visualg-vars-font-size') || '12';
         settingVarsFontSize.value = savedVarsFontSize;
-        settingVarsFontSizeSlider.value = Math.min(parseInt(savedVarsFontSize, 10), 160);
+        if (settingVarsFontSizeSlider) settingVarsFontSizeSlider.value = Math.min(parseInt(savedVarsFontSize, 10), 160);
         var savedConsoleFontSize = localStorage.getItem('visualg-console-font-size') || '13';
         settingConsoleFontSize.value = savedConsoleFontSize;
-        settingConsoleFontSizeSlider.value = Math.min(parseInt(savedConsoleFontSize, 10), 160);
+        if (settingConsoleFontSizeSlider) settingConsoleFontSizeSlider.value = Math.min(parseInt(savedConsoleFontSize, 10), 160);
         settingConsoleInputMode.value = localStorage.getItem('visualg-console-input-mode') || 'inline';
         settingLoopDetection.value = localStorage.getItem('visualg-loop-detection') || 'on';
         var varsColumns = JSON.parse(localStorage.getItem('visualg-vars-columns') || '{"nome":true,"tipo":true,"valor":true}');
@@ -1221,6 +1233,7 @@
         setStatus('Executando...', 'running');
         setRunning(true);
         var hadError = false;
+        var wasStopped = false;
 
         try {
             var tokens = new window.VisuAlgLexer(source).tokenize();
@@ -1235,6 +1248,7 @@
                 hadError = true;
                 reportExecutionError(e, tab.id);
             } else {
+                wasStopped = true;
                 setStatus('Execução interrompida');
             }
         }
@@ -1243,7 +1257,7 @@
         tab.executor = null;
         tab.running = false;
         setRunning(false);
-        document.dispatchEvent(new window.CustomEvent('visualg:execution-end'));
+        document.dispatchEvent(new window.CustomEvent('visualg:execution-end', { detail: { stopped: wasStopped } }));
     }
 
     async function stepProgram() {
@@ -1264,6 +1278,7 @@
         setStatus('Passo a passo...', 'running');
         setRunning(true);
         var hadError = false;
+        var wasStopped = false;
 
         try {
             var tokens = new window.VisuAlgLexer(source).tokenize();
@@ -1281,6 +1296,7 @@
                 hadError = true;
                 reportExecutionError(e);
             } else {
+                wasStopped = true;
                 setStatus('Execução interrompida');
             }
         }
@@ -1289,7 +1305,7 @@
         tab.executor = null;
         tab.running = false;
         setRunning(false);
-        document.dispatchEvent(new window.CustomEvent('visualg:execution-end'));
+        document.dispatchEvent(new window.CustomEvent('visualg:execution-end', { detail: { stopped: wasStopped } }));
     }
 
     function stopProgram() {
@@ -1427,69 +1443,40 @@
     }
 
     function autoIndent() {
-        var code = editor.getValue();
-        var lines = code.split('\n');
-        var tabSize = editor.instance.getOption('tabSize') || 2;
-        var indentLevel = 0;
-        var result = [];
-
-        var ACCENT_MAP = {
-            'então': 'entao',
-            'senão': 'senao',
-            'até': 'ate',
-            'faça': 'faca',
-            'início': 'inicio',
-            'lógico': 'logico',
-            'não': 'nao'
-        };
-
-        function normalize(word) {
-            var lower = word.toLowerCase();
-            return ACCENT_MAP.hasOwnProperty(lower) ? ACCENT_MAP[lower] : lower;
+        var cm = editor.instance; var code = cm.getValue(); var lines = code.split('\n');
+        var tabSize = cm.getOption('indentUnit') || 2; var indentLevel = 0; var result = []; var inBlockComment = false;
+        var decrease = ['fimse','senao','fimenquanto','fimpara','fimescolha','fimalgoritmo','fimprocedimento','fimfuncao','caso','outrocaso','inicio','ate'];
+        var increaseFirst = ['inicio','var','senao','repita','escolha','caso','outrocaso'];
+        function visibleCode(line) {
+            var text = line.replace(/"(?:""|[^"])*"/g, '""');
+            while (text) {
+                if (inBlockComment) { var closing = text.indexOf('}'); if (closing < 0) return ''; text = text.slice(closing + 1); inBlockComment = false; continue; }
+                var comment = text.indexOf('//'); var opening = text.indexOf('{');
+                if (comment >= 0 && (opening < 0 || comment < opening)) return text.slice(0, comment);
+                if (opening < 0) return text;
+                var end = text.indexOf('}', opening + 1);
+                if (end < 0) { inBlockComment = true; return text.slice(0, opening); }
+                text = text.slice(0, opening) + ' ' + text.slice(end + 1);
+            }
+            return '';
         }
-
-        // Primeira palavra da linha diminui indentação
-        var indentDecrease = ['fimse', 'senao', 'fimenquanto', 'fimpara', 'fimrepita', 'fimescolha', 'fimalgoritmo', 'fimprocedimento', 'fimfuncao', 'caso', 'outrocaso', 'inicio'];
-
-        // Primeira palavra da linha aumenta indentação
-        var indentIncreaseFirst = ['inicio', 'var', 'senao', 'repita', 'escolha', 'caso', 'outrocaso'];
-
-        // Última palavra da linha aumenta indentação
-        var indentIncreaseLast = ['entao', 'faca'];
-
-        for (var i = 0; i < lines.length; i++) {
-            var trimmed = lines[i].trim();
-            if (trimmed === '') {
-                result.push('');
-                continue;
-            }
-
-            // Extrair primeira e última palavras
-            var words = trimmed.split(/\s+/);
-            var firstWord = normalize(words[0].split(/[^a-zA-ZáàâãéèêíìîóòôõúùûçÁÀÂÃÉÈÊÍÌÎÓÒÔÕÚÙÛÇ_]/)[0]);
-            var lastToken = words[words.length - 1];
-            var lastWord = normalize(lastToken.split(/[^a-zA-ZáàâãéèêíìîóòôõúùûçÁÀÂÃÉÈÊÍÌÎÓÒÔÕÚÙÛÇ_]/)[0]);
-
-            // Diminuir ANTES de escrever a linha
-            if (indentDecrease.indexOf(firstWord) !== -1) {
-                indentLevel = Math.max(0, indentLevel - 1);
-            }
-
-            // Escrever linha com indentação
-            var indent = '';
-            for (var j = 0; j < indentLevel * tabSize; j++) {
-                indent += ' ';
-            }
-            result.push(indent + trimmed);
-
-            // Aumentar DEPOIS de escrever a linha
-            if (indentIncreaseFirst.indexOf(firstWord) !== -1) {
-                indentLevel++;
-            } else if (indentIncreaseLast.indexOf(lastWord) !== -1) {
-                indentLevel++;
-            }
-        }
-
-        editor.setValue(result.join('\n'));
+        function keyword(value) { var match = /^[a-zA-ZáàâãéèêíìîóòôõúùûçÁÀÂÃÉÈÊÍÌÎÓÒÔÕÚÙÛÇ_]+/.exec(value.trim()); return match ? match[0].normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase() : ''; }
+        lines.forEach(function (line) {
+            var trimmed = line.trim(); if (!trimmed) { result.push(''); return; }
+            var syntax = visibleCode(line).trim(); var first = keyword(syntax); var parts = syntax.split(/\s+/); var last = keyword(parts[parts.length - 1] || '');
+            if (decrease.indexOf(first) !== -1) indentLevel = Math.max(0, indentLevel - 1);
+            result.push(' '.repeat(indentLevel * tabSize) + trimmed);
+            if (increaseFirst.indexOf(first) !== -1 || ['entao','faca'].indexOf(last) !== -1) indentLevel++;
+        });
+        var formatted = result.join('\n'); if (formatted === code) return;
+        function remap(pos) { var oldIndent = /^\s*/.exec(lines[pos.line] || '')[0].length; var newIndent = /^\s*/.exec(result[pos.line] || '')[0].length; return { line:pos.line, ch:Math.min((result[pos.line] || '').length, newIndent + Math.max(0, pos.ch - oldIndent)) }; }
+        var selections = cm.listSelections().map(function (range) { return { anchor:remap(range.anchor), head:remap(range.head) }; });
+        var lastLine = cm.lastLine(); var scroll = cm.getScrollInfo();
+        cm.operation(function () {
+            cm.replaceRange(formatted, { line:0, ch:0 }, { line:lastLine, ch:(lines[lastLine] || '').length }, '+autoindent');
+            cm.setSelections(selections);
+            cm.scrollTo(scroll.left, scroll.top);
+        });
+        cm.focus();
     }
 })();

@@ -9,6 +9,7 @@
     var tabs = {
         'sumario': 'docs/sumario.md',
         'introducao': 'docs/introducao.md',
+        'editor': 'docs/editor.md',
         'status': 'docs/status.md',
         'compatibilidade': 'docs/compatibilidade.md',
         'operadores': 'docs/operadores.md',
@@ -20,7 +21,7 @@
         'comandos': 'docs/comandos.md',
         'historia': 'docs/historia.md'
     };
-    var docOrder = ['sumario', 'introducao', 'historia', 'compatibilidade', 'operadores', 'entrada-saida', 'condicionais', 'repeticao', 'subprogramas', 'funcoes', 'comandos', 'status'];
+    var docOrder = ['sumario', 'introducao', 'historia', 'editor', 'compatibilidade', 'operadores', 'entrada-saida', 'condicionais', 'repeticao', 'subprogramas', 'funcoes', 'comandos', 'status'];
 
     function enhanceImages(root) {
         root.querySelectorAll('img:not([data-doc-enhanced])').forEach(function (img) {

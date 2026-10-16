@@ -5,10 +5,10 @@
 > `ANALISE_PROBLEMAS_VISUALG_WEB.md` e `COMPATIBILIDADE_PENDENCIAS.md` foram
 > descontinuados para não manter listas concorrentes.
 
-**Versão revisada:** `0.14.0`
+**Versão revisada:** `1.0.0`
 
-**Última revisão:** 6 de outubro de 2026
-**Base funcional auditada:** versão `0.14.0` e árvore de trabalho local; os resultados abaixo são das verificações executadas nesta revisão.
+**Última revisão:** 16 de outubro de 2026
+**Base funcional auditada:** versão `1.0.0` e árvore de trabalho local; os resultados abaixo são das verificações executadas nesta revisão.
 
 ![Temas clássicos da interface atual](screenshots/interface-temas-classicos-2026.png)
 
@@ -19,7 +19,7 @@
 | Área | Estado atual | O que falta |
 | --- | --- | --- |
 | Linguagem | O conjunto documentado está implementado e coberto por regressões. Não há incompatibilidade de linguagem reproduzida registrada como aberta nesta revisão. | Novas diferenças em relação ao VisuAlg 3.0.7 precisam de programa mínimo e teste de reprodução. |
-| Aplicação Web | A versão continua Beta. Build, lint e regressões principais passaram nesta revisão; a navegação Anterior/Próxima da documentação foi verificada em Chromium. Há 26 temas agrupados em claros e escuros. | Reforçar recuperação de dados, concluir validações manuais e realizar uso acompanhado em sala de aula. |
+| Aplicação Web | Versão 1.0.0, com build, lint e regressões principais; a navegação da documentação foi verificada em Chromium. O seletor agrupa 11 temas escuros, 11 claros e 8 clássicos. | Reforçar recuperação de dados, concluir validações manuais e realizar uso acompanhado em sala de aula. |
 | Abas e autosave | Abas de código e conteúdos auxiliares podem ser fechadas; códigos, aba ativa, estado modificado e uma cópia de recuperação são persistidos e testados. Falhas de salvamento geram aviso visível. | Tratar armazenamento cheio/bloqueado, workspace corrompido, migração e fechamento inesperado; oferecer backup completo. |
 | Acessibilidade | Atalhos, navegação por teclado em abas e modais, foco inicial e preso em modais, retorno do foco, ARIA e anúncios de estado foram implementados. | Validar com leitor de tela, zoom de 200%, todos os temas e tamanhos mínimos de alvos de toque. |
 | Electron | Isolamento, sandbox, CSP, IPC e proteção de caminhos possuem regressões automatizadas. O aplicativo iniciou em desenvolvimento, abriu a janela permitida do Console e sincronizou a saída. | Preparar e validar a distribuição pública dos instaladores. |
@@ -73,7 +73,7 @@ Prioridade **alta** indica risco para dados, acessibilidade ou publicação;
 | FILE-001 | Média | Pendente | **Falsos positivos ao abrir `.alg`.** O filtro textual bloqueia palavras parecidas com HTML/JavaScript mesmo que estejam em comentários ou strings. Concluir com validação adequada ao fato de o arquivo ser exibido como texto no editor. |
 | ERROR-001 | Média | Pendente | **Mensagens de erro uniformes.** Nem todo erro semântico ou de execução possui linha, coluna e trecho. Concluir quando a localização e a orientação didática forem consistentes nas fases do interpretador. |
 | MOBILE-001 | Média | Em validação | **Interface móvel.** Há teste de viewport estreita e captura visual. Ainda é necessário validar em dispositivos reais o editor, teclado virtual, áreas de toque e janelas auxiliares. |
-| RELEASE-001 | Média | Pendente | **Versão em uma única fonte.** A versão ainda é repetida no `package.json` e na interface. Concluir quando a build derivar esses valores de uma fonte única e a retirada da etiqueta Beta tiver critério explícito. |
+| RELEASE-001 | Média | Concluído | **Versão em uma única fonte.** `package.json` define a versão técnica 1.0.0; a tela de abertura e o cabeçalho exibem 1.0. A identificação Beta foi retirada com a adoção da versão 1.0. |
 | DOCS-001 | Baixa | Pendente | **Carregamento seguro da documentação.** Verificar `response.ok` e definir uma fronteira de sanitização antes de aceitar qualquer Markdown que não faça parte do pacote local. |
 | TECH-001 | Baixa | Planejado | **Scripts clássicos e globais.** Modularizar gradualmente o runtime e permitir que o Vite empacote o código sem os avisos atuais, preservando os testes existentes. |
 
@@ -92,6 +92,7 @@ incompatibilidades ou regressões conhecidas:
 
 | Versão | Principais entregas consolidadas | Evidência atual |
 | --- | --- | --- |
+| `1.0` | Primeira versão principal independente; 11 temas escuros e 11 temas claros, além de 8 temas clássicos; identificação de versão derivada do pacote. | `npm run test:ci` passou; testes E2E dos temas e seus contrastes também passaram nesta revisão. |
 | `0.14` | Identidade própria do fork; nova interface com abas unificadas, painéis responsivos, 26 temas claros e escuros e destaque de sintaxe; Console em painel/aba/modal/janela/aba externa; fontes independentes; teclado, foco e ARIA; segurança Electron; lint, CI e testes E2E. | `npm run test:ci` passou em 6/10/2026; navegação de documentação verificada em Chromium. Suíte E2E completa não executada nesta revisão. |
 | `0.13` | Onboarding e galeria; erro clicável; estado visível do autosave e recuperação; controle dos painéis; `senao se`; E/S sem parênteses; funções sem `()`; `pi`; entrada inválida repetida; comandos especiais e semântica avançada. | `npm run test:compat`, `npm run test:standard`, `npm run test:examples`, `npm run test:workspace` e testes E2E. |
 | `0.12` | Persistência das abas e códigos, restauração da sessão, programas padrão e documentação de história/autoria. | `npm run test:workspace` e `npm run test:standard`. |

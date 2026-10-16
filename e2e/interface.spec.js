@@ -10,14 +10,80 @@ async function openApp(page) {
   await page.goto('/');
   await expect(page.locator('#editor-empty-state')).toBeVisible();
   if (await page.locator('#btn-empty-restore-tabs').isEnabled()) await page.locator('#btn-empty-restore-tabs').click();
-  else await page.locator('#btn-empty-new').click();
+  else await createFileThroughWelcome(page);
   await expect(page.locator('.CodeMirror')).toBeVisible();
   await expect.poll(() => page.evaluate(() => Boolean(window.VisualGWorkspace))).toBe(true);
+}
+
+async function createFileThroughWelcome(page) {
+  const tabsBeforeCreate = await page.locator('.tab-item').count();
+  await page.locator('#btn-empty-new').click();
+  const dialog = page.locator('.workspace-create-dialog[open]');
+  await expect(dialog).toBeVisible();
+  await dialog.locator('button[type="submit"]').click();
+  await expect(dialog).toBeHidden();
+  await expect(page.locator('.tab-item')).toHaveCount(tabsBeforeCreate + 1);
+  await expect.poll(() => page.evaluate(() => window.TabManager.getActiveTab()?.fileName || '')).toContain('MeuAlgoritmo');
 }
 
 async function useConsolePresentation(page, mode) {
   await page.addInitScript((presentation) => localStorage.setItem('visualg-console-presentation', presentation), mode);
 }
+
+test('editor envolve seleções, busca, substitui e seleciona ocorrências', async ({ page }) => {
+  await openApp(page);
+  await page.evaluate(() => {
+    const cm = window.VisualGEditor.instance;
+    cm.setValue('escreval(ola)\nnota + nota + nota');
+    cm.setSelection({ line:0, ch:9 }, { line:0, ch:12 });
+    cm.focus();
+  });
+  await page.keyboard.insertText('"');
+  await expect.poll(() => page.evaluate(() => window.VisualGEditor.getValue())).toBe('escreval("ola")\nnota + nota + nota');
+
+  await page.locator('.CodeMirror').click();
+  await page.keyboard.press('Control+f');
+  await page.locator('.cm-search-widget input[type="search"]').fill('ola');
+  await expect(page.locator('.cm-search-current')).toBeVisible();
+  await page.keyboard.press('Escape');
+  await page.locator('.CodeMirror').click();
+  await page.evaluate(() => { const cm = window.VisualGEditor.instance; cm.setCursor({ line:1, ch:1 }); cm.focus(); });
+  await page.keyboard.press('Control+d');
+  expect(await page.evaluate(() => window.VisualGEditor.instance.listSelections().length)).toBe(2);
+  await page.keyboard.press('Control+Shift+l');
+  expect(await page.evaluate(() => window.VisualGEditor.instance.listSelections().length)).toBe(3);
+  await page.evaluate(() => { const cm = window.VisualGEditor.instance; cm.setValue('um dois tres'); cm.setCursor({ line:0, ch:4 }); });
+  const altClick = await page.evaluate(() => {
+    const cm = window.VisualGEditor.instance;
+    const point = cm.charCoords({ line:0, ch:8 }, 'window');
+    return { x:point.left + 2, y:(point.top + point.bottom) / 2 };
+  });
+  await page.keyboard.down('Alt');
+  await page.mouse.click(altClick.x, altClick.y);
+  await page.keyboard.up('Alt');
+  expect(await page.evaluate(() => window.VisualGEditor.instance.listSelections().length)).toBe(2);
+  await page.evaluate(() => { const cm = window.VisualGEditor.instance; cm.setValue('escreval("ola")\nnota + nota + nota'); cm.setCursor({ line:1, ch:1 }); cm.focus(); });
+  await page.keyboard.press('Control+h');
+  await page.locator('.cm-search-widget input[type="search"]').fill('nota');
+  await page.locator('.cm-search-widget input[type="text"]').fill('valor');
+  await page.locator('.cm-search-widget button[title="Substituir todas as ocorrências"]').click();
+  await expect.poll(() => page.evaluate(() => window.VisualGEditor.getValue())).toBe('escreval("ola")\nvalor + valor + valor');
+});
+
+test('autoindentação preserva comentários, cursor e permite desfazer', async ({ page }) => {
+  await openApp(page);
+  await page.evaluate(() => {
+    const cm = window.VisualGEditor.instance;
+    cm.setValue('Algoritmo "Teste"\nInicio\nse verdadeiro entao\nescreval("faca") // comentario\nfimse\nfimalgoritmo');
+    cm.setCursor({ line:3, ch:12 });
+  });
+  await page.locator('#btn-tab-indent').click();
+  await expect.poll(() => page.evaluate(() => window.VisualGEditor.getValue())).toBe('Algoritmo "Teste"\nInicio\n  se verdadeiro entao\n    escreval("faca") // comentario\n  fimse\nfimalgoritmo');
+  expect(await page.evaluate(() => window.VisualGEditor.instance.getCursor().line)).toBe(3);
+  await page.keyboard.press('Control+z');
+  await expect.poll(() => page.evaluate(() => window.VisualGEditor.getValue())).toContain('escreval("faca") // comentario');
+  expect(await page.evaluate(() => window.VisualGEditor.getValue())).toContain('\nse verdadeiro entao\n');
+});
 
 test('inicia na tela de boas-vindas e permite restaurar as abas salvas', async ({ page }) => {
   await page.addInitScript(() => {
@@ -72,28 +138,30 @@ test('mostra códigos recentes na tela inicial e reabre o arquivo escolhido', as
   await expect.poll(() => page.evaluate(() => window.VisualGEditor.getValue())).toBe(code);
 });
 
-test('descarta arquivo novo sem uso ao fechar a aba', async ({ page }) => {
+test('fechar aba mantém arquivo novo no projeto', async ({ page }) => {
   await openApp(page);
   await page.locator('#btn-add-tab').click();
-  await page.locator('#btn-empty-new').click();
-  await expect(page.locator('.tab-item')).toHaveCount(2);
+  const tabsBeforeNew = await page.locator('.tab-item').count();
+  await createFileThroughWelcome(page);
+  await expect(page.locator('.tab-item')).toHaveCount(tabsBeforeNew + 1);
+  const createdFile = page.locator('#workspace-file-list .file-item').filter({ hasText: 'MeuAlgoritmo (cópia 1).alg' });
+  await expect(createdFile).toBeVisible();
   await page.locator('.tab-item.active .tab-close').click();
-  await expect(page.locator('.tab-item')).toHaveCount(1);
-  await expect(page.locator('#workspace-file-list .file-item').filter({ hasText: 'MeuAlgoritmo.alg' })).toHaveCount(0);
-  await expect(page.locator('#editor-recent-list button').filter({ hasText: 'MeuAlgoritmo.alg' })).toHaveCount(0);
-  await expect.poll(() => page.evaluate(() => JSON.parse(localStorage.getItem('visualg-closed-files-v1') || '[]').length)).toBe(4);
+  await expect(page.locator('.tab-item')).toHaveCount(tabsBeforeNew);
+  await expect(createdFile).toBeVisible();
 });
 
-test('arquivo com código continua nos recentes após fechar e recarregar', async ({ page }) => {
+test('arquivo com código continua no projeto após fechar e recarregar', async ({ page }) => {
   await openApp(page);
   await page.locator('#btn-add-tab').click();
-  await page.locator('#btn-empty-new').click();
+  await createFileThroughWelcome(page);
   const code = 'Algoritmo "Guardado"\nInicio\n  escreval("salvo")\nfimalgoritmo';
   await page.evaluate((source) => window.VisualGEditor.setValue(source), code);
+  const createdFile = page.locator('#workspace-file-list .file-item').filter({ hasText: 'MeuAlgoritmo (cópia 1).alg' });
+  await expect(createdFile).toBeVisible();
   await page.locator('.tab-item.active .tab-close').click();
   await page.reload();
-  await expect(page.locator('#editor-recent-list button').filter({ hasText: 'Guardado.alg' })).toBeVisible();
-  await page.locator('#editor-recent-list button', { hasText: 'Guardado.alg' }).click();
+  await page.locator('.file-item').filter({ hasText: 'MeuAlgoritmo (cópia 1).alg' }).click();
   await expect.poll(() => page.evaluate(() => window.VisualGEditor.getValue())).toBe(code);
 });
 
@@ -176,24 +244,78 @@ test('IDs repetidos são reparados sem descartar códigos diferentes', async ({ 
   await expect.poll(() => page.evaluate(() => JSON.parse(localStorage.getItem('visualg-closed-files-v1'))[0].code)).toBe(codeC);
 });
 
-test('menu de contexto oferece sliders e permite fonte maior que 50', async ({ page }) => {
+test('menu de contexto usa pílulas ajustáveis sem sliders e permite fonte maior que 50', async ({ page }) => {
+  await page.setViewportSize({ width:858, height:699 });
   await openApp(page);
   await page.locator('.CodeMirror').click({ button:'right' });
   const menu = page.locator('#editor-quick-menu');
   await expect(menu).toBeVisible();
+  const fontSelector = menu.locator('.editor-quick-field').filter({ hasText:'Fonte' }).locator('select');
   const font = menu.locator('.editor-quick-field').filter({ hasText:'Tamanho da fonte' });
-  await expect(font.locator('input[type="range"]')).toHaveAttribute('max', '160');
-  await font.locator('input[type="range"]').fill('72');
-  await expect(font.locator('input[type="number"]')).toHaveValue('72');
+  const selectorBox = await fontSelector.boundingBox();
+  const numericBox = await font.locator('.editor-quick-numeric-control').boundingBox();
+  expect(Math.abs(selectorBox.x - numericBox.x)).toBeLessThanOrEqual(1);
+  await expect(menu.locator('input[type="range"]')).toHaveCount(0);
+  await expect(font.locator('input[type="number"]')).toBeHidden();
+  const fontPill = font.locator('.editor-quick-value-pill');
+  const initialFontBox = await fontPill.boundingBox();
+  await page.mouse.move(initialFontBox.x + initialFontBox.width / 2, initialFontBox.y + initialFontBox.height / 2);
+  await page.mouse.down();
+  await page.mouse.move(initialFontBox.x + initialFontBox.width / 2 + 290, initialFontBox.y + initialFontBox.height / 2);
+  await page.mouse.up();
+  await expect(fontPill).toHaveText('72');
   await expect(page.locator('#setting-font-size')).toHaveValue('72');
+  const fontPillBox = await fontPill.boundingBox();
+  await page.mouse.move(fontPillBox.x + fontPillBox.width / 2, fontPillBox.y + fontPillBox.height / 2);
+  await page.mouse.down();
+  await page.mouse.move(fontPillBox.x + fontPillBox.width / 2 + 5, fontPillBox.y + fontPillBox.height / 2);
+  await page.mouse.up();
+  await expect(fontPill).toHaveText('73');
+  await font.locator('button[aria-label^="Aumentar"]').click();
+  await expect(fontPill).toHaveText('74');
+  await font.locator('button[aria-label^="Diminuir"]').click();
+  await expect(page.locator('#setting-font-size')).toHaveValue('73');
+  await font.locator('button[aria-label^="Diminuir"]').click();
+  await expect(fontPill).toHaveText('72');
+  const tabSize = menu.locator('.editor-quick-field').filter({ hasText:'Tamanho da tabulação' });
+  await tabSize.locator('button[aria-label^="Aumentar"]').click();
+  await expect(page.locator('#setting-tab-size')).toHaveValue('4');
+  await tabSize.locator('button[aria-label^="Diminuir"]').click();
+  await expect(page.locator('#setting-tab-size')).toHaveValue('2');
   const spacing = menu.locator('.editor-quick-field').filter({ hasText:'Espaçamento entre letras' });
-  await spacing.locator('input[type="number"]').fill('2');
-  await expect(spacing.locator('input[type="range"]')).toHaveValue('2');
+  const spacingPill = spacing.locator('.editor-quick-value-pill');
+  await spacingPill.focus();
+  await page.keyboard.press('End');
+  await expect(spacingPill).toHaveText('10');
   await page.reload();
   await expect.poll(() => page.evaluate(() => localStorage.getItem('visualg-font-size'))).toBe('72');
-  await expect(page.locator('#setting-font-size-slider')).toHaveAttribute('max', '160');
-  await expect(page.locator('#setting-console-font-size-slider')).toHaveAttribute('max', '160');
-  await expect(page.locator('#setting-vars-font-size-slider')).toHaveAttribute('max', '160');
+  await expect(page.locator('input[type="range"]')).toHaveCount(0);
+});
+
+test('pílulas das configurações têm ajustes incrementais e cabem sem sobreposição', async ({ page }) => {
+  await page.setViewportSize({ width:900, height:760 });
+  await openApp(page);
+  await page.evaluate(() => window.VisualGWorkspace.showSettings('Editor'));
+  await page.locator('.settings-categories button').filter({ hasText:'Editor' }).click();
+  const fontGroup = page.locator('.workspace-setting-group').filter({ hasText:'Tamanho da fonte' }).first();
+  await fontGroup.locator('button[aria-label^="Aumentar"]').click();
+  await expect(fontGroup.locator('input[type="number"]')).toHaveValue('15');
+  await expect(fontGroup.locator('input[type="range"]')).toHaveCount(0);
+  await expect(fontGroup.locator('output')).toHaveText('15 px');
+  const boxes = await fontGroup.locator('.workspace-setting-control-row > :not([hidden])').evaluateAll((nodes) => nodes.map((node) => {
+    const rect = node.getBoundingClientRect();
+    return { left:rect.left, right:rect.right };
+  }));
+  for (let index = 1; index < boxes.length; index++) {
+    expect(boxes[index].left).toBeGreaterThanOrEqual(boxes[index - 1].right - 1);
+  }
+  const numericInput = fontGroup.locator('input[type="number"]');
+  const tabGroup = page.locator('.workspace-setting-group').filter({ has:page.locator('#workspace-setting-tab-size') });
+  await expect(tabGroup.locator('.workspace-setting-value')).toHaveAttribute('aria-valuemax', '4');
+  await tabGroup.locator('button[aria-label^="Aumentar"]').click();
+  await expect(page.locator('#workspace-setting-tab-size')).toHaveValue('4');
+  await tabGroup.locator('button[aria-label^="Diminuir"]').click();
+  await expect(page.locator('#workspace-setting-tab-size')).toHaveValue('2');
 });
 
 test('criação rápida preserva códigos e IDs únicos após recarregar', async ({ page }) => {
@@ -417,20 +539,47 @@ test('a documentação começa pelo sumário e seus links abrem os artigos', asy
   await expect(page.locator('.docs-article')).toContainText('Introdução ao VisuAlg Web');
   await page.locator('.docs-page-navigation-previous').click();
   await expect(page.locator('.docs-article')).toContainText('Sumário');
+  await page.locator('.doc-item', { hasText: 'Editor e arquivos' }).click();
+  await expect(page.locator('.docs-article')).toContainText('Ctrl+Shift+L');
+  await expect(page.locator('.docs-article')).toContainText('F11 permanece reservado');
 });
 
-test('relatar problema abre Issues em nova guia sem formulário próprio', async ({ page }) => {
+test('relatar problema explica o destino antes de abrir Issues', async ({ page }) => {
   await openApp(page);
-  await expect(page.locator('#bugReportOverlay, .bug-report-field, form')).toHaveCount(0);
+  await page.locator('#btn-report-bug').click();
+  const dialog = page.locator('#report-issue-dialog');
+  await expect(dialog).toBeVisible();
+  await expect.poll(() => dialog.evaluate((node) => {
+    const rect = node.getBoundingClientRect();
+    return Math.abs(rect.left + rect.width / 2 - window.innerWidth / 2) < 2
+      && Math.abs(rect.top + rect.height / 2 - window.innerHeight / 2) < 2;
+  })).toBe(true);
+  await expect(dialog).toContainText('github.com/Gregorio-A/visualg-web/issues');
   await page.evaluate(() => {
     window.__openedIssueTabs = [];
     window.open = (url, target, features) => { window.__openedIssueTabs.push({ url, target, features }); return null; };
   });
+  await dialog.locator('[data-report-cancel]').click();
+  await expect(dialog).toBeHidden();
   await page.locator('#btn-report-bug').click();
+  await dialog.locator('[value="continue"]').click();
   await expect.poll(() => page.evaluate(() => window.__openedIssueTabs.length)).toBe(1);
   await expect.poll(() => page.evaluate(() => window.__openedIssueTabs[0])).toEqual({
     url: 'https://github.com/Gregorio-A/visualg-web/issues', target: '_blank', features: 'noopener,noreferrer',
   });
+});
+
+test('modal de criar arquivo permanece centralizado na janela', async ({ page }) => {
+  await openApp(page);
+  await page.locator('#btn-new-workspace-file').click();
+  const dialog = page.locator('#new-workspace-file-dialog');
+  await expect(dialog).toBeVisible();
+  await expect.poll(() => dialog.evaluate((node) => {
+    const rect = node.getBoundingClientRect();
+    return Math.abs(rect.left + rect.width / 2 - window.innerWidth / 2) < 2
+      && Math.abs(rect.top + rect.height / 2 - window.innerHeight / 2) < 2;
+  })).toBe(true);
+  await dialog.locator('[data-create-cancel]').click();
 });
 
 test('configurações usam fontes em px e abrem o console em modal grande por padrão', async ({ page }) => {
@@ -449,12 +598,26 @@ test('configurações usam fontes em px e abrem o console em modal grande por pa
 
 test('temas claros mantêm contraste legível e o Clássico substitui sua variante separada', async ({ page }, testInfo) => {
   await openApp(page);
+  await expect(page.locator('.logo-version')).toHaveText('1.0');
   await expect(page.locator('#setting-theme option[value="visualg-classic-high-contrast"]')).toHaveCount(0);
+  await page.locator('#btn-scale').click();
+  for (const [groupName, count] of [['Escuros', 11], ['Claros', 11]]) {
+    const group = page.locator('.theme-subgroup').filter({ hasText:groupName });
+    await expect(group.locator('button')).toHaveCount(count);
+  }
+  const lightThemes = page.locator('.theme-subgroup').filter({ hasText: 'Claros' }).locator('button');
+  await expect(lightThemes).toHaveText([
+    'VisuAlg Light', 'Paper & Ink', 'Nord', 'Kanagawa Lotus', 'GitHub Light',
+    'One Light', 'Solarized Light', 'Alto contraste', 'Catppuccin Latte',
+    'Rosé Pine Dawn', 'Gruvbox'
+  ]);
+  await page.locator('#btn-scale').click();
+  await expect(page.locator('#workspace-theme-menu')).toHaveCount(0);
   await page.evaluate(() => {
     window.VisualGEditor.setValue('Algoritmo "Contraste"\nInicio\n  escreval("Teste (visual)")\nfimalgoritmo');
     window.VisualGEditor.instance.setCursor({ line: 2, ch: 10 });
   });
-  const themes = ['light', 'github-light', 'solarized-light', 'high-contrast', 'catppuccin-latte', 'gruvbox-light', 'paper', 'visualg-classic', 'visualg-3', 'visualg-agua', 'visualg-metal', 'visualg-notas', 'visualg-aluminio', 'visualg-madeira', 'visualg-plastico'];
+  const themes = ['light', 'github-light', 'solarized-light', 'high-contrast', 'catppuccin-latte', 'gruvbox-light', 'paper', 'nord-light', 'one-light', 'rose-pine-dawn', 'kanagawa-lotus', 'visualg-classic', 'visualg-3', 'visualg-agua', 'visualg-metal', 'visualg-notas', 'visualg-aluminio', 'visualg-madeira', 'visualg-plastico'];
   for (const theme of themes) {
     await page.evaluate((id) => {
       const select = window.document.getElementById('setting-theme');
@@ -594,7 +757,7 @@ test('restaura abas e uma cópia de recuperação', async ({ page }) => {
   await expect.poll(() => page.evaluate(() => window.TabManager.getPersistenceState().status)).toBe('saved');
   const tabsBeforeNew = await page.locator('.tab-item').count();
   await page.locator('#btn-add-tab').click();
-  await page.locator('#btn-empty-new').click();
+  await createFileThroughWelcome(page);
   await setCode(page, second);
   await expect.poll(() => page.evaluate(() => window.TabManager.getPersistenceState().status)).toBe('saved');
   const tabsBeforeReload = await page.locator('.tab-item').count();
@@ -664,18 +827,19 @@ test('ponto de parada pausa antes da linha e Executar continua', async ({ page }
 test('fechar aba preserva arquivo, excluir envia ao histórico e restaura', async ({ page }) => {
   await openApp(page);
   await page.locator('#btn-add-tab').click();
-  await page.locator('#btn-empty-new').click();
+  await createFileThroughWelcome(page);
+  const createdFile = page.locator('#workspace-file-list .file-item').filter({ hasText: 'MeuAlgoritmo (cópia 1).alg' });
   await setCode(page, programs.output);
   await page.locator('.tab-item.active .tab-close').click();
-  await expect(page.locator('#workspace-file-list')).toContainText('Atalhos.alg');
+  await expect(createdFile).toBeVisible();
   await page.reload();
-  await page.locator('.file-item').filter({ hasText: 'Atalhos.alg' }).click();
+  await page.locator('.file-item').filter({ hasText: 'MeuAlgoritmo (cópia 1).alg' }).click();
   await expect.poll(() => page.evaluate(() => window.VisualGEditor.getValue())).toBe(programs.output);
-  await page.locator('.file-item').filter({ hasText: 'Atalhos.alg' }).locator('.file-close').click();
-  await expect(page.locator('#workspace-file-list')).not.toContainText('Atalhos.alg');
+  await page.locator('.file-item').filter({ hasText: 'MeuAlgoritmo (cópia 1).alg' }).locator('.file-close').click();
+  await expect(page.locator('#workspace-file-list')).not.toContainText('MeuAlgoritmo (cópia 1).alg');
   await page.locator('#btn-history').click();
-  await page.locator('#workspace-trash button').filter({ hasText: 'Atalhos.alg' }).click();
-  await expect(page.locator('#workspace-file-list')).toContainText('Atalhos.alg');
+  await page.locator('#workspace-trash button').filter({ hasText: 'MeuAlgoritmo (cópia 1).alg' }).click();
+  await expect(page.locator('#workspace-file-list')).toContainText('MeuAlgoritmo (cópia 1).alg');
 });
 
 test('botão Histórico abre a janela de recuperação', async ({ page }) => {
@@ -705,8 +869,12 @@ test('temas e escala do editor persistem', async ({ page }) => {
   await expect.poll(() => page.locator('.tab-item.active').evaluate((element) => window.getComputedStyle(element).backgroundColor)).toBe('rgb(255, 255, 255)');
   await page.locator('#btn-settings').click();
   await page.locator('.settings-categories button').filter({ hasText: 'Editor' }).click();
-  await page.locator('#workspace-setting-letter-spacing').fill('2');
-  await page.locator('#workspace-setting-line-spacing').fill('33');
+  const letterPill = page.locator('#workspace-setting-letter-spacing-pill');
+  await letterPill.focus(); await page.keyboard.press('Home');
+  for (let index = 0; index < 12; index++) await page.keyboard.press('ArrowRight');
+  const linePill = page.locator('#workspace-setting-line-spacing-pill');
+  await linePill.focus(); await page.keyboard.press('Home');
+  for (let index = 0; index < 15; index++) await page.keyboard.press('ArrowRight');
   await page.locator('.view-tab[data-type="settings"] .view-tab-close').click();
   await page.reload();
   await expect(page.locator('html')).toHaveAttribute('data-theme', 'github-light');
@@ -724,7 +892,7 @@ test('console em modal e janela separada', async ({ page }) => {
   await page.locator('#debug-run').click();
   await expect(page.locator('.console-overlay')).toBeVisible();
   await expect(page.locator('#terminal-output')).toContainText('atalho funcionando');
-  await page.locator('.console-dialog-header button').click();
+  await page.locator('.console-dialog-header').getByRole('button', { name:'Voltar ao editor' }).click();
   await page.locator('#btn-settings').click();
   await page.locator('.settings-categories button').filter({ hasText: 'Console' }).click();
   await page.locator('#workspace-setting-console-presentation').selectOption('window');
@@ -794,7 +962,7 @@ test('layout móvel mantém todas as seções utilizáveis com meia tela dispon�
   await expect(page.locator('.workspace-settings')).toBeVisible();
   await expect(page.locator('.settings-categories')).toHaveCSS('flex-direction', 'row');
   await page.locator('.settings-categories button').filter({ hasText: 'Editor' }).click();
-  await expect(page.locator('#workspace-setting-font-size')).toBeVisible();
+  await expect(page.locator('.workspace-setting-group').filter({ hasText:'Tamanho da fonte' }).locator('.workspace-setting-value')).toBeVisible();
   await expectInsideViewport('#workspace-aux-view');
 
   await page.locator('#btn-scale').click();
@@ -1055,7 +1223,7 @@ test('pares respeitam contexto, fechamento existente, seleção e Backspace', as
     cm.focus();
   });
   await page.keyboard.type('(');
-  await expect.poll(() => page.evaluate(() => window.VisualGEditor.getValue())).toBe('escreva(()');
+  await expect.poll(() => page.evaluate(() => window.VisualGEditor.getValue())).toBe('escreva((valor))');
 
   await page.evaluate(() => {
     const cm = window.VisualGEditor.instance;
@@ -1191,10 +1359,11 @@ test('console mantém saída, entrada e saída do painel acessíveis acima do te
 
   await page.evaluate(() => window.localStorage.setItem('visualg-console-presentation', 'modal'));
   await page.locator('#btn-show-console').click();
-  await expect(page.locator('.console-dialog-header button')).toBeVisible();
+  await expect(page.locator('.console-dialog-header').getByRole('button', { name:'Parar execução' })).toBeVisible();
+  await expect(page.locator('.console-dialog-header').getByRole('button', { name:'Voltar ao editor' })).toBeVisible();
   const dialog = await page.locator('.console-dialog').boundingBox();
   expect(dialog.y + dialog.height).toBeLessThanOrEqual(260.5);
-  await page.locator('.console-dialog-header button').click();
+  await page.locator('.console-dialog-header').getByRole('button', { name:'Voltar ao editor' }).click();
   await expect(page.locator('#editorPanel')).toBeVisible();
 });
 
@@ -1239,6 +1408,9 @@ test('autocompletar aceita comando e barra de comandos cria arquivo', async ({ p
   const tabsBeforeNew = await page.locator('.tab-item').count();
   await page.locator('#command-input').fill('Novo arquivo');
   await page.locator('#command-results button').first().click();
+  const createDialog = page.locator('.workspace-create-dialog[open]');
+  await expect(createDialog).toBeVisible();
+  await createDialog.locator('button[type="submit"]').click();
   await expect(page.locator('.tab-item')).toHaveCount(tabsBeforeNew + 1);
 });
 
@@ -1302,26 +1474,36 @@ test('linha do tempo mostra composição vertical no celular e imagem no tablet'
   await expect(page.locator('.docs-figure-timeline .docs-image-frame')).toBeVisible();
 });
 
-test('configurações numéricas sincronizam campo e slider e empilham prévia', async ({ page }) => {
+test('configurações usam pílula arrastável no lugar do campo numérico', async ({ page }) => {
   await page.setViewportSize({ width: 900, height: 720 });
   await openApp(page);
   await page.evaluate(() => window.VisualGWorkspace.showSettings('Editor'));
   await page.locator('.settings-categories button').filter({ hasText: 'Editor' }).click();
   const font = page.locator('#workspace-setting-font-size');
+  const pill = page.locator('.workspace-setting-group').filter({ has: font }).locator('.workspace-setting-value');
   const slider = page.locator('.workspace-setting-group').filter({ has: font }).locator('input[type="range"]');
-  await expect(slider).toHaveValue(await font.inputValue());
-  await slider.fill('22');
+  await expect(font).toBeHidden();
+  await expect(slider).toHaveCount(0);
+  await expect(pill).toHaveText('14 px');
+  const initialPillBox = await pill.boundingBox();
+  await page.mouse.move(initialPillBox.x + initialPillBox.width / 2, initialPillBox.y + initialPillBox.height / 2);
+  await page.mouse.down();
+  await page.mouse.move(initialPillBox.x + initialPillBox.width / 2 + 40, initialPillBox.y + initialPillBox.height / 2);
+  await page.mouse.up();
   await expect(font).toHaveValue('22');
-  await font.fill('18');
-  await expect(slider).toHaveValue('18');
-  const columns = await page.locator('.settings-content-layout').evaluate((node) => window.getComputedStyle(node).gridTemplateColumns.split(' ').length);
-  expect(columns).toBe(1);
+  await expect(pill).toHaveText('22 px');
+  const pillBox = await pill.boundingBox();
+  await page.mouse.move(pillBox.x + pillBox.width / 2, pillBox.y + pillBox.height / 2);
+  await page.mouse.down();
+  await page.mouse.move(pillBox.x + pillBox.width / 2 - 20, pillBox.y + pillBox.height / 2);
+  await page.mouse.up();
+  await expect(font).toHaveValue('18');
   await page.setViewportSize({ width: 1600, height: 900 });
   const wideColumns = await page.locator('.settings-content-layout').evaluate((node) => window.getComputedStyle(node).gridTemplateColumns.split(' ').length);
-  expect(wideColumns).toBe(2);
+  expect(wideColumns).toBe(1);
 });
 
-test('configurações móveis sincronizam os sliders de espaçamento', async ({ page }) => {
+test('configurações móveis sincronizam as pílulas de espaçamento', async ({ page }) => {
   await page.setViewportSize({ width:390, height:720 });
   await openApp(page);
   await page.locator('#btn-menu').click();
@@ -1329,13 +1511,16 @@ test('configurações móveis sincronizam os sliders de espaçamento', async ({ 
   await expect(page.locator('.workspace-settings')).toBeVisible();
   await page.locator('.settings-categories button').filter({ hasText:'Editor' }).click();
   const letters = page.locator('#workspace-setting-letter-spacing');
-  const letterSlider = page.locator('.workspace-setting-group').filter({ has:letters }).locator('input[type="range"]');
-  await letterSlider.fill('2');
+  const letterPill = page.locator('.workspace-setting-group').filter({ has:letters }).locator('.workspace-setting-value');
+  await letterPill.focus(); await page.keyboard.press('Home');
+  for (let index = 0; index < 12; index++) await page.keyboard.press('ArrowRight');
   await expect(letters).toHaveValue('2');
   const lines = page.locator('#workspace-setting-line-spacing');
-  const lineSlider = page.locator('.workspace-setting-group').filter({ has:lines }).locator('input[type="range"]');
-  await lines.fill('32');
-  await expect(lineSlider).toHaveValue('32');
+  const linePill = page.locator('.workspace-setting-group').filter({ has:lines }).locator('.workspace-setting-value');
+  await expect(lines).toBeHidden();
+  await linePill.focus(); await page.keyboard.press('Home');
+  for (let index = 0; index < 14; index++) await page.keyboard.press('ArrowRight');
+  await expect(linePill).toHaveText('32 px');
 });
 
 test('pinch zoom não reduz a altura da aplicação ao tamanho da área ampliada', async ({ page }) => {
@@ -1450,10 +1635,11 @@ test('abas de documentação, console e configurações ocupam a área principal
   await expect(page.locator('#editorPanel')).toBeVisible();
   await expect(page.locator('#btn-nav-back')).toBeDisabled();
   await page.locator('.doc-item', { hasText: 'História' }).click();
+  const tabsBeforeNew = await page.locator('.tab-item').count();
   await page.locator('#btn-add-tab').click();
-  await page.locator('#btn-empty-new').click();
+  await createFileThroughWelcome(page);
   await expect(page.locator('#editorPanel')).toBeVisible();
-  await expect(page.locator('.tab-item')).toHaveCount(2);
+  await expect(page.locator('.tab-item')).toHaveCount(tabsBeforeNew + 1);
   await page.locator('#btn-show-console').click();
   await expect(page.locator('#terminalPanel')).toBeVisible();
   await page.locator('.view-tab[data-type="console"] .view-tab-close').click();
@@ -1490,6 +1676,8 @@ test('paletas mudam a interface inteira e a sintaxe; lua e sol alternam diretame
   const dark = await colors();
   await page.locator('#btn-scale').click();
   await page.locator('#workspace-theme-menu button').filter({ hasText: 'Dracula' }).click();
+  await expect(page.locator('html')).toHaveAttribute('data-theme', 'dracula');
+  await expect.poll(colors).not.toEqual(dark);
   const dracula = await colors();
   expect(dracula.slice(0, 4)).not.toEqual(dark.slice(0, 4));
   expect(dracula.slice(4)).not.toEqual(dark.slice(4));
@@ -1530,10 +1718,10 @@ test('console em painel e nova aba sincroniza saída e fontes independentes', as
   await popup.close();
 });
 
-test('todos os dez temas têm paletas e sintaxe próprias', async ({ page }) => {
+test('temas principais têm paletas e sintaxe próprias', async ({ page }) => {
   await openApp(page);
   await setCode(page, 'algoritmo "Tema"\nvar\n  n: inteiro\ninicio\n  escreval("Olá", 12) // nota\nfimalgoritmo');
-  const themes = ['dark', 'light', 'dracula', 'nord', 'dark-monokai', 'github-dark', 'github-light', 'one-dark', 'solarized-dark', 'solarized-light'];
+  const themes = ['dark', 'light', 'dracula', 'nord', 'dark-monokai', 'github-dark', 'github-light', 'one-dark', 'solarized-dark', 'solarized-light', 'nord-light', 'one-light', 'rose-pine-dawn', 'kanagawa-lotus'];
   const palettes = [];
   for (const theme of themes) {
     const palette = await page.evaluate((name) => {
@@ -1551,7 +1739,7 @@ test('todos os dez temas têm paletas e sintaxe próprias', async ({ page }) => 
 test('novos temas claros e escuros mudam superfícies e sintaxe', async ({ page }) => {
   await openApp(page);
   await setCode(page, 'algoritmo "Tema"\nvar\n  n: inteiro\ninicio\n  escreval("Olá", 12)\nfimalgoritmo');
-  const themes = ['catppuccin-mocha', 'rose-pine', 'gruvbox-dark', 'catppuccin-latte', 'gruvbox-light', 'paper'];
+  const themes = ['catppuccin-mocha', 'rose-pine', 'gruvbox-dark', 'catppuccin-latte', 'gruvbox-light', 'paper', 'nord-light', 'one-light', 'rose-pine-dawn', 'kanagawa-lotus'];
   const palettes = [];
   for (const theme of themes) {
     const palette = await page.evaluate((name) => {
@@ -1573,8 +1761,12 @@ test('fontes independentes persistem e espaçamento acompanha o zoom do editor',
   await page.locator('#btn-settings').click();
   await page.locator('.settings-categories button').filter({ hasText: 'Editor' }).click();
   await page.locator('#workspace-setting-editor-font-family').selectOption('fira-code');
-  await page.locator('#workspace-setting-letter-spacing').fill('2');
-  await page.locator('#workspace-setting-line-spacing').fill('33');
+  const letterPill = page.locator('#workspace-setting-letter-spacing-pill');
+  await letterPill.focus(); await page.keyboard.press('Home');
+  for (let index = 0; index < 12; index++) await page.keyboard.press('ArrowRight');
+  const linePill = page.locator('#workspace-setting-line-spacing-pill');
+  await linePill.focus(); await page.keyboard.press('Home');
+  for (let index = 0; index < 15; index++) await page.keyboard.press('ArrowRight');
   await page.locator('.settings-categories button').filter({ hasText: 'Console' }).click();
   await page.locator('#workspace-setting-console-font-family').selectOption('ibm-plex');
   await page.locator('.view-tab[data-type="settings"] .view-tab-close').click();
@@ -1583,19 +1775,23 @@ test('fontes independentes persistem e espaçamento acompanha o zoom do editor',
     consoleFamily: window.getComputedStyle(window.document.getElementById('terminal-output')).fontFamily,
     spacing: parseFloat(window.getComputedStyle(window.document.querySelector('.editor-panel .CodeMirror')).letterSpacing),
     lineHeight: parseFloat(window.getComputedStyle(window.document.querySelector('.editor-panel .CodeMirror-line')).lineHeight),
+    lineHeightTransition: window.getComputedStyle(window.document.querySelector('.editor-panel .CodeMirror-line')).transitionDuration,
   }));
   const before = await metrics();
   expect(before.editorFamily).toContain('Fira Code');
   expect(before.consoleFamily).toContain('IBM Plex Mono');
   expect(before.spacing).toBeCloseTo(2, 1);
   expect(before.lineHeight).toBeCloseTo(33, 1);
+  expect(before.lineHeightTransition).toBe('0.18s');
   await page.locator('.CodeMirror').click();
   await page.keyboard.press('Control+Shift+Equal');
+  await page.waitForTimeout(220);
   const larger = await metrics();
   expect(larger.spacing).toBeGreaterThan(before.spacing);
   expect(larger.lineHeight).toBeGreaterThan(before.lineHeight);
   expect(larger.spacing / before.spacing).toBeCloseTo(15 / 14, 2);
   await page.keyboard.press('Control+Minus');
+  await page.waitForTimeout(220);
   expect((await metrics()).spacing).toBeCloseTo(before.spacing, 1);
   await page.reload();
   expect((await metrics()).editorFamily).toContain('Fira Code');
@@ -1644,7 +1840,7 @@ test('atalhos e roda alteram somente a fonte da área em foco', async ({ page })
   await page.keyboard.press('Control+0');
   await expect(page.locator('#setting-font-size')).toHaveValue('14');
   await page.locator('#btn-show-console').click();
-  await page.locator('#terminalPanel').click();
+  await page.locator('#terminal-output').click();
   await page.keyboard.press('Control+Equal');
   await expect(page.locator('#setting-console-font-size')).toHaveValue('14');
   await expect(page.locator('#setting-font-size')).toHaveValue('14');

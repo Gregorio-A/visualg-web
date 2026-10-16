@@ -25,9 +25,9 @@ notas da versão, ser movidas para a seção de correções do status e ganhar t
 de regressão.
 
 Mudanças incompatíveis deliberadas exigem justificativa, documentação de
-migração e incremento de versão principal. Durante a fase beta, superfícies de
-interface e extensões ainda podem evoluir, mas programas classificados como
-“Suportado” não devem quebrar silenciosamente.
+migração e incremento de versão principal. Superfícies de interface e extensões
+podem evoluir, mas programas classificados como “Suportado” não devem quebrar
+silenciosamente.
 
 Arquivos de workspace/autosave são internos e não constituem formato público de
 intercâmbio. Arquivos `.alg` e `.txt` permanecem os formatos portáveis.

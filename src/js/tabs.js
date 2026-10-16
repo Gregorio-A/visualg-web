@@ -492,7 +492,11 @@
                 if (window.VisualGWorkspace) window.VisualGWorkspace.showEditor();
                 renderTabs();
             });
-            document.getElementById('btn-empty-new').addEventListener('click', function () { startScreenRequested = false; self.createTab(); });
+            document.getElementById('btn-empty-new').addEventListener('click', function () {
+                startScreenRequested = false;
+                if (window.VisualGWorkspace && window.VisualGWorkspace.createFile) window.VisualGWorkspace.createFile();
+                else self.createTab();
+            });
             document.getElementById('btn-empty-import').addEventListener('click', function () { document.getElementById('file-input').click(); });
             document.getElementById('btn-empty-restore-tabs').addEventListener('click', function () { self.restorePreviousSession(); });
 

@@ -1752,12 +1752,15 @@ body.resizing {
 }
 
 .font-size-control {
-    display: flex;
-    flex-direction: column;
-    gap: 6px;
+    display: grid;
+    grid-template-columns: 72px minmax(0, 1fr);
+    align-items: center;
+    gap: 8px 10px;
 }
 
 .font-size-input-row {
+    grid-column: 1;
+    grid-row: 1;
     display: flex;
     align-items: center;
     gap: 6px;
@@ -1795,12 +1798,26 @@ body.resizing {
     -webkit-appearance: none;
     appearance: none;
     width: 100%;
+    grid-column: 2;
+    grid-row: 1;
     height: 4px;
     background: var(--bg-highlight);
     border-radius: 2px;
     outline: none;
     cursor: pointer;
 }
+.setting-font-slider { display:none !important; }
+.setting-font-input {
+    min-width:72px;
+    border-radius:999px !important;
+    text-align:center;
+    font-variant-numeric:tabular-nums;
+    cursor:ew-resize;
+}
+.setting-group:has(> .setting-font-input) { display:grid; grid-template-columns:minmax(0,1fr) auto; align-items:center; gap:8px 10px; }
+.setting-group:has(> .setting-font-input) > label { grid-column:1/-1; }
+.setting-group:has(> .setting-font-input) > .setting-font-input { grid-column:2; grid-row:2; width:100%; box-sizing:border-box; }
+.setting-group:has(> .setting-font-input) > .setting-range-limits { display:none; }
 
 .setting-font-slider::-webkit-slider-thumb {
     -webkit-appearance: none;

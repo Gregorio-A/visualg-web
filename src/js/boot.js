@@ -4,17 +4,23 @@
     document.documentElement.setAttribute('data-app-loading', '');
     window.VisualGAppBoot = (function () {
         var ready = Object.create(null), failed = false, finished = false;
+        var startedAt = performance.now();
 
         function finish() {
             if (finished || failed || !ready.main || !ready.workspace || !ready.layout) return;
             finished = true;
             Promise.resolve(document.fonts ? document.fonts.ready : null).catch(function () {}).then(function () {
-                requestAnimationFrame(function () { requestAnimationFrame(function () {
-                    var root = document.getElementById('app-boot');
-                    document.documentElement.removeAttribute('data-app-loading');
-                    root.classList.add('is-leaving');
-                    window.setTimeout(function () { root.hidden = true; root.remove(); }, 280);
-                }); });
+                var reducedMotion = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+                var minimumVisibleMs = reducedMotion ? 500 : 1550;
+                window.setTimeout(function () {
+                    window.requestAnimationFrame(function () { window.requestAnimationFrame(function () {
+                        var root = document.getElementById('app-boot');
+                        document.documentElement.removeAttribute('data-app-loading');
+                        document.body.classList.add('app-entering');
+                        root.classList.add('is-leaving');
+                        window.setTimeout(function () { root.hidden = true; root.remove(); document.body.classList.remove('app-entering'); }, reducedMotion ? 220 : 920);
+                    }); });
+                }, Math.max(0, minimumVisibleMs - (performance.now() - startedAt)));
             });
         }
 

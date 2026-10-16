@@ -3,7 +3,7 @@
     'use strict';
 
     var DOCS = [
-        ['sumario', 'Sumário'], ['introducao', 'Introdução'], ['historia', 'História'], ['compatibilidade', 'Compatibilidade'],
+        ['sumario', 'Sumário'], ['introducao', 'Introdução'], ['historia', 'História'], ['editor', 'Editor e arquivos'], ['compatibilidade', 'Compatibilidade'],
         ['operadores', 'Operadores'], ['entrada-saida', 'E/S'], ['condicionais', 'Condicionais'],
         ['repeticao', 'Repetição'], ['subprogramas', 'Subprogramas'], ['funcoes', 'Funções'],
         ['comandos', 'Comandos'], ['status', 'Status do projeto']
@@ -11,6 +11,7 @@
     var DOC_TAGS = {
         sumario: 'sumário índice conteúdo tópicos navegação documentação',
         introducao: 'primeiros passos algoritmo programa estrutura inicio fimalgoritmo',
+        editor: 'atalhos localizar substituir seleção múltipla formatar recuo comentar arquivos exportar executar depurar console foco',
         historia: 'origem visualg versoes evolução',
         compatibilidade: 'recursos suportados limitações diferenças versão',
         operadores: 'aritméticos relacionais logicos comparação expressões precedência',
@@ -28,6 +29,7 @@
     var LAYOUT_KEY = 'visualg-layout-v2';
     var folders = [];
     var assignments = {};
+    var selectedFolderId = null;
     var trash = [];
     var closedFiles = [];
     var collapsedFolders = {};
@@ -50,6 +52,11 @@
     var consoleDialog = null;
     var consolePanelOpen = false;
     var refreshSidebarActionOverflow = function () {};
+    var pendingFocusChord = false;
+    var focusChordTimer = null;
+    var focusModeActive = false;
+    var executionDebugMode = false;
+    var lastFocusedArea = 'editor';
 
     function get(id) { return document.getElementById(id); }
     function shortcutEnabled(name) { return localStorage.getItem('visualg-shortcut-' + name) !== 'off'; }
@@ -58,7 +65,7 @@
     function readJson(key, fallback) {
         try { return JSON.parse(localStorage.getItem(key) || 'null') || fallback; } catch (error) { return fallback; }
     }
-    function saveFolders() { try { localStorage.setItem(FOLDERS_KEY, JSON.stringify({ folders: folders, assignments: assignments, collapsed: collapsedFolders })); } catch (error) { /* local editing stays available */ } }
+    function saveFolders() { try { localStorage.setItem(FOLDERS_KEY, JSON.stringify({ folders: folders, assignments: assignments, collapsed: collapsedFolders, selectedFolderId: selectedFolderId })); } catch (error) { /* local editing stays available */ } }
     function saveTrash() { try { localStorage.setItem(TRASH_KEY, JSON.stringify(trash)); return true; } catch (error) { return false; } }
     function saveClosed() { try { localStorage.setItem(CLOSED_KEY, JSON.stringify(closedFiles)); return true; } catch (error) { return false; } }
     function reportStorageFailure() {
@@ -365,6 +372,7 @@
         item.append(fileIcon, label, close);
         item.addEventListener('click', function (event) {
             if (event.target.closest('.file-close')) { deleteFile(tab); return; }
+            selectedFolderId = assignments[tab.id] || null; saveFolders();
             openSavedFile(tab);
         });
         item.addEventListener('contextmenu', function (event) { event.preventDefault(); openFileMenu(event, tab); });
@@ -396,7 +404,7 @@
             var children = tabs.filter(function (tab) { return assignments[tab.id] === folder.id && fileName(tab).toLocaleLowerCase('pt-BR').includes(query); });
             if (query && !children.length && !folder.name.toLocaleLowerCase('pt-BR').includes(query)) return;
             var isCollapsed = !!collapsedFolders[folder.id];
-            var heading = document.createElement('button'); heading.type = 'button'; heading.className = 'file-item file-folder' + (isCollapsed ? ' collapsed' : ''); heading.title = folder.name; heading.setAttribute('aria-expanded', String(!isCollapsed));
+            var heading = document.createElement('button'); heading.type = 'button'; heading.className = 'file-item file-folder' + (isCollapsed ? ' collapsed' : '') + (selectedFolderId === folder.id ? ' selected' : ''); heading.title = folder.name; heading.setAttribute('aria-expanded', String(!isCollapsed));
             var disclosure = document.createElement('span'); disclosure.className = 'folder-disclosure'; disclosure.setAttribute('aria-hidden', 'true'); disclosure.appendChild(icon('chevron-down'));
             var folderIcon = icon(isCollapsed ? 'folder' : 'folder-open'); folderIcon.classList.add('folder-icon');
             var folderLabel = document.createElement('span'); folderLabel.className = 'file-label'; folderLabel.textContent = folder.name; folderLabel.title = folder.name;
@@ -406,6 +414,9 @@
             group.inert = isCollapsed;
             group.style.height = isCollapsed ? '0px' : 'auto';
             heading.addEventListener('click', function () {
+                selectedFolderId = folder.id;
+                document.querySelectorAll('.file-folder.selected').forEach(function (selected) { selected.classList.remove('selected'); });
+                heading.classList.add('selected');
                 collapsedFolders[folder.id] = !collapsedFolders[folder.id];
                 var collapsed = !!collapsedFolders[folder.id];
                 heading.classList.toggle('collapsed', collapsed); heading.setAttribute('aria-expanded', String(!collapsed)); group.inert = collapsed;
@@ -491,7 +502,8 @@
         var dismiss = null; var escape = null;
         function closeMenu() {
             listeners.abort();
-            menu.remove();
+            menu.classList.add('is-closing');
+            window.setTimeout(function () { menu.remove(); }, 170);
             if (dismiss) document.removeEventListener('pointerdown', dismiss);
             if (escape) document.removeEventListener('keydown', escape);
         }
@@ -509,32 +521,73 @@
             ['Guias de indentação', 'setting-indent-guides', 'change']
         ].forEach(function (entry) {
             var source = get(entry[1]); if (!source) return;
-            var field = document.createElement('label'); field.className = 'editor-quick-field';
+            var field = document.createElement('div'); field.className = 'editor-quick-field';
             var caption = document.createElement('span'); caption.textContent = entry[0];
             var control = source.cloneNode(true); control.removeAttribute('id'); control.classList.add('editor-quick-control'); control.value = source.value;
+            control.setAttribute('aria-label', entry[0]);
             control.addEventListener(entry[2], function () {
                 source.value = control.value;
                 source.dispatchEvent(new window.Event(entry[2], { bubbles:true }));
                 control.value = source.value;
             });
-            field.append(caption, control);
-            if (source.type === 'number') {
+            field.appendChild(caption);
+            if (source.type === 'number' || source.id === 'setting-tab-size') {
                 field.classList.add('editor-quick-field-numeric');
-                var slider = document.createElement('input'); slider.type = 'range'; slider.className = 'editor-quick-slider';
-                slider.min = source.min || '1'; slider.max = source.max || '160'; slider.step = source.step || '1'; slider.value = source.value;
-                slider.setAttribute('aria-label', entry[0] + ' (controle deslizante)');
-                var limits = document.createElement('small'); limits.className = 'editor-quick-limits'; limits.textContent = slider.min + ' — ' + slider.max + ' px';
+                var minimum = source.id === 'setting-tab-size' ? 2 : Number(source.min || 1);
+                var maximum = source.id === 'setting-tab-size' ? 4 : Number(source.max || 160);
+                var step = source.id === 'setting-tab-size' ? 2 : Number(source.step || 1);
+                var valuePill = document.createElement('output'); valuePill.className = 'editor-quick-value-pill';
+                valuePill.setAttribute('role', 'spinbutton'); valuePill.setAttribute('tabindex', '0');
+                valuePill.setAttribute('aria-label', entry[0]); valuePill.setAttribute('aria-valuemin', minimum); valuePill.setAttribute('aria-valuemax', maximum);
+                control.hidden = true;
                 var sliderTimer = null;
-                function applySlider() {
-                    if (sliderTimer !== null) { window.clearTimeout(sliderTimer); sliderTimer = null; }
-                    control.value = slider.value; control.dispatchEvent(new window.Event('input', { bubbles:true }));
+                function showQuickValue(value) {
+                    var displayValue = source.id === 'setting-tab-size' ? value + ' espaços' : String(value);
+                    valuePill.value = displayValue; valuePill.textContent = displayValue; valuePill.setAttribute('aria-valuenow', value);
                 }
-                slider.addEventListener('input', function () { control.value = slider.value; if (sliderTimer === null) sliderTimer = window.setTimeout(applySlider, 45); });
-                slider.addEventListener('change', applySlider);
-                control.addEventListener('input', function () { if (control.value !== '') slider.value = control.value; });
-                source.addEventListener('input', function () { control.value = source.value; slider.value = source.value; }, { signal:listeners.signal });
-                field.append(slider, limits);
-            }
+                function commitQuickValue() {
+                    if (sliderTimer !== null) { window.clearTimeout(sliderTimer); sliderTimer = null; }
+                    control.dispatchEvent(new window.Event(entry[2], { bubbles:true }));
+                }
+                function updateQuickValue(value, immediate) {
+                    var normalized = Math.max(minimum, Math.min(maximum, minimum + Math.round((Number(value) - minimum) / step) * step));
+                    normalized = Number(normalized.toFixed(4)); control.value = String(normalized); showQuickValue(normalized);
+                    if (immediate) commitQuickValue();
+                    else if (sliderTimer === null) sliderTimer = window.setTimeout(commitQuickValue, 40);
+                }
+                source.addEventListener(entry[2], function () { control.value = source.value; showQuickValue(source.value); }, { signal:listeners.signal });
+                showQuickValue(control.value);
+                var pillDrag = null;
+                valuePill.addEventListener('pointerdown', function (pointerEvent) {
+                    if (pointerEvent.button !== 0) return;
+                    pillDrag = { x:pointerEvent.clientX, value:Number(control.value), moved:false };
+                    valuePill.classList.add('is-adjusting'); valuePill.setPointerCapture(pointerEvent.pointerId);
+                });
+                valuePill.addEventListener('pointermove', function (pointerEvent) {
+                    if (!pillDrag || !(pointerEvent.buttons & 1)) return;
+                    var delta = pointerEvent.clientX - pillDrag.x; if (Math.abs(delta) < 3) return;
+                    pillDrag.moved = true; pointerEvent.preventDefault(); updateQuickValue(pillDrag.value + Math.round(delta / 5) * step, false);
+                });
+                ['pointerup', 'pointercancel'].forEach(function (type) { valuePill.addEventListener(type, function () { var moved = pillDrag && pillDrag.moved; pillDrag = null; valuePill.classList.remove('is-adjusting'); if (moved) commitQuickValue(); }); });
+                valuePill.addEventListener('keydown', function (keyEvent) {
+                    if (!['ArrowUp', 'ArrowRight', 'ArrowDown', 'ArrowLeft', 'Home', 'End'].includes(keyEvent.key)) return;
+                    keyEvent.preventDefault();
+                    var next = keyEvent.key === 'Home' ? minimum : keyEvent.key === 'End' ? maximum : Number(control.value) + (keyEvent.key === 'ArrowUp' || keyEvent.key === 'ArrowRight' ? 1 : -1) * step;
+                    updateQuickValue(next, true);
+                });
+                var stepper = document.createElement('span'); stepper.className = 'editor-quick-stepper';
+                [['−', -1, 'Diminuir'], ['+', 1, 'Aumentar']].forEach(function (action) {
+                    var button = document.createElement('button'); button.type = 'button'; button.textContent = action[0];
+                    button.setAttribute('aria-label', action[2] + ' ' + entry[0].toLocaleLowerCase('pt-BR'));
+                    button.addEventListener('click', function () {
+                        updateQuickValue(Number(control.value) + step * action[1], true);
+                    });
+                    stepper.appendChild(button);
+                });
+                var numericControl = document.createElement('div'); numericControl.className = 'editor-quick-numeric-control';
+                numericControl.append(valuePill, stepper, control);
+                field.append(numericControl);
+            } else field.appendChild(control);
             menu.appendChild(field);
         });
         menu.addEventListener('pointerdown', function (pointerEvent) { pointerEvent.stopPropagation(); });
@@ -699,10 +752,13 @@
         if (consoleDialog) return consoleDialog;
         consoleDialog = document.createElement('div'); consoleDialog.className = 'modal-overlay console-overlay hidden';
         var box = document.createElement('div'); box.className = 'console-dialog';
-        var header = document.createElement('div'); header.className = 'console-dialog-header'; header.textContent = 'Console';
+        var header = document.createElement('div'); header.className = 'console-dialog-header';
+        var title = document.createElement('span'); title.className = 'console-dialog-title'; title.textContent = 'Console';
+        var actions = document.createElement('div'); actions.className = 'console-dialog-actions';
         var stop = document.createElement('button'); stop.type = 'button'; stop.className = 'console-stop-button'; stop.textContent = 'Parar execução'; stop.setAttribute('aria-label', 'Parar execução'); stop.disabled = get('btn-stop').disabled; stop.addEventListener('click', function () { get('btn-stop').click(); });
         var close = document.createElement('button'); close.type = 'button'; close.textContent = 'Voltar ao editor'; close.addEventListener('click', closeConsoleDialog);
-        header.appendChild(stop); header.appendChild(close); box.appendChild(header); consoleDialog.appendChild(box); document.body.appendChild(consoleDialog);
+        actions.appendChild(stop); actions.appendChild(close);
+        header.appendChild(title); header.appendChild(actions); box.appendChild(header); consoleDialog.appendChild(box); document.body.appendChild(consoleDialog);
         consoleDialog.addEventListener('click', function (event) { if (event.target === consoleDialog) closeConsoleDialog(); });
         return consoleDialog;
     }
@@ -763,7 +819,20 @@
         if (view.type === 'settings') showEditor();
         else showSettings();
     }
-    function openIssueTracker() { window.open('https://github.com/Gregorio-A/visualg-web/issues', '_blank', 'noopener,noreferrer'); }
+    function openIssueTracker() {
+        var dialog = get('report-issue-dialog');
+        if (!dialog) {
+            dialog = document.createElement('dialog');
+            dialog.id = 'report-issue-dialog'; dialog.className = 'workspace-create-dialog report-issue-dialog';
+            dialog.setAttribute('aria-labelledby', 'report-issue-title');
+            dialog.innerHTML = '<form method="dialog"><h2 id="report-issue-title">Relatar um problema</h2><p>Você será direcionado ao GitHub Issues do VisualG Web:</p><p><strong>github.com/Gregorio-A/visualg-web/issues</strong></p><p>Ajuda incluir a versão, navegador e sistema, as etapas para reproduzir e o resultado esperado e observado. Não anexe seus algoritmos ou dados pessoais.</p><div class="workspace-create-actions"><button type="button" value="cancel" data-report-cancel>Cancelar</button><button type="submit" value="continue">Continuar para o GitHub</button></div></form>';
+            document.body.appendChild(dialog);
+            dialog.querySelector('[value="continue"]').addEventListener('click', function () { window.open('https://github.com/Gregorio-A/visualg-web/issues', '_blank', 'noopener,noreferrer'); });
+            dialog.querySelector('[data-report-cancel]').addEventListener('click', function () { dialog.close('cancel'); });
+        }
+        dialog.returnValue = '';
+        dialog.showModal();
+    }
     function resetConfiguration(scope) {
         var groups = {
             'Aparência': ['visualg-theme'],
@@ -960,7 +1029,7 @@
         };
         var categories = [
             { title:'Aparência', description:'Escolha as cores usadas em toda a interface.', fields:[['Tema de cores','setting-theme']] },
-            { title:'Editor', description:'Leitura, espaçamento e comportamento da área de código.', fields:[['Fonte','setting-editor-font-family'],['Tamanho da fonte (px)','setting-font-size'],['Espaçamento entre letras','setting-letter-spacing'],['Espaçamento entre linhas','setting-line-spacing'],['Quebra de linha','setting-word-wrap'],['Tamanho da tabulação','setting-tab-size'],['Guias de indentação','setting-indent-guides']], preview:'editor' },
+            { title:'Editor', description:'Leitura, espaçamento e comportamento da área de código.', fields:[['Fonte','setting-editor-font-family'],['Tamanho da fonte (px)','setting-font-size'],['Espaçamento entre letras','setting-letter-spacing'],['Espaçamento entre linhas','setting-line-spacing'],['Quebra de linha','setting-word-wrap'],['Tamanho da tabulação','setting-tab-size'],['Guias de indentação','setting-indent-guides']] },
             { title:'Console', description:'Aparência, posição e forma de entrada do console.', fields:[['Aparência','setting-console-theme'],['Modo de exibição','setting-console-presentation'],['Fonte','setting-console-font-family'],['Tamanho da fonte (px)','setting-console-font-size'],['Entrada do console','setting-console-input-mode']], preview:'console' },
             { title:'Variáveis', description:'Aparência da tabela usada durante a execução e depuração.', fields:[['Tamanho da fonte (px)','setting-vars-font-size']], preview:'variables' },
             { title:'Execução', description:'Proteções aplicadas enquanto seu algoritmo está rodando.', fields:[['Detecção de loop infinito','setting-loop-detection']] },
@@ -998,59 +1067,122 @@
             var layout = document.createElement('div'); layout.className = 'settings-content-layout' + (entry.preview ? '' : ' settings-content-layout-no-preview'); var form = document.createElement('div'); form.className = 'settings-fields'; layout.appendChild(form);
             entry.fields.forEach(function (field) {
                 var source = get(field[1]); if (!source) return;
-                var group = document.createElement('label'); group.className = 'workspace-setting-group';
-                var text = document.createElement('strong'); text.textContent = field[0];
-                var help = document.createElement('small'); help.textContent = descriptions[field[1]] || '';
                 var control = source.cloneNode(true); control.id = 'workspace-' + field[1]; control.value = source.value;
+                var group = document.createElement('div'); group.className = 'workspace-setting-group';
+                var text = document.createElement('label'); text.textContent = field[0];
+                var help = document.createElement('small'); help.textContent = descriptions[field[1]] || '';
                 var compactInterface = window.innerWidth <= 760 || (window.innerWidth <= 950 && window.innerHeight <= 500);
                 if (field[1] === 'setting-word-wrap' && compactInterface) {
                     text.textContent += ' (sempre ativa em telas compactas)';
                     control.value = 'on';
                     control.disabled = true;
                 }
-                var slider = null;
-                if (source.type === 'number') {
-                    slider = document.createElement('input'); slider.type = 'range'; slider.className = 'workspace-setting-slider';
-                    slider.min = source.min || '1'; slider.max = source.max || '50'; slider.step = source.step || '1'; slider.value = control.value;
-                    slider.setAttribute('aria-label', field[0] + ' (controle deslizante)');
-                    var limits = document.createElement('span'); limits.className = 'workspace-setting-limits';
-                    limits.textContent = slider.min + ' — ' + slider.max + (field[0].indexOf('(px)') !== -1 ? ' px' : '');
-                    var sliderTimer = null;
-                    function applySlider() {
-                        if (sliderTimer !== null) { window.clearTimeout(sliderTimer); sliderTimer = null; }
-                        control.value = slider.value;
-                        control.dispatchEvent(new window.Event('input', { bubbles:true }));
+                var slider = null; var stepper = null; var valueOutput = null;
+                if (source.type === 'number' || field[1] === 'setting-tab-size') {
+                    slider = document.createElement('span');
+                    slider.min = field[1] === 'setting-tab-size' ? '2' : (source.min || '1');
+                    slider.max = field[1] === 'setting-tab-size' ? '4' : (source.max || '50');
+                    slider.step = field[1] === 'setting-tab-size' ? '2' : (source.step || '1');
+                    slider.value = control.value;
+                    var settingDispatchTimer = null;
+                    valueOutput = document.createElement('output'); valueOutput.className = 'workspace-setting-value';
+                    valueOutput.setAttribute('role', 'spinbutton'); valueOutput.setAttribute('tabindex', '0');
+                    valueOutput.setAttribute('aria-label', field[0]);
+                    valueOutput.setAttribute('aria-valuemin', slider.min); valueOutput.setAttribute('aria-valuemax', slider.max);
+                    valueOutput.id = control.id + '-pill'; text.htmlFor = valueOutput.id;
+                    control.hidden = true;
+                    var unit = field[1] === 'setting-tab-size' ? ' espaços' : (field[1].indexOf('font-size') !== -1 || field[1].indexOf('spacing') !== -1 ? ' px' : '');
+                    function dispatchSettingValue() {
+                        if (settingDispatchTimer !== null) { window.clearTimeout(settingDispatchTimer); settingDispatchTimer = null; }
+                        control.dispatchEvent(new window.Event(source.tagName === 'SELECT' ? 'change' : 'input', { bubbles:true }));
                     }
-                    slider.addEventListener('input', function () {
+                    function syncRange(dispatch, immediate) {
                         control.value = slider.value;
-                        if (sliderTimer === null) sliderTimer = window.setTimeout(applySlider, 45);
+                        if (valueOutput) {
+                            valueOutput.value = slider.value + unit;
+                            valueOutput.textContent = valueOutput.value;
+                            valueOutput.setAttribute('aria-valuenow', slider.value);
+                        }
+                        if (dispatch) {
+                            if (immediate) dispatchSettingValue();
+                            else if (settingDispatchTimer === null) settingDispatchTimer = window.setTimeout(dispatchSettingValue, 36);
+                        }
+                    }
+                    syncRange(false);
+                    if (valueOutput) {
+                        var pillDrag = null;
+                        valueOutput.addEventListener('pointerdown', function (event) {
+                            if (event.button !== 0) return;
+                            pillDrag = { x:event.clientX, value:Number(slider.value), moved:false };
+                            valueOutput.classList.add('is-adjusting');
+                            valueOutput.setPointerCapture(event.pointerId);
+                        });
+                        valueOutput.addEventListener('pointermove', function (event) {
+                            if (!pillDrag || !(event.buttons & 1)) return;
+                            var delta = event.clientX - pillDrag.x;
+                            if (Math.abs(delta) < 3) return;
+                            pillDrag.moved = true;
+                            event.preventDefault();
+                            var step = Number(slider.step) || 1;
+                            slider.value = String(Math.max(Number(slider.min), Math.min(Number(slider.max), pillDrag.value + Math.round(delta / 5) * step)));
+                            syncRange(true, false);
+                        });
+                        ['pointerup', 'pointercancel'].forEach(function (type) {
+                            valueOutput.addEventListener(type, function () { var moved = pillDrag && pillDrag.moved; pillDrag = null; valueOutput.classList.remove('is-adjusting'); if (moved) syncRange(true, true); });
+                        });
+                        valueOutput.addEventListener('keydown', function (event) {
+                            if (!['ArrowUp', 'ArrowRight', 'ArrowDown', 'ArrowLeft', 'PageUp', 'PageDown', 'Home', 'End'].includes(event.key)) return;
+                            event.preventDefault();
+                            var next = Number(slider.value);
+                            if (event.key === 'Home') next = Number(slider.min);
+                            else if (event.key === 'End') next = Number(slider.max);
+                            else next += (event.key === 'ArrowUp' || event.key === 'ArrowRight' || event.key === 'PageUp' ? 1 : -1) * Number(slider.step) * (event.key === 'PageUp' || event.key === 'PageDown' ? 10 : 1);
+                            slider.value = String(Math.max(Number(slider.min), Math.min(Number(slider.max), next)));
+                            syncRange(true, true);
+                        });
+                    }
+                    stepper = document.createElement('span'); stepper.className = 'workspace-setting-stepper';
+                    [['−', -1, 'Diminuir '], ['+', 1, 'Aumentar ']].forEach(function (action) {
+                        var button = document.createElement('button'); button.type = 'button'; button.textContent = action[0];
+                        button.setAttribute('aria-label', action[2] + field[0].toLocaleLowerCase('pt-BR'));
+                        button.addEventListener('click', function () {
+                            var next = Number(slider.value) + Number(slider.step) * action[1];
+                            slider.value = String(Math.max(Number(slider.min), Math.min(Number(slider.max), next)));
+                            syncRange(true, true);
+                        });
+                        stepper.appendChild(button);
                     });
-                    slider.addEventListener('change', applySlider);
                 }
                 control.addEventListener(source.tagName === 'SELECT' ? 'change' : 'input', function () {
-                    source.value = control.value; source.dispatchEvent(new window.Event(source.tagName === 'SELECT' ? 'change' : 'input', { bubbles: true }));
-                    if (slider && control.value !== '') slider.value = control.value;
+                    source.value = control.value; source.dispatchEvent(new window.Event(source.tagName === 'SELECT' ? 'change' : 'input', { bubbles:true }));
+                    if (slider && control.value !== '') {
+                        slider.value = control.value;
+                        if (valueOutput) { valueOutput.value = slider.value + unit; valueOutput.textContent = valueOutput.value; valueOutput.setAttribute('aria-valuenow', slider.value); }
+                    }
                     updateFontLabels();
-                }); group.append(text, help, control);
-                if (slider) group.append(slider, limits);
+                });
+                group.append(text, help);
+                if (slider) {
+                    var controlRow = document.createElement('div'); controlRow.className = 'workspace-setting-control-row';
+                    if (valueOutput) controlRow.appendChild(valueOutput);
+                    controlRow.append(control, valueOutput, stepper); group.appendChild(controlRow);
+                } else group.appendChild(control);
                 form.append(group);
             });
             if (entry.preview) layout.appendChild(createPreview(entry.preview));
             content.appendChild(layout);
             if (entry.title === 'Arquivos') {
                 var p = document.createElement('p'); p.textContent = 'Os arquivos são salvos automaticamente neste navegador. Nomes precisam ser únicos apenas dentro da mesma pasta; ao duplicar, o aplicativo cria nomes previsíveis como “programa (cópia 1).alg”.'; form.appendChild(p);
-                var erase = document.createElement('button'); erase.type = 'button'; erase.className = 'settings-danger-action'; erase.textContent = 'Apagar todos os arquivos deste dispositivo'; erase.addEventListener('click', clearAllFiles); form.appendChild(erase);
-                var eraseHelp = document.createElement('small'); eraseHelp.className = 'settings-action-help'; eraseHelp.textContent = 'Remove também pastas, lixeira e cópias de recuperação, sempre após uma confirmação explícita.'; form.appendChild(eraseHelp);
             }
             if (entry.title === 'Atalhos') {
-                var shortcuts = [['run','Executar ou parar','F5 / F9'],['step','Passo a passo','F8'],['debug','Navegar na depuração','F10 / F11'],['save','Salvar arquivo','Ctrl + S'],['palette','Paleta de comandos','Ctrl + Shift + P'],['font','Ajustar fonte da área','Ctrl + + / − / 0 ou roda']];
+                var shortcuts = [['run','Executar ou parar','F5 / F9 · Shift + F5 para parar'],['step','Passo a passo','F8'],['debug','Próxima linha na depuração','F10'],['save','Salvar arquivo','Ctrl + S'],['palette','Paleta de comandos','Ctrl + Shift + P'],['font','Ajustar fonte da área','Ctrl + + / − / 0 ou roda']];
                 var shortcutList = document.createElement('div'); shortcutList.className = 'settings-shortcut-list';
                 shortcuts.forEach(function (shortcut) { var row = document.createElement('label'); var checkbox = document.createElement('input'); checkbox.type = 'checkbox'; checkbox.checked = localStorage.getItem('visualg-shortcut-' + shortcut[0]) !== 'off'; checkbox.addEventListener('change', function () { localStorage.setItem('visualg-shortcut-' + shortcut[0], checkbox.checked ? 'on' : 'off'); }); var name = document.createElement('span'); name.textContent = shortcut[1]; var keys = document.createElement('kbd'); keys.textContent = shortcut[2]; row.append(checkbox, name, keys); shortcutList.appendChild(row); });
                 form.appendChild(shortcutList);
-                var editorKeys = document.createElement('small'); editorKeys.className = 'settings-action-help'; editorKeys.textContent = 'No editor: Tab indenta a seleção; Shift + Tab recua; Ctrl/Cmd + [ ou ] ajusta o recuo; Ctrl/Cmd + / comenta ou descomenta.'; form.appendChild(editorKeys);
+                var editorKeys = document.createElement('small'); editorKeys.className = 'settings-action-help'; editorKeys.textContent = 'No editor: Ctrl/Cmd + K, depois Z ativa o modo foco; Esc sai. Tab indenta a seleção; Shift + Tab recua; Ctrl/Cmd + [ ou ] ajusta o recuo; Ctrl/Cmd + / comenta ou descomenta. F11 continua sendo o atalho de tela cheia do navegador.'; form.appendChild(editorKeys);
             }
             if (entry.title === 'Redefinir') {
-                var resetIntro = document.createElement('p'); resetIntro.textContent = 'Redefinir preferências restaura os valores padrão. Seus arquivos e o histórico de recuperação permanecem salvos; para removê-los, use a seção Arquivos.'; form.appendChild(resetIntro);
+                var resetIntro = document.createElement('p'); resetIntro.textContent = 'Redefinir preferências restaura os valores padrão e preserva seus arquivos. A exclusão de algoritmos é uma ação separada e exige confirmação.'; form.appendChild(resetIntro);
                 var resetActions = document.createElement('div'); resetActions.className = 'settings-reset-actions';
                 var resetAll = document.createElement('button'); resetAll.type = 'button'; resetAll.className = 'settings-reset-all'; resetAll.textContent = 'Restaurar todas as configurações';
                 resetAll.addEventListener('click', function () { resetConfiguration('Todas'); }); resetActions.appendChild(resetAll);
@@ -1061,6 +1193,8 @@
                     resetButton.addEventListener('click', function () { resetConfiguration(name); }); resetItem.append(resetButton, resetHelp); resetActions.appendChild(resetItem);
                 });
                 form.append(resetActions);
+                var erase = document.createElement('button'); erase.type = 'button'; erase.className = 'settings-danger-action'; erase.textContent = 'Apagar todos os arquivos deste dispositivo'; erase.addEventListener('click', clearAllFiles); form.appendChild(erase);
+                var eraseHelp = document.createElement('small'); eraseHelp.className = 'settings-action-help'; eraseHelp.textContent = 'Apaga arquivos, pastas, itens fechados, lixeira e cópias de recuperação após confirmação.'; form.appendChild(eraseHelp);
             }
         }
         categories.forEach(function (entry) { var button = document.createElement('button'); button.type = 'button'; button.textContent = entry.title; button.addEventListener('click', function () { renderCategory(entry); }); sidebar.append(button); });
@@ -1138,11 +1272,13 @@
         });
         handle.addEventListener('pointermove', function (event) {
             if (!handle.hasPointerCapture(event.pointerId)) return;
-            if (axis === 'x' && handle.id === 'left-resizer' && event.clientX <= 8) {
-                document.body.classList.add('sidebar-left-collapsed'); updatePanelButtons(); saveLayout(); return;
+            if (axis === 'x' && handle.id === 'left-resizer') {
+                if (event.clientX <= 8) { document.body.classList.add('sidebar-left-collapsed'); updatePanelButtons(); return; }
+                if (document.body.classList.contains('sidebar-left-collapsed')) { document.body.classList.remove('sidebar-left-collapsed'); updatePanelButtons(); }
             }
-            if (axis === 'x' && handle.id === 'right-resizer' && event.clientX >= window.innerWidth - 8) {
-                document.body.classList.add('sidebar-right-collapsed'); updatePanelButtons(); saveLayout(); return;
+            if (axis === 'x' && handle.id === 'right-resizer') {
+                if (event.clientX >= window.innerWidth - 8) { document.body.classList.add('sidebar-right-collapsed'); updatePanelButtons(); return; }
+                if (document.body.classList.contains('sidebar-right-collapsed')) { document.body.classList.remove('sidebar-right-collapsed'); updatePanelButtons(); }
             }
             var delta = (axis === 'x' ? event.clientX : event.clientY) - start;
             if (property === '--ide-right') delta = -delta;
@@ -1150,7 +1286,9 @@
             document.documentElement.style.setProperty(property, property === '--ide-message-height' ? (next / owner.parentElement.getBoundingClientRect().height * 100) + '%' : next + 'px');
             if (window.VisualGEditor.instance) window.VisualGEditor.instance.refresh();
         });
-        handle.addEventListener('pointerup', function () { handle.classList.remove('dragging'); document.querySelector('.ide-shell').classList.remove('is-resizing-columns'); saveLayout(); });
+        function finishResize() { handle.classList.remove('dragging'); document.querySelector('.ide-shell').classList.remove('is-resizing-columns'); saveLayout(); }
+        handle.addEventListener('pointerup', finishResize);
+        handle.addEventListener('pointercancel', finishResize);
     }
 
     function addDebugVariablesResizer(handle) {
@@ -1194,7 +1332,7 @@
 
     function initPalette() {
         var commands = [
-            ['Novo arquivo', function () { window.TabManager.createTab(); showEditor(); }],
+            ['Novo arquivo', createWorkspaceFile],
             ['Enviar arquivo', function () { get('file-input').click(); }],
             ['Baixar arquivo', function () { get('btn-save').click(); }],
             ['Pesquisar arquivos', function () { get('workspace-file-search').focus(); }],
@@ -1202,6 +1340,7 @@
             ['Passo a passo', function () { get('btn-step').click(); }],
             ['Parar', function () { get('btn-stop').click(); }],
             ['Console', showConsole],
+            ['Modo foco do editor', function () { setFocusMode(!focusModeActive); }],
             ['Documentação', function () { showDoc('sumario'); }],
             ['Exemplos', showExamples],
             ['Histórico', function () { get('btn-history').click(); }],
@@ -1209,26 +1348,170 @@
             ['Configurações', function () { get('btn-settings').click(); }]
         ];
         var input = get('command-input'); var results = get('command-results');
+        var resultsCloseTimer = null;
+        function hideResults() {
+            if (results.classList.contains('hidden')) return;
+            results.classList.add('is-closing');
+            window.clearTimeout(resultsCloseTimer);
+            resultsCloseTimer = window.setTimeout(function () { results.classList.add('hidden'); results.classList.remove('is-closing'); }, 170);
+        }
         function render() {
+            window.clearTimeout(resultsCloseTimer); resultsCloseTimer = null; results.classList.remove('is-closing');
             var query = input.value.trim().toLocaleLowerCase('pt-BR'); results.replaceChildren();
             commands.filter(function (entry) { return !query || entry[0].toLocaleLowerCase('pt-BR').includes(query); }).forEach(function (entry) {
                 var button = document.createElement('button'); button.type = 'button'; button.textContent = entry[0];
-                button.addEventListener('click', function () { entry[1](); results.classList.add('hidden'); input.value = ''; }); results.appendChild(button);
+                button.addEventListener('click', function () { entry[1](); hideResults(); input.value = ''; }); results.appendChild(button);
             });
             results.classList.toggle('hidden', !results.children.length);
         }
         input.addEventListener('focus', render); input.addEventListener('input', render);
         input.addEventListener('keydown', function (event) {
-            if (event.key === 'Escape') { results.classList.add('hidden'); input.blur(); }
+            if (event.key === 'Escape') { hideResults(); input.blur(); }
             if (event.key === 'Enter') { event.preventDefault(); var first = results.querySelector('button'); if (first) first.click(); }
         });
-        document.addEventListener('click', function (event) { if (!event.target.closest('.command-bar')) results.classList.add('hidden'); });
+        document.addEventListener('click', function (event) { if (!event.target.closest('.command-bar')) hideResults(); });
         document.addEventListener('keydown', function (event) { if (shortcutEnabled('palette') && event.ctrlKey && event.shiftKey && event.key.toLowerCase() === 'p') { event.preventDefault(); input.focus(); input.select(); } });
+    }
+
+    function setFocusMode(enabled) {
+        if (enabled && (view.type !== 'editor' || !aux.classList.contains('hidden') || !get('editor-empty-state').hidden)) return false;
+        focusModeActive = !!enabled;
+        document.body.classList.toggle('is-focus-mode', focusModeActive);
+        var button = get('btn-focus-mode');
+        if (button) {
+            button.setAttribute('aria-pressed', String(focusModeActive));
+            button.setAttribute('aria-label', focusModeActive ? 'Sair do modo foco' : 'Ativar modo foco');
+            button.title = focusModeActive ? 'Sair do modo foco (Esc)' : 'Modo foco do editor (Ctrl+K, Z)';
+            var glyph = button.querySelector('[data-lucide]');
+            if (glyph) glyph.setAttribute('data-lucide', focusModeActive ? 'minimize' : 'maximize');
+            refreshIcons(button);
+        }
+        var mobileButton = get('mobile-focus-mode');
+        if (mobileButton) mobileButton.innerHTML = '<i data-lucide="' + (focusModeActive ? 'minimize' : 'maximize') + '"></i> ' + (focusModeActive ? 'Sair do modo foco' : 'Modo foco do editor');
+        if (mobileButton) refreshIcons(mobileButton);
+        window.requestAnimationFrame(function () {
+            var cm = window.VisualGEditor && window.VisualGEditor.instance;
+            if (!cm) return;
+            cm.refresh();
+            if (window.matchMedia('(pointer:fine)').matches) cm.focus();
+        });
+        return true;
+    }
+
+    function setExecutionLock(locked, debug) {
+        var panel = get('editorPanel');
+        var overlay = get('execution-lock-overlay');
+        if (!panel || !overlay) return;
+        panel.classList.toggle('execution-locked', !!locked && !debug);
+        panel.classList.toggle('execution-readonly', !!locked && !!debug);
+        panel.setAttribute('aria-busy', String(!!locked));
+        overlay.hidden = !locked || !!debug;
+        var cm = window.VisualGEditor && window.VisualGEditor.instance;
+        if (cm) {
+            cm.setOption('readOnly', !!locked);
+            var input = cm.getInputField();
+            if (locked && !debug) {
+                if (!Object.prototype.hasOwnProperty.call(input.dataset, 'executionTabindex')) input.dataset.executionTabindex = input.getAttribute('tabindex') || '';
+                input.setAttribute('tabindex', '-1');
+                input.blur();
+            } else if (Object.prototype.hasOwnProperty.call(input.dataset, 'executionTabindex')) {
+                var originalTabindex = input.dataset.executionTabindex;
+                if (originalTabindex) input.setAttribute('tabindex', originalTabindex); else input.removeAttribute('tabindex');
+                delete input.dataset.executionTabindex;
+            }
+            if (!locked || debug) cm.refresh();
+        }
+    }
+
+    function initFocusMode() {
+        function toggle() { setFocusMode(!focusModeActive); }
+        var exitButton = document.createElement('button');
+        exitButton.type = 'button'; exitButton.className = 'focus-mode-exit'; exitButton.innerHTML = '<i data-lucide="minimize" aria-hidden="true"></i><span>Sair do modo foco</span>';
+        exitButton.setAttribute('aria-label', 'Sair do modo foco');
+        exitButton.addEventListener('click', function () { setFocusMode(false); });
+        document.body.appendChild(exitButton); refreshIcons(exitButton);
+        get('btn-focus-mode').addEventListener('click', toggle);
+        get('execution-lock-console').addEventListener('click', showConsole);
+        get('execution-lock-stop').addEventListener('click', function () {
+            get('btn-stop').click();
+            showEditor();
+        });
+        get('mobile-focus-mode').addEventListener('click', function () {
+            get('mobile-menu').classList.remove('open');
+            setFocusMode(true);
+        });
+        document.addEventListener('keydown', function (event) {
+            var target = event.target;
+            var targetElement = target && target.nodeType === 1 ? target : null;
+            var inEditor = targetElement && targetElement.closest('.CodeMirror');
+            var typing = targetElement && ((targetElement.matches('input,textarea,select,[contenteditable="true"]') && !inEditor) || targetElement.closest('.modal-overlay:not(.hidden), .console-overlay:not(.hidden), #consoleInputOverlay:not(.hidden)'));
+            if (event.key === 'Escape' && focusModeActive) {
+                var blockingOverlay = document.querySelector('.modal-overlay:not(.hidden), .console-overlay:not(.hidden), #consoleInputOverlay:not(.hidden)');
+                if (!blockingOverlay && !get('mobile-menu').classList.contains('open')) {
+                    event.preventDefault(); event.stopPropagation(); setFocusMode(false);
+                }
+                return;
+            }
+            if (typing || event.altKey || event.shiftKey) return;
+            if (pendingFocusChord) {
+                pendingFocusChord = false;
+                window.clearTimeout(focusChordTimer);
+                if (event.key.toLowerCase() === 'z') { event.preventDefault(); setFocusMode(!focusModeActive); }
+                return;
+            }
+            if ((event.ctrlKey || event.metaKey) && event.key.toLowerCase() === 'k') {
+                event.preventDefault();
+                pendingFocusChord = true;
+                window.clearTimeout(focusChordTimer);
+                focusChordTimer = window.setTimeout(function () { pendingFocusChord = false; }, 1200);
+            }
+        }, true);
+    }
+
+    function createWorkspaceFile() {
+        var dialog = get('new-workspace-file-dialog');
+        if (!dialog) {
+            dialog = document.createElement('dialog');
+            dialog.id = 'new-workspace-file-dialog';
+            dialog.className = 'workspace-create-dialog';
+            dialog.setAttribute('aria-labelledby', 'new-workspace-file-title');
+            dialog.innerHTML = '<form method="dialog"><h2 id="new-workspace-file-title">Criar arquivo</h2><label for="new-workspace-file-name">Nome</label><input id="new-workspace-file-name" name="fileName" value="MeuAlgoritmo" maxlength="100" required autocomplete="off"><label for="new-workspace-file-folder">Pasta</label><select id="new-workspace-file-folder" name="folder"></select><div class="workspace-create-actions"><button type="button" value="cancel" data-create-cancel>Cancelar</button><button type="submit" value="create">Criar arquivo</button></div></form>';
+            document.body.appendChild(dialog);
+            dialog.addEventListener('close', function () {
+                if (dialog.returnValue !== 'create') return;
+                var nameInput = get('new-workspace-file-name');
+                var folderSelect = get('new-workspace-file-folder');
+                var name = String(nameInput.value || '').trim().replace(/[\\/<>:"|?*]/g, '-').replace(new RegExp('[' + String.fromCharCode(0) + '-' + String.fromCharCode(31) + ']', 'g'), '-').replace(/[. ]+$/, '');
+                if (!name) return;
+                var folderId = folderSelect.value || null;
+                var requestedName = /\.(alg|txt)$/i.test(name) ? name : name + '.alg';
+                var safeName = uniqueFileName(requestedName, null, folderId);
+                var tab = window.TabManager.createTab(window.gerarTemplate(), { fileName:safeName, used:true, forceNew:true });
+                if (!tab) return;
+                if (folderId) assignments[tab.id] = folderId;
+                saveFolders(); renderFiles(); showEditor();
+            });
+            dialog.querySelector('[data-create-cancel]').addEventListener('click', function () { dialog.close('cancel'); });
+        }
+        var folderSelect = get('new-workspace-file-folder');
+        folderSelect.replaceChildren();
+        var active = window.TabManager.getActiveTab();
+        var selectedFolder = selectedFolderId || (active ? assignments[active.id] || '' : '');
+        var rootOption = document.createElement('option'); rootOption.value = ''; rootOption.textContent = 'Raiz do projeto'; folderSelect.appendChild(rootOption);
+        folders.forEach(function (folder) {
+            var option = document.createElement('option'); option.value = folder.id; option.textContent = folder.name; folderSelect.appendChild(option);
+        });
+        folderSelect.value = selectedFolder;
+        get('new-workspace-file-name').value = 'MeuAlgoritmo';
+        dialog.returnValue = '';
+        dialog.showModal();
+        get('new-workspace-file-name').focus();
+        get('new-workspace-file-name').select();
     }
 
     function openThemeMenu() {
         var existing = get('workspace-theme-menu');
-        if (existing) { existing.remove(); get('btn-scale').setAttribute('aria-pressed', 'false'); return; }
+        if (existing) { existing.classList.add('is-closing'); window.setTimeout(function () { existing.remove(); }, 170); get('btn-scale').setAttribute('aria-pressed', 'false'); return; }
         var menu = document.createElement('div'); menu.id = 'workspace-theme-menu'; menu.className = 'workspace-theme-menu';
         var current = document.documentElement.getAttribute('data-theme') || 'dark';
         var currentMode = document.documentElement.dataset.colorMode;
@@ -1237,8 +1520,8 @@
             document.documentElement.dataset.colorMode = mode;
             window.VisualGEditor.instance.refresh();
         }
-        var lightThemeIds = ['light', 'github-light', 'solarized-light', 'high-contrast', 'catppuccin-latte', 'gruvbox-light', 'paper', 'visualg-classic', 'visualg-3', 'visualg-agua', 'visualg-metal', 'visualg-notas', 'visualg-aluminio', 'visualg-madeira', 'visualg-plastico'];
-        [['Escuros', ['dark', 'dracula', 'nord', 'dark-monokai', 'github-dark', 'one-dark', 'solarized-dark', 'high-contrast-dark', 'catppuccin-mocha', 'rose-pine', 'gruvbox-dark']], ['Claros', ['light', 'github-light', 'solarized-light', 'high-contrast', 'catppuccin-latte', 'gruvbox-light', 'paper']], ['Clássicos', ['visualg-classic', 'visualg-3', 'visualg-agua', 'visualg-metal', 'visualg-notas', 'visualg-aluminio', 'visualg-madeira', 'visualg-plastico']]].forEach(function (group) {
+        var lightThemeIds = ['light', 'github-light', 'solarized-light', 'high-contrast', 'catppuccin-latte', 'gruvbox-light', 'paper', 'nord-light', 'one-light', 'rose-pine-dawn', 'kanagawa-lotus', 'visualg-classic', 'visualg-3', 'visualg-agua', 'visualg-metal', 'visualg-notas', 'visualg-aluminio', 'visualg-madeira', 'visualg-plastico'];
+        [['Escuros', ['dark', 'dracula', 'nord', 'dark-monokai', 'github-dark', 'one-dark', 'solarized-dark', 'high-contrast-dark', 'catppuccin-mocha', 'rose-pine', 'gruvbox-dark']], ['Claros', ['light', 'paper', 'nord-light', 'kanagawa-lotus', 'github-light', 'one-light', 'solarized-light', 'high-contrast', 'catppuccin-latte', 'rose-pine-dawn', 'gruvbox-light']], ['Clássicos', ['visualg-classic', 'visualg-3', 'visualg-agua', 'visualg-metal', 'visualg-notas', 'visualg-aluminio', 'visualg-madeira', 'visualg-plastico']]].forEach(function (group) {
             var subgroup = document.createElement('div'); subgroup.className = 'theme-subgroup';
             var title = document.createElement('span'); title.className = 'theme-group-title'; title.textContent = group[0]; subgroup.appendChild(title);
             group[1].forEach(function (id) {
@@ -1252,7 +1535,7 @@
                     currentMode = lightThemeIds.includes(id) ? 'light' : 'dark';
                     select.value = id;
                     select.dispatchEvent(new window.Event('change', { bubbles: true }));
-                    menu.remove();
+                    menu.classList.add('is-closing'); window.setTimeout(function () { menu.remove(); }, 170);
                     get('btn-scale').setAttribute('aria-pressed', 'false');
                     document.removeEventListener('pointerdown', dismiss);
                 });
@@ -1266,7 +1549,7 @@
         function dismiss(event) {
             if (menu.contains(event.target) || event.target.closest('#btn-scale')) return;
             previewTheme(get('setting-theme').value, currentMode);
-            menu.remove(); get('btn-scale').setAttribute('aria-pressed', 'false'); document.removeEventListener('pointerdown', dismiss);
+            menu.classList.add('is-closing'); window.setTimeout(function () { menu.remove(); }, 170); get('btn-scale').setAttribute('aria-pressed', 'false'); document.removeEventListener('pointerdown', dismiss);
         }
         document.addEventListener('pointerdown', dismiss);
     }
@@ -1304,7 +1587,7 @@
                 var value = Number(field.value); if (!Number.isFinite(value) || value < setting[3] || value > setting[4]) return;
                 var fontSize = Number(get('setting-font-size').value) || 14;
                 document.documentElement.style.setProperty(setting[2], (Math.round(value * fontSize / 14 * 100) / 100) + 'px');
-                window.VisualGEditor.instance.refresh();
+                document.dispatchEvent(new window.CustomEvent('visualg:request-editor-refresh'));
             }
             field.addEventListener('input', function () { localStorage.setItem(setting[1], field.value); apply(); });
             document.addEventListener('visualg:editor-font-size', apply);
@@ -1324,7 +1607,12 @@
         var next = action === 'reset' ? (area === 'console' ? 13 : 14) : Math.max(1, Math.min(160, current + action));
         field.value = String(next); field.dispatchEvent(new window.Event('input', { bubbles: true })); updateFontLabels();
         var proxy = get('workspace-' + field.id);
-        if (proxy) { proxy.value = field.value; var slider = proxy.closest('.workspace-setting-group').querySelector('input[type="range"]'); if (slider) slider.value = field.value; }
+        if (proxy) {
+            proxy.value = field.value;
+            var group = proxy.closest('.workspace-setting-group');
+            var pill = group.querySelector('.workspace-setting-value');
+            if (pill) { pill.value = field.value + ' px'; pill.textContent = pill.value; pill.setAttribute('aria-valuenow', field.value); }
+        }
     }
     function initFontControls() {
         [['console', 'console-font-decrease', -1], ['console', 'console-font-increase', 1]].forEach(function (item) {
@@ -1338,13 +1626,17 @@
             if (!shortcutEnabled('font')) return;
             if (!(event.ctrlKey || event.metaKey) || event.altKey || (event.shiftKey && event.key !== '+')) return;
             var target = event.target;
-            var area = target.closest('#terminalPanel, .console-dialog') ? 'console' : target.closest('#editorPanel, .CodeMirror') ? 'editor' : view.type === 'console' ? 'console' : view.type === 'editor' ? 'editor' : null;
+            var area = target.closest('#terminalPanel, .console-dialog') ? 'console' : lastFocusedArea || (view.type === 'console' ? 'console' : view.type === 'editor' ? 'editor' : null);
             if (!area) return;
             var action = (event.key === '+' || event.key === '=' || event.key === 'Add') ? 1 : (event.key === '-' || event.key === 'Subtract') ? -1 : event.key === '0' ? 'reset' : null;
             if (action === null) return;
             event.preventDefault(); changeAreaFont(area, action);
         }, true);
         [get('editorPanel'), get('terminalPanel')].forEach(function (element, index) {
+            document.addEventListener('pointerdown', function (event) {
+                if (event.target.closest(index === 0 ? '#editorPanel, .CodeMirror' : '#terminalPanel, .console-dialog')) lastFocusedArea = index === 0 ? 'editor' : 'console';
+            }, true);
+            element.addEventListener('focusin', function () { lastFocusedArea = index === 0 ? 'editor' : 'console'; });
             element.addEventListener('wheel', function (event) {
                 if (!shortcutEnabled('font')) return;
                 if (!(event.ctrlKey || event.metaKey)) return;
@@ -1437,7 +1729,7 @@
 
     function init() {
         editor = document.querySelector('.editor-column'); aux = get('workspace-aux-view'); terminal = get('terminalPanel'); editor.appendChild(terminal);
-        var savedFolders = readJson(FOLDERS_KEY, {}); folders = Array.isArray(savedFolders.folders) ? savedFolders.folders : []; assignments = savedFolders.assignments && typeof savedFolders.assignments === 'object' ? savedFolders.assignments : {}; collapsedFolders = savedFolders.collapsed && typeof savedFolders.collapsed === 'object' ? savedFolders.collapsed : {};
+        var savedFolders = readJson(FOLDERS_KEY, {}); folders = Array.isArray(savedFolders.folders) ? savedFolders.folders : []; assignments = savedFolders.assignments && typeof savedFolders.assignments === 'object' ? savedFolders.assignments : {}; collapsedFolders = savedFolders.collapsed && typeof savedFolders.collapsed === 'object' ? savedFolders.collapsed : {}; selectedFolderId = folders.some(function (folder) { return folder.id === savedFolders.selectedFolderId; }) ? savedFolders.selectedFolderId : null;
         var savedClosed = readJson(CLOSED_KEY, []);
         closedFiles = (Array.isArray(savedClosed) ? savedClosed : []).filter(function (item) { return item && typeof item.code === 'string' && typeof item.id === 'string' && item.id; });
         seedReferenceWorkspace();
@@ -1501,8 +1793,8 @@
         });
         get('btn-upload-workspace').addEventListener('click', function () { get('file-input').click(); });
         get('btn-download-workspace').addEventListener('click', function () { get('btn-save').click(); });
-        get('btn-new-workspace-file').addEventListener('click', function () { window.TabManager.createTab(); showEditor(); });
-        get('btn-new-workspace-folder').addEventListener('click', function () { var name = window.prompt('Nome da nova pasta'); if (name && name.trim()) { folders.push({ id: 'folder-' + Date.now(), name: name.trim() }); saveFolders(); renderFiles(); } });
+        get('btn-new-workspace-file').addEventListener('click', createWorkspaceFile);
+        get('btn-new-workspace-folder').addEventListener('click', function () { var name = window.prompt('Nome da nova pasta'); if (name && name.trim()) { var folder = { id: 'folder-' + Date.now(), name: name.trim() }; folders.push(folder); selectedFolderId = folder.id; saveFolders(); renderFiles(); } });
         get('btn-duplicate-workspace').addEventListener('click', function () { var tab = window.TabManager.getActiveTab(); if (tab) { duplicateFile(tab); showEditor(); } else { window.TabManager.createTab(); showEditor(); } });
         get('btn-docs-sidebar').addEventListener('click', function () { showDoc('sumario'); });
         get('btn-examples-sidebar').addEventListener('click', showExamples);
@@ -1532,6 +1824,7 @@
         get('mobile-nav-forward').addEventListener('click', function () { get('mobile-menu').classList.remove('open'); get('btn-nav-forward').click(); });
         get('btn-toggle-left').addEventListener('click', function () { document.body.classList.toggle('sidebar-left-collapsed'); updatePanelButtons(); saveLayout(); window.requestAnimationFrame(function () { window.VisualGEditor.instance.refresh(); }); });
         get('btn-toggle-right').addEventListener('click', function () { document.body.classList.toggle('sidebar-right-collapsed'); updatePanelButtons(); saveLayout(); window.requestAnimationFrame(function () { window.VisualGEditor.instance.refresh(); }); });
+        initFocusMode();
         initEdgeDragRestore();
         get('btn-empty-docs').addEventListener('click', function () { showDoc('sumario'); });
         get('btn-scale').addEventListener('click', openThemeMenu);
@@ -1563,22 +1856,31 @@
         addResizable(get('right-resizer'), 'x', '--ide-right', get('right-sidebar'), 300, function () { return Math.min(540, window.innerWidth * .4); });
         addDebugVariablesResizer(get('debug-divider'));
         document.addEventListener('visualg:execution-start', function (event) {
+            if (focusModeActive) setFocusMode(false);
+            executionDebugMode = !!(event.detail && event.detail.debug);
+            setExecutionLock(true, executionDebugMode);
             updateConsoleStopControls(true);
             setDebugRunAction(true);
             messages = []; renderMessages(); renderDebugBreakpoints();
             document.body.classList.toggle('debug-session-active', !!(event.detail && event.detail.debug));
             if (event.detail && event.detail.debug) get('debug-session-controls').classList.remove('hidden');
             renderDebugCallStack([], false);
-            if (event.detail && event.detail.debug) showEditor(); else showConsole();
+            if (event.detail && event.detail.debug) showEditor();
+            else showConsole();
         });
-        document.addEventListener('visualg:execution-end', function () {
+        document.addEventListener('visualg:execution-end', function (event) {
+            setExecutionLock(false);
             updateConsoleStopControls(false);
             setDebugRunAction(false);
             document.body.classList.remove('debug-session-active');
             get('debug-session-controls').classList.add('hidden');
             renderDebugCallStack([], false);
             renderFiles();
+            var wasDebug = executionDebugMode;
+            executionDebugMode = false;
+            if (!wasDebug && !(event.detail && event.detail.stopped)) showConsole();
         });
+        document.addEventListener('visualg:input-request', function () { showConsole(); });
         document.addEventListener('visualg:running', function () { renderFiles(); if (window.TabManager.refresh) window.TabManager.refresh(); });
         document.addEventListener('visualg:status', function (event) {
             var text = event.detail.text || '';
@@ -1636,7 +1938,7 @@
         window.VisualGEditor.instance.on('gutterClick', toggleBreakpoint);
         window.VisualGEditor.instance.setOption('gutters', ['CodeMirror-linenumbers', 'debug-current', 'breakpoints']);
         window.VisualGEditor.instance.on('change', function () { if (messages.some(function (item) { return item.kind === 'error'; })) { messages = []; renderMessages(); window.VisualGEditor.clearHighlight(); } });
-        window.VisualGWorkspace = { showEditor: showEditor, showConsole: showConsole, toggleConsole: toggleConsole, showDoc: showDoc, showExamples: showExamples, showSettings: showSettings, toggleSettings: toggleSettings, openThemeMenu: openThemeMenu, getBreakpoints: getCurrentBreakpoints, uniqueFileName: uniqueFileName, navigateToLocation: navigateToLocation };
+        window.VisualGWorkspace = { showEditor: showEditor, showConsole: showConsole, toggleConsole: toggleConsole, showDoc: showDoc, showExamples: showExamples, showSettings: showSettings, toggleSettings: toggleSettings, openThemeMenu: openThemeMenu, getBreakpoints: getCurrentBreakpoints, uniqueFileName: uniqueFileName, createFile: createWorkspaceFile, navigateToLocation: navigateToLocation };
         refreshIcons(document.querySelector('.ide-shell'));
         if (window.VisualGAppBoot) window.VisualGAppBoot.ready('workspace');
     }

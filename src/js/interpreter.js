@@ -67,6 +67,7 @@
         'lógico': 'logico',
         'não': 'nao',
         'função': 'funcao',
+        'fimfunção': 'fimfuncao',
         'caráter': 'caractere',
         'caracter': 'caractere',
         'literal': 'caractere',
@@ -948,6 +949,7 @@
             // For escolha blocks, stop at caso / outrocaso
             if ((endKeyword === 'fimescolha' || endKeyword === '__caso__') &&
                 (this.match(T.KEYWORD, 'caso') || this.match(T.KEYWORD, 'outrocaso'))) break;
+            if (endKeyword === '__caso__' && this.match(T.KEYWORD, 'fimescolha')) break;
 
             var stmt = this.parseStatement();
             if (stmt) stmts.push(stmt);
