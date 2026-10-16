@@ -107,6 +107,17 @@
         btnStep.addEventListener('click', function () { advanceDebugger('over'); });
         btnStop.addEventListener('click', stopProgram);
         btnSave.addEventListener('click', saveProgram);
+        document.getElementById('btn-print').addEventListener('click', function () {
+            var printDialog = document.getElementById('print-options-dialog');
+            if (printDialog.parentElement !== document.body) document.body.appendChild(printDialog);
+            printDialog.showModal();
+        });
+        document.getElementById('btn-print-cancel').addEventListener('click', function () { document.getElementById('print-options-dialog').close(); });
+        document.getElementById('btn-print-confirm').addEventListener('click', function () {
+            var style = document.querySelector('input[name="print-style"]:checked').value;
+            document.getElementById('print-options-dialog').close();
+            printProgram(style);
+        });
 
         // Save dropdown events
         btnSaveDropdown.addEventListener('click', function(e) {
@@ -1478,5 +1489,59 @@
             cm.scrollTo(scroll.left, scroll.top);
         });
         cm.focus();
+    }
+
+    function printProgram(style) {
+        var activeTab = tabManager.getActiveTab();
+        var fileName = activeTab && activeTab.fileName ? activeTab.fileName : ((activeTab && activeTab.name) || 'programa') + '.alg';
+        var source = editor.getValue();
+        var printDocument = document.getElementById('print-document');
+        if (printDocument.parentElement !== document.body) document.body.appendChild(printDocument);
+        var code = document.getElementById('print-code');
+        var label = document.getElementById('print-file-name');
+        code.replaceChildren();
+        code.dataset.source = source;
+        code.classList.toggle('print-monochrome', style === 'monochrome');
+        var cm = editor.instance;
+        var maxColumns = 76;
+        source.split('\n').forEach(function (line, lineIndex) {
+            var tokens = cm ? cm.getLineTokens(lineIndex) : [{ start:0, end:line.length, string:line, type:null }];
+            if (tokens.map(function (token) { return token.string || ''; }).join('') !== line) tokens = [{ start:0, end:line.length, string:line, type:null }];
+            var rows = [[]];
+            var column = 0;
+            tokens.forEach(function (token) {
+                var type = token.type || '';
+                String(token.string || '').split('').forEach(function (character) {
+                    var width = character === '\t' ? 4 - (column % 4) : 1;
+                    if (column + width > maxColumns && rows[rows.length - 1].length) { rows.push([]); column = 0; }
+                    var parts = rows[rows.length - 1];
+                    var last = parts[parts.length - 1];
+                    if (last && last.type === type) last.text += character;
+                    else parts.push({ type:type, text:character });
+                    column += width;
+                });
+            });
+            rows.forEach(function (parts) {
+                var row = document.createElement('div'); row.className = 'print-line';
+                var number = document.createElement('span'); number.className = 'print-line-number'; number.textContent = String(lineIndex + 1);
+                var content = document.createElement('code'); content.className = 'print-line-content';
+                parts.forEach(function (part) {
+                    var token = document.createElement('span');
+                    token.textContent = part.text;
+                    token.className = part.type ? 'cm-token ' + part.type.split(/\s+/).map(function (name) { return 'cm-' + name; }).join(' ') : '';
+                    content.appendChild(token);
+                });
+                row.append(number, content); code.appendChild(row);
+            });
+        });
+        label.textContent = fileName;
+        var previousTitle = document.title;
+        document.title = fileName;
+        var restoreTitle = function () {
+            document.title = previousTitle;
+            window.removeEventListener('afterprint', restoreTitle);
+        };
+        window.addEventListener('afterprint', restoreTitle);
+        window.print();
     }
 })();

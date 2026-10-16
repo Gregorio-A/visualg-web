@@ -125,6 +125,7 @@
             </div>
         </div>
         <div class="header-actions">
+            <button id="btn-print" class="toolbar-btn" title="Imprimir código" aria-label="Imprimir código"><i data-lucide="printer"></i></button>
             <button id="btn-show-console" class="toolbar-btn" title="Abrir console" aria-label="Abrir console" aria-pressed="false"><i data-lucide="terminal"></i></button>
             <button id="btn-theme" class="toolbar-btn" title="Alternar modo claro/escuro" aria-label="Alternar modo claro/escuro"><i data-lucide="sun"></i></button>
             <button id="btn-scale" class="toolbar-btn" title="Escolher paleta de cores" aria-label="Escolher paleta de cores" aria-pressed="false"><i data-lucide="palette"></i></button>
@@ -658,6 +659,26 @@
             </div>
         </div>
     </div>
+
+    <main id="print-document" aria-hidden="true">
+        <header class="print-header"><strong>VisuAlg Web</strong><span id="print-file-name"></span></header>
+        <div id="print-code" class="print-code"></div>
+    </main>
+    <dialog id="print-options-dialog" class="print-options-dialog" aria-labelledby="print-options-title">
+        <form method="dialog">
+            <h2 id="print-options-title">Imprimir código</h2>
+            <p>Escolha como o código deve sair no papel.</p>
+            <fieldset>
+                <legend>Estilo de impressão</legend>
+                <label><input type="radio" name="print-style" value="color" checked> Colorida</label>
+                <label><input type="radio" name="print-style" value="monochrome"> Preto e branco</label>
+            </fieldset>
+            <div class="print-options-actions">
+                <button type="button" id="btn-print-cancel">Cancelar</button>
+                <button type="button" id="btn-print-confirm">Continuar para impressão</button>
+            </div>
+        </form>
+    </dialog>
 
     <!-- CodeMirror 5 JS -->
     <script src="vendor/codemirror/codemirror.min.js"></script>

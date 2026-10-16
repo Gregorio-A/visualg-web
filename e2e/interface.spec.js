@@ -224,6 +224,31 @@ test('fechar uma aba na tela inicial não substitui seu código pelo modelo', as
   await expect(page.locator('#workspace-file-list .file-item').filter({ hasText:'salvo.alg' })).toHaveCount(1);
 });
 
+test('abas de ferramentas permanecem visíveis depois de fechar o último código', async ({ page }) => {
+  await useConsolePresentation(page, 'tab');
+  await openApp(page);
+  await page.evaluate(() => {
+    window.VisualGWorkspace.showSettings();
+    window.VisualGWorkspace.showDoc('introducao');
+    window.VisualGWorkspace.showConsole();
+  });
+  await expect(page.locator('.view-tab[data-type="settings"]')).toHaveCount(1);
+  await expect(page.locator('.view-tab[data-type="console"]')).toHaveCount(1);
+  await expect(page.locator('.view-tab[data-type="docs"]')).toHaveCount(1);
+
+  await page.evaluate(() => window.TabManager.getTabs().slice().forEach((tab) => window.TabManager.closeTab(tab.id)));
+  await expect(page.locator('.editor-column')).toHaveClass(/start-screen-active/);
+  for (const type of ['settings', 'console', 'docs']) {
+    await expect(page.locator('.view-tab[data-type="' + type + '"]')).toBeVisible();
+  }
+  await page.locator('.view-tab[data-type="settings"]').click();
+  await expect(page.locator('.workspace-settings')).toBeVisible();
+  await page.locator('.view-tab[data-type="docs"]').click();
+  await expect(page.locator('#workspace-aux-view')).toBeVisible();
+  await page.locator('.view-tab[data-type="console"]').click();
+  await expect(page.locator('#workspace-aux-view')).toBeHidden();
+});
+
 test('IDs repetidos são reparados sem descartar códigos diferentes', async ({ page }) => {
   const codeA = 'Algoritmo "A"\nInicio\nfimalgoritmo';
   const codeB = 'Algoritmo "B"\nInicio\nfimalgoritmo';
@@ -258,6 +283,12 @@ test('menu de contexto usa pílulas ajustáveis sem sliders e permite fonte maio
   await expect(menu.locator('input[type="range"]')).toHaveCount(0);
   await expect(font.locator('input[type="number"]')).toBeHidden();
   const fontPill = font.locator('.editor-quick-value-pill');
+  await fontPill.hover();
+  await page.mouse.wheel(0, -100);
+  await expect(fontPill).toHaveText('15');
+  await expect(page.locator('#setting-font-size')).toHaveValue('15');
+  await page.mouse.wheel(0, 100);
+  await expect(fontPill).toHaveText('14');
   const initialFontBox = await fontPill.boundingBox();
   await page.mouse.move(initialFontBox.x + initialFontBox.width / 2, initialFontBox.y + initialFontBox.height / 2);
   await page.mouse.down();
@@ -302,6 +333,14 @@ test('pílulas das configurações têm ajustes incrementais e cabem sem sobrepo
   await expect(fontGroup.locator('input[type="number"]')).toHaveValue('15');
   await expect(fontGroup.locator('input[type="range"]')).toHaveCount(0);
   await expect(fontGroup.locator('output')).toHaveText('15 px');
+  const fontPill = fontGroup.locator('.workspace-setting-value');
+  await fontPill.hover();
+  await page.mouse.wheel(0, -100);
+  await expect(fontGroup.locator('input[type="number"]')).toHaveValue('16');
+  await expect(fontPill).toHaveText('16 px');
+  await page.mouse.wheel(0, 100);
+  await expect(fontGroup.locator('input[type="number"]')).toHaveValue('15');
+  await expect(fontPill).toHaveText('15 px');
   const boxes = await fontGroup.locator('.workspace-setting-control-row > :not([hidden])').evaluateAll((nodes) => nodes.map((node) => {
     const rect = node.getBoundingClientRect();
     return { left:rect.left, right:rect.right };
@@ -731,6 +770,77 @@ test('aceita leia em modal', async ({ page }) => {
   await page.locator('#console-input-modal').fill('Grace');
   await page.locator('#console-input-modal-ok').click();
   await expect(page.locator('#terminal-output')).toContainText('Olá, Grace');
+});
+
+test('imprimir código abre a impressão do navegador com o arquivo formatado para papel', async ({ page }) => {
+  await page.addInitScript(() => { window.print = () => { window.__printCalled = true; }; });
+  await openApp(page);
+  const code = `Algoritmo "Impressão"
+Var
+  texto: caractere
+Inicio
+  texto <- "<código & seguro ${'x'.repeat(100)}>"
+  escreval(texto)
+fimalgoritmo`;
+  await page.evaluate((source) => window.VisualGEditor.setValue(source), code);
+  const expectedName = await page.evaluate(() => {
+    const tab = window.TabManager.getActiveTab();
+    return tab.fileName || (tab.name || 'programa') + '.alg';
+  });
+
+  await page.locator('#btn-print').click();
+  const printDialog = page.locator('#print-options-dialog');
+  await expect(printDialog).toBeVisible();
+  const dialogBox = await printDialog.boundingBox();
+  const viewport = page.viewportSize();
+  expect(Math.abs(dialogBox.x + dialogBox.width / 2 - viewport.width / 2)).toBeLessThan(2);
+  expect(Math.abs(dialogBox.y + dialogBox.height / 2 - viewport.height / 2)).toBeLessThan(2);
+  await expect(printDialog.locator('input[value="color"]')).toBeChecked();
+  await printDialog.locator('#btn-print-confirm').click();
+
+  await expect.poll(() => page.evaluate(() => window.__printCalled)).toBe(true);
+  await expect(page.locator('#print-code')).toHaveAttribute('data-source', code);
+  await expect(page.locator('#print-file-name')).toHaveText(expectedName);
+  const printedCodeText = await page.locator('.print-line-content').evaluateAll((nodes) => nodes.map((node) => node.textContent).join(''));
+  expect(printedCodeText).toContain('<código & seguro ');
+  await expect(page.locator('.print-line-number')).toHaveCount(8);
+  await expect(page.locator('.print-line-number').nth(4)).toHaveText('5');
+  const splitLine = page.locator('.print-line').filter({ has:page.locator('.print-line-number', { hasText:'5' }) });
+  await expect(splitLine).toHaveCount(2);
+  await expect(page.locator('#print-code .cm-string').first()).toHaveCount(1);
+  await page.emulateMedia({ media: 'print' });
+  await expect(page.locator('#print-document')).toBeVisible();
+  await expect.poll(() => page.locator('#print-code').evaluate((element) => element.getBoundingClientRect().height)).toBeGreaterThan(0);
+  await page.evaluate(() => window.dispatchEvent(new window.Event('afterprint')));
+
+  await page.emulateMedia({ media:'screen' });
+  await page.locator('#btn-print').click();
+  await printDialog.locator('input[value="monochrome"]').check();
+  await printDialog.locator('#btn-print-confirm').click();
+  await expect(page.locator('#print-code')).toHaveClass(/print-monochrome/);
+  await expect.poll(() => page.evaluate(() => window.__printCalled)).toBe(true);
+  await page.evaluate(() => window.dispatchEvent(new window.Event('afterprint')));
+
+  const longSource = Array.from({ length:180 }, (_, index) => 'escreval("linha ' + (index + 1) + ' ' + 'conteudo '.repeat(12) + '")').join('\n');
+  await page.evaluate((source) => window.VisualGEditor.setValue(source), longSource);
+  await page.locator('#btn-print').click();
+  await printDialog.locator('#btn-print-confirm').click();
+  await expect(page.locator('#print-code')).toHaveAttribute('data-source', longSource);
+  const reconstructedLines = await page.locator('.print-line').evaluateAll((rows) => {
+    const lines = [];
+    rows.forEach((row) => {
+      const number = row.querySelector('.print-line-number').textContent;
+      const previous = lines[lines.length - 1];
+      if (!previous || previous.number !== number) lines.push({ number, text:'' });
+      lines[lines.length - 1].text += row.querySelector('.print-line-content').textContent;
+    });
+    return lines.map((line) => line.text);
+  });
+  expect(reconstructedLines).toEqual(longSource.split('\n'));
+  await page.emulateMedia({ media:'print' });
+  const pdf = await page.pdf({ format:'A4', printBackground:true });
+  const pageCount = (pdf.toString('latin1').match(/\/Type\s*\/Page(?!s)\b/g) || []).length;
+  expect(pageCount).toBeGreaterThan(1);
 });
 
 test('abre e salva arquivo .alg', async ({ page }) => {
@@ -1649,6 +1759,29 @@ test('abas de documentação, console e configurações ocupam a área principal
   await expect(page.locator('.settings-categories button')).toHaveCount(8);
   await page.locator('.view-tab[data-type="settings"] .view-tab-close').click();
   await expect(page.locator('#editorPanel')).toBeVisible();
+});
+
+test('laterais continuam controláveis enquanto configurações está aberta', async ({ page }) => {
+  await openApp(page);
+  await page.locator('#btn-settings').click();
+  await expect(page.locator('.workspace-settings')).toBeVisible();
+  const columns = () => page.locator('.ide-shell').evaluate((element) => window.getComputedStyle(element).gridTemplateColumns.split(' ').length);
+  await expect.poll(columns).toBe(5);
+
+  await page.locator('#btn-toggle-left').click();
+  await expect(page.locator('#workspace-sidebar')).toBeHidden();
+  await page.locator('#btn-toggle-left').click();
+  await expect(page.locator('#workspace-sidebar')).toBeVisible();
+
+  await page.locator('#btn-toggle-right').click();
+  await expect(page.locator('#right-sidebar')).toBeHidden();
+  await page.locator('#btn-toggle-right').click();
+  await expect(page.locator('#right-sidebar')).toBeVisible();
+
+  await page.locator('.view-tab[data-type="settings"] .view-tab-close').click();
+  await expect(page.locator('#editorPanel')).toBeVisible();
+  await expect(page.locator('#workspace-sidebar')).toBeVisible();
+  await expect(page.locator('#right-sidebar')).toBeVisible();
 });
 
 test('editor e abas não exibem linhas decorativas acima ou abaixo', async ({ page }) => {

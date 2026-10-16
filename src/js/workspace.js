@@ -558,6 +558,17 @@
                 source.addEventListener(entry[2], function () { control.value = source.value; showQuickValue(source.value); }, { signal:listeners.signal });
                 showQuickValue(control.value);
                 var pillDrag = null;
+                var wheelRemainder = 0;
+                valuePill.addEventListener('wheel', function (wheelEvent) {
+                    wheelEvent.preventDefault();
+                    var delta = wheelEvent.deltaY;
+                    if (wheelEvent.deltaMode === 1) delta *= 40;
+                    else if (wheelEvent.deltaMode === 2) delta *= 100;
+                    wheelRemainder += delta / 100;
+                    var steps = wheelRemainder < 0 ? Math.ceil(wheelRemainder) : Math.floor(wheelRemainder);
+                    wheelRemainder -= steps;
+                    if (steps) updateQuickValue(Number(control.value) - steps * step, false);
+                }, { passive:false });
                 valuePill.addEventListener('pointerdown', function (pointerEvent) {
                     if (pointerEvent.button !== 0) return;
                     pillDrag = { x:pointerEvent.clientX, value:Number(control.value), moved:false };
@@ -1111,6 +1122,20 @@
                     syncRange(false);
                     if (valueOutput) {
                         var pillDrag = null;
+                        var wheelRemainder = 0;
+                        valueOutput.addEventListener('wheel', function (event) {
+                            event.preventDefault();
+                            var delta = event.deltaY;
+                            if (event.deltaMode === 1) delta *= 40;
+                            else if (event.deltaMode === 2) delta *= 100;
+                            wheelRemainder += delta / 100;
+                            var steps = wheelRemainder < 0 ? Math.ceil(wheelRemainder) : Math.floor(wheelRemainder);
+                            wheelRemainder -= steps;
+                            if (!steps) return;
+                            var next = Number(slider.value) - steps * (Number(slider.step) || 1);
+                            slider.value = String(Math.max(Number(slider.min), Math.min(Number(slider.max), next)));
+                            syncRange(true, false);
+                        }, { passive:false });
                         valueOutput.addEventListener('pointerdown', function (event) {
                             if (event.button !== 0) return;
                             pillDrag = { x:event.clientX, value:Number(slider.value), moved:false };
