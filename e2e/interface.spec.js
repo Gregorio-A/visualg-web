@@ -772,7 +772,7 @@ test('aceita leia em modal', async ({ page }) => {
   await expect(page.locator('#terminal-output')).toContainText('Olá, Grace');
 });
 
-test('imprimir código abre a impressão do navegador com o arquivo formatado para papel', async ({ page }) => {
+test('imprimir código abre a impressão do navegador com o arquivo formatado para papel', async ({ page }, testInfo) => {
   await page.addInitScript(() => { window.print = () => { window.__printCalled = true; }; });
   await openApp(page);
   const code = `Algoritmo "Impressão"
@@ -838,9 +838,11 @@ fimalgoritmo`;
   });
   expect(reconstructedLines).toEqual(longSource.split('\n'));
   await page.emulateMedia({ media:'print' });
-  const pdf = await page.pdf({ format:'A4', printBackground:true });
-  const pageCount = (pdf.toString('latin1').match(/\/Type\s*\/Page(?!s)\b/g) || []).length;
-  expect(pageCount).toBeGreaterThan(1);
+  if (testInfo.project.use.browserName === 'chromium') {
+    const pdf = await page.pdf({ format:'A4', printBackground:true });
+    const pageCount = (pdf.toString('latin1').match(/\/Type\s*\/Page(?!s)\b/g) || []).length;
+    expect(pageCount).toBeGreaterThan(1);
+  }
 });
 
 test('abre e salva arquivo .alg', async ({ page }) => {

@@ -1498,8 +1498,9 @@
         var printDocument = document.getElementById('print-document');
         if (printDocument.parentElement !== document.body) document.body.appendChild(printDocument);
         var code = document.getElementById('print-code');
+        var codeBody = code.tBodies[0] || code.appendChild(document.createElement('tbody'));
         var label = document.getElementById('print-file-name');
-        code.replaceChildren();
+        codeBody.replaceChildren();
         code.dataset.source = source;
         code.classList.toggle('print-monochrome', style === 'monochrome');
         var cm = editor.instance;
@@ -1522,16 +1523,16 @@
                 });
             });
             rows.forEach(function (parts) {
-                var row = document.createElement('div'); row.className = 'print-line';
-                var number = document.createElement('span'); number.className = 'print-line-number'; number.textContent = String(lineIndex + 1);
-                var content = document.createElement('code'); content.className = 'print-line-content';
+                var row = document.createElement('tr'); row.className = 'print-line';
+                var number = document.createElement('td'); number.className = 'print-line-number'; number.textContent = String(lineIndex + 1);
+                var content = document.createElement('td'); content.className = 'print-line-content';
                 parts.forEach(function (part) {
                     var token = document.createElement('span');
                     token.textContent = part.text;
                     token.className = part.type ? 'cm-token ' + part.type.split(/\s+/).map(function (name) { return 'cm-' + name; }).join(' ') : '';
                     content.appendChild(token);
                 });
-                row.append(number, content); code.appendChild(row);
+                row.append(number, content); codeBody.appendChild(row);
             });
         });
         label.textContent = fileName;

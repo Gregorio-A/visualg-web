@@ -48,10 +48,10 @@ html, body { width: 100% !important; height: 100% !important; }
     #print-document { display:block !important; position:relative !important; visibility:visible !important; opacity:1 !important; color:#111; background:#fff; font-family:Arial,sans-serif; print-color-adjust:exact; -webkit-print-color-adjust:exact; }
     .print-header { display:flex; justify-content:space-between; align-items:baseline; gap:16px; padding-bottom:8px; margin-bottom:12px; border-bottom:1px solid #aaa; font-size:10pt; break-after:avoid; }
     .print-header span { color:#444; }
-    .print-code { margin:0; color:#111; font:8pt/1.35 'DejaVu Sans Mono','Courier New',monospace; }
-    .print-line { display:grid; grid-template-columns:3.5em minmax(0,1fr); column-gap:8px; min-height:1.35em; break-inside:avoid; page-break-inside:avoid; }
-    .print-line-number { color:#777; text-align:right; user-select:none; }
-    .print-line-content { min-width:0; white-space:pre; }
+    .print-code { width:100%; table-layout:fixed; border-collapse:collapse; margin:0; color:#111; font:8pt/1.35 'DejaVu Sans Mono','Courier New',monospace; }
+    .print-line { break-inside:avoid; page-break-inside:avoid; }
+    .print-line-number { width:3.5em; padding:0 8px 0 0; color:#777; text-align:right; vertical-align:top; user-select:none; }
+    .print-line-content { padding:0; white-space:pre; vertical-align:top; }
     .print-code:not(.print-monochrome) .cm-keyword,.print-code:not(.print-monochrome) .cm-meta,.print-code:not(.print-monochrome) .cm-qualifier { color:#8b1e3f; }
     .print-code:not(.print-monochrome) .cm-string { color:#19723a; }
     .print-code:not(.print-monochrome) .cm-number,.print-code:not(.print-monochrome) .cm-atom { color:#7142a0; }
