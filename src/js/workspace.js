@@ -700,15 +700,25 @@
         consoleDialog = document.createElement('div'); consoleDialog.className = 'modal-overlay console-overlay hidden';
         var box = document.createElement('div'); box.className = 'console-dialog';
         var header = document.createElement('div'); header.className = 'console-dialog-header'; header.textContent = 'Console';
+        var stop = document.createElement('button'); stop.type = 'button'; stop.className = 'console-stop-button'; stop.textContent = 'Parar execução'; stop.setAttribute('aria-label', 'Parar execução'); stop.disabled = get('btn-stop').disabled; stop.addEventListener('click', function () { get('btn-stop').click(); });
         var close = document.createElement('button'); close.type = 'button'; close.textContent = 'Voltar ao editor'; close.addEventListener('click', closeConsoleDialog);
-        header.appendChild(close); box.appendChild(header); consoleDialog.appendChild(box); document.body.appendChild(consoleDialog);
+        header.appendChild(stop); header.appendChild(close); box.appendChild(header); consoleDialog.appendChild(box); document.body.appendChild(consoleDialog);
         consoleDialog.addEventListener('click', function (event) { if (event.target === consoleDialog) closeConsoleDialog(); });
         return consoleDialog;
+    }
+    function updateConsoleStopControls(running) {
+        var disabled = !running;
+        var panelButton = get('btn-console-stop');
+        if (panelButton) panelButton.disabled = disabled;
+        if (consoleDialog) {
+            var dialogButton = consoleDialog.querySelector('.console-stop-button');
+            if (dialogButton) dialogButton.disabled = disabled;
+        }
     }
     function syncConsoleWindow() {
         if (!consoleWindow || consoleWindow.closed) return;
         var style = window.getComputedStyle(document.documentElement);
-        consoleWindow.postMessage({ type: 'visualg-console', output: get('terminal-output').innerText, inputNeeded: !get('terminal-input-area').classList.contains('hidden') || !get('consoleInputOverlay').classList.contains('hidden'), colors: { background: style.getPropertyValue('--ide-canvas').trim(), panel: style.getPropertyValue('--ide-panel').trim(), foreground: style.getPropertyValue('--ide-foreground').trim(), border: style.getPropertyValue('--ide-border').trim() }, fontSize: get('setting-console-font-size').value, fontFamily: get('setting-console-font-family').value }, window.location.origin === 'null' ? '*' : window.location.origin);
+        consoleWindow.postMessage({ type: 'visualg-console', output: get('terminal-output').innerText, inputNeeded: !get('terminal-input-area').classList.contains('hidden') || !get('consoleInputOverlay').classList.contains('hidden'), running: !get('btn-stop').disabled, colors: { background: style.getPropertyValue('--console-bg').trim(), panel: style.getPropertyValue('--console-panel').trim(), foreground: style.getPropertyValue('--console-fg').trim(), output: style.getPropertyValue('--console-output').trim(), border: style.getPropertyValue('--console-border').trim() }, fontSize: get('setting-console-font-size').value, fontFamily: get('setting-console-font-family').value }, window.location.origin === 'null' ? '*' : window.location.origin);
     }
     function showConsole() {
         var mode = localStorage.getItem('visualg-console-presentation') || 'modal';
@@ -759,7 +769,7 @@
             'Aparência': ['visualg-theme'],
             'Editor': ['visualg-editor-font-family', 'visualg-font-size', 'visualg-word-wrap', 'visualg-tab-size', 'visualg-indent-guides', 'visualg-editor-letter-spacing', 'visualg-editor-line-spacing', 'visualg-editor-spacing-relative-v1'],
             'Variáveis': ['visualg-vars-font-size', 'visualg-vars-columns'],
-            'Console': ['visualg-console-font-family', 'visualg-console-font-size', 'visualg-console-presentation', 'visualg-console-input-mode'],
+            'Console': ['visualg-console-color-scheme', 'visualg-console-font-family', 'visualg-console-font-size', 'visualg-console-presentation', 'visualg-console-input-mode'],
             'Execução': ['visualg-loop-detection'],
             'Atalhos': ['visualg-shortcut-run', 'visualg-shortcut-step', 'visualg-shortcut-debug', 'visualg-shortcut-save', 'visualg-shortcut-palette', 'visualg-shortcut-font'],
             'Interface': ['visualg-layout-v2', 'visualg-section-visibility-v1']
@@ -941,6 +951,7 @@
             'setting-tab-size':'Define quantos espaços são inseridos ao indentar.',
             'setting-indent-guides':'Mostra linhas verticais para facilitar a leitura de blocos.',
             'setting-console-presentation':'Escolhe onde o console aparece durante a execução.',
+            'setting-console-theme':'Escolhe o fundo escuro padrão do console ou uma aparência clara, independente do tema geral.',
             'setting-console-font-family':'Define a fonte usada nas mensagens e entradas.',
             'setting-console-font-size':'Ajusta apenas o texto do console.',
             'setting-console-input-mode':'Escolhe entre digitar no próprio console ou em uma janela de entrada.',
@@ -950,7 +961,7 @@
         var categories = [
             { title:'Aparência', description:'Escolha as cores usadas em toda a interface.', fields:[['Tema de cores','setting-theme']] },
             { title:'Editor', description:'Leitura, espaçamento e comportamento da área de código.', fields:[['Fonte','setting-editor-font-family'],['Tamanho da fonte (px)','setting-font-size'],['Espaçamento entre letras','setting-letter-spacing'],['Espaçamento entre linhas','setting-line-spacing'],['Quebra de linha','setting-word-wrap'],['Tamanho da tabulação','setting-tab-size'],['Guias de indentação','setting-indent-guides']], preview:'editor' },
-            { title:'Console', description:'Aparência, posição e forma de entrada do console.', fields:[['Modo de exibição','setting-console-presentation'],['Fonte','setting-console-font-family'],['Tamanho da fonte (px)','setting-console-font-size'],['Entrada do console','setting-console-input-mode']], preview:'console' },
+            { title:'Console', description:'Aparência, posição e forma de entrada do console.', fields:[['Aparência','setting-console-theme'],['Modo de exibição','setting-console-presentation'],['Fonte','setting-console-font-family'],['Tamanho da fonte (px)','setting-console-font-size'],['Entrada do console','setting-console-input-mode']], preview:'console' },
             { title:'Variáveis', description:'Aparência da tabela usada durante a execução e depuração.', fields:[['Tamanho da fonte (px)','setting-vars-font-size']], preview:'variables' },
             { title:'Execução', description:'Proteções aplicadas enquanto seu algoritmo está rodando.', fields:[['Detecção de loop infinito','setting-loop-detection']] },
             { title:'Arquivos', description:'Armazenamento local, nomes e exclusão dos seus algoritmos.', fields:[] },
@@ -1448,17 +1459,29 @@
         get('btn-report-bug').addEventListener('click', openIssueTracker);
         get('mobile-report-bug').addEventListener('click', function () { get('mobile-menu').classList.remove('open'); openIssueTracker(); });
         get('right-sidebar').classList.toggle('messages-resized', !!layout.messagesResized);
+        var consoleTheme = get('setting-console-theme');
+        consoleTheme.value = localStorage.getItem('visualg-console-color-scheme') === 'light' ? 'light' : 'dark';
+        document.documentElement.setAttribute('data-console-theme', consoleTheme.value);
+        consoleTheme.addEventListener('change', function () {
+            var theme = consoleTheme.value === 'light' ? 'light' : 'dark';
+            localStorage.setItem('visualg-console-color-scheme', theme);
+            document.documentElement.setAttribute('data-console-theme', theme);
+            syncConsoleWindow();
+        });
         var presentation = get('setting-console-presentation'); presentation.value = localStorage.getItem('visualg-console-presentation') || 'modal';
         presentation.addEventListener('change', function () { localStorage.setItem('visualg-console-presentation', presentation.value); closeConsoleDialog(); if (consolePanelOpen) { consolePanelOpen = false; editor.classList.remove('console-panel-visible'); } updateConsoleButton(); });
         new MutationObserver(syncConsoleWindow).observe(get('terminal-output'), { childList: true, subtree: true, characterData: true });
         new MutationObserver(syncConsoleWindow).observe(get('terminal-input-area'), { attributes: true, attributeFilter: ['class'] });
         new MutationObserver(syncConsoleWindow).observe(get('consoleInputOverlay'), { attributes: true, attributeFilter: ['class'] });
+        new MutationObserver(function () { updateConsoleStopControls(!get('btn-stop').disabled); syncConsoleWindow(); }).observe(get('btn-stop'), { attributes: true, attributeFilter: ['disabled'] });
         new MutationObserver(syncConsoleWindow).observe(document.documentElement, { attributes: true, attributeFilter: ['data-theme'] });
         get('setting-console-font-size').addEventListener('input', syncConsoleWindow);
         document.addEventListener('visualg:font-family-changed', function (event) { if (event.detail.area === 'console') syncConsoleWindow(); });
         window.addEventListener('message', function (event) {
             if (event.origin !== window.location.origin || event.source !== consoleWindow || !event.data) return;
             if (event.data.type === 'visualg-console-ready') syncConsoleWindow();
+            if (event.data.type === 'visualg-console-focus' && window.Terminal && window.Terminal.requestInputFocus) window.Terminal.requestInputFocus();
+            if (event.data.type === 'visualg-console-blur' && window.Terminal && window.Terminal.releaseExternalInputFocus) window.Terminal.releaseExternalInputFocus();
             if (event.data.type === 'visualg-console-input') {
                 if (!get('consoleInputOverlay').classList.contains('hidden')) { get('console-input-modal').value = event.data.value; get('console-input-modal-ok').click(); }
                 else { get('terminal-input').value = event.data.value; get('terminal-input-ok').click(); }
@@ -1500,6 +1523,7 @@
             renderDebugBreakpoints(); get('debug-menu').classList.add('hidden');
         });
         get('btn-show-console').addEventListener('click', toggleConsole);
+        get('btn-console-stop').addEventListener('click', function () { get('btn-stop').click(); });
         get('btn-home').addEventListener('click', showEditor);
         get('mobile-files').addEventListener('click', function () { var shell = document.querySelector('.ide-shell'); shell.classList.remove('mobile-debug'); shell.classList.add('mobile-files'); get('mobile-menu').classList.remove('open'); });
         get('mobile-editor').addEventListener('click', function () { showEditor(); get('mobile-menu').classList.remove('open'); });
@@ -1539,6 +1563,7 @@
         addResizable(get('right-resizer'), 'x', '--ide-right', get('right-sidebar'), 300, function () { return Math.min(540, window.innerWidth * .4); });
         addDebugVariablesResizer(get('debug-divider'));
         document.addEventListener('visualg:execution-start', function (event) {
+            updateConsoleStopControls(true);
             setDebugRunAction(true);
             messages = []; renderMessages(); renderDebugBreakpoints();
             document.body.classList.toggle('debug-session-active', !!(event.detail && event.detail.debug));
@@ -1547,6 +1572,7 @@
             if (event.detail && event.detail.debug) showEditor(); else showConsole();
         });
         document.addEventListener('visualg:execution-end', function () {
+            updateConsoleStopControls(false);
             setDebugRunAction(false);
             document.body.classList.remove('debug-session-active');
             get('debug-session-controls').classList.add('hidden');
@@ -1612,6 +1638,7 @@
         window.VisualGEditor.instance.on('change', function () { if (messages.some(function (item) { return item.kind === 'error'; })) { messages = []; renderMessages(); window.VisualGEditor.clearHighlight(); } });
         window.VisualGWorkspace = { showEditor: showEditor, showConsole: showConsole, toggleConsole: toggleConsole, showDoc: showDoc, showExamples: showExamples, showSettings: showSettings, toggleSettings: toggleSettings, openThemeMenu: openThemeMenu, getBreakpoints: getCurrentBreakpoints, uniqueFileName: uniqueFileName, navigateToLocation: navigateToLocation };
         refreshIcons(document.querySelector('.ide-shell'));
+        if (window.VisualGAppBoot) window.VisualGAppBoot.ready('workspace');
     }
 
     function showTrashInRecovery() {
@@ -1631,5 +1658,13 @@
         modal.appendChild(section);
     }
 
-    document.addEventListener('DOMContentLoaded', function () { window.setTimeout(init, 0); });
+    document.addEventListener('DOMContentLoaded', function () {
+        window.setTimeout(function () {
+            try { init(); }
+            catch (error) {
+                if (window.VisualGAppBoot) window.VisualGAppBoot.fail();
+                throw error;
+            }
+        }, 0);
+    });
 })();

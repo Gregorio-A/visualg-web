@@ -102,4 +102,5 @@
             window.VisualGEditor.instance.refresh();
         }
     });
+    if (window.VisualGAppBoot) window.VisualGAppBoot.ready('layout');
 })();

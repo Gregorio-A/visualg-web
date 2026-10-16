@@ -16,7 +16,9 @@
     header span { margin-right: auto; }
     button { padding: 6px 10px; border: 1px solid var(--console-border,#454545); border-radius: 4px; background: var(--console-background,#29292c); color: var(--console-foreground,#ddd); cursor: pointer; }
     button:hover { background: #3d3d42; }
+    button:disabled { opacity: .5; cursor: default; }
     pre { flex: 1; overflow: auto; margin: 0; padding: 18px; white-space: pre-wrap; overflow-wrap: anywhere; font: inherit; }
+    #output { color: var(--console-output,var(--console-foreground,#dedede)); }
     form { display: none; gap: 8px; padding: 10px 12px; background: var(--console-panel,#19191a); }
     form.visible { display: flex; }
     input { flex: 1; min-width: 0; padding: 8px; border: 1px solid var(--console-border,#505050); border-radius: 4px; background: var(--console-background,#111); color: var(--console-foreground,#eee); font: inherit; }
@@ -24,7 +26,7 @@
   <script src="js/console-window.js" defer></script>
 </head>
 <body>
-  <header><span>Console — VisuAlg</span><button id="back" type="button">Voltar ao editor</button><button id="stop" type="button">Parar</button></header>
+  <header><span>Console — VisuAlg</span><button id="back" type="button">Voltar ao editor</button><button id="stop" type="button" title="Parar execução" aria-label="Parar execução" disabled>Parar execução</button></header>
   <pre id="output" aria-live="polite"></pre>
   <form id="input-form"><input id="input" aria-label="Entrada do programa" autocomplete="off"><button type="submit">Enviar</button></form>
 </body>

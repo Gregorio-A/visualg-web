@@ -1193,3 +1193,78 @@ html[data-theme] .header-actions .toolbar-btn { color:var(--ide-muted) !importan
 html[data-theme] .header-actions .toolbar-btn:hover:not(:disabled),html[data-theme] .header-actions .toolbar-btn:focus-visible { border-color:var(--ide-accent) !important; background:var(--ide-hover) !important; color:var(--ide-foreground) !important; }
 html[data-theme^="visualg-"] .header-logo .logo-version,html[data-theme^="visualg-"] .header-actions .toolbar-btn { color:var(--skin-title-fg) !important; }
 html[data-theme^="visualg-"] .header-actions .toolbar-btn:hover:not(:disabled),html[data-theme^="visualg-"] .header-actions .toolbar-btn:focus-visible { border-color:currentColor !important; background:#ffffff2e !important; color:var(--skin-title-fg) !important; }
+
+/* Classic skins use both dark and light title bars; keep history controls matched to each palette. */
+html[data-theme="visualg-classic"] .header-history button,
+html[data-theme="visualg-3"] .header-history button,
+html[data-theme="visualg-agua"] .header-history button,
+html[data-theme="visualg-madeira"] .header-history button,
+html[data-theme="visualg-plastico"] .header-history button { color:#fff !important; }
+html[data-theme="visualg-metal"] .header-history button,
+html[data-theme="visualg-notas"] .header-history button,
+html[data-theme="visualg-aluminio"] .header-history button { color:var(--ide-foreground) !important; }
+html[data-theme^="visualg-"] .header-history svg { color:currentColor !important; opacity:.92; }
+html[data-theme^="visualg-"] .header-history button:hover:not(:disabled) svg,
+html[data-theme^="visualg-"] .header-history button:focus-visible svg { opacity:1; }
+html[data-theme^="visualg-"] .header-history button:hover:not(:disabled) { background:#ffffff20; }
+html[data-theme^="visualg-"] .header-history button:focus-visible { outline:2px solid currentColor; outline-offset:1px; }
+html[data-theme^="visualg-"] .header-history button:disabled { opacity:.42; cursor:default; }
+
+/* A visible panel gets a softly filled glyph; a hidden panel stays an outline. */
+html[data-theme^="visualg-"] .header-actions .panel-toggle[aria-pressed="true"] { color:var(--skin-title-fg,var(--ide-foreground)) !important; }
+html[data-theme^="visualg-"] .header-actions .panel-toggle[aria-pressed="true"] svg rect { fill:color-mix(in srgb,currentColor 78%,transparent); }
+html[data-theme^="visualg-"] .header-actions .panel-toggle[aria-pressed="false"] svg rect { fill:transparent; }
+html[data-theme^="visualg-"] .header-actions .panel-toggle[aria-pressed="false"] svg path { stroke:currentColor; }
+html[data-theme^="visualg-"] .header-actions .panel-toggle:focus-visible { outline-color:var(--skin-title-fg,var(--ide-accent)); }
+
+/* The console has its own palette, independent of the workspace theme. */
+html[data-console-theme="dark"] {
+    --console-bg:#000;
+    --console-panel:#151515;
+    --console-fg:#dedede;
+    --console-border:#454545;
+    --console-muted:#bfbfbf;
+    --console-output:#9ece6a;
+    --console-input-bg:#080808;
+    --console-input-fg:#eee;
+    --console-error:#ff727d;
+}
+html[data-console-theme="light"] {
+    --console-bg:#fff;
+    --console-panel:#f1f1f1;
+    --console-fg:#242424;
+    --console-border:#b8b8b8;
+    --console-muted:#555;
+    --console-output:#236b35;
+    --console-input-bg:#fff;
+    --console-input-fg:#242424;
+    --console-error:#b42332;
+}
+html[data-console-theme] #terminalPanel,
+html[data-console-theme] .console-dialog { background:var(--console-bg) !important; color:var(--console-fg) !important; }
+html[data-console-theme] #terminalPanel .panel-header,
+html[data-console-theme] .console-dialog-header { background:var(--console-panel) !important; color:var(--console-muted) !important; border-color:var(--console-border) !important; }
+html[data-console-theme] #terminalPanel .panel-body,
+html[data-console-theme] #terminal-output { background:var(--console-bg) !important; color:var(--console-output) !important; }
+html[data-console-theme] #terminal-input-area { border-color:var(--console-border) !important; background:var(--console-panel) !important; }
+html[data-console-theme] #terminal-input,
+html[data-console-theme] #console-input-modal { border-color:var(--console-border) !important; background:var(--console-input-bg) !important; color:var(--console-input-fg) !important; }
+html[data-console-theme] #terminal-input-ok,
+html[data-console-theme] .console-dialog-header button { border-color:var(--console-border) !important; background:var(--console-panel) !important; color:var(--console-fg) !important; }
+html[data-console-theme] .console-error { color:var(--console-error) !important; }
+html[data-console-theme] .console-font-controls,
+html[data-console-theme] .console-font-controls button,
+html[data-console-theme] #terminalPanel .panel-header-btn { color:var(--console-muted) !important; }
+html[data-console-theme] .console-font-controls button:hover,
+html[data-console-theme] #terminal-input-ok:hover { background:var(--console-border) !important; }
+html[data-console-theme] .panel-header .console-stop-button { display:flex; align-items:center; justify-content:center; gap:5px; width:auto; min-width:28px; padding:4px 7px; border:1px solid var(--console-border); background:var(--console-panel); color:var(--console-muted); font:11px Arial,sans-serif; }
+html[data-console-theme] .panel-header .console-stop-button:hover:not(:disabled),
+html[data-console-theme] .console-dialog-header .console-stop-button:hover:not(:disabled) { background:var(--console-border) !important; color:var(--console-fg) !important; }
+html[data-console-theme] .console-stop-button:focus-visible { outline:2px solid var(--console-fg); outline-offset:2px; }
+html[data-console-theme] .console-stop-button:disabled { opacity:.48; cursor:default; }
+html[data-console-theme] .console-dialog #btn-console-stop { display:none !important; }
+html[data-console-theme] #consoleInputOverlay .modal { border-color:var(--console-border) !important; background:var(--console-bg) !important; color:var(--console-fg) !important; }
+html[data-console-theme] #consoleInputOverlay .modal-header,
+html[data-console-theme] #consoleInputOverlay .modal-footer { border-color:var(--console-border) !important; background:var(--console-panel) !important; color:var(--console-fg) !important; }
+html[data-console-theme] .settings-preview-console { background:var(--console-bg) !important; color:var(--console-output) !important; }
+@media (max-width:760px) { #btn-console-stop span { display:none; } }

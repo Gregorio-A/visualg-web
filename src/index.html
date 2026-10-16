@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="pt-BR" data-theme="dark">
+<html lang="pt-BR" data-theme="dark" data-console-theme="dark">
 
 <head>
     <meta charset="UTF-8">
@@ -35,6 +35,23 @@
     <link rel="stylesheet" href="css/style.css">
     <link rel="stylesheet" href="css/fonts.css">
     <link rel="stylesheet" href="css/workspace.css">
+    <style>
+        html[data-app-loading] body > :not(#app-boot) { visibility: hidden; }
+        #app-boot { position: fixed; inset: 0; z-index: 99999; display: grid; place-items: center; background: #1f1f22; color: #f4f4f5; opacity: 1; transition: opacity 240ms cubic-bezier(.2,.75,.25,1); }
+        #app-boot.is-leaving { opacity: 0; pointer-events: none; }
+        #app-boot[hidden] { display: none; }
+        .app-boot-card { display: grid; justify-items: center; gap: 12px; padding: 24px; text-align: center; font: 14px/1.4 Arial,sans-serif; }
+        .app-boot-logo { width: 76px; height: 76px; object-fit: contain; }
+        .app-boot-title { margin: 0; font-size: 24px; font-weight: 600; letter-spacing: .01em; }
+        .app-boot-version { color: #b8b8c0; font-size: 13px; }
+        .app-boot-spinner { width: 28px; height: 28px; margin-top: 8px; border: 3px solid #ffffff35; border-top-color: #fff; border-radius: 50%; animation: app-boot-spin .85s linear infinite; }
+        .app-boot-error { max-width: 360px; color: #ffb4ab; }
+        .app-boot-reload { padding: 9px 16px; border: 0; border-radius: 6px; background: #f4f4f5; color: #1f1f22; font: inherit; cursor: pointer; }
+        @keyframes app-boot-spin { to { transform: rotate(360deg); } }
+        @media (prefers-color-scheme: light) { html[data-app-loading] #app-boot { background: #f5f5f7; color: #24242a; } html[data-app-loading] .app-boot-version { color: #666672; } html[data-app-loading] .app-boot-spinner { border-color: #24242a30; border-top-color: #24242a; } }
+        @media (prefers-reduced-motion: reduce) { #app-boot { transition-duration: 1ms; } .app-boot-spinner { animation-duration: 1.8s; } }
+    </style>
+    <script src="js/boot.js"></script>
 
     <!-- Lucide Icons -->
     <script src="unpk/lucide.min.js"></script>
@@ -44,6 +61,15 @@
 </head>
 
 <body>
+    <div id="app-boot" role="status" aria-live="polite">
+        <div class="app-boot-card">
+            <img class="app-boot-logo" src="images/figma-reference/logo.png" alt="">
+            <div><h1 class="app-boot-title">VisualG Web</h1><div class="app-boot-version">Versão __VISUALG_WEB_VERSION__</div></div>
+            <div class="app-boot-spinner" id="app-boot-spinner" aria-label="Carregando"></div>
+            <p class="app-boot-error" id="app-boot-error" hidden></p>
+            <button class="app-boot-reload" id="app-boot-reload" type="button" hidden onclick="location.reload()">Recarregar</button>
+        </div>
+    </div>
     <!-- Header / Toolbar -->
     <header class="header">
         <div class="header-logo">
@@ -225,6 +251,7 @@
                 <div class="panel-header">
                     Console
                     <div class="console-font-controls" aria-label="Tamanho da fonte do console"><button id="console-font-decrease" type="button" title="Diminuir fonte do console">−</button><span id="console-font-value">13px</span><button id="console-font-increase" type="button" title="Aumentar fonte do console">+</button></div>
+                    <button id="btn-console-stop" class="panel-header-btn console-stop-button" type="button" title="Parar execução" aria-label="Parar execução" disabled><i data-lucide="square" aria-hidden="true"></i><span>Parar execução</span></button>
                     <button id="btn-clear-terminal" class="panel-header-btn" title="Limpar console"><i data-lucide="brush-cleaning"></i></button>
                 </div>
                 <div class="panel-body">
@@ -410,6 +437,13 @@
                             <option value="fredoka">Fredoka (arredondada)</option>
                             <option value="patrick-hand">Patrick Hand (manuscrita)</option>
                             <option value="system">Fonte monoespaçada do sistema</option>
+                        </select>
+                    </div>
+                    <div class="setting-group">
+                        <label for="setting-console-theme">Aparência do console</label>
+                        <select id="setting-console-theme">
+                            <option value="dark">Escuro (preto)</option>
+                            <option value="light">Claro (branco)</option>
                         </select>
                     </div>
                     <div class="setting-group">

@@ -358,6 +358,7 @@
                 closeProductModals();
             }
         });
+        if (window.VisualGAppBoot) window.VisualGAppBoot.ready('main');
     });
 
     // === First-use experience & examples ===

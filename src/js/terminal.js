@@ -10,6 +10,8 @@
         inputArea: null,
         inputEl: null,
         inputResolve: null,
+        focusRequested: false,
+        externalFocusRequested: false,
         _modalSubmit: null,
         _modalCancel: null,
         _modalKeydown: null,
@@ -28,6 +30,47 @@
                     self.submitInput();
                 }
             });
+            document.addEventListener('pointerdown', function (event) {
+                if (!event.target.closest('#terminalPanel, .console-dialog')) self.focusRequested = false;
+            }, true);
+            document.addEventListener('click', function (event) {
+                var surface = event.target.closest('#terminalPanel, .console-dialog');
+                if (!surface || event.target.closest('button, a, select, textarea')) return;
+                self.focusRequested = true;
+                self.focusActiveInput();
+            });
+            document.addEventListener('focusin', function (event) {
+                if (!event.target.closest('#terminalPanel, .console-dialog')) self.focusRequested = false;
+            });
+        },
+
+        requestInputFocus: function () {
+            this.externalFocusRequested = true;
+        },
+
+        releaseExternalInputFocus: function () {
+            this.externalFocusRequested = false;
+        },
+
+        focusActiveInput: function () {
+            if (!this.inputResolve) return false;
+            var modal = document.getElementById('consoleInputOverlay');
+            if (modal && !modal.classList.contains('hidden')) {
+                document.getElementById('console-input-modal').focus();
+                return true;
+            }
+            if (!this.inputArea.classList.contains('hidden')) {
+                this.inputEl.focus();
+                return true;
+            }
+            return false;
+        },
+
+        isConsoleVisible: function () {
+            var dialog = document.querySelector('.console-overlay:not(.hidden)');
+            if (dialog) return true;
+            var panel = document.getElementById('terminalPanel');
+            return !!(panel && panel.getClientRects().length);
         },
 
         write: function (text) {
@@ -98,14 +141,14 @@
         _readInputInline: function () {
             this.inputArea.classList.remove('hidden');
             this.inputEl.value = '';
-            this.inputEl.focus();
+            if (this.isConsoleVisible() || (this.focusRequested && !this.externalFocusRequested)) this.inputEl.focus();
 
             var input = this.inputEl;
+            var self = this;
             setTimeout(function () {
-                input.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                if (self.isConsoleVisible()) input.scrollIntoView({ behavior: 'smooth', block: 'center' });
             }, 300);
 
-            var self = this;
             return new Promise(function (resolve) {
                 self.inputResolve = resolve;
             });
@@ -121,7 +164,7 @@
             label.textContent = prompt || 'Digite a entrada:';
             input.value = '';
             overlay.classList.remove('hidden');
-            input.focus();
+            if (!this.externalFocusRequested) input.focus();
 
             var self = this;
             return new Promise(function (resolve, reject) {
@@ -162,6 +205,8 @@
         submitInput: function () {
             var val = this.inputEl.value;
             this.inputArea.classList.add('hidden');
+            this.focusRequested = false;
+            this.externalFocusRequested = false;
             if (this.inputResolve) {
                 var resolve = this.inputResolve;
                 this.inputResolve = null;
