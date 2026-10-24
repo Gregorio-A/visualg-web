@@ -1,5 +1,20 @@
 # Histórico de versões
 
+## 1.11.0 — 24 de outubro de 2026
+
+- Reorganiza a página inicial em boas-vindas, duas ações principais, links de apoio, Desafios do Dia e Arquivos recentes. Os painéis de continuidade ficam lado a lado quando há espaço e se empilham em telas estreitas.
+- Separa os dois níveis diários em cartões com descrições curtas e acesso direto, além de um link para o calendário.
+- Os arquivos recentes ganham painel próprio, data da última abertura quando disponível, estado vazio e uma opção para removê-los apenas dessa lista.
+- Apresenta calendário e exercícios selecionados lado a lado na Documentação, com adaptação para telas pequenas, legenda e estados visuais mais fáceis de distinguir.
+- Adiciona prévia dos títulos no hover e foco do calendário, acesso rápido ao dia atual e uma lista de desafios pesquisável e filtrável por dificuldade. A lista mostra os dias disponíveis do ano mais recente primeiro, com carregamento progressivo.
+- Recolhe as orientações gerais em seções expansíveis. Em cada exercício, as dicas aparecem uma a uma; o editor pode iniciar um algoritmo novo e a solução exige confirmação antes de ser revelada.
+- Preserva a data consultada durante a virada do dia. Quando a pessoa acompanha o dia atual, o calendário avança automaticamente.
+- Remove as capturas de tela inseridas dentro da própria página de Desafios do Dia; o conteúdo interativo ocupa esse espaço.
+- Atualiza as capturas externas da interface e a versão exibida no aplicativo para 1.11.
+- Cria arquivos de imediato, com nome único e pasta definida pelo contexto atual, sem abrir o formulário de criação. O botão **+** das abas também cria o arquivo diretamente.
+- Sincroniza o nome do arquivo e a declaração `Algoritmo "..."` nos dois sentidos, inclusive ao duplicar ou importar. `F2` renomeia o arquivo ativo ou o selecionado na lista.
+- Substitui a sequência `Ctrl+K`, `Z` por `Ctrl+Shift+F` (`Cmd+Shift+F` no macOS) para alternar o modo foco; `Esc` continua saindo dele.
+
 ## 1.1.0 — 24 de outubro de 2026
 
 ### Adições

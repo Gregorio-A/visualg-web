@@ -2,11 +2,11 @@
 
 Esta página descreve os controles do VisuAlg Web. Os atalhos abaixo correspondem ao mapa padrão para Windows e Linux; algumas combinações podem variar conforme o navegador ou o sistema operacional.
 
-![Editor e painéis na versão 1.1](screenshots/interface-editor-1.1.png)
+![Editor e painéis na versão 1.11](screenshots/interface-editor-1.11.png)
 
 ## Arquivos do projeto
 
-Crie um arquivo pela tela inicial ou pela ação **Novo arquivo**. O diálogo permite informar o nome e a pasta. Arquivos abertos aparecem na lateral; fechar uma aba mantém o arquivo no projeto. Para removê-lo, use a ação de exclusão e confirme. O salvamento de trabalho ocorre automaticamente neste navegador. **Baixar projeto** exporta os arquivos para o dispositivo; essa ação não grava silenciosamente em uma pasta do computador.
+Crie um arquivo pela tela inicial, pelo botão **Novo arquivo** ou pelo **+** das abas. Ele aparece imediatamente, sem perguntar nome ou pasta, com um nome livre como `MeuAlgoritmo.alg`. Se uma pasta estiver selecionada, o arquivo entra nela; caso contrário, usa a pasta do arquivo ativo ou a raiz do projeto. Pressione `F2` para renomear o arquivo ativo ou um arquivo selecionado na lista. O nome do arquivo e o nome entre aspas na linha `Algoritmo "..."` acompanham um ao outro quando você renomeia ou edita essa linha. Arquivos abertos aparecem na lateral; fechar uma aba mantém o arquivo no projeto. Para removê-lo, use a ação de exclusão e confirme. O salvamento de trabalho ocorre automaticamente neste navegador. **Baixar projeto** exporta os arquivos para o dispositivo; essa ação não grava silenciosamente em uma pasta do computador.
 
 ## Localizar e substituir
 
@@ -46,4 +46,4 @@ O projeto é salvo automaticamente neste navegador; `Ctrl+S` baixa o arquivo ati
 
 ## Modo foco
 
-Pressione `Ctrl+K` e, em seguida, `Z` para ocultar temporariamente as laterais e concentrar a área de edição. Pressione `Esc` para voltar. O estado anterior dos painéis é restaurado.
+Pressione `Ctrl+Shift+F` (ou `Cmd+Shift+F` no macOS) para alternar o modo foco e ocultar temporariamente as laterais. Pressione `Esc` para voltar. O estado anterior dos painéis é restaurado.

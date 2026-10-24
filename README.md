@@ -5,51 +5,53 @@ Teste o app: [gregorioalves.com/visualg](https://gregorioalves.com/visualg/)
 
 Este projeto não é o VisuAlg original nem o VisuAlg.dev. O VisuAlg Web é um fork do VisuAlg.dev, do qual herdou a base do editor e do interpretador antes de receber identidade, políticas, testes e alterações próprias. Ambos fazem parte de uma história maior, construída por professores, desenvolvedores, materiais didáticos e iniciativas anteriores.
 
-## VisuAlg Web 1.1 em imagens
+## VisuAlg Web 1.11 em imagens
 
-A versão 1.1 reúne o editor, a documentação e a execução na mesma área de trabalho. A página inicial agora apresenta os dois desafios do dia:
+A versão 1.11 reorganiza a página inicial em ações para começar e painéis para continuar, com desafios e arquivos recentes. Na Documentação, o calendário fica junto aos exercícios selecionados. O editor e a execução continuam na mesma área de trabalho:
 
-![Página inicial com o Desafio do Dia](img/interface-inicio-1.1.png)
+![Página inicial com o Desafio do Dia](img/interface-inicio-1.11.png)
 
-![Editor com código aberto e painéis laterais](img/interface-editor-1.1.png)
+![Editor com código aberto e painéis laterais](img/interface-editor-1.11.png)
 
-![Console após executar um algoritmo](img/interface-console-1.1.png)
+![Console após executar um algoritmo](img/interface-console-1.11.png)
 
-A documentação inclui um calendário de 1º de janeiro até a data atual, com desafios simples e avançados independentes. Cada exercício oferece enunciado, exemplo, dicas e uma solução inicialmente oculta:
+A documentação inclui calendário e lista pesquisável de 1º de janeiro até a data atual, com desafios iniciantes e avançados independentes. Cada exercício oferece enunciado, exemplo, dicas progressivas e uma solução inicialmente oculta:
 
-![Calendário e níveis dos Desafios do Dia](img/interface-desafios-1.1.png)
+![Calendário e níveis dos Desafios do Dia](img/interface-desafios-1.11.png)
 
-![Página de um desafio simples](img/interface-desafio-simples-1.1.png)
+![Lista pesquisável dos desafios anteriores](img/interface-desafios-lista-1.11.png)
 
-![Página de um desafio avançado](img/interface-desafio-avancado-1.1.png)
+![Página de um desafio simples](img/interface-desafio-simples-1.11.png)
 
-![Documentação integrada ao editor](img/interface-documentacao-1.1.png)
+![Página de um desafio avançado](img/interface-desafio-avancado-1.11.png)
+
+![Documentação integrada ao editor](img/interface-documentacao-1.11.png)
 
 As configurações, a seleção de temas e a interface móvel também foram atualizadas:
 
-![Configurações de aparência](img/interface-configuracoes-1.1.png)
+![Configurações de aparência](img/interface-configuracoes-1.11.png)
 
-![Configurações do editor](img/interface-fontes-editor-1.1.png)
+![Configurações do editor](img/interface-fontes-editor-1.11.png)
 
-![Seleção dos temas disponíveis](img/interface-temas-1.1.png)
+![Seleção dos temas disponíveis](img/interface-temas-1.11.png)
 
-<img src="img/interface-mobile-1.1.png" width="260" alt="VisuAlg Web em uma tela de celular">
+<img src="img/interface-mobile-1.11.png" width="260" alt="VisuAlg Web em uma tela de celular">
 
 Os quatro temas clássicos atuais são VisuAlg Clássico, VisuAlg 3.0, Windows 95 e Steam Clássico. O Steam usa a organização de aplicativo desktop dos temas clássicos, com paleta oliva e controles compactos:
 
-![Editor no tema Steam Clássico](img/interface-steam-1.1.png)
+![Editor no tema Steam Clássico](img/interface-steam-1.11.png)
 
-![Editor no tema Windows 95](img/interface-windows95-1.1.png)
+![Editor no tema Windows 95](img/interface-windows95-1.11.png)
 
-![Editor no tema VisuAlg Clássico](img/interface-classico-1.1.png)
+![Editor no tema VisuAlg Clássico](img/interface-classico-1.11.png)
 
 Os temas contemporâneos continuam disponíveis:
 
-![Editor no tema Catppuccin Mocha](img/interface-mocha-1.1.png)
+![Editor no tema Catppuccin Mocha](img/interface-mocha-1.11.png)
 
-![Editor no tema Paper & Ink](img/interface-paper-1.1.png)
+![Editor no tema Paper & Ink](img/interface-paper-1.11.png)
 
-A versão `1.1.0` amplia a versão principal independente lançada na linha `1.0`.
+A versão `1.11.0` refina a apresentação dos desafios lançados em `1.1.0`.
 O histórico completo desta atualização está em [CHANGELOG.md](CHANGELOG.md).
 A identidade do fork e os créditos da aplicação de origem permanecem no
 [histórico do projeto](src/docs/historia.md).
@@ -92,6 +94,8 @@ eles entram no documento de status com identificador e criterio de conclusao.
 - Editor baseado em CodeMirror 5 com destaque de sintaxe para VisuAlg.
 - Cinco arquivos de exemplo na primeira visita, sem substituir arquivos já salvos.
 - Arquivos locais organizáveis em pastas, filtráveis por nome, com upload, download, duplicação e exclusão recuperável por 30 dias.
+- Novo arquivo criado imediatamente com nome único, sem formulário; `F2` renomeia o arquivo e a declaração `Algoritmo` acompanha o nome, inclusive ao editar a declaração no código.
+- Modo foco alternado por `Ctrl+Shift+F` (`Cmd+Shift+F` no macOS), com `Esc` para sair.
 - Abas de código, documentação, exemplos, Console e Configurações numa única barra; todas podem ser fechadas sem apagar arquivos. As abas de código mostram alterações desde o último download e têm menu contextual.
 - Documentação e exemplos em abas centrais de altura total, com busca e divisão código + documentação ou código + código.
 - Autocompletar comandos (também com `Ctrl+Espaço`) e indentação automática.

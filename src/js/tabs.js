@@ -114,8 +114,20 @@
     }
 
     function extractName(code) {
-        var match = code.match(/algoritmo\s+"([^"]+)"/i);
-        return (match && match[1]) ? match[1] : 'Sem nome';
+        var range = declarationNameRange(code);
+        return range && range.end > range.start ? code.slice(range.start, range.end) : 'Sem nome';
+    }
+
+    function declarationNameRange(code) {
+        var match = /^[ \t]*algoritmo[ \t]+"([^"]*)"/im.exec(code);
+        if (!match) return null;
+        var start = match.index + match[0].indexOf('"') + 1;
+        return { start: start, end: start + match[1].length };
+    }
+
+    function codeWithDeclarationName(code, name) {
+        var range = declarationNameRange(code);
+        return range ? code.slice(0, range.start) + name + code.slice(range.end) : 'Algoritmo "' + name + '"\n' + code;
     }
 
     function updateCounterFromId(id) {
@@ -487,10 +499,8 @@
             }, true);
 
             document.getElementById('btn-add-tab').addEventListener('click', function () {
-                if (blockWhenRunning()) return;
-                startScreenRequested = true;
-                if (window.VisualGWorkspace) window.VisualGWorkspace.showEditor();
-                renderTabs();
+                if (window.VisualGWorkspace && window.VisualGWorkspace.createFile) window.VisualGWorkspace.createFile();
+                else self.createTab();
             });
             document.getElementById('btn-empty-new').addEventListener('click', function () {
                 startScreenRequested = false;
@@ -656,6 +666,7 @@
             if (!options.fileName && nextCode.trim() !== getDefaultCode().trim() && window.VisualGWorkspace && window.VisualGWorkspace.uniqueFileName) {
                 options.fileName = window.VisualGWorkspace.uniqueFileName(extractName(nextCode) + '.alg', reusable ? reusable.id : null, null);
             }
+            if (options.fileName && !options.id) nextCode = codeWithDeclarationName(nextCode, options.fileName.replace(/\.(alg|txt)$/i, ''));
             if (reusable) {
                 reusable.code = nextCode;
                 reusable.name = extractName(nextCode);
@@ -812,12 +823,25 @@
             return tabs.slice();
         },
 
+        codeWithDeclarationName: codeWithDeclarationName,
+
         setFileName: function (id, fileName) {
             var tab = getTab(id);
             if (!tab || blockWhenRunning()) return false;
-            var clean = String(fileName || '').trim().replace(/[\\/]/g, '-');
+            var clean = String(fileName || '').trim().replace(/[\\/<>:"|?*]/g, '-').replace(/[. ]+$/, '');
             if (!clean) return false;
             tab.fileName = /\.(alg|txt)$/i.test(clean) ? clean : clean + '.alg';
+            var declarationName = tab.fileName.replace(/\.(alg|txt)$/i, '');
+            var range = declarationNameRange(tab.code);
+            if (id === activeTabId && window.VisualGEditor && window.VisualGEditor.instance) {
+                var cm = window.VisualGEditor.instance;
+                if (range) {
+                    if (tab.code.slice(range.start, range.end) !== declarationName) cm.replaceRange(declarationName, cm.posFromIndex(range.start), cm.posFromIndex(range.end), '+rename');
+                } else cm.replaceRange('Algoritmo "' + declarationName + '"\n', { line:0, ch:0 }, null, '+rename');
+                tab.code = cm.getValue();
+            } else tab.code = codeWithDeclarationName(tab.code, declarationName);
+            tab.name = declarationName;
+            tab.dirty = true;
             if (pendingSessionRaw) pendingSessionRaw = null;
             tab.used = true;
             tab.lastOpenedAt = Date.now();
@@ -829,9 +853,16 @@
         updateTabCode: function (id, code) {
             var tab = getTab(id);
             if (!tab || id === activeTabId || typeof code !== 'string' || blockWhenRunning()) return false;
+            var previousName = tab.name;
             tab.code = code;
             if (pendingSessionRaw) pendingSessionRaw = null;
             tab.name = extractName(code);
+            if (tab.name !== previousName && tab.name !== 'Sem nome' && window.VisualGWorkspace && window.VisualGWorkspace.uniqueFileName) {
+                var extension = /\.txt$/i.test(tab.fileName || '') ? '.txt' : '.alg';
+                tab.fileName = window.VisualGWorkspace.uniqueFileName(tab.name + extension, tab.id, window.VisualGWorkspace.folderOfFile ? window.VisualGWorkspace.folderOfFile(tab.id) : null);
+                var canonicalName = tab.fileName.slice(0, -extension.length);
+                if (canonicalName !== tab.name) { tab.name = canonicalName; tab.code = codeWithDeclarationName(tab.code, canonicalName); }
+            }
             if (code.trim() && code.trim() !== getDefaultCode().trim()) tab.used = true;
             renderTabs();
             schedulePersist();
@@ -875,6 +906,17 @@
             var newName = extractName(code);
             if (tab.name !== newName) {
                 tab.name = newName;
+                if (newName !== 'Sem nome' && window.VisualGWorkspace && window.VisualGWorkspace.uniqueFileName) {
+                    var extension = /\.txt$/i.test(tab.fileName || '') ? '.txt' : '.alg';
+                    tab.fileName = window.VisualGWorkspace.uniqueFileName(newName + extension, tab.id, window.VisualGWorkspace.folderOfFile ? window.VisualGWorkspace.folderOfFile(tab.id) : null);
+                    var canonicalName = tab.fileName.slice(0, -extension.length);
+                    if (canonicalName !== newName) {
+                        tab.name = canonicalName;
+                        var range = declarationNameRange(code);
+                        if (range) window.VisualGEditor.instance.replaceRange(canonicalName, window.VisualGEditor.instance.posFromIndex(range.start), window.VisualGEditor.instance.posFromIndex(range.end), '+rename');
+                        tab.code = window.VisualGEditor.getValue();
+                    }
+                }
                 renderTabs();
             }
             schedulePersist();

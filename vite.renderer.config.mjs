@@ -8,7 +8,7 @@ const configDir = path.dirname(fileURLToPath(import.meta.url));
 const sourceRoot = path.resolve(configDir, 'src');
 const appVersion = JSON.parse(fs.readFileSync(path.join(configDir, 'package.json'), 'utf8')).version;
 const displayVersion = appVersion.split('.').slice(0, 2).join('.');
-const documentationImages = fs.readdirSync(path.join(configDir, 'img')).filter((name) => /^interface-.*-1\.1\.png$/.test(name));
+const documentationImages = fs.readdirSync(path.join(configDir, 'img')).filter((name) => /^interface-.*-1\.11\.png$/.test(name));
 
 function fingerprintScriptReferences(outDir) {
   ['index.html', 'console-window.html'].forEach(function (htmlName) {

@@ -219,7 +219,7 @@
             <button id="btn-scale" class="toolbar-btn" title="Escolher paleta de cores" aria-label="Escolher paleta de cores" aria-pressed="false"><i data-lucide="palette"></i></button>
             <button id="btn-toggle-left" class="toolbar-btn panel-toggle left-toggle" title="Ocultar arquivos" aria-label="Ocultar arquivos" aria-pressed="true"><i data-lucide="panel-left-close"></i></button>
             <button id="btn-toggle-right" class="toolbar-btn panel-toggle right-toggle" title="Ocultar depuração" aria-label="Ocultar depuração" aria-pressed="true"><i data-lucide="panel-right-close"></i></button>
-            <button id="btn-focus-mode" class="toolbar-btn focus-mode-toggle" type="button" title="Modo foco do editor (Ctrl+K, Z)" aria-label="Ativar modo foco" aria-pressed="false"><i data-lucide="maximize"></i></button>
+            <button id="btn-focus-mode" class="toolbar-btn focus-mode-toggle" type="button" title="Modo foco do editor (Ctrl+Shift+F)" aria-label="Ativar modo foco" aria-pressed="false"><i data-lucide="maximize"></i></button>
             <button id="btn-settings" class="toolbar-btn" title="Configurações" aria-label="Configurações" aria-pressed="false"><i data-lucide="sliders-horizontal"></i></button>
             <button id="btn-report-bug" class="toolbar-btn" title="Relatar um problema" aria-label="Relatar um problema"><i data-lucide="message-circle-warning"></i></button>
             <button id="btn-menu" class="toolbar-btn btn-menu" title="Menu" aria-label="Abrir menu" aria-expanded="false" aria-controls="mobile-menu"><i data-lucide="menu"></i></button>
@@ -293,21 +293,30 @@
                 </div>
                 <div class="editor-panel" id="editorPanel">
                     <div id="editor-empty-state" class="editor-empty-state" hidden>
-                        <div class="editor-empty-window-title" aria-hidden="true">Bem-vindo ao VisuAlg</div>
-                        <i data-lucide="file-code-2" aria-hidden="true"></i>
-                        <h2>O que deseja fazer?</h2>
-                        <p>Comece com um arquivo novo ou importe um código existente.</p>
-                        <div class="editor-empty-actions">
-                            <button id="btn-empty-new" type="button"><i data-lucide="file-plus-2"></i> Novo arquivo</button>
-                            <button id="btn-empty-import" type="button"><i data-lucide="folder-up"></i> Importar código</button>
-                            <button id="btn-empty-docs" type="button"><i data-lucide="book-open"></i> Documentação</button>
-                            <button id="btn-empty-restore-tabs" type="button"><i data-lucide="rotate-ccw"></i> Restaurar abas anteriores</button>
+                        <div class="editor-empty-content">
+                            <div class="editor-empty-window-title" aria-hidden="true">Bem-vindo ao VisuAlg</div>
+                            <header class="editor-empty-intro">
+                                <i data-lucide="file-code-2" aria-hidden="true"></i>
+                                <div><h2>Bem-vindo ao VisuAlg</h2><p>Escolha como deseja começar.</p></div>
+                            </header>
+                            <div class="editor-empty-actions">
+                                <button id="btn-empty-new" class="editor-empty-primary" type="button"><i data-lucide="file-plus-2"></i><span><strong>Novo algoritmo</strong><small>Criar arquivo vazio</small></span></button>
+                                <button id="btn-empty-import" type="button"><i data-lucide="folder-up"></i><span><strong>Abrir arquivo</strong><small>Importar código existente</small></span></button>
+                            </div>
+                            <nav class="editor-empty-utilities" aria-label="Outras formas de começar">
+                                <button id="btn-empty-docs" type="button"><i data-lucide="book-open"></i> Documentação</button>
+                                <button id="btn-empty-restore-tabs" type="button"><i data-lucide="rotate-ccw"></i> Restaurar abas anteriores</button>
+                            </nav>
+                            <div class="editor-home-grid">
+                                <section id="daily-challenge-home" class="daily-challenge-home" aria-label="Desafio do Dia" hidden></section>
+                                <section id="editor-recent-files" class="editor-recent-files" aria-label="Códigos recentes" hidden>
+                                    <header><h3>Arquivos recentes</h3><i data-lucide="history" aria-hidden="true"></i></header>
+                                    <div id="editor-recent-list" class="editor-recent-list"></div>
+                                    <p id="editor-recent-empty" class="editor-recent-empty" hidden>Nenhum arquivo recente. Crie um algoritmo para começar.</p>
+                                    <p class="editor-recent-hint">Continue de onde parou ou abra um novo arquivo.</p>
+                                </section>
+                            </div>
                         </div>
-                        <section id="daily-challenge-home" class="daily-challenge-home" aria-label="Desafio do Dia" hidden></section>
-                        <section id="editor-recent-files" class="editor-recent-files" aria-label="Códigos recentes" hidden>
-                            <h3>Códigos recentes</h3>
-                            <div id="editor-recent-list" class="editor-recent-list"></div>
-                        </section>
                     </div>
                     <div class="resize-handle-horizontal" id="resizeHandleHorizontal"></div>
                     <div class="resize-handle-vertical" id="resizeHandleVertical"></div>

@@ -52,8 +52,6 @@
     var consoleDialog = null;
     var consolePanelOpen = false;
     var refreshSidebarActionOverflow = function () {};
-    var pendingFocusChord = false;
-    var focusChordTimer = null;
     var focusModeActive = false;
     var executionDebugMode = false;
     var lastFocusedArea = 'editor';
@@ -231,7 +229,7 @@
 
     function fileName(tab) { return tab.fileName || tab.name + '.alg'; }
     function uniqueFileName(requestedName, ignoredId, folderId) {
-        var clean = String(requestedName || 'Meu algoritmo.alg').trim().replace(/[\\/]/g, '-') || 'Meu algoritmo.alg';
+        var clean = String(requestedName || 'Meu algoritmo.alg').trim().replace(/[\\/<>:"|?*]/g, '-').replace(/[. ]+$/, '') || 'Meu algoritmo.alg';
         if (!/\.(alg|txt)$/i.test(clean)) clean += '.alg';
         var match = /^(.*?)(\.(?:alg|txt))$/i.exec(clean);
         var base = match[1].replace(/ \(cópia \d+\)$/i, '');
@@ -380,6 +378,12 @@
             selectedFolderId = assignments[tab.id] || null; saveFolders();
             openSavedFile(tab);
         });
+        item.addEventListener('keydown', function (event) {
+            if (event.key !== 'F2') return;
+            event.preventDefault();
+            event.stopPropagation();
+            renameFile(tab);
+        });
         item.addEventListener('contextmenu', function (event) { event.preventDefault(); openFileMenu(event, tab); });
         item.addEventListener('dragstart', function (event) { if (window.TabManager.getRunningTab && window.TabManager.getRunningTab()) { event.preventDefault(); return; } event.dataTransfer.setData('text/visualg-tab', tab.id); event.dataTransfer.effectAllowed = 'move'; item.classList.add('drag-source'); });
         item.addEventListener('dragend', function () { item.classList.remove('drag-source'); document.querySelectorAll('.file-folder.drag-over').forEach(function (folder) { folder.classList.remove('drag-over'); }); });
@@ -469,18 +473,44 @@
         var list = get('editor-recent-list');
         if (!section || !list) return;
         list.replaceChildren();
+        var dismissed = {};
+        try { dismissed = JSON.parse(localStorage.getItem('visualg-recent-hidden') || '{}') || {}; } catch (error) { dismissed = {}; }
         var recent = tabs.filter(function (tab) {
-            return tab && tab.lastOpenedAt && (tab.fileName || tab.used) && typeof tab.code === 'string';
+            return tab && tab.lastOpenedAt && (tab.fileName || tab.used) && typeof tab.code === 'string' &&
+                new Date(tab.lastOpenedAt).getTime() > (Number(dismissed[tab.id]) || 0);
         }).sort(function (a, b) { return new Date(b.lastOpenedAt).getTime() - new Date(a.lastOpenedAt).getTime(); }).slice(0, 5);
-        section.hidden = !recent.length;
+        section.hidden = false;
+        var empty = get('editor-recent-empty');
+        if (empty) empty.hidden = recent.length > 0;
         recent.forEach(function (tab) {
+            var row = document.createElement('div'); row.className = 'editor-recent-row';
             var button = document.createElement('button');
             button.type = 'button';
+            button.className = 'editor-recent-open';
             button.title = 'Abrir ' + fileName(tab);
             button.appendChild(icon('file-code-2'));
-            var name = document.createElement('span'); name.textContent = fileName(tab); button.appendChild(name);
+            var details = document.createElement('span'); details.className = 'editor-recent-details';
+            var name = document.createElement('strong'); name.textContent = fileName(tab); details.appendChild(name);
+            var opened = new Date(tab.lastOpenedAt);
+            if (!Number.isNaN(opened.getTime())) {
+                var time = document.createElement('time'); time.dateTime = opened.toISOString();
+                time.textContent = 'Aberto em ' + opened.toLocaleDateString('pt-BR', { day: '2-digit', month: 'short' });
+                details.appendChild(time);
+            }
+            button.appendChild(details);
             button.addEventListener('click', function () { openSavedFile(tab); });
-            list.appendChild(button);
+            var menu = document.createElement('details'); menu.className = 'editor-recent-menu';
+            var trigger = document.createElement('summary'); trigger.title = 'Opções de ' + fileName(tab); trigger.setAttribute('aria-label', trigger.title);
+            trigger.appendChild(icon('ellipsis')); menu.appendChild(trigger);
+            var remove = document.createElement('button'); remove.type = 'button'; remove.textContent = 'Remover dos recentes';
+            remove.addEventListener('click', function () {
+                dismissed[tab.id] = Date.now();
+                try { localStorage.setItem('visualg-recent-hidden', JSON.stringify(dismissed)); } catch (error) { /* Storage may be unavailable. */ }
+                renderRecentFiles(tabs);
+            });
+            menu.appendChild(remove);
+            row.addEventListener('contextmenu', function (event) { event.preventDefault(); menu.open = true; trigger.focus(); });
+            row.append(button, menu); list.appendChild(row);
         });
         refreshIcons(list);
     }
@@ -624,6 +654,22 @@
         document.addEventListener('keydown', escape);
     }
 
+    function renameFile(tab) {
+        var requested = window.prompt('Novo nome do arquivo', fileName(tab));
+        if (requested === null) return;
+        var clean = requested.trim().replace(/[\\/<>:"|?*]/g, '-').replace(/[. ]+$/, '');
+        if (!clean) return;
+        var name = uniqueFileName(clean, tab.id, assignments[tab.id] || null);
+        if (tab.closed) {
+            var declarationName = name.replace(/\.(alg|txt)$/i, '');
+            tab.code = window.TabManager.codeWithDeclarationName(tab.code, declarationName);
+            tab.name = declarationName;
+            tab.fileName = name;
+            saveClosed();
+            renderFiles();
+        } else if (window.TabManager.setFileName(tab.id, name)) renderFiles();
+    }
+
     function openFileMenu(event, tab) {
         var old = get('file-context-menu'); if (old) old.remove();
         var menu = document.createElement('div'); menu.id = 'file-context-menu'; menu.className = 'debug-menu';
@@ -632,7 +678,7 @@
         if (!tab.closed) option('Fechar aba', function () { window.TabManager.closeTab(tab.id); });
         option('Exportar como .alg', function () { exportWorkspaceFile(tab, 'alg'); });
         option('Exportar como .txt', function () { exportWorkspaceFile(tab, 'txt'); });
-        option('Renomear', function () { var name = window.prompt('Nome do arquivo', fileName(tab)); if (!name) return; name = uniqueFileName(name, tab.id, assignments[tab.id] || null); if (tab.closed) { tab.fileName = name; saveClosed(); renderFiles(); } else if (window.TabManager.setFileName(tab.id, name)) renderFiles(); });
+        option('Renomear (F2)', function () { renameFile(tab); });
         option('Duplicar', function () { duplicateFile(tab); });
         option('Mover para pasta', function () {
             var name = window.prompt('Nome da pasta (vazio para mover à raiz)', folders.find(function (folder) { return folder.id === assignments[tab.id]; })?.name || '');
@@ -1021,6 +1067,7 @@
     }
     function renderDocContent(markdown) {
         var article = document.createElement('article'); article.className = 'docs-article'; article.innerHTML = window.marked.parse(markdown);
+        aux.classList.toggle('daily-challenges-page', activeDocument === 'desafios');
         if (activeDocument === 'desafios' && window.VisualGDailyChallenges) window.VisualGDailyChallenges.mount(article);
         if (window.DocsPanel) window.DocsPanel.enhanceImages(article);
         article.addEventListener('click', function (event) {
@@ -1235,7 +1282,7 @@
                 var shortcutList = document.createElement('div'); shortcutList.className = 'settings-shortcut-list';
                 shortcuts.forEach(function (shortcut) { var row = document.createElement('label'); var checkbox = document.createElement('input'); checkbox.type = 'checkbox'; checkbox.checked = localStorage.getItem('visualg-shortcut-' + shortcut[0]) !== 'off'; checkbox.addEventListener('change', function () { localStorage.setItem('visualg-shortcut-' + shortcut[0], checkbox.checked ? 'on' : 'off'); }); var name = document.createElement('span'); name.textContent = shortcut[1]; var keys = document.createElement('kbd'); keys.textContent = shortcut[2]; row.append(checkbox, name, keys); shortcutList.appendChild(row); });
                 form.appendChild(shortcutList);
-                var editorKeys = document.createElement('small'); editorKeys.className = 'settings-action-help'; editorKeys.textContent = 'No editor: Ctrl/Cmd + K, depois Z ativa o modo foco; Esc sai. Tab indenta a seleção; Shift + Tab recua; Ctrl/Cmd + [ ou ] ajusta o recuo; Ctrl/Cmd + / comenta ou descomenta. F11 continua sendo o atalho de tela cheia do navegador.'; form.appendChild(editorKeys);
+                var editorKeys = document.createElement('small'); editorKeys.className = 'settings-action-help'; editorKeys.textContent = 'No editor: Ctrl/Cmd + Shift + F alterna o modo foco; Esc sai. Tab indenta a seleção; Shift + Tab recua; Ctrl/Cmd + [ ou ] ajusta o recuo; Ctrl/Cmd + / comenta ou descomenta. F11 continua sendo o atalho de tela cheia do navegador.'; form.appendChild(editorKeys);
             }
             if (entry.title === 'Redefinir') {
                 var resetIntro = document.createElement('p'); resetIntro.textContent = 'Redefinir preferências restaura os valores padrão e preserva seus arquivos. A exclusão de algoritmos é uma ação separada e exige confirmação.'; form.appendChild(resetIntro);
@@ -1437,7 +1484,7 @@
         if (button) {
             button.setAttribute('aria-pressed', String(focusModeActive));
             button.setAttribute('aria-label', focusModeActive ? 'Sair do modo foco' : 'Ativar modo foco');
-            button.title = focusModeActive ? 'Sair do modo foco (Esc)' : 'Modo foco do editor (Ctrl+K, Z)';
+            button.title = focusModeActive ? 'Sair do modo foco (Esc)' : 'Modo foco do editor (Ctrl+Shift+F)';
             var glyph = button.querySelector('[data-lucide]');
             if (glyph) glyph.setAttribute('data-lucide', focusModeActive ? 'minimize' : 'maximize');
             refreshIcons(button);
@@ -1517,6 +1564,12 @@
             var targetElement = target && target.nodeType === 1 ? target : null;
             var inEditor = targetElement && targetElement.closest('.CodeMirror');
             var typing = targetElement && ((targetElement.matches('input,textarea,select,[contenteditable="true"]') && !inEditor) || targetElement.closest('.modal-overlay:not(.hidden), .console-overlay:not(.hidden), #consoleInputOverlay:not(.hidden)'));
+            if (event.key === 'F2' && !typing && !event.altKey && !event.ctrlKey && !event.metaKey && !event.shiftKey) {
+                if (targetElement && targetElement.closest('.file-item[data-tab-id]')) return;
+                var activeFile = window.TabManager.getActiveTab();
+                if (activeFile) { event.preventDefault(); renameFile(activeFile); }
+                return;
+            }
             if (event.key === 'Escape' && focusModeActive) {
                 var blockingOverlay = document.querySelector('.modal-overlay:not(.hidden), .console-overlay:not(.hidden), #consoleInputOverlay:not(.hidden)');
                 if (!blockingOverlay && !get('mobile-menu').classList.contains('open')) {
@@ -1524,61 +1577,24 @@
                 }
                 return;
             }
-            if (typing || event.altKey || event.shiftKey) return;
-            if (pendingFocusChord) {
-                pendingFocusChord = false;
-                window.clearTimeout(focusChordTimer);
-                if (event.key.toLowerCase() === 'z') { event.preventDefault(); setFocusMode(!focusModeActive); }
-                return;
-            }
-            if ((event.ctrlKey || event.metaKey) && event.key.toLowerCase() === 'k') {
+            if (typing || event.altKey) return;
+            if ((event.ctrlKey || event.metaKey) && event.shiftKey && event.key.toLowerCase() === 'f') {
                 event.preventDefault();
-                pendingFocusChord = true;
-                window.clearTimeout(focusChordTimer);
-                focusChordTimer = window.setTimeout(function () { pendingFocusChord = false; }, 1200);
+                setFocusMode(!focusModeActive);
             }
         }, true);
     }
 
     function createWorkspaceFile() {
-        var dialog = get('new-workspace-file-dialog');
-        if (!dialog) {
-            dialog = document.createElement('dialog');
-            dialog.id = 'new-workspace-file-dialog';
-            dialog.className = 'workspace-create-dialog';
-            dialog.setAttribute('aria-labelledby', 'new-workspace-file-title');
-            dialog.innerHTML = '<form method="dialog"><h2 id="new-workspace-file-title">Criar arquivo</h2><label for="new-workspace-file-name">Nome</label><input id="new-workspace-file-name" name="fileName" value="MeuAlgoritmo" maxlength="100" required autocomplete="off"><label for="new-workspace-file-folder">Pasta</label><select id="new-workspace-file-folder" name="folder"></select><div class="workspace-create-actions"><button type="button" value="cancel" data-create-cancel>Cancelar</button><button type="submit" value="create">Criar arquivo</button></div></form>';
-            document.body.appendChild(dialog);
-            dialog.addEventListener('close', function () {
-                if (dialog.returnValue !== 'create') return;
-                var nameInput = get('new-workspace-file-name');
-                var folderSelect = get('new-workspace-file-folder');
-                var name = String(nameInput.value || '').trim().replace(/[\\/<>:"|?*]/g, '-').replace(new RegExp('[' + String.fromCharCode(0) + '-' + String.fromCharCode(31) + ']', 'g'), '-').replace(/[. ]+$/, '');
-                if (!name) return;
-                var folderId = folderSelect.value || null;
-                var requestedName = /\.(alg|txt)$/i.test(name) ? name : name + '.alg';
-                var safeName = uniqueFileName(requestedName, null, folderId);
-                var tab = window.TabManager.createTab(window.gerarTemplate(), { fileName:safeName, used:true, forceNew:true });
-                if (!tab) return;
-                if (folderId) assignments[tab.id] = folderId;
-                saveFolders(); renderFiles(); showEditor();
-            });
-            dialog.querySelector('[data-create-cancel]').addEventListener('click', function () { dialog.close('cancel'); });
-        }
-        var folderSelect = get('new-workspace-file-folder');
-        folderSelect.replaceChildren();
         var active = window.TabManager.getActiveTab();
-        var selectedFolder = selectedFolderId || (active ? assignments[active.id] || '' : '');
-        var rootOption = document.createElement('option'); rootOption.value = ''; rootOption.textContent = 'Raiz do projeto'; folderSelect.appendChild(rootOption);
-        folders.forEach(function (folder) {
-            var option = document.createElement('option'); option.value = folder.id; option.textContent = folder.name; folderSelect.appendChild(option);
-        });
-        folderSelect.value = selectedFolder;
-        get('new-workspace-file-name').value = 'MeuAlgoritmo';
-        dialog.returnValue = '';
-        dialog.showModal();
-        get('new-workspace-file-name').focus();
-        get('new-workspace-file-name').select();
+        var folderId = selectedFolderId || (active ? assignments[active.id] || null : null);
+        var safeName = uniqueFileName('MeuAlgoritmo.alg', null, folderId);
+        var declarationName = safeName.replace(/\.alg$/i, '');
+        var code = window.TabManager.codeWithDeclarationName(window.gerarTemplate(), declarationName);
+        var tab = window.TabManager.createTab(code, { fileName:safeName, used:true, forceNew:true });
+        if (!tab) return;
+        if (folderId) assignments[tab.id] = folderId;
+        saveFolders(); renderFiles(); showEditor();
     }
 
     function openThemeMenu() {
@@ -2005,7 +2021,7 @@
         window.VisualGEditor.instance.on('gutterClick', toggleBreakpoint);
         window.VisualGEditor.instance.setOption('gutters', ['CodeMirror-linenumbers', 'debug-current', 'breakpoints']);
         window.VisualGEditor.instance.on('change', function () { if (messages.some(function (item) { return item.kind === 'error'; })) { messages = []; renderMessages(); window.VisualGEditor.clearHighlight(); } });
-        window.VisualGWorkspace = { showEditor: showEditor, showConsole: showConsole, toggleConsole: toggleConsole, returnToEditor: returnToEditor, isConsoleOpen: function () { return !!(consoleDialog && !consoleDialog.classList.contains('hidden')) || consolePanelOpen || view.type === 'console' || !!(consoleWindow && !consoleWindow.closed); }, showDoc: showDoc, refreshDocs: renderDocs, showExamples: showExamples, showSettings: showSettings, toggleSettings: toggleSettings, openThemeMenu: openThemeMenu, getBreakpoints: getCurrentBreakpoints, uniqueFileName: uniqueFileName, createFile: createWorkspaceFile, navigateToLocation: navigateToLocation };
+        window.VisualGWorkspace = { showEditor: showEditor, showConsole: showConsole, toggleConsole: toggleConsole, returnToEditor: returnToEditor, isConsoleOpen: function () { return !!(consoleDialog && !consoleDialog.classList.contains('hidden')) || consolePanelOpen || view.type === 'console' || !!(consoleWindow && !consoleWindow.closed); }, showDoc: showDoc, refreshDocs: renderDocs, showExamples: showExamples, showSettings: showSettings, toggleSettings: toggleSettings, openThemeMenu: openThemeMenu, getBreakpoints: getCurrentBreakpoints, uniqueFileName: uniqueFileName, folderOfFile: function (id) { return assignments[id] || null; }, createFile: createWorkspaceFile, navigateToLocation: navigateToLocation };
         refreshIcons(document.querySelector('.ide-shell'));
         if (window.VisualGAppBoot) window.VisualGAppBoot.ready('workspace');
     }

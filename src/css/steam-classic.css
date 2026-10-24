@@ -593,3 +593,17 @@ html[data-theme="steam-classic"] :is(.column-resizer,#debug-divider,.resize-hand
 html[data-theme="steam-classic"] #debug-divider { position:relative; min-height:7px; background:#3d4738 !important; cursor:row-resize; }
 html[data-theme="steam-classic"] #debug-divider::after { position:absolute; top:2px; left:calc(50% - 22px); width:44px; height:2px; background:#6f7b68; content:""; }
 html[data-theme="steam-classic"] #debug-divider:hover::after { background:#e2cf76; }
+
+/* The welcome screen is a single resizable VGUI window in the new layout. */
+html[data-theme="steam-classic"] .editor-empty-state::before { display:none; }
+html[data-theme="steam-classic"] .editor-empty-content { margin:12px auto 0; border:1px solid #283024; background:#394233; box-shadow:inset 1px 1px #6f7b68,inset -1px -1px #2f372c; }
+html[data-theme="steam-classic"] .editor-empty-window-title { position:static !important; width:100%; height:27px; transform:none; }
+html[data-theme="steam-classic"] .editor-empty-intro { margin:14px 15px; }
+html[data-theme="steam-classic"] .editor-empty-actions { gap:6px; margin:0 15px; }
+html[data-theme="steam-classic"] .editor-empty-actions button { min-height:52px; padding:7px 10px; }
+html[data-theme="steam-classic"] .editor-empty-utilities { margin:7px 15px 13px; }
+html[data-theme="steam-classic"] .editor-home-grid { gap:8px; margin:0 15px 15px; }
+html[data-theme="steam-classic"] :is(.daily-challenge-home,.editor-recent-files) { width:auto; margin:0; border-radius:0; background:#2f372c; }
+html[data-theme="steam-classic"] .editor-recent-files h3 { color:#e0e3d4; font:600 12px Tahoma,Verdana,Arial,sans-serif; }
+html[data-theme="steam-classic"] .editor-empty-actions button strong { font:600 12px Tahoma,Verdana,Arial,sans-serif; }
+html[data-theme="steam-classic"] .editor-empty-actions button small { font:11px Tahoma,Verdana,Arial,sans-serif; }
