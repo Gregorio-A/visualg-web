@@ -15,6 +15,7 @@
         _modalSubmit: null,
         _modalCancel: null,
         _modalKeydown: null,
+        _autoScrollFrame: 0,
 
         init: function () {
             this.outputEl = document.getElementById('terminal-output');
@@ -43,6 +44,11 @@
             });
             document.addEventListener('focusin', function (event) {
                 if (!event.target.closest('#terminalPanel, .console-dialog')) self.focusRequested = false;
+            });
+            document.addEventListener('visualg:execution-end', function () {
+                // The workspace may move/show the console while handling this event.
+                // Scroll after that layout change has been painted.
+                self.scrollToBottom();
             });
         },
 
@@ -75,13 +81,28 @@
             return !!(panel && panel.getClientRects().length);
         },
 
+        scrollToBottom: function () {
+            var self = this;
+            function align() {
+                if (!self.outputEl) return;
+                var panel = self.outputEl.closest('.panel-body');
+                if (panel) panel.scrollTop = panel.scrollHeight;
+                self.outputEl.scrollTop = self.outputEl.scrollHeight;
+            }
+            align();
+            if (this._autoScrollFrame) window.cancelAnimationFrame(this._autoScrollFrame);
+            this._autoScrollFrame = window.requestAnimationFrame(function () {
+                align();
+                self._autoScrollFrame = window.requestAnimationFrame(function () {
+                    self._autoScrollFrame = 0;
+                    align();
+                });
+            });
+        },
+
         write: function (text) {
             this.outputEl.appendChild(document.createTextNode(String(text)));
-            // Auto-scroll to bottom
-            var panel = this.outputEl.closest('.panel-body');
-            if (panel) {
-                panel.scrollTop = panel.scrollHeight;
-            }
+            this.scrollToBottom();
         },
 
         writeln: function (text) {
@@ -109,8 +130,7 @@
             }
 
             this.outputEl.appendChild(row);
-            var panel = this.outputEl.closest('.panel-body');
-            if (panel) panel.scrollTop = panel.scrollHeight;
+            this.scrollToBottom();
         },
         readInput: function (prompt) {
             if (prompt) {
@@ -232,7 +252,12 @@
         },
 
         clear: function () {
+            if (this._autoScrollFrame) window.cancelAnimationFrame(this._autoScrollFrame);
+            this._autoScrollFrame = 0;
             this.outputEl.textContent = '';
+            this.outputEl.scrollTop = 0;
+            var panel = this.outputEl.closest('.panel-body');
+            if (panel) panel.scrollTop = 0;
         }
     };
 })();

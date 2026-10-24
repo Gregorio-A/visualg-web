@@ -10,11 +10,17 @@ O VisuAlg Web executa pseudocódigo em português no estilo do VisuAlg 3.0.7, di
 
 A barra lateral esquerda reúne arquivos e documentação. O centro mantém uma única área de trabalho para o arquivo, a documentação, os exemplos, o console ou as configurações. À direita ficam execução, mensagens e variáveis. Durante a execução, o botão **Executar** se transforma em **Parar**, e o arquivo ativo recebe um indicador animado.
 
-![Visão geral do editor, arquivos, execução e variáveis](screenshots/interface-visualg-2026.png)
+![Visão geral do editor, arquivos, execução e variáveis na versão 1.1](screenshots/interface-editor-1.1.png)
 
 A documentação abre na mesma aba de documentação ao trocar de assunto. A pesquisa considera títulos e o texto das páginas e também mostra exemplos encontrados em um bloco separado.
 
-![Documentação integrada à área central](screenshots/interface-documentacao-2026.png)
+![Documentação integrada à área central na versão 1.1](screenshots/interface-documentacao-1.1.png)
+
+## Desafios do Dia
+
+A página inicial e a Documentação apresentam dois exercícios independentes por data: **Simples** e **Avançado**. O calendário permite voltar a qualquer dia do ano atual desde 1º de janeiro. Abra o exercício, tente resolvê-lo no editor e consulte as dicas e a solução somente quando precisar. A página **Desafios do Dia** explica o funcionamento completo.
+
+![Calendário com os desafios simples e avançados](screenshots/interface-desafios-1.1.png)
 
 ## Estrutura mínima
 

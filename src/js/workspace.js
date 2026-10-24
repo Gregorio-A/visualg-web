@@ -3,7 +3,7 @@
     'use strict';
 
     var DOCS = [
-        ['sumario', 'Sumário'], ['introducao', 'Introdução'], ['historia', 'História'], ['editor', 'Editor e arquivos'], ['compatibilidade', 'Compatibilidade'],
+        ['desafios', 'Desafios do Dia'], ['sumario', 'Sumário'], ['introducao', 'Introdução'], ['historia', 'História'], ['editor', 'Editor e arquivos'], ['compatibilidade', 'Compatibilidade'],
         ['operadores', 'Operadores'], ['entrada-saida', 'E/S'], ['condicionais', 'Condicionais'],
         ['repeticao', 'Repetição'], ['subprogramas', 'Subprogramas'], ['funcoes', 'Funções'],
         ['comandos', 'Comandos'], ['status', 'Status do projeto']
@@ -362,14 +362,19 @@
     function createFileItem(tab) {
         var item = document.createElement('button');
         var isRunning = !!(tab.running || (tab.executor && tab.executor.running));
-        item.type = 'button'; item.className = 'file-item' + (window.TabManager.getActiveTab()?.id === tab.id ? ' active' : '') + (isRunning ? ' running' : '');
+        item.type = 'button'; item.className = 'file-item open' + (window.TabManager.getActiveTab()?.id === tab.id ? ' active' : '') + (tab.dirty ? ' modified' : '') + (isRunning ? ' running' : '');
         item.dataset.tabId = tab.id; item.title = fileName(tab); item.draggable = true;
         if (item.classList.contains('active') && activeFileAnimationId === tab.id) { item.classList.add('file-select-enter'); activeFileAnimationId = null; window.setTimeout(function () { item.classList.remove('file-select-enter'); }, 340); }
         if (recentlyMovedTabId === tab.id) { item.classList.add('file-drop-arrive'); recentlyMovedTabId = null; window.setTimeout(function () { item.classList.remove('file-drop-arrive'); }, 360); }
         var fileIcon = icon(isRunning ? 'loader-circle' : 'file-code-2'); fileIcon.classList.add('file-icon'); fileIcon.setAttribute('aria-hidden', 'true');
         var label = document.createElement('span'); label.className = 'file-label'; label.textContent = fileName(tab);
+        if (tab.dirty) {
+            var dirtyMarker = document.createElement('span'); dirtyMarker.className = 'file-dirty'; dirtyMarker.textContent = '●'; dirtyMarker.title = 'Modificado desde o último download'; dirtyMarker.setAttribute('aria-label', 'Modificado');
+            item.title = fileName(tab) + ' — Modificado desde o último download';
+            item.append(fileIcon, label, dirtyMarker);
+        } else item.append(fileIcon, label);
         var close = icon('trash-2'); close.classList.add('file-close'); close.setAttribute('aria-hidden', 'true'); close.title = 'Excluir arquivo';
-        item.append(fileIcon, label, close);
+        item.append(close);
         item.addEventListener('click', function (event) {
             if (event.target.closest('.file-close')) { deleteFile(tab); return; }
             selectedFolderId = assignments[tab.id] || null; saveFolders();
@@ -653,9 +658,10 @@
         var normalize = normalizeDocSearch;
         var terms = normalize(get('docs-search').value).split(' ').filter(Boolean);
         list.replaceChildren();
+        if (window.VisualGDailyChallenges) window.VisualGDailyChallenges.renderSidebarLink(list, terms);
         var docsHeading = document.createElement('h3'); docsHeading.className = 'doc-results-heading'; docsHeading.textContent = 'Documentação'; list.appendChild(docsHeading);
         var matches = 0;
-        DOCS.forEach(function (entry) {
+        DOCS.filter(function (entry) { return entry[0] !== 'desafios'; }).forEach(function (entry) {
             var markdown = docCache[entry[0]] || '';
             var searchable = normalize(entry[1] + ' ' + (DOC_TAGS[entry[0]] || '') + ' ' + markdown);
             if (terms.length && !terms.every(function (term) { return searchable.includes(term); })) return;
@@ -737,7 +743,30 @@
         if (next.type === 'editor' && window.VisualGEditor.instance) window.setTimeout(function () { window.VisualGEditor.instance.refresh(); }, 0);
         if (next.type === 'console' && get('terminal-input-area').classList.contains('hidden') === false) get('terminal-input').focus();
     }
-    function showEditor() { if (view.type === 'editor') setView(view); else pushView({ type: 'editor' }); }
+    function showEditor() {
+        if (consoleDialog && !consoleDialog.classList.contains('hidden')) {
+            consoleDialog.classList.add('hidden');
+            editor.appendChild(terminal);
+        }
+        if (view.type === 'editor') setView(view); else pushView({ type: 'editor' });
+    }
+    function returnToEditor() {
+        var consoleOpen = !!(consoleDialog && !consoleDialog.classList.contains('hidden')) || consolePanelOpen || view.type === 'console' || !!(consoleWindow && !consoleWindow.closed);
+        if (consoleDialog && !consoleDialog.classList.contains('hidden')) {
+            consoleDialog.classList.add('hidden');
+            editor.appendChild(terminal);
+        }
+        if (consolePanelOpen) {
+            consolePanelOpen = false;
+            editor.classList.remove('console-panel-visible');
+        }
+        if (consoleWindow && !consoleWindow.closed) consoleWindow.close();
+        consoleWindow = null;
+        consoleWindowMode = null;
+        showEditor();
+        updateConsoleButton();
+        return consoleOpen;
+    }
     function animateEditorForFileSwitch() {
         var panel = get('editorPanel');
         if (!panel) return;
@@ -768,7 +797,8 @@
         var actions = document.createElement('div'); actions.className = 'console-dialog-actions';
         var stop = document.createElement('button'); stop.type = 'button'; stop.className = 'console-stop-button'; stop.textContent = 'Parar execução'; stop.setAttribute('aria-label', 'Parar execução'); stop.disabled = get('btn-stop').disabled; stop.addEventListener('click', function () { get('btn-stop').click(); });
         var close = document.createElement('button'); close.type = 'button'; close.textContent = 'Voltar ao editor'; close.addEventListener('click', closeConsoleDialog);
-        actions.appendChild(stop); actions.appendChild(close);
+        actions.appendChild(stop);
+        actions.appendChild(close);
         header.appendChild(title); header.appendChild(actions); box.appendChild(header); consoleDialog.appendChild(box); document.body.appendChild(consoleDialog);
         consoleDialog.addEventListener('click', function (event) { if (event.target === consoleDialog) closeConsoleDialog(); });
         return consoleDialog;
@@ -788,7 +818,7 @@
         consoleWindow.postMessage({ type: 'visualg-console', output: get('terminal-output').innerText, inputNeeded: !get('terminal-input-area').classList.contains('hidden') || !get('consoleInputOverlay').classList.contains('hidden'), running: !get('btn-stop').disabled, colors: { background: style.getPropertyValue('--console-bg').trim(), panel: style.getPropertyValue('--console-panel').trim(), foreground: style.getPropertyValue('--console-fg').trim(), output: style.getPropertyValue('--console-output').trim(), border: style.getPropertyValue('--console-border').trim() }, fontSize: get('setting-console-font-size').value, fontFamily: get('setting-console-font-family').value }, window.location.origin === 'null' ? '*' : window.location.origin);
     }
     function showConsole() {
-        var mode = localStorage.getItem('visualg-console-presentation') || 'modal';
+        var mode = focusModeActive ? 'modal' : (localStorage.getItem('visualg-console-presentation') || 'modal');
         if (mode === 'panel') {
             closeConsoleDialog(); consolePanelOpen = true; editor.classList.add('console-panel-visible');
             showEditor(); updateConsoleButton(); window.VisualGEditor.instance.refresh(); return;
@@ -991,6 +1021,7 @@
     }
     function renderDocContent(markdown) {
         var article = document.createElement('article'); article.className = 'docs-article'; article.innerHTML = window.marked.parse(markdown);
+        if (activeDocument === 'desafios' && window.VisualGDailyChallenges) window.VisualGDailyChallenges.mount(article);
         if (window.DocsPanel) window.DocsPanel.enhanceImages(article);
         article.addEventListener('click', function (event) {
             var link = event.target.closest('a[href^="#doc:"]');
@@ -1450,11 +1481,6 @@
 
     function initFocusMode() {
         function toggle() { setFocusMode(!focusModeActive); }
-        var exitButton = document.createElement('button');
-        exitButton.type = 'button'; exitButton.className = 'focus-mode-exit'; exitButton.innerHTML = '<i data-lucide="minimize" aria-hidden="true"></i><span>Sair do modo foco</span>';
-        exitButton.setAttribute('aria-label', 'Sair do modo foco');
-        exitButton.addEventListener('click', function () { setFocusMode(false); });
-        document.body.appendChild(exitButton); refreshIcons(exitButton);
         get('btn-focus-mode').addEventListener('click', toggle);
         get('execution-lock-console').addEventListener('click', showConsole);
         get('execution-lock-stop').addEventListener('click', function () {
@@ -1465,6 +1491,27 @@
             get('mobile-menu').classList.remove('open');
             setFocusMode(true);
         });
+        window.addEventListener('keydown', function (event) {
+            if (event.key !== 'Escape') return;
+            var inputOverlay = get('consoleInputOverlay');
+            // Escape in a prompt cancels that input first; a subsequent Escape
+            // closes the console and returns to the editor.
+            if (inputOverlay && !inputOverlay.classList.contains('hidden')) return;
+            var consoleVisible = !!(consoleDialog && !consoleDialog.classList.contains('hidden')) || consolePanelOpen || view.type === 'console' || !!(consoleWindow && !consoleWindow.closed);
+            if (!consoleVisible) return;
+            event.preventDefault();
+            event.stopImmediatePropagation();
+            returnToEditor();
+        }, true);
+        window.addEventListener('keydown', function (event) {
+            if (event.key !== 'F5' && event.code !== 'F5') return;
+            var consoleVisible = !!(consoleDialog && !consoleDialog.classList.contains('hidden')) || consolePanelOpen || view.type === 'console' || !!(consoleWindow && !consoleWindow.closed);
+            if (!consoleVisible && !(focusModeActive && !get('btn-stop').disabled)) return;
+            event.preventDefault();
+            event.stopImmediatePropagation();
+            if (!get('btn-stop').disabled) get('btn-stop').click();
+            returnToEditor();
+        }, true);
         document.addEventListener('keydown', function (event) {
             var target = event.target;
             var targetElement = target && target.nodeType === 1 ? target : null;
@@ -1541,12 +1588,13 @@
         var current = document.documentElement.getAttribute('data-theme') || 'dark';
         var currentMode = document.documentElement.dataset.colorMode;
         function previewTheme(id, mode) {
+            if (current === 'windows-95' || current.startsWith('visualg-') || id === 'windows-95' || id.startsWith('visualg-')) return;
             document.documentElement.setAttribute('data-theme', id);
             document.documentElement.dataset.colorMode = mode;
             window.VisualGEditor.instance.refresh();
         }
-        var lightThemeIds = ['light', 'github-light', 'solarized-light', 'high-contrast', 'catppuccin-latte', 'gruvbox-light', 'paper', 'nord-light', 'one-light', 'rose-pine-dawn', 'kanagawa-lotus', 'visualg-classic', 'visualg-3', 'visualg-agua', 'visualg-metal', 'visualg-notas', 'visualg-aluminio', 'visualg-madeira', 'visualg-plastico'];
-        [['Escuros', ['dark', 'dracula', 'nord', 'dark-monokai', 'github-dark', 'one-dark', 'solarized-dark', 'high-contrast-dark', 'catppuccin-mocha', 'rose-pine', 'gruvbox-dark']], ['Claros', ['light', 'paper', 'nord-light', 'kanagawa-lotus', 'github-light', 'one-light', 'solarized-light', 'high-contrast', 'catppuccin-latte', 'rose-pine-dawn', 'gruvbox-light']], ['Clássicos', ['visualg-classic', 'visualg-3', 'visualg-agua', 'visualg-metal', 'visualg-notas', 'visualg-aluminio', 'visualg-madeira', 'visualg-plastico']]].forEach(function (group) {
+        var lightThemeIds = ['light', 'github-light', 'solarized-light', 'high-contrast', 'catppuccin-latte', 'gruvbox-light', 'paper', 'nord-light', 'one-light', 'rose-pine-dawn', 'kanagawa-lotus', 'visualg-classic', 'windows-95', 'visualg-3'];
+        [['Escuros', ['dark', 'dracula', 'nord', 'dark-monokai', 'github-dark', 'one-dark', 'solarized-dark', 'high-contrast-dark', 'catppuccin-mocha', 'rose-pine', 'gruvbox-dark']], ['Claros', ['light', 'paper', 'nord-light', 'kanagawa-lotus', 'github-light', 'one-light', 'solarized-light', 'high-contrast', 'catppuccin-latte', 'rose-pine-dawn', 'gruvbox-light']], ['Clássicos', ['windows-95', 'visualg-classic', 'visualg-3', 'steam-classic']]].forEach(function (group) {
             var subgroup = document.createElement('div'); subgroup.className = 'theme-subgroup';
             var title = document.createElement('span'); title.className = 'theme-group-title'; title.textContent = group[0]; subgroup.appendChild(title);
             group[1].forEach(function (id) {
@@ -1622,9 +1670,7 @@
 
     function updateFontLabels() {
         var editorLabel = get('editor-font-value');
-        var consoleLabel = get('console-font-value');
         if (editorLabel) editorLabel.textContent = get('setting-font-size').value + 'px';
-        if (consoleLabel) consoleLabel.textContent = get('setting-console-font-size').value + 'px';
     }
     function changeAreaFont(area, action) {
         var field = get(area === 'console' ? 'setting-console-font-size' : 'setting-font-size');
@@ -1640,9 +1686,6 @@
         }
     }
     function initFontControls() {
-        [['console', 'console-font-decrease', -1], ['console', 'console-font-increase', 1]].forEach(function (item) {
-            get(item[1]).addEventListener('click', function () { changeAreaFont(item[0], item[2]); });
-        });
         ['setting-font-size', 'setting-console-font-size'].forEach(function (id) { get(id).addEventListener('input', updateFontLabels); });
         document.addEventListener('visualg:editor-font-size', updateFontLabels);
         document.addEventListener('visualg:console-font-size', updateFontLabels);
@@ -1881,7 +1924,6 @@
         addResizable(get('right-resizer'), 'x', '--ide-right', get('right-sidebar'), 300, function () { return Math.min(540, window.innerWidth * .4); });
         addDebugVariablesResizer(get('debug-divider'));
         document.addEventListener('visualg:execution-start', function (event) {
-            if (focusModeActive) setFocusMode(false);
             executionDebugMode = !!(event.detail && event.detail.debug);
             setExecutionLock(true, executionDebugMode);
             updateConsoleStopControls(true);
@@ -1963,7 +2005,7 @@
         window.VisualGEditor.instance.on('gutterClick', toggleBreakpoint);
         window.VisualGEditor.instance.setOption('gutters', ['CodeMirror-linenumbers', 'debug-current', 'breakpoints']);
         window.VisualGEditor.instance.on('change', function () { if (messages.some(function (item) { return item.kind === 'error'; })) { messages = []; renderMessages(); window.VisualGEditor.clearHighlight(); } });
-        window.VisualGWorkspace = { showEditor: showEditor, showConsole: showConsole, toggleConsole: toggleConsole, showDoc: showDoc, showExamples: showExamples, showSettings: showSettings, toggleSettings: toggleSettings, openThemeMenu: openThemeMenu, getBreakpoints: getCurrentBreakpoints, uniqueFileName: uniqueFileName, createFile: createWorkspaceFile, navigateToLocation: navigateToLocation };
+        window.VisualGWorkspace = { showEditor: showEditor, showConsole: showConsole, toggleConsole: toggleConsole, returnToEditor: returnToEditor, isConsoleOpen: function () { return !!(consoleDialog && !consoleDialog.classList.contains('hidden')) || consolePanelOpen || view.type === 'console' || !!(consoleWindow && !consoleWindow.closed); }, showDoc: showDoc, refreshDocs: renderDocs, showExamples: showExamples, showSettings: showSettings, toggleSettings: toggleSettings, openThemeMenu: openThemeMenu, getBreakpoints: getCurrentBreakpoints, uniqueFileName: uniqueFileName, createFile: createWorkspaceFile, navigateToLocation: navigateToLocation };
         refreshIcons(document.querySelector('.ide-shell'));
         if (window.VisualGAppBoot) window.VisualGAppBoot.ready('workspace');
     }

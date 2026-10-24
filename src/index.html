@@ -35,6 +35,9 @@
     <link rel="stylesheet" href="css/style.css">
     <link rel="stylesheet" href="css/fonts.css">
     <link rel="stylesheet" href="css/workspace.css">
+    <link rel="stylesheet" href="css/windows-95.css">
+    <link rel="stylesheet" href="css/classic-layout.css">
+    <link rel="stylesheet" href="css/steam-classic.css">
     <style>
         html[data-app-loading] body > :not(#app-boot) { visibility: hidden; }
         #app-boot { --boot-accent:var(--ide-accent,#ff168d); --boot-bg:var(--ide-canvas,#08090f); --boot-fg:var(--ide-foreground,#f7f7fb); position:fixed; inset:0; z-index:99999; display:grid; place-items:center; overflow:hidden; isolation:isolate; background:var(--boot-bg); color:var(--boot-fg); opacity:1; }
@@ -57,6 +60,64 @@
         .app-boot-status::after { display:inline-block; width:1.5em; text-align:left; content:""; animation:boot-ellipsis 1.4s steps(4,end) infinite; }
         .app-boot-error { max-width:360px; color:#ffb4ab; }
         .app-boot-reload { padding:9px 16px; border:0; border-radius:6px; background:#f4f4f5; color:#1f1f22; font:inherit; cursor:pointer; }
+        html[data-boot-skin="classic"] #app-boot { --boot-bg:#008080; --boot-fg:#000; display:grid; background:#008080; font:11px/1.25 "MS Sans Serif",Tahoma,Arial,sans-serif; image-rendering:pixelated; }
+        html[data-boot-skin="classic"] #app-boot::before { position:absolute; inset:0; display:block; background:radial-gradient(ellipse at 50% 46%,#119393 0,#008080 68%); content:""; animation:classic-desktop-in 650ms steps(8,end) both; }
+        html[data-boot-skin="classic"] #app-boot::after { position:absolute; inset:0; display:block; pointer-events:none; background:repeating-linear-gradient(0deg,#0000 0 3px,#00000008 4px); content:""; }
+        html[data-boot-skin="classic"] #app-boot.is-leaving { animation:classic-boot-exit 620ms steps(8,end) both; }
+        html[data-boot-skin="classic"] .app-boot-card { z-index:1; display:block; width:min(440px,calc(100vw - 30px)); padding:3px; border:2px solid; border-color:#fff #404040 #404040 #fff; background:#c0c0c0; box-shadow:1px 1px 0 #000,inset 1px 1px #dfdfdf; text-align:left; font:11px/1.25 "MS Sans Serif",Tahoma,Arial,sans-serif; animation:classic-window-pop 680ms steps(7,end) both; }
+        html[data-boot-skin="classic"] .app-boot-card > .app-boot-logo-stage,html[data-boot-skin="classic"] .app-boot-card > div:not(.app-boot-classic-content),html[data-boot-skin="classic"] .app-boot-card > #app-boot-spinner,html[data-boot-skin="classic"] .app-boot-card > #app-boot-status { display:none; }
+        html[data-boot-skin="classic"] .app-boot-classic-titlebar { display:flex; height:23px; align-items:center; gap:7px; padding:2px 5px; background:#000080; color:#fff; font-weight:bold; letter-spacing:0; }
+        .app-boot-classic-titlebar { display:none; }
+        html[data-boot-skin="classic"] .app-boot-classic-titlebar { display:flex; }
+        html[data-boot-skin="classic"] .app-boot-classic-titlebar img { width:16px; height:16px; image-rendering:pixelated; }
+        html[data-boot-skin="classic"] .app-boot-classic-titlebar span { margin-left:auto; padding:0 4px; border:1px solid; border-color:#fff #404040 #404040 #fff; background:#c0c0c0; color:#000; font:bold 12px/14px Tahoma,Arial,sans-serif; }
+        html[data-boot-skin="classic"] .app-boot-classic-content { padding:22px 23px 17px; }
+        .app-boot-classic-content { display:none; }
+        html[data-boot-skin="classic"] .app-boot-classic-content { display:block; }
+        html[data-boot-skin="classic"] .app-boot-brand { display:flex; align-items:center; gap:15px; min-height:72px; }
+        html[data-boot-skin="classic"] .app-boot-logo-stage { width:62px; height:62px; margin:0; }
+        html[data-boot-skin="classic"] .app-boot-logo-stage::before,html[data-boot-skin="classic"] .app-boot-logo-stage::after { display:none; }
+        html[data-boot-skin="classic"] .app-boot-logo { width:58px; height:58px; image-rendering:pixelated; animation:classic-logo-reveal 700ms steps(5,end) both; }
+        html[data-boot-skin="classic"] .app-boot-title { justify-content:flex-start; gap:4px; color:#000; font-size:25px; line-height:1; font-weight:bold; letter-spacing:-1.2px; animation:classic-text-in 480ms steps(5,end) 120ms both; }
+        html[data-boot-skin="classic"] .app-boot-title-web { color:#000080; text-shadow:none; }
+        html[data-boot-skin="classic"] .app-boot-version { margin-top:7px; color:#404040; font-size:11px; letter-spacing:0; animation:classic-text-in 420ms steps(4,end) 220ms both; }
+        html[data-boot-skin="classic"] .app-boot-classic-rule { height:2px; margin:12px 0 13px; border-top:1px solid #808080; border-bottom:1px solid #fff; }
+        html[data-boot-skin="classic"] .app-boot-status { min-height:16px; margin:0 0 9px; color:#222; font-size:11px; letter-spacing:0; text-align:left; animation:classic-text-in 400ms steps(4,end) 300ms both; }
+        html[data-boot-skin="classic"] .app-boot-status::after { width:1.5em; animation:boot-ellipsis 1.2s steps(4,end) infinite; }
+        html[data-boot-skin="classic"] .app-boot-spinner { display:none; }
+        html[data-boot-skin="classic"] .app-boot-progress-frame { height:19px; padding:2px; border:2px solid; border-color:#808080 #fff #fff #808080; background:#c0c0c0; }
+        .app-boot-progress-frame { display:none; }
+        html[data-boot-skin="classic"] .app-boot-progress-frame { display:block; }
+        html[data-boot-skin="classic"] .app-boot-progress { width:0; height:100%; background:repeating-linear-gradient(90deg,#000080 0 12px,#000080 12px,#c0c0c0 12px,#c0c0c0 15px); animation:classic-progress 1.8s steps(9,end) 150ms forwards; }
+        html[data-boot-skin="classic"] .app-boot-classic-footer { display:flex; justify-content:flex-start; align-items:center; gap:12px; margin-top:13px; color:#404040; font-size:10px; }
+        .app-boot-classic-footer { display:none; }
+        html[data-boot-skin="classic"] .app-boot-error { color:#800000; }
+        html[data-boot-skin="classic"] .app-boot-reload { border:2px solid; border-color:#fff #404040 #404040 #fff; border-radius:0; background:#c0c0c0; color:#000; font:11px Tahoma,Arial,sans-serif; }
+        html[data-boot-skin="steam"] #app-boot { --boot-bg:#000; --boot-fg:#d6d8c9; display:grid; background:#000; font:14px/1.3 Tahoma,Verdana,Arial,sans-serif; }
+        html[data-boot-skin="steam"] #app-boot::before,html[data-boot-skin="steam"] #app-boot::after { display:none; }
+        html[data-boot-skin="steam"] #app-boot.is-leaving { animation:classic-boot-exit 420ms steps(6,end) both; }
+        html[data-boot-skin="steam"] .app-boot-card { box-sizing:border-box; display:block; width:min(534px,calc(100vw - 28px)); min-height:300px; padding:10px; border:1px solid #75806b; background:#4c5844; box-shadow:none; text-align:left; font:14px/1.3 Tahoma,Verdana,Arial,sans-serif; animation:steam-load-in 480ms steps(6,end) both; }
+        html[data-boot-skin="steam"] .app-boot-card > :not(.steam-boot-content):not(#app-boot-error):not(#app-boot-reload) { display:none !important; }
+        .steam-boot-content { display:none; }
+        html[data-boot-skin="steam"] .steam-boot-content { display:block; }
+        html[data-boot-skin="steam"] .steam-boot-title { display:flex; align-items:center; gap:7px; margin:0 0 12px; color:#e0e3d4; font:18px/1.25 Tahoma,Verdana,Arial,sans-serif; }
+        html[data-boot-skin="steam"] .steam-boot-title img { width:18px; height:18px; object-fit:contain; image-rendering:pixelated; }
+        html[data-boot-skin="steam"] .steam-boot-status { margin:0 0 4px 17px; color:#bbc4af; font:14px/1.3 Tahoma,Verdana,Arial,sans-serif; }
+        html[data-boot-skin="steam"] .steam-boot-progress-frame { box-sizing:border-box; width:min(366px,calc(100% - 18px)); height:27px; margin:0 0 11px 17px; padding:3px; border:1px solid #293227; background:#3b4637; }
+        html[data-boot-skin="steam"] .steam-boot-progress { width:0; height:100%; background:repeating-linear-gradient(90deg,#c6b560 0 12px,transparent 12px 16px); animation:steam-load-progress 1.55s steps(13,end) 100ms forwards; }
+        html[data-boot-skin="steam"] .steam-boot-secondary { margin:0 0 4px 17px; color:#bbc4af; font:14px/1.3 Tahoma,Verdana,Arial,sans-serif; }
+        html[data-boot-skin="steam"] .steam-boot-progress-frame.secondary { margin-bottom:12px; }
+        html[data-boot-skin="steam"] .steam-boot-progress-frame.secondary .steam-boot-progress { animation-delay:420ms; }
+        html[data-boot-skin="steam"] #app-boot-error { margin:8px 17px 0; color:#f0a29a; }
+        html[data-boot-skin="steam"] #app-boot-reload { margin:10px 17px; padding:5px 12px; border:1px solid #293227; border-radius:0; background:#596653; color:#e0e3d4; font:12px Tahoma,Verdana,Arial,sans-serif; }
+        @keyframes steam-load-in { from { opacity:0; transform:scale(.98); } to { opacity:1; transform:none; } }
+        @keyframes steam-load-progress { to { width:100%; } }
+        @keyframes classic-desktop-in { from { opacity:0; } to { opacity:1; } }
+        @keyframes classic-window-pop { 0% { opacity:0; transform:translateY(16px) scale(.97); } 70% { opacity:1; transform:translateY(-2px) scale(1.005); } 100% { opacity:1; transform:none; } }
+        @keyframes classic-logo-reveal { from { opacity:0; transform:scale(.5); filter:contrast(2); } to { opacity:1; transform:scale(1); filter:none; } }
+        @keyframes classic-text-in { from { opacity:0; transform:translateX(-8px); } to { opacity:1; transform:none; } }
+        @keyframes classic-progress { to { width:100%; } }
+        @keyframes classic-boot-exit { 0% { opacity:1; } 55% { opacity:1; transform:scale(1.012); } 100% { opacity:0; transform:scale(1.025); } }
         @keyframes app-boot-spin { to { transform:rotate(360deg); } }
         @keyframes boot-aura { 0%,100% { opacity:.65; transform:scale(.88); } 50% { opacity:1; transform:scale(1.13); } }
         @keyframes boot-orbit { to { transform:rotate(360deg); } }
@@ -69,7 +130,7 @@
         @keyframes boot-dissolve-exit { from { opacity:1; filter:blur(0); } to { opacity:0; filter:blur(12px); } }
         @keyframes app-content-unblur { from { opacity:.7; filter:blur(10px); transform:scale(1.008); } to { opacity:1; filter:blur(0); transform:scale(1); } }
         @media (max-width:600px) { .app-boot-logo-stage { width:136px; height:136px; } .app-boot-logo { width:124px; height:124px; } .app-boot-spinner { margin-top:29px; } }
-        @media (prefers-reduced-motion:reduce) { .app-boot-logo-stage::before,.app-boot-logo-stage::after,.app-boot-logo,.app-boot-title,.app-boot-version,.app-boot-spinner,.app-boot-spinner::after,.app-boot-status,.app-boot-status::after,.app-boot-card { animation-duration:.01ms !important; animation-iteration-count:1 !important; } #app-boot.is-leaving { animation:boot-reduced-exit 180ms ease-out both; } body.app-entering > :not(#app-boot) { animation-duration:.01ms !important; } @keyframes boot-reduced-exit { to { opacity:0; } } }
+        @media (prefers-reduced-motion:reduce) { .app-boot-logo-stage::before,.app-boot-logo-stage::after,.app-boot-logo,.app-boot-title,.app-boot-version,.app-boot-spinner,.app-boot-spinner::after,.app-boot-status,.app-boot-status::after,.app-boot-card,#app-boot::before,.app-boot-progress,.steam-boot-progress { animation-duration:.01ms !important; animation-iteration-count:1 !important; } #app-boot.is-leaving { animation:boot-reduced-exit 180ms ease-out both; } body.app-entering > :not(#app-boot) { animation-duration:.01ms !important; } @keyframes boot-reduced-exit { to { opacity:0; } } }
     </style>
     <script src="js/boot.js"></script>
 
@@ -83,6 +144,21 @@
 <body>
     <div id="app-boot" role="status" aria-live="polite">
         <div class="app-boot-card">
+            <div class="app-boot-classic-titlebar" aria-hidden="true"><img src="images/logo/visualg-mark.png" alt="" /><strong>VisuAlg Web — Iniciando</strong><span>×</span></div>
+            <div class="app-boot-classic-content">
+                <div class="app-boot-brand"><div class="app-boot-logo-stage" aria-hidden="true"><img class="app-boot-logo" src="images/logo/visualg-mark.png" alt="" /></div><div><h1 class="app-boot-title"><span>VisuAlg</span><span class="app-boot-title-web">Web</span></h1><div class="app-boot-version">__VISUALG_WEB_VERSION__</div></div></div>
+                <div class="app-boot-classic-rule"></div>
+                <p class="app-boot-status" id="app-boot-status-classic">Preparando a área de trabalho</p>
+                <div class="app-boot-progress-frame" aria-hidden="true"><div class="app-boot-progress"></div></div>
+                <div class="app-boot-classic-footer"><span>Carregando componentes do sistema</span></div>
+            </div>
+            <div class="steam-boot-content" aria-hidden="true">
+                <h1 class="steam-boot-title"><img src="images/logo/visualg-mark.png" alt="" />VisuAlg Web — Loading...</h1>
+                <p class="steam-boot-status">Verificando e preparando recursos...</p>
+                <div class="steam-boot-progress-frame"><div class="steam-boot-progress"></div></div>
+                <p class="steam-boot-secondary">Iniciando editor e carregando arquivos...</p>
+                <div class="steam-boot-progress-frame secondary"><div class="steam-boot-progress"></div></div>
+            </div>
             <div class="app-boot-logo-stage" aria-hidden="true"><img class="app-boot-logo" src="images/logo/visualg-mark.png" alt="" /></div>
             <div><h1 class="app-boot-title"><span>VisualG</span><span class="app-boot-title-web">Web</span></h1><div class="app-boot-version">__VISUALG_WEB_VERSION__</div></div>
             <div class="app-boot-spinner" id="app-boot-spinner" aria-label="Carregando"></div>
@@ -93,6 +169,18 @@
     </div>
     <!-- Header / Toolbar -->
     <header class="header">
+        <div class="win95-chrome" aria-label="Controles clássicos do VisuAlg Web">
+            <div class="win95-titlebar"><img src="images/logo/visualg-mark.png" alt="" /><strong id="win95-title">VisuAlg Web</strong></div>
+            <nav class="win95-menubar" aria-label="Menu principal">
+                <details><summary>Arquivo</summary><div class="win95-dropdown"><button data-win95-target="btn-new-workspace-file">Novo arquivo</button><button data-win95-target="btn-open">Abrir...</button><button data-win95-target="btn-save">Salvar</button><hr><button data-win95-target="btn-print">Imprimir...</button></div></details>
+                <details><summary>Editar</summary><div class="win95-dropdown"><button data-win95-command="undo">Desfazer</button><button data-win95-command="redo">Refazer</button><hr><button data-win95-command="selectAll">Selecionar tudo</button><button data-win95-target="btn-tab-indent">Indentar</button></div></details>
+                <details><summary>Exibir</summary><div class="win95-dropdown"><button data-win95-target="btn-toggle-left">Painel de arquivos</button><button data-win95-target="btn-toggle-right">Painel de controle</button><button data-win95-target="btn-show-console">Console</button><button data-win95-target="btn-scale">Temas</button></div></details>
+                <details><summary>Executar</summary><div class="win95-dropdown"><button data-win95-target="btn-run">Executar / Parar <span>F5</span></button><button data-win95-target="debug-start">Depurar</button><button data-win95-target="btn-step">Próxima linha <span>F10</span></button><button data-win95-target="btn-stop">Parar</button></div></details>
+                <details><summary>Ferramentas</summary><div class="win95-dropdown"><button data-win95-target="btn-settings">Configurações</button><button data-win95-target="btn-focus-mode">Modo foco</button><button data-win95-target="btn-history">Histórico</button></div></details>
+                <details><summary>Ajuda</summary><div class="win95-dropdown"><button data-win95-target="btn-docs">Documentação</button><button data-win95-target="btn-examples">Exemplos</button><button data-win95-target="btn-report-bug">Relatar problema</button></div></details>
+            </nav>
+            <div class="win95-toolbar" role="toolbar" aria-label="Ações principais"><span class="win95-grip" aria-hidden="true"></span><button class="win95-mobile-action" data-win95-target="mobile-files">Arquivos</button><button class="win95-mobile-action" data-win95-target="mobile-editor">Editor</button><button class="win95-mobile-action" data-win95-target="mobile-debug">Controle</button><span class="win95-toolbar-divider win95-mobile-action" aria-hidden="true"></span><button data-win95-target="btn-new-workspace-file"><img src="images/win95/new.png" alt="" />Novo</button><button data-win95-target="btn-open"><img src="images/win95/open.png" alt="" />Abrir</button><button data-win95-target="btn-save"><img src="images/win95/save.png" alt="" />Salvar</button><span class="win95-toolbar-divider" aria-hidden="true"></span><button data-win95-target="btn-run"><img src="images/win95/run.png" alt="" />Executar</button><button data-win95-target="debug-start"><img src="images/win95/debug.png" alt="" />Depurar</button><span class="win95-toolbar-divider" aria-hidden="true"></span><button data-win95-target="btn-scale">Temas</button><button data-win95-target="btn-settings">Opções</button></div>
+        </div>
         <div class="header-logo">
             <button id="btn-home" class="logo-home" type="button" title="Voltar ao editor"><img class="logo-img" src="images/figma-reference/logo.png" alt="" /><span class="logo-text">VisuAlg Web</span><span class="logo-version">__VISUALG_WEB_VERSION__</span></button>
             <button type="button" class="beta-tag" title="Abrir status do projeto">Beta</button>
@@ -205,6 +293,7 @@
                 </div>
                 <div class="editor-panel" id="editorPanel">
                     <div id="editor-empty-state" class="editor-empty-state" hidden>
+                        <div class="editor-empty-window-title" aria-hidden="true">Bem-vindo ao VisuAlg</div>
                         <i data-lucide="file-code-2" aria-hidden="true"></i>
                         <h2>O que deseja fazer?</h2>
                         <p>Comece com um arquivo novo ou importe um código existente.</p>
@@ -214,6 +303,7 @@
                             <button id="btn-empty-docs" type="button"><i data-lucide="book-open"></i> Documentação</button>
                             <button id="btn-empty-restore-tabs" type="button"><i data-lucide="rotate-ccw"></i> Restaurar abas anteriores</button>
                         </div>
+                        <section id="daily-challenge-home" class="daily-challenge-home" aria-label="Desafio do Dia" hidden></section>
                         <section id="editor-recent-files" class="editor-recent-files" aria-label="Códigos recentes" hidden>
                             <h3>Códigos recentes</h3>
                             <div id="editor-recent-list" class="editor-recent-list"></div>
@@ -264,7 +354,7 @@
                 <!-- Painel de variáveis -->
                 <div class="variables-panel" id="variablesPanel">
                 <div class="panel-header">
-                    VARIÁVEIS
+                    Variáveis
                     <button id="btn-clear-vars" class="panel-header-btn" type="button" title="Limpar valores exibidos" aria-label="Limpar valores exibidos"><i data-lucide="brush-cleaning"></i></button>
                 </div>
                 <div class="panel-body variables-wrapper">
@@ -286,9 +376,7 @@
             <div class="terminal-panel" id="terminalPanel">
                 <div class="panel-header">
                     Console
-                    <div class="console-font-controls" aria-label="Tamanho da fonte do console"><button id="console-font-decrease" type="button" title="Diminuir fonte do console">−</button><span id="console-font-value">13px</span><button id="console-font-increase" type="button" title="Aumentar fonte do console">+</button></div>
                     <button id="btn-console-stop" class="panel-header-btn console-stop-button" type="button" title="Parar execução" aria-label="Parar execução" disabled><i data-lucide="square" aria-hidden="true"></i><span>Parar execução</span></button>
-                    <button id="btn-clear-terminal" class="panel-header-btn" title="Limpar console"><i data-lucide="brush-cleaning"></i></button>
                 </div>
                 <div class="panel-body">
                     <div id="terminal-output"></div>
@@ -300,6 +388,7 @@
             </div>
         </div>
     </main>
+    <footer class="win95-statusbar" aria-label="Barra de status"><span id="win95-status">Pronto</span><span id="win95-position">Linha 1, Coluna 1</span><span id="win95-mode">INS</span></footer>
 
     <div class="mobile-code-toolbar" id="mobile-code-toolbar" role="toolbar" aria-label="Atalhos de programação" aria-hidden="true">
         <div class="mobile-autocomplete-suggestions" id="mobile-autocomplete-suggestions" aria-label="Sugestões do autocomplete" hidden></div>
@@ -361,13 +450,9 @@
                             <option value="rose-pine-dawn">Rosé Pine Dawn</option>
                             <option value="kanagawa-lotus">Kanagawa Lotus</option>
                             <option value="visualg-classic">VisuAlg Clássico</option>
+                            <option value="windows-95">Windows 95</option>
                             <option value="visualg-3">VisuAlg 3.0</option>
-                            <option value="visualg-agua">Agua</option>
-                            <option value="visualg-metal">Metal</option>
-                            <option value="visualg-notas">Notas</option>
-                            <option value="visualg-aluminio">aluminio</option>
-                            <option value="visualg-madeira">Madeira</option>
-                            <option value="visualg-plastico">Plastico</option>
+                            <option value="steam-classic">Steam Clássico</option>
                         </select>
                     </div>
                     <div class="setting-group">
@@ -696,12 +781,15 @@
     <script src="js/tabs.js"></script>
     <script src="js/docs.js"></script>
     <script src="js/workspace.js"></script>
+    <script src="js/challenge-clock.js"></script>
+    <script src="js/daily-challenges.js"></script>
     <script src="js/main.js"></script>
     <script src="js/accessibility.js"></script>
     <script src="js/pwa.js"></script>
 
     <!-- Resize and icon initialization -->
     <script src="js/layout.js"></script>
+    <script src="js/windows-95.js"></script>
 </body>
 
 </html>

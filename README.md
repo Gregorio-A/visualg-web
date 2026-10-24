@@ -5,46 +5,54 @@ Teste o app: [gregorioalves.com/visualg](https://gregorioalves.com/visualg/)
 
 Este projeto não é o VisuAlg original nem o VisuAlg.dev. O VisuAlg Web é um fork do VisuAlg.dev, do qual herdou a base do editor e do interpretador antes de receber identidade, políticas, testes e alterações próprias. Ambos fazem parte de uma história maior, construída por professores, desenvolvedores, materiais didáticos e iniciativas anteriores.
 
-## A nova interface em imagens
+## VisuAlg Web 1.1 em imagens
 
-Editor com arquivos e documentação à esquerda, execução e variáveis à direita, abas centrais e destaque de sintaxe:
+A versão 1.1 reúne o editor, a documentação e a execução na mesma área de trabalho. A página inicial agora apresenta os dois desafios do dia:
 
-![VisuAlg com editor e painéis laterais](img/interface-visualg-2026.png)
+![Página inicial com o Desafio do Dia](img/interface-inicio-1.1.png)
 
-Console aberto como aba após a execução de um algoritmo, com saída e variáveis visíveis:
+![Editor com código aberto e painéis laterais](img/interface-editor-1.1.png)
 
-![Console e variáveis após executar um algoritmo](img/interface-console-2026.png)
+![Console após executar um algoritmo](img/interface-console-1.1.png)
 
-Documentação e Configurações ocupam a área principal em abas que podem ser fechadas:
+A documentação inclui um calendário de 1º de janeiro até a data atual, com desafios simples e avançados independentes. Cada exercício oferece enunciado, exemplo, dicas e uma solução inicialmente oculta:
 
-![Documentação aberta em uma aba central](img/interface-documentacao-2026.png)
+![Calendário e níveis dos Desafios do Dia](img/interface-desafios-1.1.png)
 
-Redefinição de todas as preferências ou de uma categoria específica, sem apagar arquivos:
+![Página de um desafio simples](img/interface-desafio-simples-1.1.png)
 
-![Opções para redefinir as configurações](img/interface-configuracoes-2026.png)
+![Página de um desafio avançado](img/interface-desafio-avancado-1.1.png)
 
-Fontes do editor e temas clássicos do VisuAlg 3.0:
+![Documentação integrada ao editor](img/interface-documentacao-1.1.png)
 
-![Opções de fonte do editor](img/interface-fontes-editor-2026.png)
+As configurações, a seleção de temas e a interface móvel também foram atualizadas:
 
-![Seletor de temas com as peles clássicas](img/interface-temas-classicos-2026.png)
+![Configurações de aparência](img/interface-configuracoes-1.1.png)
 
-A interface também se adapta a telas estreitas e roda como aplicativo Electron:
+![Configurações do editor](img/interface-fontes-editor-1.1.png)
 
-<img src="img/interface-mobile-2026.png" width="260" alt="Editor do VisuAlg em uma tela de celular">
+![Seleção dos temas disponíveis](img/interface-temas-1.1.png)
 
-![VisuAlg como aplicativo Electron](img/interface-electron-2026.png)
+<img src="img/interface-mobile-1.1.png" width="260" alt="VisuAlg Web em uma tela de celular">
 
-Dois dos novos temas completos, com paletas próprias para a interface e a sintaxe:
+Os quatro temas clássicos atuais são VisuAlg Clássico, VisuAlg 3.0, Windows 95 e Steam Clássico. O Steam usa a organização de aplicativo desktop dos temas clássicos, com paleta oliva e controles compactos:
 
-![Editor no tema escuro Catppuccin Mocha](img/interface-tema-mocha.png)
+![Editor no tema Steam Clássico](img/interface-steam-1.1.png)
 
-![Editor no tema claro Paper & Ink](img/interface-tema-paper.png)
+![Editor no tema Windows 95](img/interface-windows95-1.1.png)
 
-Esta versão `1.0.0` marca a primeira versão principal independente, após a linha
-iniciada na `0.10` a partir de um fork do projeto **VisuAlg.dev**. A nova identidade
-evita confundir este produto com a aplicação de origem e preserva seus créditos
-no [histórico do projeto](src/docs/historia.md).
+![Editor no tema VisuAlg Clássico](img/interface-classico-1.1.png)
+
+Os temas contemporâneos continuam disponíveis:
+
+![Editor no tema Catppuccin Mocha](img/interface-mocha-1.1.png)
+
+![Editor no tema Paper & Ink](img/interface-paper-1.1.png)
+
+A versão `1.1.0` amplia a versão principal independente lançada na linha `1.0`.
+O histórico completo desta atualização está em [CHANGELOG.md](CHANGELOG.md).
+A identidade do fork e os créditos da aplicação de origem permanecem no
+[histórico do projeto](src/docs/historia.md).
 
 O **VisuAlg Web é mantido por Murilo Gregorio Alves**. Dúvidas, suporte,
 propostas e assuntos sobre este fork devem ser encaminhados pelos
@@ -89,7 +97,7 @@ eles entram no documento de status com identificador e criterio de conclusao.
 - Autocompletar comandos (também com `Ctrl+Espaço`) e indentação automática.
 - Execucao completa com `F9` e execucao passo a passo com `F8`.
 - Realce da linha atual durante a execucao passo a passo.
-- Console em painel abaixo do editor, aba central, modal, janela separada ou nova aba do navegador. A janela/aba externa sincroniza saída, entrada, tema e fonte; no Electron, só a página interna do Console pode abrir uma janela.
+- Console em painel redimensionável abaixo do editor, aba central, modal, janela separada ou nova aba do navegador. A saída permanece no fim ao concluir uma execução longa; `Esc` fecha o console e volta ao código. A janela/aba externa sincroniza saída, entrada, tema e fonte; no Electron, só a página interna do Console pode abrir uma janela.
 - Entrada por campo inline ou modal, independentemente da apresentação do console.
 - Painel de variaveis com nome, tipo e valor.
 - Abertura de arquivos `.alg` e `.txt`.
@@ -102,10 +110,11 @@ eles entram no documento de status com identificador e criterio de conclusao.
 - Autoindentacao do codigo.
 - Comentario/descomentario com `Ctrl+/` ou `Cmd+/`.
 - Botão sol/lua para alternar diretamente entre VisuAlg Light e Dark; botão de paleta para escolher também Catppuccin Mocha/Latte, Rosé Pine, Gruvbox Dark/Light e Paper & Ink, além dos temas anteriores, com cores próprias para toda a interface e sintaxe.
-- Fontes independentes no editor e Console (JetBrains Mono, Fira Code, IBM Plex Mono, Inconsolata, Roboto Mono, Source Code Pro ou fonte do sistema), distribuídas com a aplicação, com botões discretos, `Ctrl++`, `Ctrl+-`, `Ctrl+0` e `Ctrl+roda do mouse` sobre a área desejada.
-- Temas clássicos inspirados no VisuAlg: Clássico, VisuAlg 3.0 e as peles Agua, Metal, Notas, aluminio, Madeira e Plastico.
+- Fontes independentes no editor e no Console (JetBrains Mono, Fira Code, IBM Plex Mono, Inconsolata, Roboto Mono, Source Code Pro ou fonte do sistema), distribuídas com a aplicação. O tamanho é ajustado em Configurações ou pelos atalhos de zoom da área em foco.
+- Quatro temas clássicos: VisuAlg Clássico, VisuAlg 3.0, Windows 95 e Steam Clássico. As antigas peles Água, Metal, Notas, Alumínio, Madeira e Plástico foram removidas; preferências salvas desses temas passam para VisuAlg Clássico.
 - O espaçamento entre letras e linhas continua configurável; ao mudar o tamanho da fonte do editor, ambos acompanham proporcionalmente o valor escolhido.
 - Pontos de parada no editor e controles reais para pausar, avançar e continuar.
+- Desafios do Dia: 365 datas com versões Simples e Avançada, calendário desde 1º de janeiro do ano atual, explicações, dicas e soluções ocultas que podem ser copiadas ou abertas no editor.
 - Configuracoes persistidas no `localStorage`.
 - Redefinição de todas as configurações ou de categorias individuais, preservando arquivos, códigos e histórico de recuperação.
 - Deteccao de possivel loop infinito apos 1.000 iteracoes, com opcao de continuar ou parar.
@@ -178,7 +187,7 @@ fimalgoritmo
 - **Sol/lua:** alterna diretamente entre VisuAlg Dark e VisuAlg Light. **Paleta:** escolhe um dos temas completos. **Engrenagem:** abre Configurações em uma aba fechável.
 - **Console:** abra pelo ícone de terminal e escolha o modo em **Configurações > Console > Modo de exibição**: painel, aba, modal, janela separada ou nova aba do navegador.
 - **Painéis laterais:** os dois ícones de painel no topo ocultam/reabrem, respectivamente, Arquivos e Depuração. O editor aumenta automaticamente quando um deles é ocultado.
-- **Fonte:** use `−` e `+` nas barras do editor e do Console, ou `Ctrl++`, `Ctrl+-`, `Ctrl+0` e `Ctrl+roda do mouse` com a área desejada em foco. Os tamanhos são salvos separadamente.
+- **Fonte:** ajuste as famílias e os tamanhos em **Configurações > Editor** e **Configurações > Console**. `Ctrl++`, `Ctrl+-`, `Ctrl+0` e `Ctrl+roda do mouse` continuam disponíveis sobre a área em foco; os tamanhos são salvos separadamente.
 - **Família e espaçamento:** em **Configurações > Editor** ou **Console**, escolha a fonte de cada área. No Editor, o espaçamento entre letras e linhas é definido em relação a 14 px e escalado automaticamente com os controles de tamanho.
 
 ## Rodando a versao web
@@ -208,6 +217,11 @@ Para gerar uma build estatica:
 ```bash
 npm run build:web
 ```
+
+Para refazer as capturas da documentação 1.1, inicie `npm run dev:web` em um
+terminal e execute `node scripts/capture-release-screenshots.mjs` em outro.
+O script usa um perfil de navegador novo e grava as imagens em `img/`; a
+captura móvel também é copiada para o manifesto PWA.
 
 Tambem e possivel servir `src/` diretamente sem build:
 

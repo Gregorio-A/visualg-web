@@ -2,6 +2,15 @@
     'use strict';
 
     document.documentElement.setAttribute('data-app-loading', '');
+    var savedTheme = 'dark';
+    try { savedTheme = localStorage.getItem('visualg-theme') || 'dark'; } catch (error) {}
+    var steamBoot = savedTheme === 'steam-classic';
+    var classicBoot = savedTheme === 'windows-95' || steamBoot || savedTheme.indexOf('visualg-') === 0;
+    if (classicBoot) {
+        document.documentElement.setAttribute('data-theme', savedTheme);
+        document.documentElement.setAttribute('data-boot-skin', steamBoot ? 'steam' : 'classic');
+    }
+
     window.VisualGAppBoot = (function () {
         var ready = Object.create(null), failed = false, finished = false;
         var startedAt = performance.now();
@@ -11,7 +20,7 @@
             finished = true;
             Promise.resolve(document.fonts ? document.fonts.ready : null).catch(function () {}).then(function () {
                 var reducedMotion = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-                var minimumVisibleMs = reducedMotion ? 500 : 1550;
+                var minimumVisibleMs = classicBoot ? 2100 : (reducedMotion ? 500 : 1550);
                 window.setTimeout(function () {
                     window.requestAnimationFrame(function () { window.requestAnimationFrame(function () {
                         var root = document.getElementById('app-boot');

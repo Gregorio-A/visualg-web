@@ -2,6 +2,8 @@
 
 Esta página descreve os controles do VisuAlg Web. Os atalhos abaixo correspondem ao mapa padrão para Windows e Linux; algumas combinações podem variar conforme o navegador ou o sistema operacional.
 
+![Editor e painéis na versão 1.1](screenshots/interface-editor-1.1.png)
+
 ## Arquivos do projeto
 
 Crie um arquivo pela tela inicial ou pela ação **Novo arquivo**. O diálogo permite informar o nome e a pasta. Arquivos abertos aparecem na lateral; fechar uma aba mantém o arquivo no projeto. Para removê-lo, use a ação de exclusão e confirme. O salvamento de trabalho ocorre automaticamente neste navegador. **Baixar projeto** exporta os arquivos para o dispositivo; essa ação não grava silenciosamente em uma pasta do computador.

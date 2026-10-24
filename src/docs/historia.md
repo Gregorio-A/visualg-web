@@ -50,7 +50,7 @@ mantida sem alterações. [Ver ficha, autoria e licença](https://commons.wikime
 | VisuAlg 3.0 | Nicolodi publicou a linha 3.0 com nova interface e comandos; a página oficial registra 3.0.7.0, revisada em 2019. | [Galeria e versões no SourceForge](https://sourceforge.net/projects/visualg30/). |
 | Revisões intermediárias | Registros públicos mostram, entre outras, 3.0.5.6, 3.0.6.5 e 3.0.7.0; as revisões mantêm a interface Win32 e aprimoram comandos e apresentação. | [Wiki do projeto 3.0](https://sourceforge.net/p/visualg301/wiki/Home/) e [telas comparativas das revisões](https://www.clubedohardware.com.br/forums/topic/1639070-visualg-links-para-baixar-download-25-3065-e-3070/). |
 | VisuAlg.dev | Etapa web posterior, que manteve a compatibilidade com o dialeto e recebeu melhorias de interface/documentação. O rodapé e changelog públicos identificam o professor Conrado Salomé Ribeiro. | [Acessar VisuAlg.dev](https://visualg.dev/). |
-| VisuAlg Web | Fork independente do VisuAlg.dev. A manutenção deste repositório começa na 0.10, passa pela 0.14 e alcança a versão principal 1.0; consulte **Status do projeto** para estado e validações atuais. | [Repositório e histórico de versões](https://github.com/Gregorio-A/visualg-web); as capturas atuais aparecem na Introdução e no Status. |
+| VisuAlg Web | Fork independente do VisuAlg.dev. A manutenção deste repositório começa na 0.10, passa pela 0.14 e alcança a versão 1.1; consulte **Status do projeto** para estado e validações atuais. | [Repositório e histórico de versões](https://github.com/Gregorio-A/visualg-web); as capturas atuais aparecem na Introdução e no Status. |
 
 ### Vídeos históricos
 
@@ -117,7 +117,7 @@ O projeto tem, portanto, várias camadas:
 4. o VisuAlg Web, fork que passa a ter versão e identidade independentes.
 
 A numeração foi preservada: a manutenção do VisuAlg Web começa na versão
-`0.10`, segue por `0.11`, `0.12`, `0.13` e `0.14`, e chega à versão `1.0`.
+`0.10`, segue por `0.11`, `0.12`, `0.13` e `0.14`, e chega às versões `1.0` e `1.1`.
 As versões `0.9` e
 anteriores são registradas como legado anterior a esta etapa de manutenção.
 

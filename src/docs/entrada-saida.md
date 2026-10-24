@@ -2,7 +2,9 @@
 
 Use `escreva` e `escreval` para mostrar valores no console. Use `leia` para receber dados digitados pelo usuário no campo de entrada do console.
 
-![Console do VisuAlg Web durante uma execução](screenshots/interface-console-2026.png)
+![Console do VisuAlg Web 1.1 após uma execução](screenshots/interface-console-1.1.png)
+
+No modo abaixo do editor, arraste a divisão acima do console para ajustar sua altura; as setas do teclado também funcionam quando essa divisão tem foco. Após uma execução longa, a rolagem permanece na saída mais recente. Pressione `Esc` para fechar o console e voltar ao código. O cabeçalho mantém apenas as ações necessárias para a execução.
 
 ## Saída com escreva
 

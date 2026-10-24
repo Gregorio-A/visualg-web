@@ -34,11 +34,11 @@
   ],
   "screenshots": [
     {
-      "src": "screenshots/interface-mobile-2026.png",
+      "src": "screenshots/interface-mobile-1.1.png",
       "sizes": "390x844",
       "type": "image/png",
       "form_factor": "narrow",
-      "label": "Editor VisuAlg Web no celular"
+      "label": "VisuAlg Web 1.1 no celular"
     }
   ]
 }

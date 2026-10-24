@@ -10,7 +10,7 @@
     var varsPanel = window.VariablesPanel;
     var tabManager = window.TabManager;
 
-    var btnRun, btnStep, btnStop, btnSave, btnSaveDropdown, saveMenu, btnOpen, btnExamples, fileInput, btnTheme, btnSettings, btnClearTerminal, btnClearVars, statusEl;
+    var btnRun, btnStep, btnStop, btnSave, btnSaveDropdown, saveMenu, btnOpen, btnExamples, fileInput, btnTheme, btnSettings, btnClearVars, statusEl;
     var settingsOverlay, settingTheme, settingFontSize, settingFontSizeSlider, settingWordWrap, settingTabSize, settingIndentGuides;
     var settingEditorFontFamily, settingConsoleFontFamily;
     var settingVarsFontSize, settingVarsFontSizeSlider, settingConsoleFontSize, settingConsoleFontSizeSlider, settingConsoleInputMode;
@@ -195,11 +195,6 @@
             mobileMenu.classList.remove('open');
             btnStop.click();
         });
-        btnClearTerminal = document.getElementById('btn-clear-terminal');
-        btnClearTerminal.addEventListener('click', function () {
-            terminal.clear();
-        });
-
         btnClearVars = document.getElementById('btn-clear-vars');
         btnClearVars.addEventListener('click', function () {
             varsPanel.clear();
@@ -362,6 +357,14 @@
             if ((e.key === 'F9' || e.key === 'F5') && shortcutEnabled('run')) {
                 e.preventDefault();
                 var runningTab = getRunningTab();
+                if (e.key === 'F5' && window.VisualGWorkspace) {
+                    var consoleOpen = window.VisualGWorkspace.isConsoleOpen();
+                    if (runningTab && (document.body.classList.contains('is-focus-mode') || consoleOpen)) stopProgram();
+                    if ((runningTab && (document.body.classList.contains('is-focus-mode') || consoleOpen)) || (!runningTab && consoleOpen)) {
+                        window.VisualGWorkspace.returnToEditor();
+                        return;
+                    }
+                }
                 if (e.shiftKey || (runningTab && !(runningTab.executor && runningTab.executor.stepResolve))) stopProgram();
                 else if (runningTab) runProgram();
                 else runProgram();
@@ -664,6 +667,7 @@
     function initTheme() {
         var saved = localStorage.getItem('visualg-theme');
         if (!saved) saved = 'dark';
+        if (['visualg-agua', 'visualg-metal', 'visualg-notas', 'visualg-aluminio', 'visualg-madeira', 'visualg-plastico'].includes(saved)) saved = 'visualg-classic';
         applyTheme(saved);
     }
 
@@ -675,7 +679,7 @@
 
     function applyTheme(theme) {
         if (theme === 'visualg-classic-high-contrast') theme = 'visualg-classic';
-        var lightThemes = ['light', 'github-light', 'solarized-light', 'high-contrast', 'catppuccin-latte', 'gruvbox-light', 'paper', 'nord-light', 'one-light', 'rose-pine-dawn', 'kanagawa-lotus', 'visualg-classic', 'visualg-3', 'visualg-agua', 'visualg-metal', 'visualg-notas', 'visualg-aluminio', 'visualg-madeira', 'visualg-plastico'];
+        var lightThemes = ['light', 'github-light', 'solarized-light', 'high-contrast', 'catppuccin-latte', 'gruvbox-light', 'paper', 'nord-light', 'one-light', 'rose-pine-dawn', 'kanagawa-lotus', 'visualg-classic', 'windows-95', 'visualg-3'];
         document.documentElement.setAttribute('data-theme', theme);
         document.documentElement.dataset.colorMode = lightThemes.includes(theme) ? 'light' : 'dark';
         localStorage.setItem('visualg-theme', theme);
@@ -1146,7 +1150,6 @@
         }
         if (mobileStep) mobileStep.disabled = btnStep.disabled;
         if (mobileStop) mobileStop.disabled = btnStop.disabled;
-        btnClearTerminal.disabled = running;
         btnClearVars.disabled = running;
         var debugControls = document.getElementById('debug-session-controls');
         if (debugControls && tab && tab.executor && tab.executor.debugMode) {
@@ -1237,6 +1240,7 @@
 
         var source = editor.getValue();
         tab.running = true;
+        tab.stopRequested = false;
         terminal.clear();
         document.dispatchEvent(new window.CustomEvent('visualg:execution-start', { detail: { debug: false } }));
         varsPanel.clear();
@@ -1251,6 +1255,7 @@
             var ast = new window.VisuAlgParser(tokens).parse();
             tab.executor = new window.VisuAlgExecutor(terminal, varsPanel);
             tab.executor.breakpointLines = new Set(window.VisualGWorkspace ? window.VisualGWorkspace.getBreakpoints() : []);
+            if (tab.stopRequested) throw new Error('__STOP__');
             tab.running = true;
             await tab.executor.run(ast);
             setStatus('Finalizado');
@@ -1264,9 +1269,11 @@
             }
         }
 
+        if (tab.stopRequested) wasStopped = true;
         if (!hadError) editor.clearHighlight();
         tab.executor = null;
         tab.running = false;
+        tab.stopRequested = false;
         setRunning(false);
         document.dispatchEvent(new window.CustomEvent('visualg:execution-end', { detail: { stopped: wasStopped } }));
     }
@@ -1282,6 +1289,7 @@
 
         var source = editor.getValue();
         tab.running = true;
+        tab.stopRequested = false;
         terminal.clear();
         document.dispatchEvent(new window.CustomEvent('visualg:execution-start', { detail: { debug: true } }));
         varsPanel.clear();
@@ -1298,6 +1306,7 @@
             tab.executor.breakpointLines = new Set(window.VisualGWorkspace ? window.VisualGWorkspace.getBreakpoints() : []);
             tab.executor.stepMode = true;
             tab.executor.debugMode = true;
+            if (tab.stopRequested) throw new Error('__STOP__');
             tab.running = true;
             setRunning(true);
             await tab.executor.run(ast);
@@ -1312,9 +1321,11 @@
             }
         }
 
+        if (tab.stopRequested) wasStopped = true;
         if (!hadError) editor.clearHighlight();
         tab.executor = null;
         tab.running = false;
+        tab.stopRequested = false;
         setRunning(false);
         document.dispatchEvent(new window.CustomEvent('visualg:execution-end', { detail: { stopped: wasStopped } }));
     }
@@ -1322,6 +1333,7 @@
     function stopProgram() {
         var tab = getRunningTab();
         if (!tab) return;
+        tab.stopRequested = true;
         if (tab.executor) {
             tab.executor.running = false;
             if (tab.executor.stepResolve) {

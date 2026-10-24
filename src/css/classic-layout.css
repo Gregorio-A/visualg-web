@@ -1,0 +1,371 @@
+/* VisuAlg and Steam classic skins share the same compact desktop arrangement. */
+html:is([data-theme^="visualg-"],[data-theme="steam-classic"]) {
+    --classic-edge-light:#fff;
+    --classic-edge-dark:color-mix(in srgb,var(--ide-border) 75%,#000);
+    --classic-face:var(--ide-panel);
+    --classic-selection:var(--ide-selected);
+    --classic-selection-text:var(--ide-foreground);
+}
+html[data-theme="visualg-classic"] { --classic-selection:#164f9a; --classic-selection-text:#fff; }
+
+html:is([data-theme^="visualg-"],[data-theme="steam-classic"]) body > .header {
+    box-sizing:border-box; display:block; flex:0 0 83px !important; height:83px !important;
+    min-height:83px !important; padding:2px 3px 0 !important;
+    border-bottom:1px solid var(--ide-border) !important; background:var(--classic-face) !important;
+}
+html:is([data-theme^="visualg-"],[data-theme="steam-classic"]) .header > :not(.win95-chrome) { display:none !important; }
+html:is([data-theme^="visualg-"],[data-theme="steam-classic"]) .win95-chrome { display:grid; grid-template-rows:22px 22px 34px; height:100%; color:var(--ide-foreground); }
+html:is([data-theme^="visualg-"],[data-theme="steam-classic"]) .win95-titlebar {
+    display:flex; align-items:center; gap:5px; height:21px; padding:0 3px;
+    background:var(--skin-header); color:var(--skin-title-fg);
+    font:700 12px/1.2 Tahoma,Arial,sans-serif;
+}
+html:is([data-theme^="visualg-"],[data-theme="steam-classic"]) .win95-titlebar img { width:16px; height:16px; object-fit:contain; image-rendering:pixelated; }
+html:is([data-theme^="visualg-"],[data-theme="steam-classic"]) .win95-titlebar strong { overflow:hidden; white-space:nowrap; text-overflow:ellipsis; }
+html:is([data-theme^="visualg-"],[data-theme="steam-classic"]) .win95-menubar { display:flex; align-items:stretch; gap:1px; min-width:0; height:22px; }
+html:is([data-theme^="visualg-"],[data-theme="steam-classic"]) .win95-menubar details { position:relative; }
+html:is([data-theme^="visualg-"],[data-theme="steam-classic"]) .win95-menubar summary {
+    display:flex; align-items:center; height:21px; padding:0 9px; list-style:none; cursor:default;
+    font:12px/1 Tahoma,Arial,sans-serif;
+}
+html:is([data-theme^="visualg-"],[data-theme="steam-classic"]) .win95-menubar summary::-webkit-details-marker { display:none; }
+html:is([data-theme^="visualg-"],[data-theme="steam-classic"]) .win95-menubar details[open] summary,
+html:is([data-theme^="visualg-"],[data-theme="steam-classic"]) .win95-menubar summary:hover { background:var(--classic-selection); color:var(--classic-selection-text); }
+html:is([data-theme^="visualg-"],[data-theme="steam-classic"]) .win95-dropdown {
+    position:absolute; z-index:200; top:21px; left:0; min-width:178px; padding:3px;
+    border:2px solid; border-color:var(--classic-edge-light) var(--classic-edge-dark) var(--classic-edge-dark) var(--classic-edge-light);
+    background:var(--classic-face); box-shadow:1px 1px var(--classic-edge-dark);
+}
+html:is([data-theme^="visualg-"],[data-theme="steam-classic"]) .win95-dropdown button {
+    display:flex; justify-content:space-between; gap:12px; width:100%; min-height:23px;
+    padding:2px 18px 2px 24px; border:0 !important; border-radius:0 !important;
+    background:transparent !important; color:var(--ide-foreground) !important; box-shadow:none !important;
+    text-align:left; white-space:nowrap; font:12px/1.2 Tahoma,Arial,sans-serif;
+}
+html:is([data-theme^="visualg-"],[data-theme="steam-classic"]) .win95-dropdown button:is(:hover,:focus-visible) { background:var(--classic-selection) !important; color:var(--classic-selection-text) !important; outline:0 !important; }
+html:is([data-theme^="visualg-"],[data-theme="steam-classic"]) .win95-dropdown hr { height:2px; margin:3px 2px; border:0; border-top:1px solid var(--ide-border); border-bottom:1px solid #fff; }
+html:is([data-theme^="visualg-"],[data-theme="steam-classic"]) .win95-toolbar {
+    display:flex; align-items:center; gap:3px; min-width:0; height:32px; padding:2px 3px;
+    border-top:1px solid #fff; border-bottom:1px solid var(--ide-border);
+    white-space:nowrap; overflow:auto hidden;
+}
+html:is([data-theme^="visualg-"],[data-theme="steam-classic"]) .win95-grip { width:4px; height:24px; flex:0 0 4px; border-left:1px solid #fff; border-right:1px solid var(--ide-border); }
+html:is([data-theme^="visualg-"],[data-theme="steam-classic"]) .win95-toolbar-divider { width:2px; height:23px; flex:0 0 2px; margin:0 4px; border-left:1px solid var(--ide-border); border-right:1px solid #fff; }
+html:is([data-theme^="visualg-"],[data-theme="steam-classic"]) .win95-toolbar button {
+    display:inline-flex; align-items:center; justify-content:center; gap:5px; flex:0 0 auto;
+    height:26px; min-height:26px; padding:2px 7px !important; border:2px solid !important;
+    border-color:#fff var(--classic-edge-dark) var(--classic-edge-dark) #fff !important;
+    border-radius:0 !important; background:var(--skin-toolbar) !important; color:var(--ide-foreground) !important;
+    box-shadow:inset 1px 1px #ffffff88,inset -1px -1px var(--ide-border) !important;
+    font:12px/1 Tahoma,Arial,sans-serif !important; white-space:nowrap;
+}
+html:is([data-theme^="visualg-"],[data-theme="steam-classic"]) .win95-toolbar button:active { border-color:var(--classic-edge-dark) #fff #fff var(--classic-edge-dark) !important; box-shadow:inset 1px 1px var(--ide-border) !important; }
+html:is([data-theme^="visualg-"],[data-theme="steam-classic"]) .win95-toolbar img { width:16px; height:16px; image-rendering:pixelated; }
+
+html:is([data-theme^="visualg-"],[data-theme="steam-classic"]) body > .main-content { padding:3px 0 0 !important; }
+html:is([data-theme^="visualg-"],[data-theme="steam-classic"]) body > .main-content > .ide-shell { padding:0 4px !important; --ide-left-resizer-track:6px; --ide-right-resizer-track:6px; }
+html:is([data-theme^="visualg-"],[data-theme="steam-classic"]) .column-resizer { width:6px; background:var(--classic-face); border-left:1px solid #fff; border-right:1px solid var(--ide-border); }
+html:is([data-theme^="visualg-"],[data-theme="steam-classic"]) .ide-shell > :is(.workspace-sidebar,.editor-column,.right-sidebar) {
+    border:2px solid !important;
+    border-color:#fff var(--classic-edge-dark) var(--classic-edge-dark) #fff !important;
+    border-radius:0 !important; background:var(--classic-face) !important;
+    box-shadow:inset 1px 1px #ffffff88,inset -1px -1px var(--ide-border) !important;
+}
+html:is([data-theme^="visualg-"],[data-theme="steam-classic"]) .workspace-sidebar { grid-template-rows:27px minmax(0,1fr) !important; }
+html:is([data-theme^="visualg-"],[data-theme="steam-classic"]) .sidebar-tabs { height:27px; padding:2px 3px 0; border-bottom:1px solid var(--ide-border); background:var(--skin-toolbar) !important; }
+html:is([data-theme^="visualg-"],[data-theme="steam-classic"]) .sidebar-tab { flex:0 1 auto; padding:0 12px; border:1px solid var(--ide-border) !important; border-bottom:0 !important; border-radius:0 !important; background:var(--classic-face) !important; color:var(--ide-foreground) !important; font:12px Tahoma,Arial,sans-serif; }
+html:is([data-theme^="visualg-"],[data-theme="steam-classic"]) .sidebar-tab.active { border-color:#fff var(--classic-edge-dark) var(--classic-face) #fff !important; background:var(--classic-face) !important; color:var(--ide-foreground) !important; box-shadow:inset 1px 1px #ffffff88; }
+html:is([data-theme^="visualg-"],[data-theme="steam-classic"]) .sidebar-tabs .sidebar-tab.active { color:var(--ide-foreground) !important; }
+html:is([data-theme^="visualg-"],[data-theme="steam-classic"]) .sidebar-tab.active::after { display:none; }
+html:is([data-theme^="visualg-"],[data-theme="steam-classic"]) .file-tree { display:flex; flex-direction:column; padding:3px 4px 5px; background:var(--classic-face); }
+html:is([data-theme^="visualg-"],[data-theme="steam-classic"]) .workspace-sidebar .sidebar-actions { gap:3px; height:33px; flex-basis:33px; padding:2px 3px !important; border-bottom:1px solid var(--ide-border) !important; background:var(--skin-toolbar) !important; }
+html:is([data-theme^="visualg-"],[data-theme="steam-classic"]) .sidebar-actions button { flex-basis:26px; width:26px; min-width:26px; height:26px; padding:3px !important; border:2px outset var(--classic-face) !important; border-radius:0 !important; background:var(--skin-toolbar) !important; color:var(--ide-foreground) !important; }
+html:is([data-theme^="visualg-"],[data-theme="steam-classic"]) .sidebar-actions button svg { width:16px; height:16px; stroke-width:2; }
+html:is([data-theme^="visualg-"],[data-theme="steam-classic"]) .workspace-search { min-height:26px; height:26px !important; flex-basis:26px; margin:5px 3px !important; padding:2px 5px !important; border:2px solid !important; border-color:var(--ide-border) #fff #fff var(--ide-border) !important; border-radius:0 !important; background:var(--ide-field) !important; }
+html:is([data-theme^="visualg-"],[data-theme="steam-classic"]) .workspace-search input { border:0 !important; background:transparent !important; color:var(--ide-foreground) !important; font:12px Tahoma,Arial,sans-serif !important; }
+html:is([data-theme^="visualg-"],[data-theme="steam-classic"]) :is(#workspace-file-list,#workspace-doc-list) { gap:0; min-height:0; margin:0 3px; padding:2px; overflow:auto; border:2px solid; border-color:var(--ide-border) #fff #fff var(--ide-border); background:var(--ide-canvas); }
+html:is([data-theme^="visualg-"],[data-theme="steam-classic"]) .file-item { height:24px; min-height:24px; width:100%; margin:0 !important; padding:0 4px !important; border:0 !important; border-radius:0 !important; background:transparent !important; color:var(--ide-foreground) !important; font:12px Tahoma,Arial,sans-serif !important; }
+html:is([data-theme^="visualg-"],[data-theme="steam-classic"]) .file-item:is(.active,:hover) { background:var(--classic-selection) !important; color:var(--classic-selection-text) !important; }
+html:is([data-theme^="visualg-"],[data-theme="steam-classic"]) .file-item:is(.active,:hover) :is(.file-label,.file-icon,.file-close) { color:var(--classic-selection-text) !important; }
+html:is([data-theme^="visualg-"],[data-theme="steam-classic"]) .file-item.active::after { display:none; }
+html:is([data-theme^="visualg-"],[data-theme="steam-classic"]) #workspace-file-list { flex:1 1 0%; }
+html:is([data-theme^="visualg-"],[data-theme="steam-classic"]) .history-link { position:static; flex:0 0 auto; align-self:flex-end; margin:4px 0 0; border:1px solid var(--ide-border) !important; border-radius:0 !important; background:var(--classic-face) !important; color:var(--ide-foreground) !important; }
+
+html:is([data-theme^="visualg-"],[data-theme="steam-classic"]) .editor-column .tab-bar { height:29px !important; min-height:29px; flex-basis:29px; overflow:visible; border-bottom:1px solid var(--ide-border) !important; background:var(--skin-toolbar) !important; }
+html:is([data-theme^="visualg-"],[data-theme="steam-classic"]) :is(.tab-item,.view-tab) { height:28px !important; min-height:28px; flex:0 1 180px; border:1px solid var(--ide-border) !important; border-bottom:0 !important; border-radius:0 !important; background:var(--classic-face) !important; color:var(--ide-foreground) !important; font:12px Tahoma,Arial,sans-serif !important; }
+html:is([data-theme^="visualg-"],[data-theme="steam-classic"]) :is(.tab-item.active,.view-tab.active) { border-color:#fff var(--classic-edge-dark) var(--ide-canvas) #fff !important; background:var(--ide-canvas) !important; color:var(--ide-foreground) !important; box-shadow:inset 1px 1px #ffffff88 !important; }
+html:is([data-theme^="visualg-"],[data-theme="steam-classic"]) .tab-item .tab-name { color:inherit !important; }
+html:is([data-theme^="visualg-"],[data-theme="steam-classic"]) :is(.tab-add,.tab-overview-trigger,.tab-bar-indent) { height:26px !important; min-height:26px; border:2px outset var(--classic-face) !important; border-radius:0 !important; background:var(--skin-toolbar) !important; color:var(--ide-foreground) !important; }
+html:is([data-theme^="visualg-"],[data-theme="steam-classic"]) .editor-column .editor-panel { margin:0 3px 3px; border:2px solid !important; border-color:var(--ide-border) #fff #fff var(--ide-border) !important; background:var(--ide-canvas) !important; box-shadow:inset 1px 1px var(--classic-edge-dark) !important; }
+html:is([data-theme^="visualg-"],[data-theme="steam-classic"]) .editor-panel .CodeMirror-gutters { border-right:1px solid var(--ide-border) !important; }
+html:is([data-theme^="visualg-"],[data-theme="steam-classic"]) .right-sidebar { --ide-debug-header-track:27px; }
+html:is([data-theme^="visualg-"],[data-theme="steam-classic"]) .right-sidebar .debug-header { height:27px !important; padding:0 5px; background:var(--skin-header) !important; color:var(--skin-title-fg) !important; font:700 12px Tahoma,Arial,sans-serif !important; }
+html:is([data-theme^="visualg-"],[data-theme="steam-classic"]) .debug-header button { width:21px; min-width:21px; height:21px; padding:2px !important; border:2px outset var(--classic-face) !important; border-radius:0 !important; background:var(--classic-face) !important; color:var(--ide-foreground) !important; }
+html:is([data-theme^="visualg-"],[data-theme="steam-classic"]) .debug-header button svg { width:14px; height:14px; }
+html:is([data-theme^="visualg-"],[data-theme="steam-classic"]) .right-sidebar .debug-controls { gap:8px; padding:9px 7px !important; border:0 !important; background:var(--classic-face) !important; }
+html:is([data-theme^="visualg-"],[data-theme="steam-classic"]) .debug-section-label { color:var(--ide-foreground); font:12px/1.2 Tahoma,Arial,sans-serif; letter-spacing:0; text-transform:lowercase; }
+html:is([data-theme^="visualg-"],[data-theme="steam-classic"]) .debug-section-label::first-letter { text-transform:uppercase; }
+html:is([data-theme^="visualg-"],[data-theme="steam-classic"]) .debug-launch-actions { gap:6px; }
+html:is([data-theme^="visualg-"],[data-theme="steam-classic"]) .debug-launch-actions button { height:26px; padding:0 8px !important; border-radius:0 !important; font:12px Tahoma,Arial,sans-serif !important; }
+html:is([data-theme^="visualg-"],[data-theme="steam-classic"]) .debug-status-block { gap:3px; min-height:0; padding:6px; border:2px groove var(--classic-face); }
+html:is([data-theme^="visualg-"],[data-theme="steam-classic"]) .right-sidebar .problems-panel { display:flex; flex:1 1 auto; flex-direction:column; min-height:65px; padding:5px; border:2px groove var(--classic-face) !important; background:var(--classic-face) !important; }
+html:is([data-theme^="visualg-"],[data-theme="steam-classic"]) .right-sidebar .problems-panel .right-section-title { margin:0 0 3px; padding:0; border:0; color:var(--ide-foreground) !important; font:12px Tahoma,Arial,sans-serif !important; letter-spacing:0 !important; text-transform:lowercase; }
+html:is([data-theme^="visualg-"],[data-theme="steam-classic"]) .right-sidebar .problems-panel .right-section-title::first-letter { text-transform:uppercase; }
+html:is([data-theme^="visualg-"],[data-theme="steam-classic"]) #problems-list { flex:1 1 auto; min-height:37px; padding:2px 4px; border:2px solid; border-color:var(--ide-border) #fff #fff var(--ide-border); background:var(--ide-canvas); }
+html:is([data-theme^="visualg-"],[data-theme="steam-classic"]) .message-card { margin:0; padding:3px; border:0 !important; border-radius:0 !important; background:var(--ide-canvas) !important; }
+html:is([data-theme^="visualg-"],[data-theme="steam-classic"]) .right-sidebar .variables-panel { border:0 !important; background:var(--classic-face) !important; }
+html:is([data-theme^="visualg-"],[data-theme="steam-classic"]) .right-sidebar .variables-panel .panel-header { height:27px !important; flex-basis:27px; padding:0 6px !important; background:var(--skin-toolbar) !important; color:var(--ide-foreground) !important; font:700 12px Tahoma,Arial,sans-serif !important; text-transform:none; }
+html:is([data-theme^="visualg-"],[data-theme="steam-classic"]) .right-sidebar .variables-panel .panel-body { margin:0 4px 4px; border:2px solid !important; border-color:var(--ide-border) #fff #fff var(--ide-border) !important; background:var(--ide-canvas) !important; }
+html:is([data-theme^="visualg-"],[data-theme="steam-classic"]) .variables-panel th { border:2px solid !important; border-color:#fff var(--ide-border) var(--ide-border) #fff !important; background:var(--classic-face) !important; color:var(--ide-foreground) !important; font:12px Tahoma,Arial,sans-serif !important; }
+html:is([data-theme^="visualg-"],[data-theme="steam-classic"]) .variables-panel td { border-bottom:1px solid var(--ide-border) !important; background:var(--ide-canvas) !important; }
+html:is([data-theme^="visualg-"],[data-theme="steam-classic"]) .win95-statusbar { box-sizing:border-box; display:flex; flex:0 0 23px; height:23px; align-items:center; gap:3px; padding:2px 4px; border-top:1px solid #fff; background:var(--classic-face); color:var(--ide-foreground); font:11px/1 Tahoma,Arial,sans-serif; }
+html:is([data-theme^="visualg-"],[data-theme="steam-classic"]) .win95-statusbar span { display:flex; align-items:center; min-width:0; height:17px; padding:0 5px; overflow:hidden; white-space:nowrap; text-overflow:ellipsis; border:1px solid; border-color:var(--ide-border) #fff #fff var(--ide-border); }
+html:is([data-theme^="visualg-"],[data-theme="steam-classic"]) #win95-status { flex:1 1 auto; }
+html:is([data-theme^="visualg-"],[data-theme="steam-classic"]) #win95-position { flex:0 0 150px; }
+html:is([data-theme^="visualg-"],[data-theme="steam-classic"]) #win95-mode { flex:0 0 45px; }
+html:is([data-theme^="visualg-"],[data-theme="steam-classic"]) .workspace-theme-menu { top:78px !important; right:auto !important; max-width:calc(100vw - 8px); overflow-x:auto; }
+html:is([data-theme^="visualg-"],[data-theme="steam-classic"]) .workspace-theme-menu .theme-subgroup button.selected { background:var(--classic-selection) !important; color:var(--classic-selection-text) !important; }
+html:is([data-theme^="visualg-"],[data-theme="steam-classic"]) :is(.workspace-theme-menu,.tab-overview-menu,.visualg-hints,.cm-search-widget,.modal,.print-options-dialog) { border-radius:0 !important; box-shadow:2px 2px var(--classic-edge-dark) !important; animation:none !important; }
+html:is([data-theme^="visualg-"],[data-theme="steam-classic"]) .workspace-settings .settings-content { background:var(--classic-face) !important; padding:14px 18px !important; }
+html:is([data-theme^="visualg-"],[data-theme="steam-classic"]) .settings-content h2 { margin:0 0 8px; font:700 15px Tahoma,Arial,sans-serif; }
+html:is([data-theme^="visualg-"],[data-theme="steam-classic"]) .settings-content .settings-category-description { margin:0 0 12px; font:12px/1.3 Tahoma,Arial,sans-serif; }
+html:is([data-theme^="visualg-"],[data-theme="steam-classic"]) .settings-content :is(label,p,small,.settings-category-description,.workspace-setting-description,.editor-quick-field) { color:var(--ide-foreground) !important; }
+html:is([data-theme^="visualg-"],[data-theme="steam-classic"]) .settings-content-layout { max-width:750px; padding:12px; border:2px groove var(--classic-face); }
+html:is([data-theme^="visualg-"],[data-theme="steam-classic"]) .settings-categories { background:var(--classic-face) !important; border-right:1px solid var(--ide-border); }
+html:is([data-theme^="visualg-"],[data-theme="steam-classic"]) .settings-categories button { min-height:32px; border:2px outset var(--classic-face) !important; border-radius:0 !important; background:var(--skin-toolbar) !important; color:var(--ide-foreground) !important; }
+html:is([data-theme^="visualg-"],[data-theme="steam-classic"]) .settings-categories button.active { border-color:var(--classic-edge-dark) #fff #fff var(--classic-edge-dark) !important; background:var(--classic-face) !important; color:var(--ide-foreground) !important; box-shadow:inset 1px 1px var(--ide-border) !important; }
+html:is([data-theme^="visualg-"],[data-theme="steam-classic"]) .settings-content :is(input:not([type="checkbox"]):not([type="radio"]),select,textarea) { min-height:26px; border:2px solid !important; border-color:var(--ide-border) #fff #fff var(--ide-border) !important; border-radius:0 !important; background:var(--ide-field) !important; color:var(--ide-foreground) !important; }
+html:is([data-theme^="visualg-"],[data-theme="steam-classic"]) :is(.workspace-create-dialog,.print-options-dialog,.modal-overlay .modal,.console-dialog) { border:2px solid !important; border-color:#fff var(--classic-edge-dark) var(--classic-edge-dark) #fff !important; border-radius:0 !important; background:var(--classic-face) !important; color:var(--ide-foreground) !important; box-shadow:2px 2px var(--classic-edge-dark) !important; transform:none !important; filter:none !important; transition:none !important; animation:none !important; }
+html:is([data-theme^="visualg-"],[data-theme="steam-classic"]) :is(.workspace-create-dialog,.print-options-dialog)::backdrop { background:#0006 !important; backdrop-filter:none !important; }
+html:is([data-theme^="visualg-"],[data-theme="steam-classic"]) .workspace-create-dialog form { gap:7px; padding:3px 10px 10px; }
+html:is([data-theme^="visualg-"],[data-theme="steam-classic"]) .print-options-dialog form { padding:3px 10px 10px; }
+html:is([data-theme^="visualg-"],[data-theme="steam-classic"]) :is(.workspace-create-dialog,.print-options-dialog) h2 { margin:0 -7px 9px; padding:4px 6px; background:var(--skin-header) !important; color:var(--skin-title-fg) !important; font:700 12px/1.2 Tahoma,Arial,sans-serif !important; }
+html:is([data-theme^="visualg-"],[data-theme="steam-classic"]) :is(.workspace-create-dialog,.print-options-dialog) :is(input:not([type="radio"]):not([type="checkbox"]),select) { min-height:26px; padding:3px 5px; border:2px solid !important; border-color:var(--ide-border) #fff #fff var(--ide-border) !important; border-radius:0 !important; background:var(--ide-field) !important; color:var(--ide-foreground) !important; font:12px Tahoma,Arial,sans-serif !important; }
+html:is([data-theme^="visualg-"],[data-theme="steam-classic"]) :is(.workspace-create-dialog,.print-options-dialog) :is(button,fieldset) { border-radius:0 !important; }
+html:is([data-theme^="visualg-"],[data-theme="steam-classic"]) :is(.workspace-create-actions,.print-options-actions) button { min-height:26px; border:2px outset var(--classic-face) !important; background:var(--skin-toolbar) !important; color:var(--ide-foreground) !important; box-shadow:none !important; font:12px Tahoma,Arial,sans-serif !important; }
+html:is([data-theme^="visualg-"],[data-theme="steam-classic"]) .modal-overlay { backdrop-filter:none !important; animation:none !important; }
+html:is([data-theme^="visualg-"],[data-theme="steam-classic"]) .modal-header { min-height:25px; height:25px; padding:0 5px; background:var(--skin-header) !important; color:var(--skin-title-fg) !important; font:700 12px Tahoma,Arial,sans-serif !important; }
+html:is([data-theme^="visualg-"],[data-theme="steam-classic"]) .modal-tabs { background:var(--classic-face) !important; border-bottom:1px solid var(--ide-border) !important; }
+html:is([data-theme^="visualg-"],[data-theme="steam-classic"]) .modal-tab { border:1px solid var(--ide-border) !important; border-bottom:0 !important; border-radius:0 !important; background:var(--classic-face) !important; color:var(--ide-foreground) !important; }
+html:is([data-theme^="visualg-"],[data-theme="steam-classic"]) .modal-tab.active { border-color:#fff var(--classic-edge-dark) var(--classic-face) #fff !important; background:var(--classic-face) !important; color:var(--ide-foreground) !important; }
+html:is([data-theme^="visualg-"],[data-theme="steam-classic"]) .modal-body { margin:3px; border:2px solid; border-color:var(--ide-border) #fff #fff var(--ide-border); background:var(--ide-canvas) !important; color:var(--ide-foreground) !important; }
+html:is([data-theme^="visualg-"],[data-theme="steam-classic"]) .console-dialog-header { min-height:26px; height:26px; flex-basis:26px; background:var(--skin-header) !important; color:var(--skin-title-fg) !important; font:700 12px Tahoma,Arial,sans-serif !important; }
+html:is([data-theme^="visualg-"],[data-theme="steam-classic"]) .workspace-setting-value { min-height:25px; border:2px solid !important; border-color:var(--ide-border) #fff #fff var(--ide-border) !important; border-radius:0 !important; background:#fff !important; color:#000 !important; box-shadow:inset 1px 1px #808080 !important; font:12px Tahoma,Arial,sans-serif !important; }
+html:is([data-theme^="visualg-"],[data-theme="steam-classic"]) .workspace-setting-value:hover,html:is([data-theme^="visualg-"],[data-theme="steam-classic"]) .workspace-setting-value.is-adjusting { border-color:#000080 !important; background:#fff !important; color:#000 !important; box-shadow:inset 1px 1px #808080 !important; transform:none !important; }
+html:is([data-theme^="visualg-"],[data-theme="steam-classic"]) .editor-quick-value-pill { height:30px; border:2px solid !important; border-color:var(--ide-border) #fff #fff var(--ide-border) !important; border-radius:0 !important; background:#fff !important; color:#000 !important; box-shadow:inset 1px 1px #808080 !important; font:12px Tahoma,Arial,sans-serif !important; }
+html:is([data-theme^="visualg-"],[data-theme="steam-classic"]) .editor-quick-value-pill:is(:hover,.is-adjusting) { border-color:#000080 !important; background:#fff !important; color:#000 !important; box-shadow:inset 1px 1px #808080 !important; transform:none !important; }
+html:is([data-theme^="visualg-"],[data-theme="steam-classic"]) .settings-preview-console { border:2px solid #404040 !important; border-radius:0 !important; background:#000 !important; color:#9bd35a !important; }
+html:is([data-theme^="visualg-"],[data-theme="steam-classic"]) .settings-preview-input { border:2px solid !important; border-color:#808080 #fff #fff #808080 !important; border-radius:0 !important; background:#fff !important; color:#000 !important; }
+html:is([data-theme^="visualg-"],[data-theme="steam-classic"]) .recovery-current { border:2px groove #dfdfdf !important; border-radius:0 !important; background:#c0c0c0 !important; color:#000 !important; }
+html:is([data-theme^="visualg-"],[data-theme="steam-classic"]) .recovery-current :is(strong,small) { color:#000 !important; }
+html:is([data-theme^="visualg-"],[data-theme="steam-classic"]) .recovery-current > svg { color:#008000 !important; }
+html:is([data-theme^="visualg-"],[data-theme="steam-classic"]) .recovery-copy { border:2px groove #dfdfdf !important; border-radius:0 !important; background:#fff !important; color:#000 !important; }
+html:is([data-theme^="visualg-"],[data-theme="steam-classic"]) .recovery-copy :is(strong,p) { color:#000 !important; }
+html:is([data-theme^="visualg-"],[data-theme="steam-classic"]) .recovery-copy button { border:2px outset var(--classic-face) !important; border-radius:0 !important; background:var(--skin-toolbar) !important; color:var(--ide-foreground) !important; }
+html:is([data-theme^="visualg-"],[data-theme="steam-classic"]) .recovery-copy button:hover { background:var(--ide-selected) !important; color:var(--ide-selected-foreground,var(--ide-foreground)) !important; }
+html:is([data-theme^="visualg-"],[data-theme="steam-classic"]) #workspace-trash button { border:2px solid !important; border-color:#808080 #fff #fff #808080 !important; border-radius:0 !important; background:#fff !important; color:#000 !important; }
+html:is([data-theme^="visualg-"],[data-theme="steam-classic"]) #workspace-trash button:hover { background:#000080 !important; color:#fff !important; }
+html:is([data-theme^="visualg-"],[data-theme="steam-classic"]) .docs-tree { min-height:0; overflow:hidden !important; }
+html:is([data-theme^="visualg-"],[data-theme="steam-classic"]) .docs-title { flex:0 0 29px; min-height:29px; box-sizing:border-box; overflow:hidden; color:#000 !important; font:700 12px Tahoma,Arial,sans-serif !important; }
+html:is([data-theme^="visualg-"],[data-theme="steam-classic"]) #workspace-doc-list { flex:1 1 0%; min-height:0; overflow:auto !important; gap:0 !important; }
+html:is([data-theme^="visualg-"],[data-theme="steam-classic"]) .doc-results-heading { flex:0 0 auto; margin:4px 4px 3px !important; line-height:1.35 !important; }
+html:is([data-theme^="visualg-"],[data-theme="steam-classic"]) .doc-item { box-sizing:border-box; width:100% !important; white-space:normal !important; overflow-wrap:anywhere; }
+html:is([data-theme^="visualg-"],[data-theme="steam-classic"]) .console-dialog #terminalPanel > .panel-header { display:none !important; }
+html:is([data-theme^="visualg-"],[data-theme="steam-classic"]) .console-dialog .console-dialog-header button { border:2px outset var(--classic-face) !important; border-radius:0 !important; background:var(--classic-face) !important; color:var(--ide-foreground) !important; font:12px Tahoma,Arial,sans-serif !important; }
+html:is([data-theme^="visualg-"],[data-theme="steam-classic"]) .console-dialog .console-stop-button { border-color:#fff #404040 #404040 #fff !important; }
+html:is([data-theme^="visualg-"],[data-theme="steam-classic"]) .console-dialog .console-stop-button:hover:not(:disabled) { background:#000080 !important; color:#fff !important; }
+html:is([data-theme^="visualg-"],[data-theme="steam-classic"]) #terminalPanel .panel-header .console-stop-button { display:inline-flex !important; align-items:center; justify-content:center; gap:5px; width:auto !important; min-width:92px; height:25px; padding:0 7px !important; border:2px outset var(--classic-face) !important; border-radius:0 !important; background:var(--classic-face) !important; color:#000 !important; box-shadow:none !important; opacity:1 !important; font:12px Tahoma,Arial,sans-serif !important; }
+html:is([data-theme^="visualg-"],[data-theme="steam-classic"]) #terminalPanel .panel-header .console-stop-button :is(svg,span) { display:inline !important; visibility:visible !important; color:#000 !important; opacity:1 !important; }
+html:is([data-theme^="visualg-"],[data-theme="steam-classic"]) #terminalPanel .panel-header .console-stop-button:hover:not(:disabled) { border-style:inset !important; background:#000080 !important; color:#fff !important; }
+html:is([data-theme^="visualg-"],[data-theme="steam-classic"]) #terminalPanel .panel-header .console-stop-button:hover:not(:disabled) :is(svg,span) { color:#fff !important; }
+html:is([data-theme^="visualg-"],[data-theme="steam-classic"]) #terminalPanel .panel-header .console-stop-button:disabled { color:#404040 !important; opacity:1 !important; }
+html:is([data-theme^="visualg-"],[data-theme="steam-classic"]) .console-panel-resizer { height:8px; flex-basis:8px; border-color:#fff var(--classic-edge-dark) var(--classic-edge-dark) #fff; background:var(--classic-face); }
+html:is([data-theme^="visualg-"],[data-theme="steam-classic"]) .console-panel-resizer::after { top:2px; height:3px; background:var(--ide-border); box-shadow:0 1px #fff; opacity:1; }
+html:is([data-theme^="visualg-"],[data-theme="steam-classic"]) .console-panel-resizer:hover::after,html:is([data-theme^="visualg-"],[data-theme="steam-classic"]) .console-panel-resizer.dragging::after { background:#000080; box-shadow:0 1px #fff; }
+html[data-theme="high-contrast"] .workspace-setting-value { min-height:25px; border:2px solid #171717 !important; border-radius:0 !important; background:#fff !important; color:#171717 !important; font:12px Arial,sans-serif !important; }
+html[data-theme="high-contrast"] .editor-quick-value-pill { height:30px; border:2px solid #171717 !important; border-radius:0 !important; background:#fff !important; color:#171717 !important; font:12px Arial,sans-serif !important; }
+html[data-theme="high-contrast"] .settings-preview-console { border:2px solid #171717 !important; border-radius:0 !important; background:#000 !important; color:#9bd35a !important; }
+html[data-theme="high-contrast"] .settings-preview-input { border:2px solid #171717 !important; border-radius:0 !important; background:#fff !important; color:#171717 !important; }
+html[data-theme="high-contrast"] .recovery-current { border:2px solid #171717 !important; border-radius:0 !important; background:#eaf2ff !important; color:#171717 !important; }
+html[data-theme="high-contrast"] .recovery-current :is(strong,small) { color:#171717 !important; }
+html[data-theme="high-contrast"] .recovery-copy { border:2px solid #171717 !important; border-radius:0 !important; background:#fff !important; color:#171717 !important; }
+html[data-theme="high-contrast"] .recovery-copy :is(strong,p) { color:#171717 !important; }
+html[data-theme="high-contrast"] .docs-tree { min-height:0; overflow:hidden !important; }
+html[data-theme="high-contrast"] .docs-title { flex:0 0 29px; min-height:29px; box-sizing:border-box; overflow:hidden; color:#171717 !important; }
+html[data-theme="high-contrast"] #workspace-doc-list { flex:1 1 0%; min-height:0; overflow:auto !important; gap:0 !important; }
+html[data-theme="high-contrast"] .doc-results-heading { flex:0 0 auto; margin:4px 4px 3px !important; line-height:1.35 !important; }
+html[data-theme="high-contrast"] .doc-item { box-sizing:border-box; width:100% !important; white-space:normal !important; overflow-wrap:anywhere; }
+html:is([data-theme^="visualg-"],[data-theme="steam-classic"]) :is(.workspace-settings .settings-content > *,.workspace-settings .settings-categories button,.workspace-aux-view:not(.hidden) > *,.file-item,.tab-item,.view-tab,.workspace-theme-menu,.modal) { animation:none !important; transition:none !important; }
+
+/* Pixel cursor set inspired by the classic Windows desktop cursors. */
+html:is([data-theme="windows-95"],[data-theme^="visualg-"]) {
+    --retro-cursor-arrow:url("../images/cursors/arrow.svg") 1 1,default;
+    --retro-cursor-hand:url("../images/cursors/hand.svg") 5 1,pointer;
+    --retro-cursor-text:url("../images/cursors/text.svg") 8 8,text;
+    --retro-cursor-wait:url("../images/cursors/wait.svg") 8 8,wait;
+    --retro-cursor-progress:url("../images/cursors/progress.svg") 1 1,progress;
+    --retro-cursor-crosshair:url("../images/cursors/crosshair.svg") 8 8,crosshair;
+    --retro-cursor-move:url("../images/cursors/move.svg") 8 8,move;
+    --retro-cursor-ew:url("../images/cursors/resize-ew.svg") 8 8,ew-resize;
+    --retro-cursor-ns:url("../images/cursors/resize-ns.svg") 8 8,ns-resize;
+    --retro-cursor-nwse:url("../images/cursors/resize-nwse.svg") 8 8,nwse-resize;
+    --retro-cursor-nesw:url("../images/cursors/resize-nesw.svg") 8 8,nesw-resize;
+    --retro-cursor-no:url("../images/cursors/not-allowed.svg") 8 8,not-allowed;
+    --retro-cursor-help:url("../images/cursors/help.svg") 1 1,help;
+    --retro-cursor-copy:url("../images/cursors/copy.svg") 1 1,copy;
+    --retro-cursor-alias:url("../images/cursors/alias.svg") 1 1,alias;
+    --retro-cursor-cell:url("../images/cursors/cell.svg") 8 8,cell;
+    --retro-cursor-context:url("../images/cursors/context-menu.svg") 1 1,context-menu;
+    --retro-cursor-no-drop:url("../images/cursors/no-drop.svg") 8 8,no-drop;
+    --retro-cursor-all-scroll:url("../images/cursors/all-scroll.svg") 8 8,all-scroll;
+    --retro-cursor-zoom-in:url("../images/cursors/zoom-in.svg") 8 8,zoom-in;
+    --retro-cursor-zoom-out:url("../images/cursors/zoom-out.svg") 8 8,zoom-out;
+    --retro-cursor-vertical-text:url("../images/cursors/vertical-text.svg") 8 8,vertical-text;
+    --retro-cursor-precision:url("../images/cursors/precision.svg") 8 8,crosshair;
+}
+html:is([data-theme="windows-95"],[data-theme^="visualg-"]) body,
+html:is([data-theme="windows-95"],[data-theme^="visualg-"]) body * {
+    cursor:var(--retro-cursor-arrow) !important;
+}
+html:is([data-theme="windows-95"],[data-theme^="visualg-"]) body :is(a[href],[role="link"],.history-link,.docs-example-link),
+html:is([data-theme="windows-95"],[data-theme^="visualg-"]) body :is(a[href],[role="link"],.history-link,.docs-example-link) * {
+    cursor:var(--retro-cursor-hand) !important;
+}
+html:is([data-theme="windows-95"],[data-theme^="visualg-"]) body :is(button,a[href],[role="button"],[role="link"],[role="tab"],summary,select,label[for],input[type="checkbox"],input[type="radio"],.file-item,.doc-item,.tab-item,.view-tab,.activity-btn,.sidebar-tab,.docs-example-link,.theme-subgroup button,.breakpoint-marker,.message-card.error,[data-win95-target]),
+html:is([data-theme="windows-95"],[data-theme^="visualg-"]) body :is(button,a[href],[role="button"],[role="link"],[role="tab"],summary,select,label[for],input[type="checkbox"],input[type="radio"],.file-item,.doc-item,.tab-item,.view-tab,.activity-btn,.sidebar-tab,.docs-example-link,.theme-subgroup button,.breakpoint-marker,.message-card.error,[data-win95-target]) * {
+    cursor:var(--retro-cursor-hand) !important;
+}
+html:is([data-theme="windows-95"],[data-theme^="visualg-"]) body :is(input:not([type="checkbox"]):not([type="radio"]),textarea,.CodeMirror,[contenteditable="true"]) {
+    cursor:var(--retro-cursor-text) !important;
+}
+html:is([data-theme="windows-95"],[data-theme^="visualg-"]) body :is(.column-resizer,.resize-handle-horizontal,[aria-orientation="vertical"]) {
+    cursor:var(--retro-cursor-ew) !important;
+}
+html:is([data-theme="windows-95"],[data-theme^="visualg-"]) body :is(.resize-handle-vertical,#debug-divider,[aria-orientation="horizontal"]) {
+    cursor:var(--retro-cursor-ns) !important;
+}
+html:is([data-theme="windows-95"],[data-theme^="visualg-"]) body :is(.resize-handle-nwse,[data-resize-direction="nwse"]) {
+    cursor:var(--retro-cursor-nwse) !important;
+}
+html:is([data-theme="windows-95"],[data-theme^="visualg-"]) body :is(.resize-handle-nesw,[data-resize-direction="nesw"]) {
+    cursor:var(--retro-cursor-nesw) !important;
+}
+html:is([data-theme="windows-95"],[data-theme^="visualg-"]) body :is([aria-busy="true"],.loading,.is-loading),
+html:is([data-theme="windows-95"],[data-theme^="visualg-"]) body :is([aria-busy="true"],.loading,.is-loading) * {
+    cursor:var(--retro-cursor-wait) !important;
+}
+html:is([data-theme="windows-95"],[data-theme^="visualg-"])[data-app-loading] body,
+html:is([data-theme="windows-95"],[data-theme^="visualg-"])[data-app-loading] body * {
+    cursor:var(--retro-cursor-wait) !important;
+}
+html:is([data-theme="windows-95"],[data-theme^="visualg-"]) body :is([data-cursor="progress"],.progress-cursor) {
+    cursor:var(--retro-cursor-progress) !important;
+}
+html:is([data-theme="windows-95"],[data-theme^="visualg-"]) body :is([data-cursor="help"],abbr[title],.help-cursor) {
+    cursor:var(--retro-cursor-help) !important;
+}
+html:is([data-theme="windows-95"],[data-theme^="visualg-"]) body :is(:disabled,[aria-disabled="true"],[data-drop-effect="none"],.not-allowed):is(:disabled,[aria-disabled="true"],[data-drop-effect="none"],.not-allowed),
+html:is([data-theme="windows-95"],[data-theme^="visualg-"]) body :is(:disabled,[aria-disabled="true"],[data-drop-effect="none"],.not-allowed):is(:disabled,[aria-disabled="true"],[data-drop-effect="none"],.not-allowed) * {
+    cursor:var(--retro-cursor-no) !important;
+}
+html:is([data-theme="windows-95"],[data-theme^="visualg-"]) body :is(.drag-source,.dragging,[draggable="true"].dragging),
+html:is([data-theme="windows-95"],[data-theme^="visualg-"]) body :is(.drag-source,.dragging,[draggable="true"].dragging) * {
+    cursor:var(--retro-cursor-move) !important;
+}
+html:is([data-theme="windows-95"],[data-theme^="visualg-"]) body [data-drop-effect="copy"] {
+    cursor:var(--retro-cursor-copy) !important;
+}
+html:is([data-theme="windows-95"],[data-theme^="visualg-"]) .ide-shell.is-resizing-columns * {
+    cursor:var(--retro-cursor-ew) !important;
+}
+html:is([data-theme="windows-95"],[data-theme^="visualg-"]) body.resizing *,
+html:is([data-theme="windows-95"],[data-theme^="visualg-"]) .right-sidebar.is-resizing-panels * {
+    cursor:var(--retro-cursor-ns) !important;
+}
+html:is([data-theme="windows-95"],[data-theme^="visualg-"]) body :is(canvas,[data-cursor="crosshair"],.crosshair-cursor) {
+    cursor:var(--retro-cursor-crosshair) !important;
+}
+html:is([data-theme="windows-95"],[data-theme^="visualg-"]) body :is([data-cursor="alias"],.alias-cursor) { cursor:var(--retro-cursor-alias) !important; }
+html:is([data-theme="windows-95"],[data-theme^="visualg-"]) body :is([data-cursor="cell"],.cell-cursor) { cursor:var(--retro-cursor-cell) !important; }
+html:is([data-theme="windows-95"],[data-theme^="visualg-"]) body :is([data-cursor="context-menu"],.context-menu-cursor) { cursor:var(--retro-cursor-context) !important; }
+html:is([data-theme="windows-95"],[data-theme^="visualg-"]) body :is([data-cursor="no-drop"],.no-drop-cursor) { cursor:var(--retro-cursor-no-drop) !important; }
+html:is([data-theme="windows-95"],[data-theme^="visualg-"]) body :is([data-cursor="all-scroll"],.all-scroll-cursor) { cursor:var(--retro-cursor-all-scroll) !important; }
+html:is([data-theme="windows-95"],[data-theme^="visualg-"]) body :is([data-cursor="zoom-in"],.zoom-in-cursor) { cursor:var(--retro-cursor-zoom-in) !important; }
+html:is([data-theme="windows-95"],[data-theme^="visualg-"]) body :is([data-cursor="zoom-out"],.zoom-out-cursor) { cursor:var(--retro-cursor-zoom-out) !important; }
+html:is([data-theme="windows-95"],[data-theme^="visualg-"]) body :is([data-cursor="vertical-text"],.vertical-text-cursor) { cursor:var(--retro-cursor-vertical-text) !important; }
+html:is([data-theme="windows-95"],[data-theme^="visualg-"]) body :is([data-cursor="precision"],.precision-cursor) { cursor:var(--retro-cursor-precision) !important; }
+html:is([data-theme="windows-95"],[data-theme^="visualg-"]) body :is(abbr[title],[data-cursor="help"],.help-cursor) { cursor:var(--retro-cursor-help) !important; }
+html:is([data-theme="windows-95"],[data-theme^="visualg-"]) body :is([data-cursor="copy"],.copy-cursor,[data-drop-effect="copy"]) { cursor:var(--retro-cursor-copy) !important; }
+html:is([data-theme="windows-95"],[data-theme^="visualg-"]) body :is(.CodeMirror-code,.CodeMirror-code *,.CodeMirror-lines,.CodeMirror-lines *,.CodeMirror textarea,.cm-content,.cm-content *) { cursor:var(--retro-cursor-text) !important; }
+
+@media (max-width:760px) {
+    html:is([data-theme^="visualg-"],[data-theme="steam-classic"]) body > .header { height:83px !important; min-height:83px !important; flex-basis:83px !important; }
+    html:is([data-theme^="visualg-"],[data-theme="steam-classic"]) .win95-menubar summary { padding-inline:5px; font-size:11px; }
+    html:is([data-theme^="visualg-"],[data-theme="steam-classic"]) .win95-menubar details:nth-last-child(-n+2) .win95-dropdown { left:auto; right:0; }
+    html:is([data-theme^="visualg-"],[data-theme="steam-classic"]) .win95-mobile-action { display:inline-flex !important; }
+    html:is([data-theme^="visualg-"],[data-theme="steam-classic"]) .win95-toolbar { scrollbar-width:none; }
+    html:is([data-theme^="visualg-"],[data-theme="steam-classic"]) #win95-position { flex-basis:112px; }
+}
+
+/* High-contrast VisuAlg palette for light, classic, and Windows-style themes. */
+html[data-color-mode="light"],
+html:is([data-theme^="visualg-"],[data-theme="steam-classic"]),
+html[data-theme="windows-95"],
+html[data-theme="high-contrast"] {
+    --ide-canvas:#fff;
+    --ide-foreground:#171717;
+    --ide-muted:#171717;
+    --ide-gutter:#555;
+    --ide-row:#eaf2ff;
+    --ide-selection:#b8d7ff;
+    --ide-error:#c00000;
+    --syn-keyword:#0033b3;
+    --syn-builtin:#7030a0;
+    --syn-type:#7a3e00;
+    --syn-string:#a31515;
+    --syn-number:#005a9c;
+    --syn-comment:#247a24;
+    --syn-operator:#171717;
+    --syn-atom:#005a9c;
+    --syn-variable:#171717;
+}
+
+html[data-color-mode="light"] #editorPanel .CodeMirror-activeline,
+html[data-color-mode="light"] #editorPanel .CodeMirror-activeline-background,
+html[data-color-mode="light"] #editorPanel .CodeMirror-linebackground.CodeMirror-activeline-background,
+html:is([data-theme^="visualg-"],[data-theme="steam-classic"]) #editorPanel .CodeMirror-activeline,
+html:is([data-theme^="visualg-"],[data-theme="steam-classic"]) #editorPanel .CodeMirror-activeline-background,
+html:is([data-theme^="visualg-"],[data-theme="steam-classic"]) #editorPanel .CodeMirror-linebackground.CodeMirror-activeline-background,
+html[data-theme="windows-95"] #editorPanel .CodeMirror-activeline,
+html[data-theme="windows-95"] #editorPanel .CodeMirror-activeline-background,
+html[data-theme="windows-95"] #editorPanel .CodeMirror-linebackground.CodeMirror-activeline-background {
+    background:#eaf2ff !important;
+}
+
+html[data-color-mode="light"] #editorPanel .CodeMirror-selected,
+html[data-color-mode="light"] #editorPanel .CodeMirror-line::selection,
+html[data-color-mode="light"] #editorPanel .CodeMirror-line > span::selection,
+html[data-color-mode="light"] #editorPanel .CodeMirror-line > span > span::selection,
+html:is([data-theme^="visualg-"],[data-theme="steam-classic"]) #editorPanel .CodeMirror-selected,
+html:is([data-theme^="visualg-"],[data-theme="steam-classic"]) #editorPanel .CodeMirror-line::selection,
+html:is([data-theme^="visualg-"],[data-theme="steam-classic"]) #editorPanel .CodeMirror-line > span::selection,
+html:is([data-theme^="visualg-"],[data-theme="steam-classic"]) #editorPanel .CodeMirror-line > span > span::selection,
+html[data-theme="windows-95"] #editorPanel .CodeMirror-selected,
+html[data-theme="windows-95"] #editorPanel .CodeMirror-line::selection,
+html[data-theme="windows-95"] #editorPanel .CodeMirror-line > span::selection,
+html[data-theme="windows-95"] #editorPanel .CodeMirror-line > span > span::selection {
+    background:#b8d7ff !important;
+    color:#171717 !important;
+}
+
+html[data-color-mode="light"] .editor-panel .CodeMirror-code span:is(.cm-keyword,.cm-type),
+html:is([data-theme^="visualg-"],[data-theme="steam-classic"]) .editor-panel .CodeMirror-code span:is(.cm-keyword,.cm-type),
+html[data-theme="windows-95"] .editor-panel .CodeMirror-code span:is(.cm-keyword,.cm-type) {
+    font-weight:700 !important;
+}
+
+html[data-color-mode="light"] .editor-panel .CodeMirror-code span.cm-comment,
+html:is([data-theme^="visualg-"],[data-theme="steam-classic"]) .editor-panel .CodeMirror-code span.cm-comment,
+html[data-theme="windows-95"] .editor-panel .CodeMirror-code span.cm-comment {
+    font-style:italic !important;
+}

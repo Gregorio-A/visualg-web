@@ -17,7 +17,7 @@ O interpretador tem como contrato a linguagem do VisuAlg 3.0.7. A mesma implemen
   ser demonstrada com um programa mínimo antes de entrar no status como problema
   confirmado.
 
-Nesta revisão da versão `1.0.0`, não há incompatibilidade de linguagem
+Nesta revisão da versão `1.1.0`, não há incompatibilidade de linguagem
 reproduzida registrada como aberta. Isso não equivale a afirmar identidade total
 em todos os casos ainda não testados.
 

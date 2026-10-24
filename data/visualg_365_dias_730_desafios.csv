@@ -1,0 +1,366 @@
+﻿dia_do_ano,data_mm_dd,mes,tema,simples_titulo,simples_enunciado,avancado_titulo,avancado_enunciado
+1,01-01,Janeiro,Verão e férias,Boas-vindas de férias,leia um nome e exiba uma saudação personalizada.,Roteiro de férias,armazene cinco destinos com custos e exiba o mais barato e o mais caro.
+2,01-02,Janeiro,Verão e férias,Termômetro da praia,leia uma temperatura e diga se supera 30 °C.,Histórico de calor,"leia sete temperaturas em vetor e informe média, máxima e dias acima da média."
+3,01-03,Janeiro,Verão e férias,Dividindo o sorvete,calcule quanto cada pessoa paga por uma compra dividida igualmente.,Sorveteria em funcionamento,"simule pedidos de três sabores, controle quantidades e total arrecadado."
+4,01-04,Janeiro,Verão e férias,Tempo de piscina,converta minutos de natação em horas e minutos.,Agenda da piscina,receba horários de início e fim de cinco reservas e detecte sobreposições.
+5,01-05,Janeiro,Verão e férias,Preço do protetor,aplique um desconto percentual a um produto.,Comparador de protetores,cadastre cinco embalagens com volume e preço e ordene por custo por mililitro.
+6,01-06,Janeiro,Verão e férias,Passos do passeio,converta uma distância de quilômetros para metros.,Contador semanal de passos,leia sete totais diários e encontre a maior sequência de dias acima da meta.
+7,01-07,Janeiro,Verão e férias,Limite da mala,informe se o peso de uma bagagem ultrapassa um limite informado.,Organizador da mala,escolha itens de uma lista por prioridade sem exceder um peso máximo.
+8,01-08,Janeiro,Verão e férias,Duas passagens,calcule o total de passagens para ida e volta.,Planejador de transporte,compare três rotas com tarifa e duração e identifique a mais barata e a mais rápida.
+9,01-09,Janeiro,Verão e férias,Lanche compartilhado,leia o preço de três itens e some os valores.,Caixa da lanchonete,"monte um menu de pedidos, controle estoque de cinco itens e calcule troco."
+10,01-10,Janeiro,Verão e férias,Relógio de férias,converta horas em minutos.,Quadro de horários,receba cinco atividades com duração e organize o cronograma sem ultrapassar o dia.
+11,01-11,Janeiro,Verão e férias,Pôr do sol,leia dois horários inteiros em minutos e calcule o intervalo entre eles.,Registro solar,leia horários de sete dias e identifique o dia com maior duração entre nascer e pôr do sol.
+12,01-12,Janeiro,Verão e férias,Piscina cheia,calcule o volume de uma piscina retangular.,Monitor de reservatório,"simule entradas e saídas de água por turnos, impedindo volume negativo ou excessivo."
+13,01-13,Janeiro,Verão e férias,Corrida na areia,calcule velocidade média a partir de distância e tempo.,Torneio de corrida,leia tempos de oito participantes e gere classificação com posições e empates.
+14,01-14,Janeiro,Verão e férias,Férias econômicas,calcule a sobra de um orçamento após uma despesa.,Diário de despesas,registre dez gastos categorizados e mostre totais por categoria e saldo.
+15,01-15,Janeiro,Verão e férias,Temperatura convertida,transforme Celsius em Fahrenheit.,Painel climático,"receba temperaturas em Celsius e Fahrenheit, normalize e ordene todas em Celsius."
+16,01-16,Janeiro,Verão e férias,Dias de viagem,informe quantas noites há entre dois números de dia do mesmo mês.,Agenda de hospedagem,mantenha dez quartos e permita reservar períodos sem conflito de datas.
+17,01-17,Janeiro,Verão e férias,Pedágio da estrada,multiplique o preço do pedágio pela quantidade de praças.,Comparativo de estradas,"avalie rotas por quilômetros, consumo e pedágios e selecione menor custo total."
+18,01-18,Janeiro,Verão e férias,Nota do hotel,leia uma nota de 0 a 10 e diga se é pelo menos 8.,Avaliador de hospedagens,calcule médias ponderadas de critérios para cinco hotéis e gere ranking.
+19,01-19,Janeiro,Verão e férias,Garrafas de água,calcule quantas garrafas de 500 ml completam um volume informado em litros.,Distribuição de água,calcule quantas caixas de tamanhos diferentes atendem um grupo com menor sobra.
+20,01-20,Janeiro,Verão e férias,Jogos de praia,receba partidas ganhas e perdidas e calcule o total.,Campeonato de praia,registre resultados entre quatro equipes e gere tabela por pontos e saldo.
+21,01-21,Janeiro,Verão e férias,Férias em família,calcule custo total por pessoa para N integrantes.,Divisor de orçamento,distribua despesas entre participantes com diferentes participações e determine saldos.
+22,01-22,Janeiro,Verão e férias,Onda alta,compare duas alturas de onda e exiba a maior.,Registro de ondas,analise 12 medições e identifique picos locais superiores aos vizinhos.
+23,01-23,Janeiro,Verão e férias,Rota de bicicleta,calcule calorias estimadas com taxa fixa por quilômetro.,Cicloturismo,"calcule distância acumulada, desnível e pausas para uma sequência de trechos."
+24,01-24,Janeiro,Verão e férias,Balde de areia,converta litros de um recipiente para mililitros.,Estoque de materiais,gerencie volumes de três recipientes e simule transferências sem derramamento.
+25,01-25,Janeiro,Verão e férias,Ingresso de parque,aplique meia-entrada quando a condição booleana for verdadeira.,Bilheteria do parque,"gerencie dois tipos de ingressos, capacidade diária e receita por categoria."
+26,01-26,Janeiro,Verão e férias,Chuva inesperada,diga se deve levar guarda-chuva a partir de uma porcentagem limite.,Previsão semanal,leia probabilidades de chuva e marque sequências de dias com risco acima do limite.
+27,01-27,Janeiro,Verão e férias,Competição de mergulho,calcule a média de três notas.,Júri de mergulho,"receba sete notas por atleta, descarte extremos e ordene pela média restante."
+28,01-28,Janeiro,Verão e férias,Lembrete de hidratação,mostre cinco lembretes numerados com um laço.,Escala de lembretes,gere alertas em intervalos configuráveis dentro de uma janela de horário.
+29,01-29,Janeiro,Verão e férias,Orçamento da viagem,compare um custo previsto com o dinheiro disponível.,Pacote de viagem,"compare pacotes com transporte, hospedagem e refeições, respeitando um teto de gastos."
+30,01-30,Janeiro,Verão e férias,Cartão-postal,leia cidade e mensagem e exiba uma dedicatória.,Catálogo de cartões,armazene destinatários e mensagens e implemente busca por nome e edição.
+31,01-31,Janeiro,Verão e férias,Resumo das férias,leia três despesas e apresente total e média.,Painel das férias,consolide gastos diários em matriz por pessoa e categoria e apresente totais.
+32,02-01,Fevereiro,Festa e convivência,Máscara colorida,leia uma cor e exiba uma frase com essa cor.,Oficina de máscaras,cadastre pedidos por cor e tamanho e gere totais por combinação em matriz.
+33,02-02,Fevereiro,Festa e convivência,Confete contado,mostre números de 1 até um limite informado.,Pacotes de confete,distribua quantidades entre equipes com capacidades distintas e reporte sobras.
+34,02-03,Fevereiro,Festa e convivência,Bloco da alegria,leia participantes adultos e crianças e calcule o total.,Controle de acesso,registre entrada e saída por faixa etária e impeça exceder a lotação.
+35,02-04,Fevereiro,Festa e convivência,Fantasia em promoção,calcule o preço final após desconto.,Loja de fantasias,registre vendas com descontos por categoria e produza ranking dos produtos.
+36,02-05,Fevereiro,Festa e convivência,Som da bateria,repita uma palavra quatro vezes em linhas separadas.,Ritmo programado,receba uma sequência de batidas e durações e imprima sua repetição em compassos.
+37,02-06,Fevereiro,Festa e convivência,Nota da fantasia,leia três avaliações e calcule a média.,Concurso de fantasias,guarde notas de jurados e calcule classificação descartando maior e menor.
+38,02-07,Fevereiro,Festa e convivência,Pulseira de evento,diga se uma idade alcança a idade mínima informada.,Portaria do evento,valide códigos únicos de ingresso e rejeite entradas repetidas.
+39,02-08,Fevereiro,Festa e convivência,Carrinho de bebidas,some preços e quantidades de dois itens.,Estoque do carrinho,simule pedidos e reposições de quatro bebidas sem permitir estoque negativo.
+40,02-09,Fevereiro,Festa e convivência,Fila do salão,leia o número de pessoas e estime o tempo com atendimento fixo.,Fila de atendimento,gerencie fila de espera com entradas e chamadas até esvaziar.
+41,02-10,Fevereiro,Festa e convivência,Convite personalizado,leia um nome e imprima uma mensagem de convite.,Lista de convidados,"cadastre nomes, impeça duplicatas e busque convidados por prefixo."
+42,02-11,Fevereiro,Festa e convivência,Ordem do desfile,apresente três nomes na sequência digitada.,Organizador do desfile,ordene blocos por horário e avise quando houver conflitos de duração.
+43,02-12,Fevereiro,Festa e convivência,Luzes piscantes,alterne as palavras LIGADO e DESLIGADO por dez rodadas.,Programação de luzes,armazene padrões de três canais e simule a saída em passos de tempo.
+44,02-13,Fevereiro,Festa e convivência,Brilho da fantasia,calcule a soma de três notas de acabamento.,Avaliação por critérios,aplique pesos configuráveis a notas de cinco fantasias e ordene resultados.
+45,02-14,Fevereiro,Festa e convivência,Bandeirinhas de cores,apresente uma cor repetida N vezes.,Sequência de bandeiras,valide padrões de cores e encontre o menor ciclo que reproduz a sequência.
+46,02-15,Fevereiro,Festa e convivência,Passos de dança,converta N sequências de oito passos em total de passos.,Coreografia textual,armazene oito movimentos e permita inverter e repetir trechos de uma sequência.
+47,02-16,Fevereiro,Festa e convivência,Preço em dupla,divida igualmente uma compra entre duas pessoas.,Rateio do evento,distribua custos conforme consumo individual e despesas comuns.
+48,02-17,Fevereiro,Festa e convivência,Fantasia por tamanho,"indique P, M ou G conforme faixas numéricas informadas.",Distribuição de fantasias,relacione tamanhos solicitados ao estoque e gere faltas por tamanho.
+49,02-18,Fevereiro,Festa e convivência,Balões na festa,calcule quantos balões restam após estourar alguns.,Reposição de balões,simule consumo em turnos e calcule o momento em que será necessária reposição.
+50,02-19,Fevereiro,Festa e convivência,Som ou silêncio,verifique se um volume numérico ultrapassa o limite.,Monitor de volume,leia medições por horário e destaque períodos consecutivos acima do limite.
+51,02-20,Fevereiro,Festa e convivência,Cadeado do armário,leia uma senha numérica e compare com a senha fixa.,Armários numerados,"gerencie empréstimos com código, ocupação e limite de tentativas de acesso."
+52,02-21,Fevereiro,Festa e convivência,Convites restantes,subtraia os convites entregues dos impressos.,Distribuição de convites,"atribua lotes a equipes, controle devoluções e confira saldo total."
+53,02-22,Fevereiro,Festa e convivência,Percurso do bloco,some distâncias de três trechos de rua.,Traçado do bloco,registre trechos em vetor e calcule distância acumulada e maior intervalo.
+54,02-23,Fevereiro,Festa e convivência,Pulseiras vendidas,calcule arrecadação a partir de unidades e preço.,Relatório de vendas,leia vendas por setor e turno em matriz e informe destaques.
+55,02-24,Fevereiro,Festa e convivência,Festa com chuva,escolha entre espaço aberto e coberto conforme uma entrada SIM/NÃO.,Plano alternativo,avalie capacidade de ambientes e redistribua grupos quando a opção externa fechar.
+56,02-25,Fevereiro,Festa e convivência,Mensagem embaralhada,apresente uma palavra ao contrário usando um laço.,Bilhete criptografado,codifique e decodifique mensagens com deslocamento alfabético configurável.
+57,02-26,Fevereiro,Festa e convivência,Copos reutilizáveis,multiplique convidados por copos por pessoa.,Logística de copos,simule retiradas e devoluções com depósito reembolsável.
+58,02-27,Fevereiro,Festa e convivência,Prêmio da festa,leia quatro notas e informe a maior.,Premiação de grupos,calcule pontuação por várias provas e resolva empates por critério secundário.
+59,02-28,Fevereiro,Festa e convivência,Encerramento do mês,some a participação registrada em quatro festas.,Balanço de eventos,"compare receitas, custos e taxas de ocupação de quatro eventos."
+60,03-01,Março,Escola e aprendizado,Primeiro dia de aula,leia nome e turma e mostre uma identificação.,Cadastro de turmas,armazene alunos e turmas em vetores paralelos e permita consultas.
+61,03-02,Março,Escola e aprendizado,Material escolar,"some os preços de caderno, lápis e borracha.",Lista de materiais,gerencie compras por categoria e destaque itens acima do orçamento.
+62,03-03,Março,Escola e aprendizado,Nota do teste,diga se uma nota alcançou a média mínima.,Painel de avaliações,registre notas de cinco alunos em três provas e gere médias e ranking.
+63,03-04,Março,Escola e aprendizado,Hora de estudar,converta horas de estudo em minutos.,Agenda de estudos,"distribua disciplinas em blocos de tempo, respeitando a carga máxima diária."
+64,03-05,Março,Escola e aprendizado,Presença na chamada,calcule a porcentagem de presença dado total e comparecimentos.,Frequência por aluno,registre presenças em matriz aluno × dia e emita alertas por limite.
+65,03-06,Março,Escola e aprendizado,Tarefa entregue,exiba ENTREGUE ou PENDENTE a partir de uma resposta.,Quadro de tarefas,"cadastre atividades com prazo numérico, status e filtro por atrasos."
+66,03-07,Março,Escola e aprendizado,Três matérias,leia e imprima os nomes de três disciplinas.,Organizador de disciplinas,cadastre cinco matérias e ordene por carga horária.
+67,03-08,Março,Escola e aprendizado,Tempo de recreio,calcule o fim de um intervalo a partir do início em minutos.,Escala do recreio,organize pausas de várias turmas sem exceder capacidade do pátio.
+68,03-09,Março,Escola e aprendizado,Livros emprestados,calcule quantos livros continuam disponíveis.,Sistema de empréstimos,"gerencie cadastro, retirada e devolução de dez livros."
+69,03-10,Março,Escola e aprendizado,Média do bimestre,calcule a média aritmética de quatro notas.,Boletim ponderado,calcule médias de alunos com pesos de avaliação configuráveis.
+70,03-11,Março,Escola e aprendizado,Página de leitura,exiba os números de página de 1 até N.,Meta de leitura,registre páginas lidas por dia e identifique a maior sequência de progresso.
+71,03-12,Março,Escola e aprendizado,Palavra nova,conte os caracteres de uma palavra digitada.,Glossário de sala,"armazene termos e definições, com busca e atualização."
+72,03-13,Março,Escola e aprendizado,Tabuada do aluno,apresente a tabuada de um número até dez.,Treinador de tabuada,"faça perguntas com dificuldade fixa, corrija e apresente taxa de acertos."
+73,03-14,Março,Escola e aprendizado,Dúvida rápida,diga se um número é par ou ímpar.,Quiz de lógica,"faça cinco perguntas, atribua pontos e mostre revisão de erros."
+74,03-15,Março,Escola e aprendizado,Notas extremas,identifique a maior entre três notas.,Estatísticas da turma,"calcule mínima, máxima, média e mediana de notas em vetor."
+75,03-16,Março,Escola e aprendizado,Aluno aprovado,classifique a média como aprovado ou reprovado.,Simulador de recuperação,calcule a nota necessária e teste diferentes cenários de resultado.
+76,03-17,Março,Escola e aprendizado,Fila de entrega,numere os alunos de 1 até N.,Distribuidor de provas,"associe versões A e B aos assentos, evitando vizinhos com mesma versão."
+77,03-18,Março,Escola e aprendizado,Cartaz da turma,desenhe uma linha de N asteriscos.,Gerador de cartazes,desenhe uma moldura textual ajustável para títulos de comprimentos variados.
+78,03-19,Março,Escola e aprendizado,Notas extras,adicione um ponto de bônus sem ultrapassar dez.,Política de bônus,aplique regras de bonificação a uma lista de notas e registre alterações.
+79,03-20,Março,Escola e aprendizado,Troca de carteiras,troque os números de dois assentos usando auxiliar.,Mapa de lugares,represente a sala em matriz e permita trocar alunos de posição.
+80,03-21,Março,Escola e aprendizado,Perguntas respondidas,calcule a porcentagem de acertos de um questionário.,Analisador de prova,compare gabarito e respostas de vários alunos e mostre acertos por questão.
+81,03-22,Março,Escola e aprendizado,Intervalo de aulas,calcule a duração entre início e fim em minutos.,Grade de horários,cadastre aulas e detecte conflitos de sala e professor.
+82,03-23,Março,Escola e aprendizado,Contador de faltas,some faltas de três meses.,Previsão de frequência,estime a frequência final considerando aulas restantes e faltas futuras.
+83,03-24,Março,Escola e aprendizado,Aula mais longa,compare a duração de duas aulas.,Relatório de tempos,calcule médias de duração por disciplina a partir de registros.
+84,03-25,Março,Escola e aprendizado,Número da carteira,verifique se uma carteira está em intervalo válido.,Inventário das salas,"controle carteiras livres, ocupadas e interditadas numa matriz."
+85,03-26,Março,Escola e aprendizado,Sequência do quadro,mostre os cinco primeiros múltiplos de um número.,Caça-padrões,identifique se uma sequência de dez valores segue progressão aritmética ou geométrica.
+86,03-27,Março,Escola e aprendizado,Lista de chamada,repita uma saudação para N alunos.,Rodízio de apresentações,gere uma ordem equilibrada de apresentação sem repetir aluno na rodada.
+87,03-28,Março,Escola e aprendizado,Preço da apostila,calcule o valor de N apostilas iguais.,Pedido de apostilas,consolide pedidos de turmas e distribua lotes respeitando estoque.
+88,03-29,Março,Escola e aprendizado,Data da prova,apresente dia e mês digitados em formato DD/MM.,Calendário de provas,valide datas e detecte duas avaliações na mesma data para uma turma.
+89,03-30,Março,Escola e aprendizado,Desempenho do mês,some os exercícios concluídos em quatro semanas.,Painel de desempenho,registre exercícios por aluno e semana e calcule evolução percentual.
+90,03-31,Março,Escola e aprendizado,Mensagem final,mostre uma frase motivadora a partir do nome do estudante.,Gerador de certificados,cadastre alunos e emita certificados textuais apenas para quem atender critérios.
+91,04-01,Abril,Lógica e enigmas,Porta misteriosa,leia um número e diga se é positivo ou negativo.,Sequência oculta,encontre o termo faltante em uma progressão aritmética com uma lacuna.
+92,04-02,Abril,Lógica e enigmas,Cofre de dois dígitos,some os algarismos de um número de dois dígitos.,Senha do cofre,"conte tentativas e bloqueie acesso após três erros, armazenando histórico de tentativas."
+93,04-03,Abril,Lógica e enigmas,Chaves trocadas,receba dois valores e mostre-os em ordem inversa.,Chaves numeradas,encontre pares de códigos cuja soma corresponde ao código do cadeado.
+94,04-04,Abril,Lógica e enigmas,Sala dos espelhos,apresente um número inteiro com seus dígitos invertidos.,Espelhos da matriz,verifique simetria horizontal e vertical de uma grade de símbolos.
+95,04-05,Abril,Lógica e enigmas,Número suspeito,verifique se um número é múltiplo de cinco.,Investigação numérica,liste todos os divisores de valores suspeitos e agrupe os que compartilham um divisor.
+96,04-06,Abril,Lógica e enigmas,Código secreto,verifique se um número de três algarismos tem todos os dígitos iguais.,Decifrador de códigos,descubra quais códigos de quatro dígitos atendem a soma e posições parciais informadas.
+97,04-07,Abril,Lógica e enigmas,Trilha numerada,mostre os números de N até 1.,Caminho do tabuleiro,"simule um personagem em grade, bloqueando movimentos em obstáculos."
+98,04-08,Abril,Lógica e enigmas,Par misterioso,verifique se dois números possuem a mesma paridade.,Investigador de pares,encontre todas as duplas com soma-alvo em um vetor sem repetir posições.
+99,04-09,Abril,Lógica e enigmas,Escada de símbolos,imprima N linhas com quantidade crescente de #.,Pirâmide criptográfica,desenhe uma pirâmide textual de dígitos com padrão alternado configurável.
+100,04-10,Abril,Lógica e enigmas,Três suspeitos,exiba o menor de três números.,Detetive de pistas,filtre uma lista de suspeitos por três características e apresente os compatíveis.
+101,04-11,Abril,Lógica e enigmas,Enigma do dobro,descubra o número original dado seu dobro.,Equações simples,resolva um sistema de duas equações lineares e trate ausência de solução única.
+102,04-12,Abril,Lógica e enigmas,Número escondido,indique se uma entrada está entre 10 e 20.,Jogo de pistas,reduza intervalos possíveis de um número secreto com comparações sucessivas.
+103,04-13,Abril,Lógica e enigmas,Botões da máquina,"receba 1, 2 ou 3 e exiba a função escolhida.",Máquina de estados,"simule estados ABERTO, FECHADO e TRAVADO com transições permitidas."
+104,04-14,Abril,Lógica e enigmas,Palavra secreta,mostre somente a primeira letra de uma palavra.,Frequência de letras,conte ocorrências das letras A a Z e apresente as três mais frequentes.
+105,04-15,Abril,Lógica e enigmas,Inversão de sinais,transforme um número negativo em positivo sem função pronta de valor absoluto.,Equilíbrio de somas,encontre um índice que divide o vetor em metades de soma igual.
+106,04-16,Abril,Lógica e enigmas,Desafio das moedas,calcule quantas moedas de R$ 1 formam um valor inteiro.,Troco exato,encontre a combinação de moedas que totaliza um valor com menor número de peças.
+107,04-17,Abril,Lógica e enigmas,Desenho quadrado,imprima um quadrado de # com lado N.,Quadrado vazado,"desenhe bordas e diagonais em matriz, tratando encontros de símbolos."
+108,04-18,Abril,Lógica e enigmas,Portas alternadas,mostre ABERTA nos índices pares e FECHADA nos ímpares.,Cem portas,simule a alternância de portas feita em rodadas de múltiplos e liste as abertas.
+109,04-19,Abril,Lógica e enigmas,Charada da idade,calcule em quantos anos alguém terá o dobro da idade atual.,Idades combinadas,encontre idades inteiras que atendam soma e diferença fornecidas.
+110,04-20,Abril,Lógica e enigmas,Soma escondida,calcule a soma dos números de 1 a N.,Série enigmática,identifique o primeiro termo cuja soma acumulada supera um alvo e exiba histórico.
+111,04-21,Abril,Lógica e enigmas,Senha espelhada,descubra se um número de três dígitos é capicua.,Palíndromos em lote,percorra um intervalo e agrupe números capicuas por quantidade de dígitos.
+112,04-22,Abril,Lógica e enigmas,Rodízio de letras,"transforme uma letra maiúscula em sua próxima letra, com Z voltando a A.",Cifra variável,codifique uma frase usando deslocamento alfabético diferente para cada posição.
+113,04-23,Abril,Lógica e enigmas,Mapa codificado,"traduza N, S, L ou O em uma direção escrita.",Navegação por comandos,execute uma sequência de movimentos em grade e detecte saídas do mapa.
+114,04-24,Abril,Lógica e enigmas,Contador de pistas,conte quantos dos cinco números digitados são positivos.,Quadro de pistas,registre dez observações e filtre as que atendem a duas condições numéricas.
+115,04-25,Abril,Lógica e enigmas,Número triangular,calcule 1 + 2 + ... + N.,Catálogo de triangulares,gere termos da sequência e encontre quais pertencem a um intervalo.
+116,04-26,Abril,Lógica e enigmas,Senha par,aceite apenas um PIN numérico com quatro dígitos e último dígito par.,Validador de PIN,"valide lista de PINs com formato, exclusão de sequências óbvias e contagem de recusas."
+117,04-27,Abril,Lógica e enigmas,Labirinto de texto,imprima N caracteres de parede em uma linha.,Labirinto de corredores,receba grade 5×5 e identifique saídas alcançáveis por exploração com fila.
+118,04-28,Abril,Lógica e enigmas,Balança de números,compare duas somas e indique a maior.,Partição equilibrada,divida seis pesos em dois grupos cuja diferença absoluta de somas seja mínima.
+119,04-29,Abril,Lógica e enigmas,Mensagem invertida,inverta uma palavra com laço e funções de texto.,Frases simétricas,encontre todas as palavras palíndromas de uma frase sem diferenciar caixa.
+120,04-30,Abril,Lógica e enigmas,Fim do enigma,some os algarismos de um inteiro positivo.,Cofre final,"valide uma senha por soma de dígitos, ausência de repetições e ordem parcial."
+121,05-01,Maio,Profissões e comércio,Primeiro salário,multiplique horas trabalhadas pelo valor da hora.,Controle de ponto,registre entrada e saída de funcionários e calcule horas extras e atrasos.
+122,05-02,Maio,Profissões e comércio,Vendas do dia,multiplique preço de um produto pela quantidade vendida.,Fechamento do caixa,"registre vendas de cinco produtos e emita faturamento, quantidades e ticket médio."
+123,05-03,Maio,Profissões e comércio,Comissão simples,calcule uma comissão percentual sobre uma venda.,Metas dos vendedores,guarde vendas por profissional em vetor e gere ranking por metas atingidas.
+124,05-04,Maio,Profissões e comércio,Etiqueta na vitrine,aplique aumento percentual a um preço.,Etiquetador em lote,atualize preços de dez produtos segundo categorias e regras de margem.
+125,05-05,Maio,Profissões e comércio,Troco do cliente,calcule o troco após uma compra válida.,Caixa com cédulas,decomponha o troco nas notas disponíveis e avise quando não for possível pagar.
+126,05-06,Maio,Profissões e comércio,Prateleira organizada,informe quantos itens faltam para completar uma meta de estoque.,Estoque mínimo,registre entradas e saídas e gere relatório de reposição para cinco produtos.
+127,05-07,Maio,Profissões e comércio,Desconto de cliente,verifique se uma compra alcança limite para desconto.,Clube de benefícios,acumule pontos e permita resgate obedecendo saldo e regras de pontos.
+128,05-08,Maio,Profissões e comércio,Diária de serviço,calcule pagamento por número de dias trabalhados.,Escala de equipes,associe funcionários a turnos e identifique conflitos de disponibilidade.
+129,05-09,Maio,Profissões e comércio,Ponto comercial,calcule área de uma loja retangular.,Distribuição de setores,use matriz para representar corredores e localizar posições ocupadas.
+130,05-10,Maio,Profissões e comércio,Bônus de produtividade,adicione bônus fixo quando a meta for atingida.,Painel de produtividade,acompanhe produção diária em vetor e destaque sequências acima da meta.
+131,05-11,Maio,Profissões e comércio,Pedido de papelaria,some o preço de quatro materiais.,Compras por fornecedor,compare preços e fretes de fornecedores e escolha menor custo por item.
+132,05-12,Maio,Profissões e comércio,Contagem do depósito,mostre números de caixas de 1 até N.,Mapeamento de caixas,encontre um produto em matriz de prateleiras e indique posição e quantidade.
+133,05-13,Maio,Profissões e comércio,Taxa de entrega,acrescente uma taxa fixa a uma compra.,Entregas em regiões,calcule taxas por distância e agrupe pedidos por rota definida.
+134,05-14,Maio,Profissões e comércio,Jornada reduzida,diga se as horas trabalhadas ultrapassam a carga contratada.,Banco de horas,controle créditos e débitos de horas em vários dias e feche o saldo.
+135,05-15,Maio,Profissões e comércio,Comparador de preços,exiba o menor entre dois preços.,Cotação de compra,"compare propostas com preço, prazo e desconto, gerando ranking ponderado."
+136,05-16,Maio,Profissões e comércio,Orçamento de reforma,multiplique área de piso pelo custo por metro quadrado.,Materiais de obra,calcule pacotes inteiros necessários para áreas de cômodos e sobras.
+137,05-17,Maio,Profissões e comércio,Entrega no prazo,compare dia da entrega com dia previsto.,Controle de pedidos,rastreie pedidos por código e classifique atrasos conforme datas numéricas.
+138,05-18,Maio,Profissões e comércio,Mesa de atendimento,mostre uma mensagem para cada cliente de 1 a N.,Senhas de atendimento,implemente filas comum e prioritária com política de atendimento alternado.
+139,05-19,Maio,Profissões e comércio,Receita da oficina,some os valores de três serviços.,Oficina de reparos,cadastre ordens por status e calcule tempo médio e custo por tipo.
+140,05-20,Maio,Profissões e comércio,Preço por quilograma,calcule o custo de um produto vendido por peso.,Feira por peso,"gerencie pesagens, descontos e totais de compras com vários itens."
+141,05-21,Maio,Profissões e comércio,Contador de encomendas,some pedidos de dois períodos.,Planejamento de produção,distribua encomendas em dias respeitando capacidade diária máxima.
+142,05-22,Maio,Profissões e comércio,Frete separado,calcule preço do produto mais frete informado.,Simulador de entregas,compare três transportadoras pelo custo total e prazo prometido.
+143,05-23,Maio,Profissões e comércio,Caixa de ferramentas,diga se a quantidade de ferramentas alcança a necessidade.,Inventário de ferramentas,"controle empréstimos, devoluções e itens ainda em uso."
+144,05-24,Maio,Profissões e comércio,Ajuste de salário,calcule salário após reajuste percentual.,Folha de pagamento fictícia,compute salários de equipe com bônus e descontos parametrizados.
+145,05-25,Maio,Profissões e comércio,Hora do almoço,calcule a duração de uma pausa a partir dos minutos de início e fim.,Escala de almoço,distribua pausas preservando mínimo de pessoas disponíveis em cada turno.
+146,05-26,Maio,Profissões e comércio,Peças por máquina,calcule produção com taxa fixa por hora.,Fábrica em turnos,acompanhe produção e perdas por máquina numa matriz e gere relatórios.
+147,05-27,Maio,Profissões e comércio,Pesquisa de preço,calcule média de três preços pesquisados.,Monitor de preços,guarde histórico semanal e encontre maior queda percentual por produto.
+148,05-28,Maio,Profissões e comércio,Chegada do caminhão,calcule hora prevista em minutos a partir de uma duração.,Recebimento de cargas,"simule fila de docas, duração de descarga e horários de liberação."
+149,05-29,Maio,Profissões e comércio,Cartaz de promoção,apresente nome do produto e preço promocional.,Vitrine automática,filtre produtos por percentual de desconto e ordene pelo valor economizado.
+150,05-30,Maio,Profissões e comércio,Fechamento da loja,calcule a diferença entre saldo inicial e final de caixa.,Auditoria do caixa,"reconcilie vendas, sangrias e pagamentos e identifique divergências."
+151,05-31,Maio,Profissões e comércio,Resumo do trabalho,leia cinco resultados diários e calcule sua soma.,Relatório mensal,"agregue resultados por equipe e semana, com médias e comparação de desempenho."
+152,06-01,Junho,Festa junina e tradições,Bandeirinhas no ar,calcule o total de bandeirinhas em N fileiras iguais.,Desenho de bandeirinhas,gere padrão alternado de cores em uma matriz e conte peças por cor.
+153,06-02,Junho,Festa junina e tradições,Barraca do milho,calcule o custo de N espigas a preço fixo.,Caixa da barraca,registre vendas por produto e quantidades com estoque limitado.
+154,06-03,Junho,Festa junina e tradições,Quadrilha numerada,imprima passos de 1 até 8.,Coreografia da quadrilha,armazene comandos de movimento e simule posições dos pares numa grade.
+155,06-04,Junho,Festa junina e tradições,Pescaria simples,informe um prêmio conforme um número entre 1 e 3.,Pescaria de prêmios,"gerencie sorteios pré-definidos, estoque de prêmios e rodadas sem repetição."
+156,06-05,Junho,Festa junina e tradições,Correio elegante,leia remetente e destinatário e imprima um bilhete.,Correio de mensagens,"armazene bilhetes, permita buscar destinatários e contar mensagens por pessoa."
+157,06-06,Junho,Festa junina e tradições,Cachorro-quente,some preços de lanche e bebida.,Montador de lanches,"combine adicionais, calcule custo e controle ingredientes disponíveis."
+158,06-07,Junho,Festa junina e tradições,Forno de pamonha,calcule quantas fornadas são necessárias para N unidades.,Planejador de fornadas,distribua receitas com tempos diferentes em um cronograma de forno único.
+159,06-08,Junho,Festa junina e tradições,Chapéu de palha,aplique desconto a um acessório.,Bazar junino,gere ranking de vendas por categoria e total de descontos concedidos.
+160,06-09,Junho,Festa junina e tradições,Paçocas para todos,calcule quantas paçocas sobram após divisão igual.,Montagem de kits,forme kits com itens de estoques diferentes maximizando quantidade de kits completos.
+161,06-10,Junho,Festa junina e tradições,Fogueira acesa,mostre a palavra FOGO por N linhas.,Desenho da fogueira,crie arte ASCII com altura configurável e distribuição simétrica de chamas.
+162,06-11,Junho,Festa junina e tradições,Bingo de números,diga se um número informado aparece em três números sorteados.,Cartela de bingo,armazene cartela 5×5 e marque números sem contar repetidos.
+163,06-12,Junho,Festa junina e tradições,Prêmio do bingo,compare duas quantidades de acertos.,Verificador de bingo,"analise cartela marcada e detecte linha, coluna ou diagonal completa."
+164,06-13,Junho,Festa junina e tradições,Dança das cadeiras,calcule quantas cadeiras restam após retirar uma por rodada.,Simulador de cadeiras,elimine jogadores em círculo a partir de passos contados.
+165,06-14,Junho,Festa junina e tradições,Tempo de festa,calcule duração entre dois horários do mesmo dia.,Cronograma de apresentações,ordene atrações por hora de início e sinalize conflitos.
+166,06-15,Junho,Festa junina e tradições,Canjica da receita,multiplique ingredientes por fator de porções.,Receita em lote,ajuste ingredientes de várias receitas e consolide uma lista de compras.
+167,06-16,Junho,Festa junina e tradições,Quentão sem álcool,calcule o volume total de bebida em copos iguais.,Controle da bebida,simule preparo em lotes e distribuição por consumo previsto.
+168,06-17,Junho,Festa junina e tradições,Barraca premiada,verifique se uma pontuação alcança o mínimo do prêmio.,Pontuação de barracas,"registre tentativas, pontue desempenhos e gere classificação com desempate."
+169,06-18,Junho,Festa junina e tradições,Pula-fogueira fictício,conte saltos de 1 até N.,Jogo de saltos,calcule pontuação por sequência com bônus por acertos consecutivos.
+170,06-19,Junho,Festa junina e tradições,Cadeia caipira,mostre uma mensagem para um número de participante.,Captura fictícia,gerencie jogadores em estados livre e preso e operações de libertação.
+171,06-20,Junho,Festa junina e tradições,Rifa junina,calcule o valor arrecadado por quantidade de bilhetes.,Controle de rifas,"valide números de bilhete, impeça duplicações e confira lotes vendidos."
+172,06-21,Junho,Festa junina e tradições,Roleta de prendas,associe quatro números a quatro desafios.,Gerenciador de prendas,distribua desafios entre participantes sem repetir até esgotar a lista.
+173,06-22,Junho,Festa junina e tradições,Bandeira triangular,calcule a área a partir de base e altura.,Otimizador de tecido,estime quantas bandeiras retangulares de recorte cabem em peças de tecido.
+174,06-23,Junho,Festa junina e tradições,Maçã do amor,aplique percentual de lucro ao custo unitário.,Precificação da barraca,"calcule preço de produtos com custo, perdas e margem desejada."
+175,06-24,Junho,Festa junina e tradições,Pratinhos de comida,calcule N pessoas vezes pratos por pessoa.,Planejador de alimentação,estime consumo de pratos por faixa de público e controle reserva de segurança.
+176,06-25,Junho,Festa junina e tradições,Pontuação do arremesso,some valores de três tentativas.,Torneio de argolas,registre resultados por rodada e produza classificação de jogadores.
+177,06-26,Junho,Festa junina e tradições,Noite fria,diga se a temperatura está abaixo do limite escolhido.,Termômetro da festa,analise série de medições e identifique intervalos de queda contínua.
+178,06-27,Junho,Festa junina e tradições,Convites juninos,calcule quantos convites faltam distribuir.,Convites por grupo,divida lotes entre turmas e gere relatório de entregas e pendências.
+179,06-28,Junho,Festa junina e tradições,Custo da decoração,some preços de três materiais decorativos.,Orçamento da decoração,monte itens por prioridade e sinalize excesso do teto disponível.
+180,06-29,Junho,Festa junina e tradições,Última dança,leia um número de pares e calcule o total de dançarinos.,Organizador de pares,forme duplas sem repetir parceria em rodadas consecutivas.
+181,06-30,Junho,Festa junina e tradições,Despedida do arraial,calcule arrecadação de duas barracas.,Balanço do arraial,consolide receitas e despesas das barracas e determine lucro de cada uma.
+182,07-01,Julho,Inverno e descanso,Chá quentinho,calcule custo de N sachês de chá.,Cafeteria de inverno,"registre pedidos, descontos por combos e estoque de ingredientes."
+183,07-02,Julho,Inverno e descanso,Temperatura mínima,leia três temperaturas e exiba a menor.,Ranking de cidades frias,cadastre temperaturas de localidades e ordene da mais fria à mais quente.
+184,07-03,Julho,Inverno e descanso,Cobertor suficiente,diga se a quantidade de cobertores atende à demanda.,Distribuição de cobertores,aloque itens a grupos segundo necessidade e estoque limitado.
+185,07-04,Julho,Inverno e descanso,Sessão de filmes,some durações de dois filmes em minutos.,Maratona de filmes,ordene uma lista por duração e selecione sessões sem ultrapassar um limite.
+186,07-05,Julho,Inverno e descanso,Livros nas férias,calcule páginas restantes de um livro.,Desafio de leitura,registre progresso de sete dias e calcule evolução e previsão baseada na média.
+187,07-06,Julho,Inverno e descanso,Chocolate quente,converta litros de leite em mililitros.,Produção de bebidas,calcule lotes com três tamanhos de copo minimizando sobras de volume.
+188,07-07,Julho,Inverno e descanso,Casaco em promoção,aplique um desconto de inverno.,Loja de casacos,"organize modelos por tamanho, estoque e descontos e filtre itens disponíveis."
+189,07-08,Julho,Inverno e descanso,Noites frias,conte de 1 até N noites com um laço.,Histórico noturno,identifique a maior sequência de temperaturas abaixo de um limite.
+190,07-09,Julho,Inverno e descanso,Aquecer o quarto,calcule custo estimado de um aparelho por horas de uso.,Simulador de energia,compare custo semanal de três aquecedores em diferentes ciclos de funcionamento.
+191,07-10,Julho,Inverno e descanso,Sopa dividida,divida uma quantidade de litros entre pessoas.,Cozinha solidária,"distribua porções entre equipes, respeitando volumes e número de pessoas."
+192,07-11,Julho,Inverno e descanso,Hora do descanso,"calcule a duração do sono em minutos entre dois horários, inclusive atravessando meia-noite.",Diário do sono,calcule duração e média de sete noites com horários de início e fim.
+193,07-12,Julho,Inverno e descanso,Termômetro duplo,converta Fahrenheit para Celsius.,Painel de sensores,identifique leituras fora de faixa e calcule média sem valores inválidos.
+194,07-13,Julho,Inverno e descanso,Fogueira de acampamento,calcule quantos gravetos serão usados em N pacotes iguais.,Estoque do acampamento,simule consumo diário de recursos e avise o primeiro dia de falta.
+195,07-14,Julho,Inverno e descanso,Viagem de ônibus,calcule custo de passagens para N pessoas.,Roteiro de excursão,"avalie paradas e duração total, incluindo tempos de espera configurados."
+196,07-15,Julho,Inverno e descanso,Monte de neve fictício,calcule a área de um círculo a partir do raio.,Mapa de neve,receba matriz de intensidades e conte regiões conectadas acima do limiar.
+197,07-16,Julho,Inverno e descanso,Jogo de cartas,compare dois valores e indique o maior.,Campeonato de cartas,leia resultados de rodadas e compute pontos e desempates dos jogadores.
+198,07-17,Julho,Inverno e descanso,Dia de cinema,calcule total de pipocas e entradas.,Cinema de férias,escolha sessões que não se sobrepõem e calcule o custo de um roteiro.
+199,07-18,Julho,Inverno e descanso,Pares de meias,calcule a quantidade de pares completos dado N meias.,Separador de meias,conte cores em vetor e calcule pares e peças sem par.
+200,07-19,Julho,Inverno e descanso,Pista de gelo fictícia,calcule distância de N voltas.,Competição de voltas,registre tempos em matriz e encontre volta mais rápida e média por atleta.
+201,07-20,Julho,Inverno e descanso,Lista de malas,leia três pesos e calcule o total.,Balanceamento de bagagens,distribua itens em duas malas minimizando a diferença de peso.
+202,07-21,Julho,Inverno e descanso,Acampamento em grupo,calcule quantas barracas de quatro lugares são necessárias.,Planejamento de barracas,distribua grupos em capacidades variadas preservando integridade das famílias.
+203,07-22,Julho,Inverno e descanso,Termômetro congelante,diga se uma temperatura é menor ou igual a zero.,Alertas de geada,identifique períodos de risco em uma lista e conte sua duração.
+204,07-23,Julho,Inverno e descanso,Biscoitos do inverno,calcule quantos pacotes são necessários para uma quantidade de biscoitos.,Produção de biscoitos,organize pedidos e calcule lotes de receitas com capacidades diferentes.
+205,07-24,Julho,Inverno e descanso,Trilhas nas férias,calcule distância total de ida e volta.,Classificador de trilhas,"ordene trilhas por distância, tempo e ganho de elevação usando critérios escolhidos."
+206,07-25,Julho,Inverno e descanso,Jogos de tabuleiro,some pontuações de duas rodadas.,Placar de torneio,gerencie quatro jogadores e classificação após várias rodadas.
+207,07-26,Julho,Inverno e descanso,Luzes do quarto,converta consumo de watts e horas para quilowatt-hora.,Eficiência residencial,compare aparelhos e calcule economia estimada com substituições.
+208,07-27,Julho,Inverno e descanso,Kit de inverno,some o preço de três peças.,Kits de agasalhos,escolha peças de diferentes categorias dentro de um orçamento por kit.
+209,07-28,Julho,Inverno e descanso,Café da manhã,calcule custo de N pães iguais.,Planejamento de refeições,calcule ingredientes de um cardápio para grupos de tamanhos diferentes.
+210,07-29,Julho,Inverno e descanso,Contador de férias,calcule dias restantes até uma data do mesmo mês.,Linha do tempo,ordene eventos por dia e horário e calcule intervalos entre atividades.
+211,07-30,Julho,Inverno e descanso,Dia de chuva,leia SIM ou NÃO e escolha atividade interna ou externa.,Agenda alternativa,replaneje uma lista de atividades conforme restrições climáticas pré-definidas.
+212,07-31,Julho,Inverno e descanso,Resumo de julho,calcule média de quatro temperaturas.,Relatório do inverno,analise medições por semana e local numa matriz e destaque extremos.
+213,08-01,Agosto,Jogos e tecnologia,Pontuação do jogador,some os pontos de três fases.,Ranking arcade,registre pontuações de dez jogadores e organize o top 5 sem perder nomes.
+214,08-02,Agosto,Jogos e tecnologia,Vidas restantes,subtraia vidas perdidas das iniciais sem permitir resultado negativo.,Jogo por turnos,"controle vida, defesa e pontos de energia de dois personagens."
+215,08-03,Agosto,Jogos e tecnologia,Teclas do comando,"exiba uma ação para W, A, S ou D.",Controle em grade,interprete uma sequência de teclas e mova um personagem entre obstáculos.
+216,08-04,Agosto,Jogos e tecnologia,FPS médio,calcule a média de três medições de quadros por segundo.,Monitor de desempenho,"analise série de FPS e calcule média, mínima e percentual abaixo de 30."
+217,08-05,Agosto,Jogos e tecnologia,Memória livre,subtraia memória usada da capacidade total.,Alocador fictício,simule reservas e liberações de blocos de memória com capacidade limitada.
+218,08-06,Agosto,Jogos e tecnologia,Senha do jogo,compare a senha digitada com um código previamente estabelecido.,Sistema de perfis,cadastre usuários em vetor e bloqueie acessos após tentativas falhas.
+219,08-07,Agosto,Jogos e tecnologia,Contador de cliques,mostre os números de 1 até N.,Teste de cliques,analise contagens por segundo e identifique a melhor janela consecutiva.
+220,08-08,Agosto,Jogos e tecnologia,Moedas virtuais,calcule saldo depois de uma compra.,Loja virtual fictícia,"gerencie saldo, itens, inventário e operações de compra e venda."
+221,08-09,Agosto,Jogos e tecnologia,Nível do personagem,diga se pontos atingem o limite do próximo nível.,Progressão de níveis,calcule níveis acumulados a partir de tabela de experiência e registre evolução.
+222,08-10,Agosto,Jogos e tecnologia,Dado digital,indique se um número informado está entre 1 e 6.,Simulador de dados,processe uma sequência de lançamentos e calcule frequência e sequências de resultados.
+223,08-11,Agosto,Jogos e tecnologia,Peças de computador,"some preços de processador, memória e armazenamento.",Montador de PCs,selecione peças compatíveis por categoria e mantenha orçamento máximo.
+224,08-12,Agosto,Jogos e tecnologia,Espaço no disco,converta gigabytes para megabytes usando base binária.,Gerente de armazenamento,simule inclusão e exclusão de arquivos com tamanhos e categorias.
+225,08-13,Agosto,Jogos e tecnologia,Bateria do controle,calcule percentual restante após consumo informado.,Autonomia do controle,simule sessões com consumo variável e encontre quando será necessário recarregar.
+226,08-14,Agosto,Jogos e tecnologia,Vitórias consecutivas,exiba PARABÉNS N vezes conforme vitórias.,Analisador de partidas,encontre maior sequência de vitórias e taxa de aproveitamento em histórico.
+227,08-15,Agosto,Jogos e tecnologia,Controle de volume,limite um valor numérico entre 0 e 100.,Mixer virtual,"gerencie níveis de três canais, aplique mudo e calcule volume médio."
+228,08-16,Agosto,Jogos e tecnologia,Fases concluídas,calcule quantas faltam para terminar um jogo.,Mapa de progressão,controle fases liberadas conforme requisitos e conquistas de etapas anteriores.
+229,08-17,Agosto,Jogos e tecnologia,Inventário simples,calcule itens após adquirir mais unidades.,Mochila de RPG,"controle pilhas, limites por item e peso máximo com menu."
+230,08-18,Agosto,Jogos e tecnologia,Placar empatado,verifique se dois jogadores têm a mesma pontuação.,Campeonato eliminatório,simule chaves de oito jogadores com entrada de vencedores por partida.
+231,08-19,Agosto,Jogos e tecnologia,Pixels coloridos,calcule quantos pixels existem numa imagem de largura e altura informadas.,Editor ASCII,represente imagem em matriz de caracteres e implemente preenchimento de área conexa.
+232,08-20,Agosto,Jogos e tecnologia,Downloads restantes,subtraia dados baixados do total de um arquivo.,Gerenciador de downloads,distribua banda entre três tarefas e estime rodadas até conclusão.
+233,08-21,Agosto,Jogos e tecnologia,Dano crítico,calcule dano base acrescido de bônus percentual.,Combate com atributos,"simule ataque, defesa, chance crítica pré-definida e efeitos em turnos."
+234,08-22,Agosto,Jogos e tecnologia,Temporizador de jogo,converta segundos de partida em minutos e segundos.,Relógio de competição,mantenha placar e eventos em instantes informados e gere linha do tempo.
+235,08-23,Agosto,Jogos e tecnologia,Código ASCII,leia um código numérico e informe se representa dígito entre 48 e 57.,Analisador de texto,conte caracteres por classe e construa histograma de letras de A a Z.
+236,08-24,Agosto,Jogos e tecnologia,Latência da rede,calcule a média de três tempos de resposta.,Diagnóstico de conexão,identifique picos e estime percentis simples a partir de amostras ordenadas.
+237,08-25,Agosto,Jogos e tecnologia,Armazenamento de fotos,calcule espaço de N imagens iguais.,Compactador fictício,agrupe arquivos por extensão e estime redução com taxas diferentes.
+238,08-26,Agosto,Jogos e tecnologia,Joystick em repouso,verifique se um valor está dentro da zona morta.,Calibrador de controle,normalize eixos numéricos e aplique zona morta com limite configurável.
+239,08-27,Agosto,Jogos e tecnologia,Ranking por pontos,compare três pontuações e exiba a maior.,Histórico de ranking,registre rodadas em matriz e compute ranking acumulado com desempates.
+240,08-28,Agosto,Jogos e tecnologia,Recompensa diária,calcule bônus após N dias fixos.,Calendário de recompensas,"simule registro de dias, bônus de sequência e reinício após ausência."
+241,08-29,Agosto,Jogos e tecnologia,Partida online,informe se o número de jogadores alcança o mínimo.,Criador de salas,distribua jogadores por salas de capacidade fixa e sinalize salas incompletas.
+242,08-30,Agosto,Jogos e tecnologia,Game over,informe se a vida chegou a zero.,Sistema de checkpoints,"permita salvar e restaurar estado de posição, vida e recursos durante simulação."
+243,08-31,Agosto,Jogos e tecnologia,Resumo do jogo,calcule razão entre vitórias e partidas totais como percentual.,Estatísticas de temporada,"processe resultados em vetor e gere sequência máxima, aproveitamento e pontuação."
+244,09-01,Setembro,Natureza e descobertas,Muda de árvore,calcule quantas mudas serão plantadas em N fileiras.,Viveiro de mudas,"controle espécies, estoques e distribuição para áreas de reflorestamento."
+245,09-02,Setembro,Natureza e descobertas,Coleta seletiva,"indique a lixeira correspondente a PAPEL, VIDRO ou PLÁSTICO.",Central de reciclagem,registre material e peso de descartes e produza relatório por categoria.
+246,09-03,Setembro,Natureza e descobertas,Litros economizados,calcule economia de água por dia durante N dias.,Consumo residencial,compare medições de água e localize aumentos anormais entre períodos.
+247,09-04,Setembro,Natureza e descobertas,Energia solar,calcule geração de um painel com potência e horas ideais.,Painéis solares,simule produção diária de vários painéis com eficiências e sombreamentos diferentes.
+248,09-05,Setembro,Natureza e descobertas,Tamanho do jardim,calcule a área de um canteiro retangular.,Projeto de jardim,distribua plantas em matriz respeitando distância mínima entre espécies.
+249,09-06,Setembro,Natureza e descobertas,Sementes restantes,calcule o saldo após semear parte das sementes.,Banco de sementes,controle estoque por espécie e validade fictícia por mês numérico.
+250,09-07,Setembro,Natureza e descobertas,Volume de chuva,converta milímetros de chuva em litros por metro quadrado.,Pluviômetro,"analise chuva de 30 dias, encontre recordes e maiores sequências secas."
+251,09-08,Setembro,Natureza e descobertas,Temperatura da estufa,"classifique uma leitura como abaixo, dentro ou acima da faixa ideal.",Controle de estufa,monitore leituras e simule acionamento de aquecimento e ventilação por histerese.
+252,09-09,Setembro,Natureza e descobertas,Vento forte,informe se uma velocidade supera um limite informado.,Rosa dos ventos,registre direções e velocidades e identifique direção predominante e média.
+253,09-10,Setembro,Natureza e descobertas,Ciclovia,calcule distância de ida e volta de um trajeto.,Rede de ciclovias,compare trechos conectados e encontre rota de menor distância entre pontos.
+254,09-11,Setembro,Natureza e descobertas,Lixo recolhido,some massas de três sacos.,Mutirão de limpeza,organize coleta por equipe e área e classifique rendimento por hora.
+255,09-12,Setembro,Natureza e descobertas,Dia ensolarado,diga se uma porcentagem de nebulosidade fica abaixo do limite.,Histórico de nebulosidade,processe 14 dias e identifique séries de dias acima de 70%.
+256,09-13,Setembro,Natureza e descobertas,Pegada do transporte,calcule emissões estimadas por distância usando taxa informada.,Comparador de transporte,"avalie trajetos por tempo, custo e emissões com ranking ponderado."
+257,09-14,Setembro,Natureza e descobertas,Vasos no quintal,multiplique linhas e colunas para descobrir a quantidade de vasos.,Irrigação por setores,represente canteiros em matriz e calcule água necessária por tipo de planta.
+258,09-15,Setembro,Natureza e descobertas,Plantas regadas,conte de 1 até N plantas atendidas.,Agenda de rega,guarde últimos dias de rega e avise quais plantas venceram intervalo configurado.
+259,09-16,Setembro,Natureza e descobertas,Comprimento da folha,converta centímetros para milímetros.,Crescimento das folhas,acompanhe medições de várias plantas em matriz e calcule tendências.
+260,09-17,Setembro,Natureza e descobertas,Peso da colheita,calcule o valor obtido vendendo N quilogramas.,Controle de safra,"calcule produção por canteiro, perdas e receita líquida."
+261,09-18,Setembro,Natureza e descobertas,Separando resíduos,verifique se a quantidade reciclada alcança uma meta.,Metas ambientais,compare indicadores mensais e calcule quais áreas ficaram abaixo da meta.
+262,09-19,Setembro,Natureza e descobertas,Rios e nascentes,some volumes informados de três fontes.,Monitor de reservatórios,"simule entrada, consumo e transbordamento de água em vários dias."
+263,09-20,Setembro,Natureza e descobertas,Consumo consciente,calcule porcentagem de redução de um consumo antigo para um novo.,Economia acumulada,compare séries mensais de consumo e gere projeção pela média móvel.
+264,09-21,Setembro,Natureza e descobertas,Trilha da mata,calcule o tempo de caminhada por distância e velocidade.,Planejamento de trilhas,distribua atividades por trechos e estime horários com pausas.
+265,09-22,Setembro,Natureza e descobertas,Índice de poluição fictício,classifique uma medição por intervalos definidos.,Painel de qualidade do ar,consolide sensores e identifique medições fora do limite por região.
+266,09-23,Setembro,Natureza e descobertas,Altura da árvore,converta metros para centímetros.,Inventário florestal,classifique árvores por faixas de altura e produza distribuição de frequências.
+267,09-24,Setembro,Natureza e descobertas,Biodiversidade,some exemplares de três espécies.,Observação de fauna,processe contagens de espécies em parcelas e calcule diversidade por riqueza de espécies.
+268,09-25,Setembro,Natureza e descobertas,Compostagem,calcule massa restante após perda percentual.,Gestão de compostagem,"simule entradas, transformação e saídas de material em várias semanas."
+269,09-26,Setembro,Natureza e descobertas,Lâmpadas eficientes,calcule economia em watts entre duas lâmpadas.,Projeto de iluminação,"avalie conjuntos de lâmpadas por consumo, custo e prazo de economia."
+270,09-27,Setembro,Natureza e descobertas,Caminho das formigas,calcule percurso total de N idas iguais.,Colônia de formigas,simule deslocamentos em grade e conte visitas a cada posição.
+271,09-28,Setembro,Natureza e descobertas,Solo úmido,diga se a umidade ultrapassa o mínimo necessário.,Irrigador automático,simule sensores e válvulas com faixas de liga/desliga independentes.
+272,09-29,Setembro,Natureza e descobertas,Maré medida,calcule a diferença entre nível máximo e mínimo.,Série de marés,identifique máximos e mínimos locais num vetor de leituras.
+273,09-30,Setembro,Natureza e descobertas,Balanço verde,some três valores de economia ambiental.,Relatório ambiental,combine indicadores por setor e apresente metas atingidas e pendências.
+274,10-01,Outubro,Mistérios e Halloween,Fantasma na tela,imprima BOO! a quantidade de vezes solicitada.,Corredor assombrado,simule deslocamentos em um corredor com armadilhas e inventário de chaves.
+275,10-02,Outubro,Mistérios e Halloween,Abóboras na porta,calcule custo de N abóboras iguais.,Estoque de abóboras,"gerencie entradas, vendas e perdas em três tamanhos diferentes."
+276,10-03,Outubro,Mistérios e Halloween,Doces ou travessuras,divida uma quantidade de doces igualmente entre crianças.,Distribuição de doces,monte sacolas com quantidades definidas e controle sobras por tipo.
+277,10-04,Outubro,Mistérios e Halloween,Morcegos voando,apresente números pares até um limite.,Enxame de morcegos,simule posições em matriz e conte criaturas em cada quadrante.
+278,10-05,Outubro,Mistérios e Halloween,Caça aos fantasmas,diga se uma pontuação alcança o recorde informado.,Ranking de caçadores,registre pontuações por rodada e classifique equipes com critério de desempate.
+279,10-06,Outubro,Mistérios e Halloween,Cemitério numérico,conte de N até zero.,Mapa do cemitério,encontre coordenadas com lápides especiais em uma matriz codificada.
+280,10-07,Outubro,Mistérios e Halloween,Vassoura veloz,calcule velocidade média de uma bruxa fictícia.,Corrida de vassouras,registre parciais por competidor e calcule classificação por tempo acumulado.
+281,10-08,Outubro,Mistérios e Halloween,Caldeirão mágico,some volumes de três ingredientes.,Poção por receita,gerencie ingredientes limitados e calcule quantas poções completas podem ser produzidas.
+282,10-09,Outubro,Mistérios e Halloween,Poção de força,aumente um atributo em porcentagem informada.,Misturador de poções,combine receitas com efeitos temporários e atualize atributos por turno.
+283,10-10,Outubro,Mistérios e Halloween,Esqueleto desmontado,calcule quantos ossos restam após perder alguns.,Inventário do necromante,gerencie componentes para criar criaturas de receitas diferentes.
+284,10-11,Outubro,Mistérios e Halloween,Vampiro dorminhoco,calcule quantas horas faltam até um horário informado.,Rotina noturna,organize atividades do vampiro em intervalos que atravessam meia-noite.
+285,10-12,Outubro,Mistérios e Halloween,Aranha de oito patas,calcule total de patas de N aranhas.,Teia geométrica,"desenhe padrões em matriz com linhas, diagonais e pontos de interseção."
+286,10-13,Outubro,Mistérios e Halloween,Porta do castelo,informe ABERTA quando uma senha correta for digitada.,Fechaduras do castelo,valide sequência de chaves e estados de portas dependentes entre si.
+287,10-14,Outubro,Mistérios e Halloween,Lua cheia fictícia,classifique a fase conforme um índice entre 1 e 4.,Calendário lunar fictício,gere fases em ciclo de 28 dias a partir de uma fase inicial informada.
+288,10-15,Outubro,Mistérios e Halloween,Monstro faminto,calcule energia restante após um ataque.,Arena de monstros,"simule combate por turnos com defesa, fraqueza e recursos consumíveis."
+289,10-16,Outubro,Mistérios e Halloween,Máscara assustadora,calcule a média de três notas dadas à fantasia.,Concurso de monstros,"calcule notas ponderadas, aplique penalidades e crie pódio com empates."
+290,10-17,Outubro,Mistérios e Halloween,Três portas,"escolha um prêmio textual conforme a porta 1, 2 ou 3.",Castelo de escolhas,modele salas conectadas e permita navegar sem atravessar portas trancadas.
+291,10-18,Outubro,Mistérios e Halloween,Doces no balde,some doces recebidos em cinco casas.,Rota das casas,acompanhe visitas a uma lista de casas e impeça contagem de repetidas.
+292,10-19,Outubro,Mistérios e Halloween,Bruxa e caldeirão,exiba uma mensagem conforme a cor de poção digitada.,Laboratório de bruxas,identifique combinações válidas de ingredientes a partir de regras.
+293,10-20,Outubro,Mistérios e Halloween,Névoa intensa,classifique visibilidade numérica acima ou abaixo de um limite.,Sensores de névoa,compare leituras consecutivas e acione alerta após três valores críticos.
+294,10-21,Outubro,Mistérios e Halloween,Lanterna fraca,subtraia consumo de uma carga inicial.,Explorador noturno,administre energia da lanterna e escolhas de trajeto com custos diferentes.
+295,10-22,Outubro,Mistérios e Halloween,Coro de fantasmas,repita uma palavra em N linhas numeradas.,Coral assombrado,programe uma sequência de vozes em turnos e imprima a grade de entradas.
+296,10-23,Outubro,Mistérios e Halloween,Chaves misteriosas,some os códigos de duas chaves.,Porta combinada,procure em uma lista duas chaves cujos códigos somem o valor da fechadura.
+297,10-24,Outubro,Mistérios e Halloween,Adivinhação da caveira,verifique se um número possui três dígitos.,Gerador de enigmas,crie cinco desafios numéricos com respostas e valide tentativas do jogador.
+298,10-25,Outubro,Mistérios e Halloween,Corrida dos zumbis,calcule quantos metros um zumbi percorre em N minutos.,Perseguição dos zumbis,simule perseguidor e fugitivo numa linha com velocidades por turno.
+299,10-26,Outubro,Mistérios e Halloween,Doce mais caro,compare preços de três doces e exiba o maior.,Loja macabra,"monte carrinho, aplique promoções por quantidade e controle estoque."
+300,10-27,Outubro,Mistérios e Halloween,Cemitério iluminado,calcule total de velas por fileira.,Iluminação do cemitério,simule interruptores para conjuntos de lâmpadas em matriz.
+301,10-28,Outubro,Mistérios e Halloween,Enigma do espelho,exiba uma palavra invertida.,Palavra amaldiçoada,detecte palíndromos e anagramas dentro de uma coleção de palavras.
+302,10-29,Outubro,Mistérios e Halloween,Dia da fantasia,aplique desconto percentual em fantasias.,Figurinos do baile,distribua peças por participantes respeitando tamanhos e quantidades disponíveis.
+303,10-30,Outubro,Mistérios e Halloween,Festa dos monstros,conte convidados a partir de três grupos.,Controle do baile,"gerencie convites, entrada e saída com lotação máxima e histórico."
+304,10-31,Outubro,Mistérios e Halloween,A noite final,mostre um desenho de abóbora usando três linhas de texto.,Escape do castelo,"construa um jogo textual com salas, objetos, pistas e condição de vitória."
+305,11-01,Novembro,Computadores e invenções,Primeiro byte,converta bytes para bits multiplicando por oito.,Analisador de arquivos,agrupe tamanhos de arquivos por extensão e calcule ocupação em memória.
+306,11-02,Novembro,Computadores e invenções,Lógica binária,diga se um número inteiro é par ou ímpar.,Conversor de bases,"converta números entre decimal, binário e hexadecimal com validação."
+307,11-03,Novembro,Computadores e invenções,Circuito ligado,exiba LIGADO quando uma entrada for 1.,Simulador de portas,"avalie uma expressão combinando AND, OR e NOT a partir de entradas lógicas."
+308,11-04,Novembro,Computadores e invenções,Resistor elétrico,calcule a corrente usando tensão e resistência positiva.,Associação de resistores,calcule resistência equivalente de redes simples em série e paralelo.
+309,11-05,Novembro,Computadores e invenções,LED piscante,mostre LIGADO e DESLIGADO cinco vezes.,Sequenciador de LEDs,processe padrões de quatro canais e gere tabela de estados por instante.
+310,11-06,Novembro,Computadores e invenções,Sensor de luz,avise quando uma leitura for menor que o limite.,Controlador de luminosidade,simule ajuste automático de brilho com faixa morta e estados.
+311,11-07,Novembro,Computadores e invenções,Velocidade da internet,calcule tempo de download com tamanho e taxa fixa compatíveis.,Monitor de transferência,estime tempos de várias tarefas compartilhando uma banda total limitada.
+312,11-08,Novembro,Computadores e invenções,Impressão de páginas,calcule folhas necessárias para impressão frente e verso.,Fila de impressão,"gerencie trabalhos por prioridade, páginas e estado de conclusão."
+313,11-09,Novembro,Computadores e invenções,Robô contador,conte de 0 até um número informado.,Robô de entrega,"navegue por grade, evite obstáculos e registre pontos atendidos."
+314,11-10,Novembro,Computadores e invenções,Coordenadas do cursor,leia X e Y e exiba a posição formatada.,Editor de coordenadas,"armazene pontos, calcule distâncias entre consecutivos e comprimento da rota."
+315,11-11,Novembro,Computadores e invenções,Percentual da bateria,diga se o percentual está abaixo de 20.,Monitor de baterias,simule vários dispositivos com consumos diferentes por rodada.
+316,11-12,Novembro,Computadores e invenções,Uso da memória,calcule percentual de memória ocupada.,Simulador de processos,aloque e libere memória de processos sem exceder limite físico.
+317,11-13,Novembro,Computadores e invenções,Temperatura do processador,compare leitura com limite configurado.,Resfriamento automático,simule curva de ventoinha por faixas e registre mudanças de velocidade.
+318,11-14,Novembro,Computadores e invenções,Nome de arquivo,acrescente extensão `.txt` a um nome digitado sem extensão.,Organizador de arquivos,"classifique nomes por extensão, conte categorias e detecte nomes repetidos."
+319,11-15,Novembro,Computadores e invenções,Senha provisória,compare dois textos e diga se são iguais.,Gerenciador de usuários,"cadastre nomes e códigos de acesso, com bloqueio de duplicados e tentativas."
+320,11-16,Novembro,Computadores e invenções,Tamanho da tela,multiplique largura e altura para calcular pixels.,Escalonamento de interface,calcule tamanho e posição de componentes após mudar resolução.
+321,11-17,Novembro,Computadores e invenções,Código de cores,calcule a média inteira de três canais RGB.,Conversor de cores,converta RGB para hexadecimal e compare luminosidade estimada de amostras.
+322,11-18,Novembro,Computadores e invenções,Contagem de erros,some as ocorrências de três tipos de falha.,Analisador de logs,conte mensagens por categoria e localize a maior sequência de erros.
+323,11-19,Novembro,Computadores e invenções,Pasta de projetos,calcule total de pastas e subpastas informadas.,Estrutura de pastas,represente relações pai-filho em vetores e gere árvore textual com indentação.
+324,11-20,Novembro,Computadores e invenções,Volume do alto-falante,aplique aumento de dez unidades com limite de 100.,Mesa de som,"gerencie volumes de canais e estados mudo, solo e restauração."
+325,11-21,Novembro,Computadores e invenções,Alarme programado,compare hora em minutos com hora de alarme.,Agenda de alarmes,armazene horários e recorrências e liste disparos para um dia informado.
+326,11-22,Novembro,Computadores e invenções,Sinal Wi-Fi fictício,classifique potência por três faixas numéricas definidas.,Mapa de sinal,processe leituras em matriz e localize áreas com cobertura insuficiente.
+327,11-23,Novembro,Computadores e invenções,Tempo de inicialização,some durações de três etapas em segundos.,Perfil de inicialização,"analise tempos por processo, identifique gargalo e custo acumulado."
+328,11-24,Novembro,Computadores e invenções,Conversor de unidades,transforme kilobytes em bytes usando fator 1024.,Calculadora de armazenamento,"converta entre bytes, KiB, MiB e GiB com seleção de unidade."
+329,11-25,Novembro,Computadores e invenções,Controle remoto,associe os números 1 a 4 a comandos escritos.,Protocolo de comandos,interprete uma sequência de instruções com parâmetros e valide erros.
+330,11-26,Novembro,Computadores e invenções,Fila de tarefas,numere N tarefas cadastradas.,Escalonador simples,execute tarefas por prioridade e duração com relatório de espera.
+331,11-27,Novembro,Computadores e invenções,Alerta de disco,verifique se espaço livre está abaixo do mínimo.,Limpeza simulada,escolha arquivos temporários por tamanho e prioridade para liberar espaço-alvo.
+332,11-28,Novembro,Computadores e invenções,Atualização de sistema,calcule o progresso percentual a partir de blocos concluídos.,Gerenciador de atualizações,simule dependências entre pacotes e identifique ordem válida de instalação.
+333,11-29,Novembro,Computadores e invenções,Estado da conexão,indique ONLINE ou OFFLINE conforme uma entrada booleana.,Monitor de rede,acompanhe resultados de testes e identifique quedas consecutivas de conexão.
+334,11-30,Novembro,Computadores e invenções,Fechamento tecnológico,calcule média de três avaliações de um aplicativo.,Painel de bugs,"cadastre falhas por severidade, status e módulo e gere resumo de pendências."
+335,12-01,Dezembro,Encerramento e celebrações,Contagem para a festa,faça contagem regressiva de N até 0.,Cronograma da festa,"organize atividades por horário e duração, detectando conflitos."
+336,12-02,Dezembro,Encerramento e celebrações,Luzes decorativas,calcule a quantidade total de lâmpadas em N cordões iguais.,Painel de luzes,simule padrões de piscada em matriz por lâmpada e turno.
+337,12-03,Dezembro,Encerramento e celebrações,Lista de presentes,some o preço de três presentes.,Planejador de presentes,"associe pessoas, itens e orçamento máximo, evitando presentes duplicados."
+338,12-04,Dezembro,Encerramento e celebrações,Embrulho necessário,calcule a área de papel para uma face retangular.,Corte de papel,distribua retângulos de embrulho em folhas de tamanho fixo e estime desperdício.
+339,12-05,Dezembro,Encerramento e celebrações,Cartão de boas-festas,leia nome e imprima mensagem personalizada.,Gerador de cartões,cadastre destinatários e modelos de texto e produza mensagens por categoria.
+340,12-06,Dezembro,Encerramento e celebrações,Árvore iluminada,desenhe um triângulo de N linhas com asteriscos.,Árvore ASCII,crie árvore simétrica com enfeites posicionados por uma matriz de caracteres.
+341,12-07,Dezembro,Encerramento e celebrações,Biscoitos preparados,calcule quantas unidades resultam de N fornadas.,Cozinha de festas,consolide ingredientes de receitas para diferentes quantidades de porções.
+342,12-08,Dezembro,Encerramento e celebrações,Convites enviados,calcule quantos faltam distribuir.,Organizador de convidados,"cadastre confirmações, acompanhantes e calcule capacidade necessária."
+343,12-09,Dezembro,Encerramento e celebrações,Bebidas geladas,converta litros disponíveis em copos de 200 ml.,Planejador de bebidas,combine tamanhos de recipientes e estime volume restante após servir convidados.
+344,12-10,Dezembro,Encerramento e celebrações,Desconto especial,aplique desconto de fim de ano a um produto.,Analisador de ofertas,compare preços antigos e atuais e ordene descontos reais em porcentagem.
+345,12-11,Dezembro,Encerramento e celebrações,Entrega de presentes,calcule a distância total de ida e volta.,Roteirizador de entregas,compare ordens possíveis de visita a quatro locais usando distâncias informadas.
+346,12-12,Dezembro,Encerramento e celebrações,Caixas empilhadas,calcule a altura de N caixas iguais.,Empilhamento seguro,"organize caixas por peso e limite de altura, com regras de estabilidade simplificadas."
+347,12-13,Dezembro,Encerramento e celebrações,Meias decorativas,diga se a quantidade de meias é suficiente para todas as pessoas.,Distribuição de brindes,"atribua modelos de brinde a grupos, com limites de estoque."
+348,12-14,Dezembro,Encerramento e celebrações,Sorteio de números,leia três números e exiba-os em ordem crescente.,Sorteio controlado,valide uma sequência de vencedores sem repetição a partir de números informados.
+349,12-15,Dezembro,Encerramento e celebrações,Mesa de jantar,calcule quantos lugares faltam para N convidados.,Organização das mesas,distribua grupos familiares por mesas respeitando capacidades e proximidade.
+350,12-16,Dezembro,Encerramento e celebrações,Sobremesa dividida,calcule a quantidade de fatias por pessoa e a sobra.,Distribuição de sobremesas,divida porções de vários sabores por preferências e estoques.
+351,12-17,Dezembro,Encerramento e celebrações,Papel de presente,converta metros para centímetros.,Gerente de embalagens,escolha caixas de dimensões disponíveis para objetos com medidas informadas.
+352,12-18,Dezembro,Encerramento e celebrações,Roupas para festa,calcule o total de peças de três categorias.,Organizador de roupas,monte combinações de peças sem repetir uma mesma peça entre conjuntos.
+353,12-19,Dezembro,Encerramento e celebrações,Nota da decoração,calcule média de três avaliações.,Júri de decoração,ordene apresentações pela média ponderada de notas de jurados.
+354,12-20,Dezembro,Encerramento e celebrações,Duração da celebração,"calcule diferença de tempo entre dois horários, mesmo após meia-noite.",Agenda noturna,organize atrações e calcule horários de término atravessando a virada do dia.
+355,12-21,Dezembro,Encerramento e celebrações,Presentes por pessoa,calcule total de presentes para N pessoas recebendo dois cada.,Conferência de pacotes,"valide etiquetas de destinatários, conte pacotes e detecte duplicatas."
+356,12-22,Dezembro,Encerramento e celebrações,Mensagens enviadas,"conte quantas mensagens foram enviadas em N dias, com um valor fixo por dia.",Relatório de mensagens,identifique dia de maior envio e média semanal a partir de vetor.
+357,12-23,Dezembro,Encerramento e celebrações,Festa no orçamento,compare o custo da festa com o orçamento disponível.,Ajustador de orçamento,reduza ou substitua itens por prioridade até caber no valor disponível.
+358,12-24,Dezembro,Encerramento e celebrações,Preparativos finais,conte quantas de cinco tarefas foram marcadas como concluídas.,Checklist dependente,mantenha tarefas com pré-requisitos e identifique quais estão liberadas.
+359,12-25,Dezembro,Encerramento e celebrações,Visitas familiares,some distâncias de três trajetos.,Planejamento de visitas,"organize paradas em ordem, calcule distância total e restrições de horário."
+360,12-26,Dezembro,Encerramento e celebrações,Doações recebidas,calcule a soma de três doações.,Campanha solidária,"registre doações por categoria, distribua kits e mostre faltas de materiais."
+361,12-27,Dezembro,Encerramento e celebrações,Potes de sobras,calcule recipientes necessários para guardar N porções.,Aproveitamento de alimentos,distribua porções de pratos entre recipientes com diferentes capacidades.
+362,12-28,Dezembro,Encerramento e celebrações,Contando os dias,calcule quantos dias faltam para o dia 31 de dezembro.,Agenda de encerramento,ordene pendências por prazo e destaque tarefas que ultrapassam uma data limite.
+363,12-29,Dezembro,Encerramento e celebrações,Retrospectiva pessoal,calcule média de quatro metas percentuais.,Painel de metas,acompanhe 12 resultados mensais em vetor e calcule evolução e melhores períodos.
+364,12-30,Dezembro,Encerramento e celebrações,Preparando a virada,converta segundos restantes em minutos e segundos.,Relógio de eventos,simule a contagem de vários eventos até um horário-alvo em segundos.
+365,12-31,Dezembro,Encerramento e celebrações,Ano novo,leia uma meta pessoal e imprima mensagem com ela.,Planejador anual,"cadastre 12 metas, distribua prazos e gere painel textual de acompanhamento."

@@ -1,0 +1,46 @@
+# Histórico de versões
+
+## 1.1.0 — 24 de outubro de 2026
+
+### Adições
+
+- **Desafios do Dia:** 365 datas e 730 exercícios independentes, um Simples e um Avançado por dia. A página inicial mostra os dois desafios atuais; a Documentação tem calendário, apresentação separada dos níveis e páginas Markdown próprias.
+- Cada página de desafio inclui objetivo, regras, exemplo, dicas e uma solução em VisuAlg inicialmente oculta. A solução pode ser exibida, ocultada, copiada ou aberta no editor.
+- O calendário permite consultar qualquer data do ano atual desde 1º de janeiro até hoje. O dia 29 de fevereiro reutiliza os desafios de 28 de fevereiro. A data é lida do relógio local e atualizada sem recarregar a página. Essa escolha dispensa serviço pago, mas não impede alterações deliberadas do relógio do dispositivo.
+- Guia introdutório dos desafios, definições curtas de termos técnicos e explicações para exemplos com seta. Os enunciados repetidos e as dicas genéricas de parte dos exercícios Simples foram revistos.
+- Tema **Steam Clássico**, inspirado no cliente Steam e em controles Source/VGUI dos anos 2000, com layout clássico, superfícies oliva e controles compactos.
+- Tema **Windows 95**, com menus, barra de ferramentas, painéis e controles clássicos. Os cursores da interface ganharam variantes adicionais, incluindo seleção de texto.
+- Divisor redimensionável entre editor e console no modo de painel, com arraste e ajuste pelas setas do teclado.
+- Telas de abertura próprias para os temas clássicos. A abertura Steam usa barras de carregamento no estilo Source.
+
+### Alterações
+
+- Melhor separação de superfícies, contraste, foco e estados dos controles clássicos em arquivos, documentação, configurações, histórico e recuperação.
+- Editor nos temas clássicos com cores de seleção, sintaxe, comentários, linha atual, gutter e componentes auxiliares ajustadas para leitura.
+- Console clássico integrado visualmente à janela; a saída permanece próxima do fim após execuções longas. `Esc` fecha o console e retorna ao código; `F5` também encerra a execução aberta e volta ao editor.
+- Layout e botões do console foram compactados. O modo abaixo do editor pode ser redimensionado sem alterar o tamanho dos outros painéis.
+- Imagens do README e das páginas internas de documentação foram refeitas a partir da interface 1.1. Há novas capturas da página inicial, editor, console, documentação, calendário, desafio, configurações, seleção de temas e interfaces clássicas.
+- A versão exibida na abertura e no cabeçalho é derivada de `package.json`, agora `1.1`.
+
+### Remoções
+
+- Peles clássicas **Água, Metal, Notas, Alumínio, Madeira e Plástico** do seletor. Preferências antigas desses temas migram para **VisuAlg Clássico**.
+- Música nos temas clássicos, incluindo Steam.
+- Botão de limpar o console e controles redundantes de tamanho de fonte no próprio console.
+- Botões decorativos e sem função de minimizar, maximizar e fechar nas barras de título clássicas.
+
+### Documentação e manutenção
+
+- `src/docs/status.md` continua sendo a fonte de pendências e validações atuais; este histórico registra apenas entregas de versão.
+- O catálogo CSV e o catálogo de soluções alimentam um gerador reproduzível para as 730 páginas Markdown.
+- `scripts/capture-release-screenshots.mjs` documenta como gerar as capturas da versão com um perfil de navegador novo, sem arquivos pessoais.
+
+### Limites conhecidos
+
+- O calendário depende da data local; alterar o relógio do dispositivo pode antecipar desafios.
+- Os exercícios Avançados podem exigir conhecimento prévio de vetores, matrizes, funções ou outras estruturas. A revisão automática da estrutura das 730 páginas não substitui avaliação didática com estudantes.
+- O deploy Web e a distribuição de instaladores Electron são processos separados desta publicação no GitHub.
+
+## 1.0.0
+
+Primeira versão principal independente do VisuAlg Web. Consulte [Status do projeto](src/docs/status.md) e o histórico do Git para as entregas anteriores.

@@ -8,7 +8,7 @@ const configDir = path.dirname(fileURLToPath(import.meta.url));
 const sourceRoot = path.resolve(configDir, 'src');
 const appVersion = JSON.parse(fs.readFileSync(path.join(configDir, 'package.json'), 'utf8')).version;
 const displayVersion = appVersion.split('.').slice(0, 2).join('.');
-const documentationImages = ['interface-visualg-2026.png', 'interface-configuracoes-2026.png', 'interface-documentacao-2026.png', 'interface-console-2026.png', 'interface-temas-classicos-2026.png', 'interface-electron-2026.png'];
+const documentationImages = fs.readdirSync(path.join(configDir, 'img')).filter((name) => /^interface-.*-1\.1\.png$/.test(name));
 
 function fingerprintScriptReferences(outDir) {
   ['index.html', 'console-window.html'].forEach(function (htmlName) {
@@ -53,7 +53,7 @@ function copyRuntimeAssets(outDir) {
       });
     },
     closeBundle: function () {
-      ['js', 'vendor', 'jsdelivr', 'unpk', 'images', 'docs'].forEach(function (dir) {
+      ['js', 'vendor', 'jsdelivr', 'unpk', 'images', 'docs', 'desafios'].forEach(function (dir) {
         var source = path.join(sourceRoot, dir);
         if (!fs.existsSync(source)) return;
 

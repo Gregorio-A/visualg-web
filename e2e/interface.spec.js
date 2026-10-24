@@ -567,10 +567,10 @@ test('abre a documentação no centro e navega de volta ao editor', async ({ pag
   await expect.poll(() => page.locator('.docs-article img').evaluateAll((images) => images.every((image) => image.complete && image.naturalWidth > 0))).toBe(true);
 });
 
-test('a documentação começa pelo sumário e seus links abrem os artigos', async ({ page }) => {
+test('a documentação destaca desafios antes do sumário e seus links abrem os artigos', async ({ page }) => {
   await openApp(page);
   await page.locator('#btn-sidebar-docs').click();
-  await expect(page.locator('.doc-item').first()).toContainText('Sumário');
+  await expect(page.locator('.doc-item').first()).toContainText('Desafios do Dia');
   await page.locator('.docs-title').hover();
   await page.locator('#btn-docs-sidebar').click();
   await expect(page.locator('.docs-article')).toContainText('Sumário');
@@ -635,6 +635,36 @@ test('configurações usam fontes em px e abrem o console em modal grande por pa
   await expect(fontOptions.filter({ hasText: 'Patrick Hand (manuscrita)' })).toHaveCount(1);
 });
 
+test('desafio do dia abre os dois níveis e mantém a solução fechada até solicitar', async ({ page }) => {
+  await openApp(page);
+  await expect(page.locator('#daily-challenge-home')).toContainText('Desafio do Dia');
+  await expect(page.locator('#daily-challenge-home .daily-challenge-home-row')).toHaveCount(2);
+  await page.locator('#btn-sidebar-docs').click();
+  await page.locator('.daily-challenge-sidebar-link').click();
+  await expect(page.locator('.docs-article h1')).toContainText('Desafios do Dia');
+  await expect(page.locator('.daily-challenge-choice')).toHaveCount(2);
+  await page.locator('.daily-challenge-choice').first().getByRole('button', { name: 'Abrir desafio' }).click();
+  const solution = page.locator('.daily-challenge-solution');
+  await expect(solution).toBeVisible();
+  await expect(solution).not.toHaveAttribute('open', '');
+  await solution.locator('summary').click();
+  await expect(solution.locator('pre code')).toBeVisible();
+  await expect(solution.getByRole('button', { name: 'Copiar código' })).toBeVisible();
+  await solution.getByRole('button', { name: 'Abrir no editor' }).click();
+  await expect(page.locator('#editorPanel')).toBeVisible();
+  await expect.poll(() => page.evaluate(() => window.VisualGEditor.getValue())).toContain('algoritmo');
+  await page.locator('#btn-sidebar-docs').click();
+  await page.locator('.daily-challenge-sidebar-link').click();
+  await expect(page.locator('.daily-challenge-choice')).toHaveCount(2);
+  const tomorrow = await page.evaluate(() => {
+    const today = window.VisualGChallengeClock.now();
+    return new Date(today.getFullYear(), today.getMonth(), today.getDate() + 1).getMonth() === today.getMonth() ? today.getDate() + 1 : null;
+  });
+  if (tomorrow !== null) {
+    await expect(page.locator('.daily-challenge-day').filter({ hasText: new RegExp('^' + tomorrow + '$') })).toBeDisabled();
+  }
+});
+
 test('temas claros mantêm contraste legível e o Clássico substitui sua variante separada', async ({ page }, testInfo) => {
   await openApp(page);
   await expect(page.locator('.logo-version')).toHaveText('1.0');
@@ -656,16 +686,13 @@ test('temas claros mantêm contraste legível e o Clássico substitui sua varian
     window.VisualGEditor.setValue('Algoritmo "Contraste"\nInicio\n  escreval("Teste (visual)")\nfimalgoritmo');
     window.VisualGEditor.instance.setCursor({ line: 2, ch: 10 });
   });
-  const themes = ['light', 'github-light', 'solarized-light', 'high-contrast', 'catppuccin-latte', 'gruvbox-light', 'paper', 'nord-light', 'one-light', 'rose-pine-dawn', 'kanagawa-lotus', 'visualg-classic', 'visualg-3', 'visualg-agua', 'visualg-metal', 'visualg-notas', 'visualg-aluminio', 'visualg-madeira', 'visualg-plastico'];
+  const themes = ['light', 'github-light', 'solarized-light', 'high-contrast', 'catppuccin-latte', 'gruvbox-light', 'paper', 'nord-light', 'one-light', 'rose-pine-dawn', 'kanagawa-lotus', 'visualg-classic', 'visualg-3', 'steam-classic'];
   for (const theme of themes) {
     await page.evaluate((id) => {
       const select = window.document.getElementById('setting-theme');
       select.value = id;
       select.dispatchEvent(new window.Event('change', { bubbles: true }));
     }, theme);
-    if (theme.startsWith('visualg-')) {
-      await expect(page.locator('body > .main-content')).toHaveCSS('padding-top', '8px');
-    }
     const ratios = await page.evaluate(() => {
       const root = window.getComputedStyle(window.document.documentElement);
       const parse = (value) => {
@@ -1565,6 +1592,9 @@ test('documentação móvel amplia imagens e mantém navegação no rodapé', as
   await expect.poll(() => page.locator('#workspace-aux-view').evaluate((node) => node.scrollTop)).toBe(0);
   await expect(page.locator('.view-tab[data-type="docs"]')).toHaveCount(1);
   await page.evaluate(() => window.VisualGWorkspace.showDoc('sumario'));
+  await expect(page.locator('.docs-page-navigation-previous')).toBeEnabled();
+  await page.locator('.docs-page-navigation-previous').click();
+  await expect(page.locator('.docs-article h1')).toContainText('Desafios do Dia');
   await expect(page.locator('.docs-page-navigation-previous')).toBeDisabled();
   await page.evaluate(() => window.VisualGWorkspace.showDoc('status'));
   await expect(page.locator('.docs-page-navigation-next')).toBeDisabled();
@@ -1840,8 +1870,7 @@ test('console em painel e nova aba sincroniza saída e fontes independentes', as
   await page.keyboard.press('Control+Shift+Equal');
   await expect(page.locator('#setting-font-size')).toHaveValue('15');
   await expect(page.locator('#setting-console-font-size')).toHaveValue('13');
-  await page.locator('#console-font-increase').click();
-  await expect(page.locator('#setting-console-font-size')).toHaveValue('14');
+  await expect(page.locator('#console-font-increase')).toHaveCount(0);
   await page.locator('#btn-settings').click();
   await page.locator('.settings-categories button').filter({ hasText: 'Console' }).click();
   await page.locator('#workspace-setting-console-presentation').selectOption('browser-tab');
@@ -1862,8 +1891,9 @@ test('temas principais têm paletas e sintaxe próprias', async ({ page }) => {
     const palette = await page.evaluate((name) => {
       const select = window.document.getElementById('setting-theme');
       select.value = name; select.dispatchEvent(new window.Event('change', { bubbles: true }));
-      const read = (selector, property) => window.getComputedStyle(window.document.querySelector(selector))[property];
-      return [read('body', 'backgroundColor'), read('.workspace-sidebar', 'backgroundColor'), read('.editor-panel', 'backgroundColor'), read('.cm-keyword', 'color'), read('.cm-string', 'color'), read('.cm-number', 'color')];
+      const root = window.getComputedStyle(window.document.documentElement);
+      const read = (token) => root.getPropertyValue('--' + token).trim();
+      return ['ide-chrome', 'ide-panel', 'ide-canvas', 'syn-keyword', 'syn-string', 'syn-number'].map(read);
     }, theme);
     expect(new Set(palette.slice(3)).size).toBeGreaterThan(1);
     palettes.push(palette.join('|'));

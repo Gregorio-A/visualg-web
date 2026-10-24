@@ -1,0 +1,245 @@
+/* Windows 95 has its own window chrome; the other themes keep the workspace layout. */
+.win95-chrome,.win95-statusbar { display:none; }
+.win95-mobile-action { display:none !important; }
+html:not([data-theme="windows-95"]) .right-sidebar .variables-panel .panel-header { text-transform:uppercase; }
+
+html[data-theme="windows-95"] {
+    --win95-face:#c0c0c0; --win95-light:#fff; --win95-highlight:#dfdfdf;
+    --win95-shadow:#808080; --win95-dark:#000; --win95-title:#000080;
+    --ide-editor-font-family:'Courier New',monospace;
+    --ide-editor-line-height:calc(var(--ide-editor-font-size,14px) * 1.55);
+    --syn-keyword:#800080; --syn-type:#008080; --syn-string:#008000;
+    --syn-number:#0000aa; --syn-comment:#6a6a6a; --syn-operator:#000080;
+    --syn-builtin:#000080; --syn-atom:#0000aa;
+}
+html[data-theme="windows-95"] body,
+html[data-theme="windows-95"] button,
+html[data-theme="windows-95"] input,
+html[data-theme="windows-95"] select { font-family:'MS Sans Serif',Tahoma,Arial,sans-serif; }
+html[data-theme="windows-95"] body > .header {
+    box-sizing:border-box; display:block; flex:0 0 83px !important; height:83px !important;
+    min-height:83px !important; padding:2px 3px 0 !important; background:var(--win95-face) !important;
+    border-bottom:1px solid var(--win95-shadow) !important;
+}
+html[data-theme="windows-95"] .header > :not(.win95-chrome) { display:none !important; }
+html[data-theme="windows-95"] .win95-chrome { display:grid; grid-template-rows:22px 22px 34px; height:100%; color:#000; }
+html[data-theme="windows-95"] .win95-titlebar {
+    display:flex; align-items:center; gap:5px; height:21px; padding:0 3px;
+    background:var(--win95-title); color:#fff; font:700 12px/1.2 'MS Sans Serif',Tahoma,Arial,sans-serif;
+}
+html[data-theme="windows-95"] .win95-titlebar img { width:16px; height:16px; object-fit:contain; image-rendering:pixelated; }
+html[data-theme="windows-95"] .win95-titlebar strong { overflow:hidden; white-space:nowrap; text-overflow:ellipsis; }
+html[data-theme="windows-95"] .win95-menubar { display:flex; align-items:stretch; gap:1px; min-width:0; height:22px; }
+html[data-theme="windows-95"] .win95-menubar details { position:relative; }
+html[data-theme="windows-95"] .win95-menubar summary {
+    display:flex; align-items:center; height:21px; padding:0 9px; list-style:none; cursor:default;
+    font:12px/1 'MS Sans Serif',Tahoma,Arial,sans-serif;
+}
+html[data-theme="windows-95"] .win95-menubar summary::-webkit-details-marker { display:none; }
+html[data-theme="windows-95"] .win95-menubar details[open] summary,
+html[data-theme="windows-95"] .win95-menubar summary:hover { background:#000080; color:#fff; }
+html[data-theme="windows-95"] .win95-dropdown {
+    position:absolute; z-index:200; top:21px; left:0; min-width:178px; padding:3px;
+    border:2px solid; border-color:#fff #404040 #404040 #fff;
+    background:#c0c0c0; box-shadow:1px 1px #000;
+}
+html[data-theme="windows-95"] .win95-dropdown button {
+    display:flex; justify-content:space-between; gap:12px; width:100%; min-height:23px;
+    padding:2px 18px 2px 24px; border:0 !important; border-radius:0 !important;
+    background:transparent !important; color:#000 !important; box-shadow:none !important;
+    text-align:left; white-space:nowrap; font:12px/1.2 'MS Sans Serif',Tahoma,Arial,sans-serif;
+}
+html[data-theme="windows-95"] .win95-dropdown button:hover,
+html[data-theme="windows-95"] .win95-dropdown button:focus-visible { background:#000080 !important; color:#fff !important; outline:0 !important; }
+html[data-theme="windows-95"] .win95-dropdown hr { height:2px; margin:3px 2px; border:0; border-top:1px solid #808080; border-bottom:1px solid #fff; }
+html[data-theme="windows-95"] .win95-toolbar {
+    display:flex; align-items:center; gap:3px; min-width:0; height:32px;
+    padding:2px 3px; border-top:1px solid #fff; border-bottom:1px solid #808080;
+    white-space:nowrap; overflow:auto hidden;
+}
+html[data-theme="windows-95"] .win95-grip { width:4px; height:24px; flex:0 0 4px; border-left:1px solid #fff; border-right:1px solid #808080; }
+html[data-theme="windows-95"] .win95-toolbar-divider { width:2px; height:23px; flex:0 0 2px; margin:0 4px; border-left:1px solid #808080; border-right:1px solid #fff; }
+html[data-theme="windows-95"] .win95-toolbar button {
+    display:inline-flex; align-items:center; justify-content:center; gap:5px; flex:0 0 auto;
+    height:26px; min-height:26px; padding:2px 7px !important; border:2px solid !important;
+    border-color:#fff #404040 #404040 #fff !important; border-radius:0 !important;
+    background:#c0c0c0 !important; color:#000 !important; box-shadow:inset 1px 1px #dfdfdf,inset -1px -1px #808080 !important;
+    font:12px/1 'MS Sans Serif',Tahoma,Arial,sans-serif !important; white-space:nowrap;
+}
+html[data-theme="windows-95"] .win95-toolbar button:active { border-color:#404040 #fff #fff #404040 !important; box-shadow:inset 1px 1px #808080 !important; }
+html[data-theme="windows-95"] .win95-toolbar img { width:16px; height:16px; image-rendering:pixelated; }
+html[data-theme="windows-95"] body > .main-content { padding:3px 0 0 !important; }
+html[data-theme="windows-95"] body > .main-content > .ide-shell { padding:0 4px !important; --ide-left-resizer-track:6px; --ide-right-resizer-track:6px; }
+html[data-theme="windows-95"] .column-resizer { width:6px; background:#c0c0c0; border-left:1px solid #fff; border-right:1px solid #808080; }
+html[data-theme="windows-95"] .ide-shell > :is(.workspace-sidebar,.editor-column,.right-sidebar) {
+    border:2px solid !important; border-color:#fff #404040 #404040 #fff !important;
+    border-radius:0 !important; background:#c0c0c0 !important; box-shadow:inset 1px 1px #dfdfdf,inset -1px -1px #808080 !important;
+}
+html[data-theme="windows-95"] .sidebar-tabs { height:27px; padding:2px 3px 0; border-bottom:1px solid #808080; background:#c0c0c0 !important; }
+html[data-theme="windows-95"] .workspace-sidebar { grid-template-rows:27px minmax(0,1fr) !important; }
+html[data-theme="windows-95"] .sidebar-tab { flex:0 1 auto; padding:0 12px; border:1px solid #808080 !important; border-bottom:0 !important; background:#c0c0c0 !important; color:#000 !important; font:12px Tahoma,Arial,sans-serif; }
+html[data-theme="windows-95"] .sidebar-tab.active { border-color:#fff #404040 #c0c0c0 #fff !important; background:#c0c0c0 !important; color:#000 !important; box-shadow:inset 1px 1px #dfdfdf; }
+html[data-theme="windows-95"] .sidebar-tab.active::after { display:none; }
+html[data-theme="windows-95"] .file-tree { padding:3px 4px 5px; background:#c0c0c0; }
+html[data-theme="windows-95"] .workspace-sidebar .sidebar-actions { gap:3px; height:33px; flex-basis:33px; padding:2px 3px !important; border-bottom:1px solid #808080 !important; }
+html[data-theme="windows-95"] .sidebar-actions button { flex-basis:26px; width:26px; min-width:26px; height:26px; padding:3px !important; }
+html[data-theme="windows-95"] .sidebar-actions button svg { width:16px; height:16px; stroke-width:2.2; shape-rendering:crispEdges; }
+html[data-theme="windows-95"] .sidebar-actions button:is(#btn-upload-workspace,#btn-download-workspace,#btn-new-workspace-file,#btn-new-workspace-folder,#btn-duplicate-workspace) { background-position:center !important; background-repeat:no-repeat !important; background-size:16px 16px !important; image-rendering:pixelated; }
+html[data-theme="windows-95"] .sidebar-actions button:is(#btn-upload-workspace,#btn-download-workspace,#btn-new-workspace-file,#btn-new-workspace-folder,#btn-duplicate-workspace) svg { visibility:hidden; }
+html[data-theme="windows-95"] #btn-upload-workspace { background-image:url('../images/win95/open.png') !important; }
+html[data-theme="windows-95"] #btn-download-workspace { background-image:url('../images/win95/save.png') !important; }
+html[data-theme="windows-95"] #btn-new-workspace-file { background-image:url('../images/win95/new.png') !important; }
+html[data-theme="windows-95"] #btn-new-workspace-folder { background-image:url('../images/win95/folder-plus.png') !important; }
+html[data-theme="windows-95"] #btn-duplicate-workspace { background-image:url('../images/win95/copy.png') !important; }
+html[data-theme="windows-95"] .workspace-search { min-height:26px; height:26px !important; flex-basis:26px; margin:5px 3px !important; padding:2px 5px !important; border:2px solid !important; border-color:#808080 #fff #fff #808080 !important; border-radius:0 !important; background:#fff !important; }
+html[data-theme="windows-95"] .workspace-search input { border:0 !important; background:#fff !important; font:12px Tahoma,Arial,sans-serif !important; }
+html[data-theme="windows-95"] .workspace-search > svg { width:16px; height:16px; flex-basis:16px; background:url('../images/win95/search.png') center/16px 16px no-repeat; color:transparent !important; stroke:transparent !important; image-rendering:pixelated; }
+html[data-theme="windows-95"] #workspace-file-list,
+html[data-theme="windows-95"] #workspace-doc-list { gap:0; min-height:0; margin:0 3px; padding:2px; overflow:auto; border:2px solid; border-color:#808080 #fff #fff #808080; background:#fff; }
+html[data-theme="windows-95"] .file-item { height:24px; min-height:24px; width:100%; margin:0 !important; padding:0 4px !important; border:0 !important; border-radius:0 !important; font:12px Tahoma,Arial,sans-serif !important; }
+html[data-theme="windows-95"] .file-item.active,
+html[data-theme="windows-95"] .file-item:hover { background:#000080 !important; color:#fff !important; }
+html[data-theme="windows-95"] .file-item.active::after { display:none; }
+html[data-theme="windows-95"] .file-item.active :is(.file-label,.file-icon,.file-close),
+html[data-theme="windows-95"] .file-item:hover :is(.file-label,.file-icon,.file-close) { color:#fff !important; }
+html[data-theme="windows-95"] .file-item .file-icon { width:16px; height:16px; flex-basis:16px; }
+html[data-theme="windows-95"] :is(.file-item .file-icon,.tab-item .tab-file-icon,.view-tab > svg) { background:url('../images/win95/file.png') center/16px 16px no-repeat; color:transparent !important; stroke:transparent !important; image-rendering:pixelated; }
+html[data-theme="windows-95"] .view-tab[data-type="settings"] > svg { background-image:url('../images/win95/settings.png'); }
+html[data-theme="windows-95"] .file-item:is(.active,:hover) .file-icon { background-image:url('../images/win95/file.png') !important; filter:brightness(0) invert(1); }
+html[data-theme="windows-95"] .history-link { bottom:2px; border:1px solid #808080 !important; border-radius:0 !important; background:#c0c0c0 !important; color:#000 !important; }
+html[data-theme="windows-95"] .editor-column .tab-bar { height:29px !important; min-height:29px; flex-basis:29px; overflow:visible; border-bottom:1px solid #808080 !important; }
+html[data-theme="windows-95"] .tab-item,
+html[data-theme="windows-95"] .view-tab { height:28px !important; min-height:28px; flex:0 1 180px; border:1px solid #808080 !important; border-bottom:0 !important; border-radius:0 !important; background:#c0c0c0 !important; color:#000 !important; font:12px Tahoma,Arial,sans-serif !important; }
+html[data-theme="windows-95"] .tab-item.active,
+html[data-theme="windows-95"] .view-tab.active { border-color:#fff #404040 #fff #fff !important; background:#fff !important; color:#000 !important; }
+html[data-theme="windows-95"] .tab-item .tab-name { color:inherit !important; }
+html[data-theme="windows-95"] .tab-add,
+html[data-theme="windows-95"] .tab-overview-trigger,
+html[data-theme="windows-95"] .tab-bar-indent { height:26px !important; min-height:26px; border:2px outset #dfdfdf !important; border-radius:0 !important; background:#c0c0c0 !important; color:#000 !important; }
+html[data-theme="windows-95"] .tab-overview-trigger { background:#c0c0c0 url('../images/win95/list.png') center/16px 16px no-repeat !important; image-rendering:pixelated; }
+html[data-theme="windows-95"] .tab-overview-trigger svg,
+html[data-theme="windows-95"] .tab-bar-indent svg { visibility:hidden; }
+html[data-theme="windows-95"] .tab-bar-indent { background:#c0c0c0 url('../images/win95/indent.png') 5px center/16px 16px no-repeat !important; image-rendering:pixelated; }
+html[data-theme="windows-95"] .editor-column .editor-panel { margin:0 3px 3px; border:2px solid !important; border-color:#808080 #fff #fff #808080 !important; background:#fff !important; box-shadow:inset 1px 1px #000 !important; }
+html[data-theme="windows-95"] .editor-panel .CodeMirror-gutters { border-right:1px solid #808080 !important; background:#e8e8e8 !important; }
+html[data-theme="windows-95"] .editor-panel .CodeMirror-linenumber { color:#555 !important; }
+html[data-theme="windows-95"] .editor-panel .CodeMirror-activeline-background { background:#f0f0f0 !important; }
+html[data-theme="windows-95"] .right-sidebar .debug-header { height:27px !important; padding:0 5px; background:#000080 !important; color:#fff !important; font:700 12px Tahoma,Arial,sans-serif !important; }
+html[data-theme="windows-95"] .debug-header button { width:21px; min-width:21px; height:21px; padding:2px !important; }
+html[data-theme="windows-95"] .debug-header button svg { width:14px; height:14px; }
+html[data-theme="windows-95"] .right-sidebar { --ide-debug-header-track:27px; }
+html[data-theme="windows-95"] .right-sidebar .debug-controls { gap:8px; padding:9px 7px !important; border:0 !important; background:#c0c0c0 !important; }
+html[data-theme="windows-95"] .debug-section-label { color:#000; font:12px/1.2 Tahoma,Arial,sans-serif; letter-spacing:0; }
+html[data-theme="windows-95"] .debug-launch-actions { gap:6px; }
+html[data-theme="windows-95"] .debug-launch-actions button { height:26px; padding:0 8px !important; font:12px Tahoma,Arial,sans-serif !important; }
+html[data-theme="windows-95"] .debug-launch-actions button svg { width:16px; height:16px; }
+html[data-theme="windows-95"] .right-sidebar .debug-launch-actions :is(.debug-run-primary,.debug-start-button),
+html[data-theme="windows-95"] .right-sidebar .debug-launch-actions .debug-run-primary:hover:not(:disabled),
+html[data-theme="windows-95"] .right-sidebar .debug-launch-actions .debug-run-primary.is-stop {
+    border:2px solid !important; border-color:#fff #404040 #404040 #fff !important;
+    border-radius:0 !important; background:#c0c0c0 !important; color:#000 !important;
+    box-shadow:inset 1px 1px #dfdfdf,inset -1px -1px #808080 !important;
+    font-weight:400 !important;
+}
+html[data-theme="windows-95"] .right-sidebar .debug-launch-actions :is(.debug-run-primary,.debug-start-button):active { border-color:#404040 #fff #fff #404040 !important; }
+html[data-theme="windows-95"] .right-sidebar .debug-launch-actions .debug-run-primary svg { color:#008000 !important; }
+html[data-theme="windows-95"] :is(.debug-section-label,.right-section-title,.variables-panel .panel-header) { text-transform:lowercase !important; }
+html[data-theme="windows-95"] :is(.debug-section-label,.right-section-title,.variables-panel .panel-header)::first-letter { text-transform:uppercase; }
+html[data-theme="windows-95"] .debug-status-block { gap:3px; min-height:0; padding:6px; border:2px groove #dfdfdf; }
+html[data-theme="windows-95"] .debug-status-value { color:#000 !important; font:12px Tahoma,Arial,sans-serif; }
+html[data-theme="windows-95"] .debug-status-dot { border-radius:0; background:#008000; box-shadow:none !important; }
+html[data-theme="windows-95"] .right-sidebar .problems-panel { display:flex; flex:1 1 auto; flex-direction:column; min-height:65px; padding:5px; border:2px groove #dfdfdf !important; background:#c0c0c0 !important; }
+html[data-theme="windows-95"] .right-sidebar .problems-panel .right-section-title { margin:0 0 3px; padding:0; border:0; }
+html[data-theme="windows-95"] #problems-list { flex:1 1 auto; min-height:37px; padding:2px 4px; border:2px solid; border-color:#808080 #fff #fff #808080; background:#fff; }
+html[data-theme="windows-95"] .message-card { margin:0; padding:3px; border:0 !important; background:#fff !important; font:12px/1.3 'Courier New',monospace; }
+html[data-theme="windows-95"] .message-card.error { color:#800000 !important; }
+html[data-theme="windows-95"] .message-card.warning { color:#804000 !important; }
+html[data-theme="windows-95"] .right-divider { background:#c0c0c0; border-top:1px solid #fff; border-bottom:1px solid #808080; }
+html[data-theme="windows-95"] .right-sidebar .variables-panel { border:0 !important; background:#c0c0c0 !important; }
+html[data-theme="windows-95"] .right-sidebar .variables-panel .panel-header { height:27px !important; flex-basis:27px; padding:0 6px !important; background:#c0c0c0 !important; color:#000 !important; font:700 12px Tahoma,Arial,sans-serif !important; }
+html[data-theme="windows-95"] #btn-clear-vars { width:23px; height:23px; border:2px outset #dfdfdf !important; border-radius:0 !important; background:#c0c0c0 url('../images/win95/clear.png') center/16px 16px no-repeat !important; opacity:1; image-rendering:pixelated; }
+html[data-theme="windows-95"] #btn-clear-vars svg { visibility:hidden; }
+html[data-theme="windows-95"] .right-sidebar .variables-panel .panel-body { margin:0 4px 4px; border:2px solid !important; border-color:#808080 #fff #fff #808080 !important; background:#fff !important; }
+html[data-theme="windows-95"] .variables-panel th { border:2px solid !important; border-color:#fff #808080 #808080 #fff !important; background:#c0c0c0 !important; color:#000 !important; font:12px Tahoma,Arial,sans-serif !important; }
+html[data-theme="windows-95"] .variables-panel td { border-bottom:1px solid #c0c0c0 !important; background:#fff !important; }
+html[data-theme="windows-95"] .win95-statusbar { box-sizing:border-box; display:flex; flex:0 0 23px; height:23px; align-items:center; gap:3px; padding:2px 4px; border-top:1px solid #fff; background:#c0c0c0; color:#000; font:11px/1 Tahoma,Arial,sans-serif; }
+html[data-theme="windows-95"] .win95-statusbar span { display:flex; align-items:center; min-width:0; height:17px; padding:0 5px; overflow:hidden; white-space:nowrap; text-overflow:ellipsis; border:1px solid; border-color:#808080 #fff #fff #808080; }
+html[data-theme="windows-95"] #win95-status { flex:1 1 auto; }
+html[data-theme="windows-95"] #win95-position { flex:0 0 150px; }
+html[data-theme="windows-95"] #win95-mode { flex:0 0 45px; }
+html[data-theme="windows-95"] .workspace-theme-menu { top:78px !important; right:auto !important; max-width:calc(100vw - 8px); overflow-x:auto; }
+html[data-theme="windows-95"] .workspace-theme-menu .theme-subgroup button.selected,
+html[data-theme="windows-95"] .workspace-theme-menu .theme-subgroup button:hover { background:#000080 !important; color:#fff !important; }
+html[data-theme="windows-95"] .workspace-settings .settings-content { background:#c0c0c0 !important; padding:14px 18px !important; }
+html[data-theme="windows-95"] .settings-content h2 { margin:0 0 8px; font:700 15px Tahoma,Arial,sans-serif; }
+html[data-theme="windows-95"] .settings-content .settings-category-description { margin:0 0 12px; font:12px/1.3 Tahoma,Arial,sans-serif; }
+html[data-theme="windows-95"] .settings-content-layout { max-width:750px; padding:12px; border:2px groove #dfdfdf; }
+html[data-theme="windows-95"] .settings-content :is(input:not([type="checkbox"]):not([type="radio"]),select,textarea) { min-height:26px; border:2px solid !important; border-color:#808080 #fff #fff #808080 !important; background:#fff !important; color:#000 !important; }
+html[data-theme="windows-95"] .settings-categories button.active { background:#c0c0c0 !important; color:#000 !important; border-color:#404040 #fff #fff #404040 !important; box-shadow:inset 1px 1px #808080 !important; }
+html[data-theme="windows-95"] :is(.workspace-create-dialog,.print-options-dialog,.modal-overlay .modal,.console-dialog) {
+    border:2px solid !important; border-color:#fff #404040 #404040 #fff !important;
+    border-radius:0 !important; background:#c0c0c0 !important; color:#000 !important;
+    box-shadow:2px 2px #000 !important; transform:none !important; filter:none !important;
+    transition:none !important; animation:none !important;
+}
+html[data-theme="windows-95"] :is(.workspace-create-dialog,.print-options-dialog)::backdrop { background:#0006 !important; backdrop-filter:none !important; }
+html[data-theme="windows-95"] .workspace-create-dialog form { gap:7px; padding:3px 10px 10px; }
+html[data-theme="windows-95"] .print-options-dialog form { padding:3px 10px 10px; }
+html[data-theme="windows-95"] :is(.workspace-create-dialog,.print-options-dialog) h2 {
+    margin:0 -7px 9px; padding:4px 6px; background:#000080 !important; color:#fff !important;
+    font:700 12px/1.2 Tahoma,Arial,sans-serif !important;
+}
+html[data-theme="windows-95"] :is(.workspace-create-dialog,.print-options-dialog) :is(input:not([type="radio"]):not([type="checkbox"]),select) {
+    min-height:26px; padding:3px 5px; border:2px solid !important;
+    border-color:#808080 #fff #fff #808080 !important; border-radius:0 !important;
+    background:#fff !important; color:#000 !important; font:12px Tahoma,Arial,sans-serif !important;
+}
+html[data-theme="windows-95"] :is(.workspace-create-dialog,.print-options-dialog) :is(button,fieldset) { border-radius:0 !important; }
+html[data-theme="windows-95"] :is(.workspace-create-actions,.print-options-actions) button { min-height:26px; border:2px outset #dfdfdf !important; background:#c0c0c0 !important; color:#000 !important; box-shadow:none !important; font:12px Tahoma,Arial,sans-serif !important; }
+html[data-theme="windows-95"] .modal-overlay { backdrop-filter:none !important; animation:none !important; }
+html[data-theme="windows-95"] .modal-header { min-height:25px; height:25px; padding:0 5px; background:#000080 !important; color:#fff !important; font:700 12px Tahoma,Arial,sans-serif !important; }
+html[data-theme="windows-95"] .modal-tabs { background:#c0c0c0 !important; border-bottom:1px solid #808080 !important; }
+html[data-theme="windows-95"] .modal-tab { border:1px solid #808080 !important; border-bottom:0 !important; border-radius:0 !important; background:#c0c0c0 !important; color:#000 !important; }
+html[data-theme="windows-95"] .modal-tab.active { border-color:#fff #404040 #c0c0c0 #fff !important; background:#c0c0c0 !important; color:#000 !important; }
+html[data-theme="windows-95"] .modal-body { margin:3px; border:2px solid; border-color:#808080 #fff #fff #808080; background:#fff !important; color:#000 !important; }
+html[data-theme="windows-95"] .console-dialog-header { min-height:26px; height:26px; flex-basis:26px; background:#000080 !important; color:#fff !important; font:700 12px Tahoma,Arial,sans-serif !important; }
+html[data-theme="windows-95"] .workspace-setting-value { min-height:25px; border:2px solid !important; border-color:#808080 #fff #fff #808080 !important; border-radius:0 !important; background:#fff !important; color:#000 !important; box-shadow:inset 1px 1px #808080 !important; font:12px Tahoma,Arial,sans-serif !important; }
+html[data-theme="windows-95"] .workspace-setting-value:hover,html[data-theme="windows-95"] .workspace-setting-value.is-adjusting { border-color:#000080 !important; background:#fff !important; color:#000 !important; box-shadow:inset 1px 1px #808080 !important; transform:none !important; }
+html[data-theme="windows-95"] .editor-quick-value-pill { height:30px; border:2px solid !important; border-color:#808080 #fff #fff #808080 !important; border-radius:0 !important; background:#fff !important; color:#000 !important; box-shadow:inset 1px 1px #808080 !important; font:12px Tahoma,Arial,sans-serif !important; }
+html[data-theme="windows-95"] .editor-quick-value-pill:is(:hover,.is-adjusting) { border-color:#000080 !important; background:#fff !important; color:#000 !important; box-shadow:inset 1px 1px #808080 !important; transform:none !important; }
+html[data-theme="windows-95"] .settings-preview-console { border:2px solid #404040 !important; border-radius:0 !important; background:#000 !important; color:#9bd35a !important; }
+html[data-theme="windows-95"] .settings-preview-input { border:2px solid !important; border-color:#808080 #fff #fff #808080 !important; border-radius:0 !important; background:#fff !important; color:#000 !important; }
+html[data-theme="windows-95"] .recovery-current { border:2px groove #dfdfdf !important; border-radius:0 !important; background:#c0c0c0 !important; color:#000 !important; }
+html[data-theme="windows-95"] .recovery-current :is(strong,small) { color:#000 !important; }
+html[data-theme="windows-95"] .recovery-current > svg { color:#008000 !important; }
+html[data-theme="windows-95"] .recovery-copy { border:2px groove #dfdfdf !important; border-radius:0 !important; background:#fff !important; color:#000 !important; }
+html[data-theme="windows-95"] .recovery-copy :is(strong,p) { color:#000 !important; }
+html[data-theme="windows-95"] #workspace-trash button { border:2px solid !important; border-color:#808080 #fff #fff #808080 !important; border-radius:0 !important; background:#fff !important; color:#000 !important; }
+html[data-theme="windows-95"] #workspace-trash button:hover { background:#000080 !important; color:#fff !important; }
+html[data-theme="windows-95"] .docs-tree { min-height:0; overflow:hidden !important; }
+html[data-theme="windows-95"] .docs-title { flex:0 0 29px; min-height:29px; box-sizing:border-box; overflow:hidden; color:#000 !important; font:700 12px Tahoma,Arial,sans-serif !important; }
+html[data-theme="windows-95"] #workspace-doc-list { flex:1 1 0%; min-height:0; overflow:auto !important; gap:0 !important; }
+html[data-theme="windows-95"] .doc-results-heading { flex:0 0 auto; margin:4px 4px 3px !important; line-height:1.35 !important; }
+html[data-theme="windows-95"] .doc-item { box-sizing:border-box; width:100% !important; white-space:normal !important; overflow-wrap:anywhere; }
+html[data-theme="windows-95"] .console-dialog #terminalPanel > .panel-header { display:none !important; }
+html[data-theme="windows-95"] .console-dialog .console-dialog-header button { border:2px outset #dfdfdf !important; border-radius:0 !important; background:#c0c0c0 !important; color:#000 !important; font:12px Tahoma,Arial,sans-serif !important; }
+html[data-theme="windows-95"] .console-dialog .console-stop-button:hover:not(:disabled) { background:#000080 !important; color:#fff !important; }
+html[data-theme="windows-95"] #terminalPanel .panel-header .console-stop-button { display:inline-flex !important; align-items:center; justify-content:center; gap:5px; width:auto !important; min-width:92px; height:25px; padding:0 7px !important; border:2px outset #dfdfdf !important; border-radius:0 !important; background:#c0c0c0 !important; color:#000 !important; box-shadow:none !important; opacity:1 !important; font:12px Tahoma,Arial,sans-serif !important; }
+html[data-theme="windows-95"] #terminalPanel .panel-header .console-stop-button :is(svg,span) { display:inline !important; visibility:visible !important; color:#000 !important; opacity:1 !important; }
+html[data-theme="windows-95"] #terminalPanel .panel-header .console-stop-button:hover:not(:disabled) { border-style:inset !important; background:#000080 !important; color:#fff !important; }
+html[data-theme="windows-95"] #terminalPanel .panel-header .console-stop-button:hover:not(:disabled) :is(svg,span) { color:#fff !important; }
+html[data-theme="windows-95"] #terminalPanel .panel-header .console-stop-button:disabled { color:#404040 !important; opacity:1 !important; }
+html[data-theme="windows-95"] .console-panel-resizer { height:8px; flex-basis:8px; border-color:#fff #404040 #404040 #fff; background:#c0c0c0; }
+html[data-theme="windows-95"] .console-panel-resizer::after { top:2px; height:3px; background:#808080; box-shadow:0 1px #fff; opacity:1; }
+html[data-theme="windows-95"] .console-panel-resizer:hover::after,html[data-theme="windows-95"] .console-panel-resizer.dragging::after { background:#000080; box-shadow:0 1px #fff; }
+html[data-theme="windows-95"] :is(.workspace-theme-menu,.tab-overview-menu,.visualg-hints,.cm-search-widget,.modal,.print-options-dialog) { border-radius:0 !important; box-shadow:2px 2px #404040 !important; animation:none !important; }
+html[data-theme="windows-95"] :is(.workspace-aux-view,.workspace-settings) { border-radius:0 !important; }
+html[data-theme="windows-95"] :is(button,.tab-item,.file-item,.workspace-theme-menu,.modal,.settings-content *) { animation:none !important; transition:none !important; }
+@media (max-width:760px) {
+    html[data-theme="windows-95"] body > .header { height:83px !important; min-height:83px !important; flex-basis:83px !important; }
+    html[data-theme="windows-95"] .win95-menubar summary { padding-inline:5px; font-size:11px; }
+    html[data-theme="windows-95"] .win95-menubar details:nth-last-child(-n+2) .win95-dropdown { left:auto; right:0; }
+    html[data-theme="windows-95"] .win95-mobile-action { display:inline-flex !important; }
+    html[data-theme="windows-95"] .win95-toolbar { scrollbar-width:none; }
+    html[data-theme="windows-95"] #win95-position { flex-basis:112px; }
+}
