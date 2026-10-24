@@ -36,7 +36,8 @@ jobs:
           test -d dist/docs
           test -d dist/js
           test -d dist/vendor
-          grep -q 'class="logo-version">1.0<' dist/index.html
+          display_version="$(node -p "require('./package.json').version.split('.').slice(0, 2).join('.')")"
+          grep -Fq "class=\"logo-version\">${display_version}<" dist/index.html
           if grep -R --include='*.html' -n '__VISUALG_WEB_VERSION__' dist; then
             echo 'A build ainda contém um marcador de versão sem substituição.'
             exit 1
