@@ -1,5 +1,14 @@
 # Histórico de versões
 
+## 1.13.0 — 29 de outubro de 2026
+
+- Cria uma edição portátil para Windows x64, distribuída como um único `.exe`, sem instalador. A execução extrai os componentes necessários temporariamente; preferências e abas continuam no perfil do usuário.
+- Adiciona **Abrir pasta** ao aplicativo desktop. A árvore navega pelas pastas reais e abre arquivos `.alg` e `.txt`. É possível criar arquivos e pastas, renomear e excluir pelo menu contextual; pastas com conteúdo não são excluídas por engano.
+- **Salvar** grava o arquivo aberto na pasta escolhida. Novas abas podem ser salvas nessa pasta; um arquivo alterado por outro programa não é sobrescrito sem aviso. O editor preserva o conteúdo quando ocorre um conflito.
+- Restringe o acesso do processo de interface à pasta escolhida e a caminhos relativos. Bloqueia travessia de diretórios, links simbólicos, arquivos binários e arquivos de código acima de 5 MB. A navegação é carregada por pasta, sob demanda.
+- Adiciona regressões para as operações de diretório e um fluxo de interface; a release Windows é gerada em ambiente Windows, com checksum SHA-256.
+- A pasta aberta precisa ser escolhida novamente após reiniciar o aplicativo. Abas continuam no histórico local; a associação de cada aba com o arquivo físico vale durante a sessão.
+
 ## 1.12.2 — 29 de outubro de 2026
 
 - Restaura o desenho original das ligaduras dos operadores no editor. `<=` e `>=` voltam a aparecer como os símbolos visuais da fonte, com setas e outros operadores no mesmo alinhamento do texto.

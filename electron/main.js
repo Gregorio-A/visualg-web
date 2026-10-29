@@ -1,8 +1,9 @@
-import { app, BrowserWindow, ipcMain, shell } from 'electron';
+import { app, BrowserWindow, dialog, ipcMain, shell } from 'electron';
 import path from 'node:path';
 import { pathToFileURL } from 'node:url';
 import started from 'electron-squirrel-startup';
 import { appendDataFile, readDataFile } from './data-files.mjs';
+import { ProjectFiles } from './project-files.mjs';
 
 // Handle creating/removing shortcuts on Windows when installing/uninstalling.
 if (started) {
@@ -24,6 +25,7 @@ const CSP = [
 ].join('; ');
 
 let mainWindow = null;
+const projectFiles = new ProjectFiles();
 
 function assertTrustedIpcSender(event) {
   if (!mainWindow || event.sender !== mainWindow.webContents ||
@@ -40,6 +42,35 @@ ipcMain.handle('visualg-data-file:read', async (event, filename) => {
 ipcMain.handle('visualg-data-file:append', async (event, filename, value) => {
   assertTrustedIpcSender(event);
   return appendDataFile(path.join(app.getPath('userData'), 'visualg-data'), filename, value);
+});
+
+ipcMain.handle('visualg-project:choose', async (event) => {
+  assertTrustedIpcSender(event);
+  const result = await dialog.showOpenDialog(mainWindow, { title: 'Abrir pasta de algoritmos', properties: ['openDirectory'] });
+  return result.canceled || !result.filePaths.length ? null : projectFiles.open(result.filePaths[0]);
+});
+ipcMain.handle('visualg-project:close', (event) => { assertTrustedIpcSender(event); projectFiles.close(); });
+ipcMain.handle('visualg-project:list', (event, relative) => { assertTrustedIpcSender(event); return projectFiles.list(relative); });
+ipcMain.handle('visualg-project:read', (event, relative) => { assertTrustedIpcSender(event); return projectFiles.read(relative); });
+ipcMain.handle('visualg-project:write', (event, relative, content, revision) => {
+  assertTrustedIpcSender(event);
+  return projectFiles.write(relative, content, revision);
+});
+ipcMain.handle('visualg-project:create-file', (event, parent, name) => {
+  assertTrustedIpcSender(event);
+  return projectFiles.createFile(parent, name);
+});
+ipcMain.handle('visualg-project:create-directory', (event, parent, name) => {
+  assertTrustedIpcSender(event);
+  return projectFiles.createDirectory(parent, name);
+});
+ipcMain.handle('visualg-project:rename', (event, relative, name) => {
+  assertTrustedIpcSender(event);
+  return projectFiles.rename(relative, name);
+});
+ipcMain.handle('visualg-project:remove', (event, relative) => {
+  assertTrustedIpcSender(event);
+  return projectFiles.remove(relative);
 });
 
 const createWindow = () => {

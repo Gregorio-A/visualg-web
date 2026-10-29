@@ -1372,6 +1372,10 @@
     }
 
     function saveProgramAs(format) {
+        if (window.VisualGDesktopProject && window.VisualGDesktopProject.isOpen()) {
+            window.VisualGDesktopProject.saveActive(format);
+            return;
+        }
         var code = editor.getValue();
         var fileName = 'programa';
 
@@ -1400,6 +1404,10 @@
     }
 
     function saveProgram() {
+        if (window.VisualGDesktopProject && window.VisualGDesktopProject.isOpen()) {
+            window.VisualGDesktopProject.saveActive();
+            return;
+        }
         saveProgramAs('alg');
     }
 

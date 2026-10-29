@@ -268,6 +268,11 @@
                         <button id="sidebar-actions-more" class="sidebar-actions-more" type="button" title="Mais ações" aria-label="Mais ações" aria-expanded="false" aria-haspopup="menu" hidden><i data-lucide="ellipsis-vertical" aria-hidden="true"></i></button>
                         <div id="sidebar-actions-menu" class="sidebar-actions-menu" role="menu" aria-label="Mais ações de arquivos" hidden></div>
                     </div>
+                    <div id="desktop-project-toolbar" class="desktop-project-toolbar" hidden>
+                        <button id="btn-open-directory" type="button"><i data-lucide="folder-open" aria-hidden="true"></i><span id="btn-open-directory-label">Abrir pasta</span></button>
+                        <span id="desktop-project-label" hidden></span>
+                        <button id="btn-close-directory" type="button" title="Fechar pasta" aria-label="Fechar pasta" hidden><i data-lucide="x" aria-hidden="true"></i></button>
+                    </div>
                     <div class="workspace-search"><i data-lucide="search" aria-hidden="true"></i><input id="workspace-file-search" type="search" aria-label="Pesquisar arquivos"></div>
                     <div id="workspace-file-list"></div>
                     <button id="btn-history" class="history-link" title="Histórico de recuperação"><i data-lucide="history"></i> Histórico</button>
@@ -792,6 +797,7 @@
     <script src="js/examples.js"></script>
     <script src="js/tabs.js"></script>
     <script src="js/docs.js"></script>
+    <script src="js/desktop-project.js"></script>
     <script src="js/workspace.js"></script>
     <script src="js/challenge-clock.js"></script>
     <script src="js/daily-challenges.js"></script>

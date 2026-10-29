@@ -1,0 +1,10 @@
+appId: br.com.visualg.web
+productName: VisuAlg Web
+artifactName: VisuAlg-Web-${version}-portable-${arch}.${ext}
+directories:
+  output: out/portable
+win:
+  target:
+    - target: portable
+      arch:
+        - x64

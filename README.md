@@ -5,11 +5,11 @@ Teste o app: [gregorioalves.com/visualg](https://gregorioalves.com/visualg/)
 
 Este projeto não é o VisuAlg original nem o VisuAlg.dev. O VisuAlg Web é um fork do VisuAlg.dev, do qual herdou a base do editor e do interpretador antes de receber identidade, políticas, testes e alterações próprias. Ambos fazem parte de uma história maior, construída por professores, desenvolvedores, materiais didáticos e iniciativas anteriores.
 
-## Versão 1.12.2
+## Versão 1.13.0
 
-A barra móvel oferece **A−** e **A+** para ajustar e salvar o tamanho do texto do editor. Os operadores do código usam ligaduras da fonte Fira Code distribuída com o aplicativo, para manter os símbolos e o alinhamento em computadores diferentes. Os caracteres digitados permanecem intactos ao salvar e executar. A versão 1.12 também melhorou execução, entrada de dados, menus, temas clássicos e edição móvel. Consulte o [histórico completo](CHANGELOG.md) e o [status das validações](src/docs/status.md).
+O aplicativo para Windows x64 agora é distribuído como um `.exe` portátil, sem instalador. Na guia **Arquivos**, use **Abrir pasta** para navegar em diretórios reais, abrir programas `.alg` e `.txt`, criar itens e salvar alterações diretamente no disco. A proteção contra conflitos avisa quando um arquivo foi modificado fora do app. Baixe o executável e confira o SHA-256 na [página de releases](https://github.com/Gregorio-A/visualg-web/releases). Consulte o [histórico completo](CHANGELOG.md) e o [status das validações](src/docs/status.md).
 
-A build Web é publicada na branch `visualg-deploy-web` para implantação manual no site. As imagens abaixo registram a interface da versão 1.11 e não foram refeitas para a 1.12.2.
+A build Web é publicada na branch `visualg-deploy-web` para implantação manual no site. As imagens abaixo registram a interface da versão 1.11 e não foram refeitas para a 1.13.0.
 
 ## VisuAlg Web 1.11 em imagens
 
@@ -57,7 +57,7 @@ Os temas contemporâneos continuam disponíveis:
 
 ![Editor no tema Paper & Ink](img/interface-paper-1.11.png)
 
-A versão `1.12.2` preserva os desafios lançados em `1.1.0` e a apresentação da versão `1.11.0`.
+A versão `1.13.0` preserva os desafios lançados em `1.1.0` e a apresentação da versão `1.11.0`.
 O histórico completo desta atualização está em [CHANGELOG.md](CHANGELOG.md).
 A identidade do fork e os créditos da aplicação de origem permanecem no
 [histórico do projeto](src/docs/historia.md).

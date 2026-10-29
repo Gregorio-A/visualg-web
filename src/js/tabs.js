@@ -850,6 +850,14 @@
             return true;
         },
 
+        setExternalFileName: function (id, fileName) {
+            var tab = getTab(id);
+            if (!tab || !/^[^\\/:*?"<>|]+\.(alg|txt)$/i.test(fileName)) return false;
+            tab.fileName = fileName;
+            renderTabs(); schedulePersist();
+            return true;
+        },
+
         updateTabCode: function (id, code) {
             var tab = getTab(id);
             if (!tab || id === activeTabId || typeof code !== 'string' || blockWhenRunning()) return false;
@@ -857,7 +865,7 @@
             tab.code = code;
             if (pendingSessionRaw) pendingSessionRaw = null;
             tab.name = extractName(code);
-            if (tab.name !== previousName && tab.name !== 'Sem nome' && window.VisualGWorkspace && window.VisualGWorkspace.uniqueFileName) {
+            if (tab.name !== previousName && tab.name !== 'Sem nome' && !(window.VisualGDesktopProject && window.VisualGDesktopProject.isTabBound(tab.id)) && window.VisualGWorkspace && window.VisualGWorkspace.uniqueFileName) {
                 var extension = /\.txt$/i.test(tab.fileName || '') ? '.txt' : '.alg';
                 tab.fileName = window.VisualGWorkspace.uniqueFileName(tab.name + extension, tab.id, window.VisualGWorkspace.folderOfFile ? window.VisualGWorkspace.folderOfFile(tab.id) : null);
                 var canonicalName = tab.fileName.slice(0, -extension.length);
@@ -906,7 +914,7 @@
             var newName = extractName(code);
             if (tab.name !== newName) {
                 tab.name = newName;
-                if (newName !== 'Sem nome' && window.VisualGWorkspace && window.VisualGWorkspace.uniqueFileName) {
+                if (newName !== 'Sem nome' && !(window.VisualGDesktopProject && window.VisualGDesktopProject.isTabBound(tab.id)) && window.VisualGWorkspace && window.VisualGWorkspace.uniqueFileName) {
                     var extension = /\.txt$/i.test(tab.fileName || '') ? '.txt' : '.alg';
                     tab.fileName = window.VisualGWorkspace.uniqueFileName(newName + extension, tab.id, window.VisualGWorkspace.folderOfFile ? window.VisualGWorkspace.folderOfFile(tab.id) : null);
                     var canonicalName = tab.fileName.slice(0, -extension.length);

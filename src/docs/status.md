@@ -5,7 +5,7 @@
 > `ANALISE_PROBLEMAS_VISUALG_WEB.md` e `COMPATIBILIDADE_PENDENCIAS.md` foram
 > descontinuados para não manter listas concorrentes.
 
-**Versão revisada:** `1.12.2`
+**Versão revisada:** `1.13.0`
 
 **Última revisão:** 29 de outubro de 2026
 **Base funcional auditada:** versão `1.1.0`; as verificações desta revisão estão identificadas abaixo.
@@ -21,11 +21,11 @@
 | Área | Estado atual | O que falta |
 | --- | --- | --- |
 | Linguagem | O conjunto documentado está implementado e coberto por regressões. Não há incompatibilidade de linguagem reproduzida registrada como aberta nesta revisão. | Novas diferenças em relação ao VisuAlg 3.0.7 precisam de programa mínimo e teste de reprodução. |
-| Aplicação Web | Versão 1.12.2, com 11 temas escuros, 11 claros e 4 clássicos. A edição móvel tem ajuste direto do texto; os operadores usam ligaduras de uma fonte distribuída com o aplicativo. | Reforçar recuperação de dados, concluir validações manuais e realizar uso acompanhado em sala de aula. |
+| Aplicação Web | Versão 1.13.0, com 11 temas escuros, 11 claros e 4 clássicos. A edição móvel tem ajuste direto do texto; os operadores usam ligaduras de uma fonte distribuída com o aplicativo. | Reforçar recuperação de dados, concluir validações manuais e realizar uso acompanhado em sala de aula. |
 | Desafios do Dia | 365 datas e 730 páginas Markdown, com níveis Iniciante e Avançado, exemplos, dicas progressivas e soluções ocultas. Calendário e lista pesquisável consultam os dias do ano atual desde 1º de janeiro até hoje. | Revisar o material didático com estudantes de diferentes idades; avançados ainda pressupõem conceitos de programação. |
 | Abas e autosave | Abas de código e conteúdos auxiliares podem ser fechadas; códigos, aba ativa, estado modificado e uma cópia de recuperação são persistidos e testados. Falhas de salvamento geram aviso visível. | Tratar armazenamento cheio/bloqueado, workspace corrompido, migração e fechamento inesperado; oferecer backup completo. |
 | Acessibilidade | Atalhos, navegação por teclado em abas e modais, foco inicial e preso em modais, retorno do foco, ARIA e anúncios de estado foram implementados. | Validar com leitor de tela, zoom de 200%, todos os temas e tamanhos mínimos de alvos de toque. |
-| Electron | Isolamento, sandbox, CSP, IPC e proteção de caminhos possuem regressões automatizadas. O aplicativo iniciou em desenvolvimento, abriu a janela permitida do Console e sincronizou a saída. | Preparar e validar a distribuição pública dos instaladores. |
+| Electron | Isolamento, sandbox, CSP, IPC e proteção de caminhos possuem regressões automatizadas. A versão 1.13 adiciona pasta real escolhida pelo usuário, navegação e salvamento de `.alg`/`.txt`, e uma build portátil Windows x64. | Validar o executável em Windows real, assinatura de código e distribuições adicionais. |
 | Build e arquitetura | A build Web é gerada com sucesso e os assets necessários são copiados. | Os scripts clássicos ainda produzem avisos esperados do Vite e mantêm dependência de globais e ordem de carregamento. |
 
 Esta tabela não significa “100% idêntico em qualquer caso”. O contrato funcional
@@ -79,6 +79,12 @@ operadores mantêm a mesma fonte e as ligaduras ativas ao trocar a fonte do
 editor, e que comentários, strings e o código salvo preservam os caracteres
 originais. Outros navegadores e dispositivos reais ainda requerem validação.
 
+Na 1.13.0, foram adicionadas regressões para criação, leitura, gravação,
+conflito de versão, renomeação, exclusão, travessia de caminhos, links
+simbólicos e arquivos binários no projeto desktop. O pacote portátil Windows
+x64 é gerado por GitHub Actions a partir da tag, com checksum SHA-256. A
+instalação e a abertura em computadores Windows reais ainda exigem validação.
+
 ## Como interpretar os estados
 
 - **Pendente:** a lacuna foi confirmada e ainda não existe solução completa.
@@ -99,12 +105,12 @@ Prioridade **alta** indica risco para dados, acessibilidade ou publicação;
 | DATA-002 | Alta | Pendente | **Backup completo.** Exportar e importar todas as abas em um formato versionado. Concluir quando ida, volta e rejeição de backup inválido estiverem testadas. |
 | A11Y-001 | Alta | Em validação | **Auditoria assistiva.** Validar leitor de tela, zoom de 200%, contraste de todos os temas, mensagens sem dependência exclusiva de cor e alvos de toque. Concluir com registro dos ambientes e correção dos achados. |
 | PILOT-001 | Alta | Pendente | **Uso real.** Validar com pelo menos 10 alunos e 3 professores, incluindo abertura de arquivos `.alg`, uma aula sem perda de código e duas semanas de uso acompanhado sem defeitos críticos. |
-| DESKTOP-001 | Alta | Pendente | **Distribuição Electron.** Testar instaladores nas plataformas publicadas, definir ícone/publicador/metadados, assinatura quando aplicável, checksums e um processo reproduzível de instalação, atualização e remoção. |
+| DESKTOP-001 | Alta | Em validação | **Distribuição Electron.** A edição portátil Windows x64 dispensa instalação e tem geração reproduzível e checksum. Validar abertura em computadores Windows reais, definir ícone/publicador, obter assinatura de código e planejar atualização. |
 | EDITOR-001 | Média | Em validação | **Estado de arquivo por aba.** O indicador de alteração desde o último download e o nome de arquivo persistem por aba. Ainda falta registrar data/origem do último export e validar casos de importação e recuperação. |
 | FILE-001 | Média | Pendente | **Falsos positivos ao abrir `.alg`.** O filtro textual bloqueia palavras parecidas com HTML/JavaScript mesmo que estejam em comentários ou strings. Concluir com validação adequada ao fato de o arquivo ser exibido como texto no editor. |
 | ERROR-001 | Média | Pendente | **Mensagens de erro uniformes.** Nem todo erro semântico ou de execução possui linha, coluna e trecho. Concluir quando a localização e a orientação didática forem consistentes nas fases do interpretador. |
 | MOBILE-001 | Média | Em validação | **Interface móvel.** Há teste de viewport estreita e captura visual; o Backspace foi verificado em navegador com perfil Android. Ainda é necessário validar em dispositivos reais o editor, teclado virtual, áreas de toque e janelas auxiliares. |
-| RELEASE-001 | Média | Concluído | **Versão em uma única fonte.** `package.json` define a versão técnica 1.12.2; a tela de abertura e o cabeçalho exibem 1.12. A identificação Beta foi retirada com a adoção da versão 1.0. |
+| RELEASE-001 | Média | Concluído | **Versão em uma única fonte.** `package.json` define a versão técnica 1.13.0; a tela de abertura e o cabeçalho exibem 1.13. A identificação Beta foi retirada com a adoção da versão 1.0. |
 | DOCS-001 | Baixa | Pendente | **Carregamento seguro da documentação.** Verificar `response.ok` e definir uma fronteira de sanitização antes de aceitar qualquer Markdown que não faça parte do pacote local. |
 | TECH-001 | Baixa | Planejado | **Scripts clássicos e globais.** Modularizar gradualmente o runtime e permitir que o Vite empacote o código sem os avisos atuais, preservando os testes existentes. |
 
@@ -123,6 +129,7 @@ incompatibilidades ou regressões conhecidas:
 
 | Versão | Principais entregas consolidadas | Evidência atual |
 | --- | --- | --- |
+| `1.13.0` | Windows portátil x64; escolha de pasta real, árvore navegável, operações em arquivos e proteção contra conflitos. | Regressão do acesso ao disco e fluxo de interface; build e validação em Windows via workflow de release. |
 | `1.12.2` | Ligaduras dos operadores restauradas com Fira Code embarcada e carregada na abertura; sem alterar o código salvo. | Verificação em Chromium do carregamento da fonte, aparência dos operadores e preservação do texto; validação em outros navegadores e dispositivos reais ainda pendente. |
 | `1.12.1` | Ajuste direto da fonte no editor móvel; operadores de código sem ligaduras dependentes do dispositivo; símbolos matemáticos explícitos na documentação. | Suíte automatizada e verificação dos controles e estilos em Chromium; validação em Android real ainda pendente. |
 | `1.12` | Melhoria de execução e entrada vazia; ações dos temas clássicos; menus de arquivos; edição numérica; barras de rolagem; documentação e quebra de linha móveis; Backspace Android. | Regressões de linguagem e programas, verificações de código e build Web desta versão; validação Android real ainda pendente. Consulte o histórico para detalhes. |

@@ -394,6 +394,10 @@
         var list = get('workspace-file-list');
         if (!list || !window.TabManager) return;
         var query = get('workspace-file-search').value.trim().toLocaleLowerCase('pt-BR');
+        if (window.VisualGDesktopProject && window.VisualGDesktopProject.isOpen()) {
+            window.VisualGDesktopProject.render(list, query);
+            return;
+        }
         var openTabs = window.TabManager.getTabs();
         var tabs = openTabs.concat(closedFiles.filter(function (closed) {
             return !openTabs.some(function (open) {
@@ -2047,6 +2051,7 @@
         });
         document.addEventListener('visualg:tab-switched', function (event) { redrawBreakpoints(event.detail.id); renderDebugBreakpoints(); showEditor(); animateEditorForFileSwitch(); });
         document.addEventListener('visualg:file-closed', function (event) {
+            if (event.defaultPrevented) return;
             var tab = event.detail;
             if (tab.unusedDraft) {
                 deletingFiles.delete(tab.id);
@@ -2076,7 +2081,7 @@
         window.VisualGEditor.instance.on('gutterClick', toggleBreakpoint);
         window.VisualGEditor.instance.setOption('gutters', ['CodeMirror-linenumbers', 'debug-current', 'breakpoints']);
         window.VisualGEditor.instance.on('change', function () { if (messages.some(function (item) { return item.kind === 'error'; })) { messages = []; renderMessages(); window.VisualGEditor.clearHighlight(); } });
-        window.VisualGWorkspace = { showEditor: showEditor, showConsole: showConsole, toggleConsole: toggleConsole, returnToEditor: returnToEditor, isConsoleOpen: function () { return !!(consoleDialog && !consoleDialog.classList.contains('hidden')) || consolePanelOpen || view.type === 'console' || !!(consoleWindow && !consoleWindow.closed); }, showDoc: showDoc, refreshDocs: renderDocs, showExamples: showExamples, showSettings: showSettings, toggleSettings: toggleSettings, openThemeMenu: openThemeMenu, getBreakpoints: getCurrentBreakpoints, uniqueFileName: uniqueFileName, folderOfFile: function (id) { return assignments[id] || null; }, createFile: createWorkspaceFile, navigateToLocation: navigateToLocation };
+        window.VisualGWorkspace = { showEditor: showEditor, showConsole: showConsole, toggleConsole: toggleConsole, returnToEditor: returnToEditor, isConsoleOpen: function () { return !!(consoleDialog && !consoleDialog.classList.contains('hidden')) || consolePanelOpen || view.type === 'console' || !!(consoleWindow && !consoleWindow.closed); }, showDoc: showDoc, refreshDocs: renderDocs, refreshFiles: renderFiles, showExamples: showExamples, showSettings: showSettings, toggleSettings: toggleSettings, openThemeMenu: openThemeMenu, getBreakpoints: getCurrentBreakpoints, uniqueFileName: uniqueFileName, folderOfFile: function (id) { return assignments[id] || null; }, createFile: createWorkspaceFile, navigateToLocation: navigateToLocation };
         refreshIcons(document.querySelector('.ide-shell'));
         if (window.VisualGAppBoot) window.VisualGAppBoot.ready('workspace');
     }

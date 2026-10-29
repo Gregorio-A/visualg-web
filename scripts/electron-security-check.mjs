@@ -39,7 +39,12 @@ try {
 
   const preloadSource = await fs.readFile(new URL('../electron/preload.js', import.meta.url), 'utf8');
   const channels = [...preloadSource.matchAll(/ipcRenderer\.invoke\('([^']+)'/g)].map((match) => match[1]);
-  assert.deepEqual(channels.sort(), ['visualg-data-file:append', 'visualg-data-file:read']);
+  assert.deepEqual(channels.sort(), [
+    'visualg-data-file:append', 'visualg-data-file:read',
+    'visualg-project:choose', 'visualg-project:close', 'visualg-project:create-directory',
+    'visualg-project:create-file', 'visualg-project:list', 'visualg-project:read',
+    'visualg-project:remove', 'visualg-project:rename', 'visualg-project:write',
+  ].sort());
 
   const rendererSource = await fs.readFile(new URL('../src/index.html', import.meta.url), 'utf8');
   assert.match(rendererSource, /Content-Security-Policy[^>]+script-src 'self'/);
