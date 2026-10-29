@@ -5,9 +5,9 @@
 > `ANALISE_PROBLEMAS_VISUALG_WEB.md` e `COMPATIBILIDADE_PENDENCIAS.md` foram
 > descontinuados para não manter listas concorrentes.
 
-**Versão revisada:** `1.11.0`
+**Versão revisada:** `1.12.0`
 
-**Última revisão:** 24 de outubro de 2026
+**Última revisão:** 29 de outubro de 2026
 **Base funcional auditada:** versão `1.1.0`; as verificações desta revisão estão identificadas abaixo.
 
 ![Seleção dos temas da versão 1.11](screenshots/interface-temas-1.11.png)
@@ -21,7 +21,7 @@
 | Área | Estado atual | O que falta |
 | --- | --- | --- |
 | Linguagem | O conjunto documentado está implementado e coberto por regressões. Não há incompatibilidade de linguagem reproduzida registrada como aberta nesta revisão. | Novas diferenças em relação ao VisuAlg 3.0.7 precisam de programa mínimo e teste de reprodução. |
-| Aplicação Web | Versão 1.11.0, com 11 temas escuros, 11 claros e 4 clássicos. A apresentação dos desafios foi reorganizada e as capturas da interface foram atualizadas. | Reforçar recuperação de dados, concluir validações manuais e realizar uso acompanhado em sala de aula. |
+| Aplicação Web | Versão 1.12.0, com 11 temas escuros, 11 claros e 4 clássicos. A execução, os menus de arquivos, os controles numéricos, a documentação lateral, a rolagem e a edição móvel foram refinados. | Reforçar recuperação de dados, concluir validações manuais e realizar uso acompanhado em sala de aula. |
 | Desafios do Dia | 365 datas e 730 páginas Markdown, com níveis Iniciante e Avançado, exemplos, dicas progressivas e soluções ocultas. Calendário e lista pesquisável consultam os dias do ano atual desde 1º de janeiro até hoje. | Revisar o material didático com estudantes de diferentes idades; avançados ainda pressupõem conceitos de programação. |
 | Abas e autosave | Abas de código e conteúdos auxiliares podem ser fechadas; códigos, aba ativa, estado modificado e uma cópia de recuperação são persistidos e testados. Falhas de salvamento geram aviso visível. | Tratar armazenamento cheio/bloqueado, workspace corrompido, migração e fechamento inesperado; oferecer backup completo. |
 | Acessibilidade | Atalhos, navegação por teclado em abas e modais, foco inicial e preso em modais, retorno do foco, ARIA e anúncios de estado foram implementados. | Validar com leitor de tela, zoom de 200%, todos os temas e tamanhos mínimos de alvos de toque. |
@@ -57,6 +57,16 @@ incluindo as 730 páginas Markdown e as novas capturas da documentação.
 dependências de produção. A suíte automatizada completa não foi repetida nesta
 etapa de documentação e publicação.
 
+Em 29 de outubro de 2026, a preparação da versão 1.12 executou `npm ci`,
+`npm run test:ci` e `npm audit --omit=dev --audit-level=high` com sucesso.
+A suíte incluiu lint, regressões P0, programas padrão, 200 programas gerados,
+17 casos adicionais de linguagem, compatibilidade, exemplos, recuperação do
+workspace, segurança Electron e build Web. A auditoria das dependências de
+produção não apontou vulnerabilidades; `npm ci` ainda informou avisos em
+dependências de desenvolvimento. As verificações visuais realizadas em
+navegador não substituem teste em dispositivo Android real nem validação de
+instaladores Electron.
+
 ## Como interpretar os estados
 
 - **Pendente:** a lacuna foi confirmada e ainda não existe solução completa.
@@ -81,8 +91,8 @@ Prioridade **alta** indica risco para dados, acessibilidade ou publicação;
 | EDITOR-001 | Média | Em validação | **Estado de arquivo por aba.** O indicador de alteração desde o último download e o nome de arquivo persistem por aba. Ainda falta registrar data/origem do último export e validar casos de importação e recuperação. |
 | FILE-001 | Média | Pendente | **Falsos positivos ao abrir `.alg`.** O filtro textual bloqueia palavras parecidas com HTML/JavaScript mesmo que estejam em comentários ou strings. Concluir com validação adequada ao fato de o arquivo ser exibido como texto no editor. |
 | ERROR-001 | Média | Pendente | **Mensagens de erro uniformes.** Nem todo erro semântico ou de execução possui linha, coluna e trecho. Concluir quando a localização e a orientação didática forem consistentes nas fases do interpretador. |
-| MOBILE-001 | Média | Em validação | **Interface móvel.** Há teste de viewport estreita e captura visual. Ainda é necessário validar em dispositivos reais o editor, teclado virtual, áreas de toque e janelas auxiliares. |
-| RELEASE-001 | Média | Concluído | **Versão em uma única fonte.** `package.json` define a versão técnica 1.11.0; a tela de abertura e o cabeçalho exibem 1.11. A identificação Beta foi retirada com a adoção da versão 1.0. |
+| MOBILE-001 | Média | Em validação | **Interface móvel.** Há teste de viewport estreita e captura visual; o Backspace foi verificado em navegador com perfil Android. Ainda é necessário validar em dispositivos reais o editor, teclado virtual, áreas de toque e janelas auxiliares. |
+| RELEASE-001 | Média | Concluído | **Versão em uma única fonte.** `package.json` define a versão técnica 1.12.0; a tela de abertura e o cabeçalho exibem 1.12. A identificação Beta foi retirada com a adoção da versão 1.0. |
 | DOCS-001 | Baixa | Pendente | **Carregamento seguro da documentação.** Verificar `response.ok` e definir uma fronteira de sanitização antes de aceitar qualquer Markdown que não faça parte do pacote local. |
 | TECH-001 | Baixa | Planejado | **Scripts clássicos e globais.** Modularizar gradualmente o runtime e permitir que o Vite empacote o código sem os avisos atuais, preservando os testes existentes. |
 
@@ -101,6 +111,7 @@ incompatibilidades ou regressões conhecidas:
 
 | Versão | Principais entregas consolidadas | Evidência atual |
 | --- | --- | --- |
+| `1.12` | Melhoria de execução e entrada vazia; ações dos temas clássicos; menus de arquivos; edição numérica; barras de rolagem; documentação e quebra de linha móveis; Backspace Android. | Regressões de linguagem e programas, verificações de código e build Web desta versão; validação Android real ainda pendente. Consulte o histórico para detalhes. |
 | `1.1` | Desafios do Dia com 730 materiais; calendário desde 1º de janeiro; Steam Clássico e Windows 95; remoção de seis peles antigas; refinamento do editor e do console; nova documentação e capturas. | Catálogo e páginas gerados com cobertura de 365 datas; capturas Chromium da interface 1.1; build Web e auditoria das dependências de produção concluídas. Consulte as notas de versão para detalhes e limites da verificação. |
 | `1.0` | Primeira versão principal independente; 11 temas escuros e 11 temas claros, além de 8 temas clássicos; identificação de versão derivada do pacote. | `npm run test:ci` passou; testes E2E dos temas e seus contrastes também passaram nesta revisão. |
 | `0.14` | Identidade própria do fork; nova interface com abas unificadas, painéis responsivos, 26 temas claros e escuros e destaque de sintaxe; Console em painel/aba/modal/janela/aba externa; fontes independentes; teclado, foco e ARIA; segurança Electron; lint, CI e testes E2E. | `npm run test:ci` passou em 6/10/2026; navegação de documentação verificada em Chromium. Suíte E2E completa não executada nesta revisão. |

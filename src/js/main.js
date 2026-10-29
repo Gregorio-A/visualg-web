@@ -764,10 +764,10 @@
 
         function syncCompactWordWrap() {
             var saved = localStorage.getItem('visualg-word-wrap') || 'off';
-            var effective = usesMobileLayout() ? 'on' : saved;
-            var enabled = effective === 'on';
+            var enabled = saved === 'on';
             if (editor.instance.getOption('lineWrapping') !== enabled) editor.instance.setOption('lineWrapping', enabled);
-            if (settingWordWrap) settingWordWrap.value = effective;
+            document.documentElement.dataset.wordWrap = saved;
+            if (settingWordWrap) settingWordWrap.value = saved;
         }
 
         function updateViewport() {
@@ -981,11 +981,10 @@
     }
 
     function applyWordWrap(value) {
-        var effective = isCompactInterface() ? 'on' : value;
-        editor.instance.setOption('lineWrapping', effective === 'on');
-        document.documentElement.dataset.wordWrap = effective;
+        editor.instance.setOption('lineWrapping', value === 'on');
+        document.documentElement.dataset.wordWrap = value;
         localStorage.setItem('visualg-word-wrap', value);
-        if (settingWordWrap) settingWordWrap.value = effective;
+        if (settingWordWrap) settingWordWrap.value = value;
     }
 
     function applyTabSize(value) {

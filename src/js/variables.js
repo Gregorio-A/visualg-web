@@ -10,6 +10,27 @@
     window.VariablesPanel = {
         tbody: null,
         previousValues: {},
+        _pendingVariables: null,
+        _updateFrame: 0,
+
+        scheduleUpdate: function (variables) {
+            this._pendingVariables = variables;
+            if (this._updateFrame) return;
+            var self = this;
+            this._updateFrame = window.requestAnimationFrame(function () {
+                self._updateFrame = 0;
+                self.flushUpdate();
+            });
+        },
+
+        flushUpdate: function () {
+            if (this._updateFrame) window.cancelAnimationFrame(this._updateFrame);
+            this._updateFrame = 0;
+            if (!this._pendingVariables) return;
+            var variables = this._pendingVariables;
+            this._pendingVariables = null;
+            this.update(variables);
+        },
 
         init: function () {
             this.tbody = document.querySelector('#variables-table tbody');
@@ -256,6 +277,9 @@
         },
 
         clear: function () {
+            if (this._updateFrame) window.cancelAnimationFrame(this._updateFrame);
+            this._updateFrame = 0;
+            this._pendingVariables = null;
             if (this.tbody) {
                 this.tbody.innerHTML = '';
             }

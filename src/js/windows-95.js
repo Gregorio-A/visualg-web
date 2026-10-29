@@ -10,6 +10,25 @@
         var tabList = document.getElementById('tab-list');
         var menus = Array.from(chrome.querySelectorAll('.win95-menubar details'));
 
+        function syncHeaderActions() {
+            chrome.querySelectorAll('.win95-header-actions [data-win95-target]').forEach(function (proxy) {
+                var original = document.getElementById(proxy.dataset.win95Target);
+                if (!original) return;
+                ['title', 'aria-label', 'aria-pressed', 'disabled'].forEach(function (attribute) {
+                    if (original.hasAttribute(attribute)) proxy.setAttribute(attribute, original.getAttribute(attribute));
+                    else proxy.removeAttribute(attribute);
+                });
+            });
+        }
+
+        if (window.renderLucideIcons) window.renderLucideIcons(chrome);
+        syncHeaderActions();
+        var actionObserver = new MutationObserver(syncHeaderActions);
+        chrome.querySelectorAll('.win95-header-actions [data-win95-target]').forEach(function (proxy) {
+            var original = document.getElementById(proxy.dataset.win95Target);
+            if (original) actionObserver.observe(original, { attributes: true, attributeFilter: ['title', 'aria-label', 'aria-pressed', 'disabled'] });
+        });
+
         function closeMenus(except) {
             menus.forEach(function (menu) { if (menu !== except) menu.open = false; });
         }

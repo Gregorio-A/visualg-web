@@ -7,6 +7,16 @@ html:is([data-theme^="visualg-"],[data-theme="steam-classic"]) {
     --classic-selection-text:var(--ide-foreground);
 }
 html[data-theme="visualg-classic"] { --classic-selection:#164f9a; --classic-selection-text:#fff; }
+html[data-theme^="visualg-"] { --ide-scroll-track:var(--ide-canvas); --ide-scroll-thumb:var(--skin-toolbar); }
+html[data-theme^="visualg-"] :where(*) { scrollbar-color:var(--ide-scroll-thumb) var(--ide-scroll-track); }
+html[data-theme^="visualg-"] ::-webkit-scrollbar { width:14px; height:14px; }
+html[data-theme^="visualg-"] ::-webkit-scrollbar-track { background:var(--ide-scroll-track); }
+html[data-theme^="visualg-"] ::-webkit-scrollbar-thumb { border:1px solid var(--ide-border); border-radius:0; background:var(--ide-scroll-thumb); }
+html[data-theme^="visualg-"] ::-webkit-scrollbar-thumb:hover { background:var(--ide-selected); }
+html[data-theme^="visualg-"] :is(.panel-body,#terminal-output)::-webkit-scrollbar { width:14px; height:14px; }
+html[data-theme^="visualg-"] :is(.panel-body,#terminal-output)::-webkit-scrollbar-track { background:var(--ide-scroll-track); }
+html[data-theme^="visualg-"] :is(.panel-body,#terminal-output)::-webkit-scrollbar-thumb { border:1px solid var(--ide-border); border-radius:0; background:var(--ide-scroll-thumb); }
+html[data-theme^="visualg-"] :is(.panel-body,#terminal-output)::-webkit-scrollbar-thumb:hover { background:var(--ide-selected); }
 
 html:is([data-theme^="visualg-"],[data-theme="steam-classic"]) body > .header {
     box-sizing:border-box; display:block; flex:0 0 83px !important; height:83px !important;
@@ -15,11 +25,21 @@ html:is([data-theme^="visualg-"],[data-theme="steam-classic"]) body > .header {
 }
 html:is([data-theme^="visualg-"],[data-theme="steam-classic"]) .header > :not(.win95-chrome) { display:none !important; }
 html:is([data-theme^="visualg-"],[data-theme="steam-classic"]) .win95-chrome { display:grid; grid-template-rows:22px 22px 34px; height:100%; color:var(--ide-foreground); }
-html:is([data-theme^="visualg-"],[data-theme="steam-classic"]) .win95-titlebar {
+html:is([data-theme="windows-95"],[data-theme^="visualg-"],[data-theme="steam-classic"]) .win95-titlebar {
     display:flex; align-items:center; gap:5px; height:21px; padding:0 3px;
     background:var(--skin-header); color:var(--skin-title-fg);
     font:700 12px/1.2 Tahoma,Arial,sans-serif;
 }
+html:is([data-theme="windows-95"],[data-theme^="visualg-"],[data-theme="steam-classic"]) .win95-header-actions { display:flex; flex:0 0 auto; align-items:center; gap:3px; margin-left:auto; padding-left:7px; border-left:2px solid var(--ide-border); }
+html:is([data-theme="windows-95"],[data-theme^="visualg-"],[data-theme="steam-classic"]) .win95-header-actions button {
+    display:grid; place-items:center; flex:0 0 30px; width:30px; height:28px; min-height:28px; padding:2px !important;
+    border:1px solid transparent !important; border-radius:2px !important; background:transparent !important;
+    color:var(--ide-foreground) !important; box-shadow:none !important; cursor:pointer;
+}
+html:is([data-theme="windows-95"],[data-theme^="visualg-"],[data-theme="steam-classic"]) .win95-header-actions button:hover,
+html:is([data-theme="windows-95"],[data-theme^="visualg-"],[data-theme="steam-classic"]) .win95-header-actions button[aria-pressed="true"] { border-color:var(--ide-border) !important; background:var(--ide-hover) !important; }
+html:is([data-theme="windows-95"],[data-theme^="visualg-"],[data-theme="steam-classic"]) .win95-header-actions button:focus-visible { outline:1px dotted currentColor !important; outline-offset:-2px; }
+html:is([data-theme="windows-95"],[data-theme^="visualg-"],[data-theme="steam-classic"]) .win95-header-actions svg { width:18px; height:18px; stroke:currentColor; stroke-width:1.8; }
 html:is([data-theme^="visualg-"],[data-theme="steam-classic"]) .win95-titlebar img { width:16px; height:16px; object-fit:contain; image-rendering:pixelated; }
 html:is([data-theme^="visualg-"],[data-theme="steam-classic"]) .win95-titlebar strong { overflow:hidden; white-space:nowrap; text-overflow:ellipsis; }
 html:is([data-theme^="visualg-"],[data-theme="steam-classic"]) .win95-menubar { display:flex; align-items:stretch; gap:1px; min-width:0; height:22px; }

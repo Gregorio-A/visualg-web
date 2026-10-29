@@ -5,6 +5,12 @@ Teste o app: [gregorioalves.com/visualg](https://gregorioalves.com/visualg/)
 
 Este projeto não é o VisuAlg original nem o VisuAlg.dev. O VisuAlg Web é um fork do VisuAlg.dev, do qual herdou a base do editor e do interpretador antes de receber identidade, políticas, testes e alterações próprias. Ambos fazem parte de uma história maior, construída por professores, desenvolvedores, materiais didáticos e iniciativas anteriores.
 
+## Versão 1.12.0
+
+Esta versão melhora a execução de programas longos e a entrada de dados, permite Enter vazio em `leia`, amplia os menus de arquivos e a edição de valores numéricos, ajusta as barras de rolagem e a documentação lateral, e corrige a quebra de linha e o Backspace em telas móveis. Os temas clássicos mantêm ações rápidas no lado direito; o Steam Clássico só muda ao ser selecionado por clique. Consulte o [histórico completo](CHANGELOG.md) e o [status das validações](src/docs/status.md).
+
+A build Web é publicada na branch `visualg-deploy-web` para implantação manual no site. As imagens abaixo registram a interface da versão 1.11 e não foram refeitas para a 1.12.
+
 ## VisuAlg Web 1.11 em imagens
 
 A versão 1.11 reorganiza a página inicial em ações para começar e painéis para continuar, com desafios e arquivos recentes. Na Documentação, o calendário fica junto aos exercícios selecionados. O editor e a execução continuam na mesma área de trabalho:
@@ -51,7 +57,7 @@ Os temas contemporâneos continuam disponíveis:
 
 ![Editor no tema Paper & Ink](img/interface-paper-1.11.png)
 
-A versão `1.11.0` refina a apresentação dos desafios lançados em `1.1.0`.
+A versão `1.12.0` preserva os desafios lançados em `1.1.0` e a apresentação da versão `1.11.0`.
 O histórico completo desta atualização está em [CHANGELOG.md](CHANGELOG.md).
 A identidade do fork e os créditos da aplicação de origem permanecem no
 [histórico do projeto](src/docs/historia.md).

@@ -82,6 +82,7 @@
         },
 
         scrollToBottom: function () {
+            if (this._autoScrollFrame) return;
             var self = this;
             function align() {
                 if (!self.outputEl) return;
@@ -89,8 +90,6 @@
                 if (panel) panel.scrollTop = panel.scrollHeight;
                 self.outputEl.scrollTop = self.outputEl.scrollHeight;
             }
-            align();
-            if (this._autoScrollFrame) window.cancelAnimationFrame(this._autoScrollFrame);
             this._autoScrollFrame = window.requestAnimationFrame(function () {
                 align();
                 self._autoScrollFrame = window.requestAnimationFrame(function () {
@@ -101,7 +100,10 @@
         },
 
         write: function (text) {
-            this.outputEl.appendChild(document.createTextNode(String(text)));
+            var value = String(text);
+            var last = this.outputEl.lastChild;
+            if (last && last.nodeType === 3) last.appendData(value);
+            else this.outputEl.appendChild(document.createTextNode(value));
             this.scrollToBottom();
         },
 

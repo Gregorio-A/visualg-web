@@ -82,6 +82,8 @@ fimalgoritmo
 | `caractere` | Mantém o texto digitado. |
 | `logico` | Aceita `verdadeiro`/`v` ou `falso`/`f`. |
 
+Pressionar Enter sem digitar nada avança a leitura e atribui o valor padrão do tipo: `0` para inteiro ou real, texto vazio para caractere e `FALSO` para lógico. A regra também vale para elementos de vetor. Espaços em branco sem outros caracteres são tratados como entrada vazia nos tipos numéricos e lógicos; em caractere, os espaços digitados são preservados.
+
 Uma entrada inválida mostra uma mensagem didática e a leitura é repetida até chegar um valor compatível. No modo modal, cancelar a entrada interrompe o programa de forma controlada. Por padrão, o valor lido aparece no console; use `eco off` para ocultá-lo e `eco on` para reativá-lo.
 
 ```visualg

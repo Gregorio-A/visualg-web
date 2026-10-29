@@ -1991,6 +1991,8 @@
         this.randomInput = { enabled: false, min: 0, max: 100 };
         this.dataFile = null;
         this.chronometerStartedAt = null;
+        this._lastYieldAt = 0;
+        this._workSinceYield = 0;
     }
 
         Executor.prototype.run = async function (ast) {
@@ -2007,6 +2009,8 @@
             this.randomInput = { enabled: false, min: 0, max: 100 };
             this.dataFile = null;
             this.chronometerStartedAt = null;
+            this._lastYieldAt = Date.now();
+            this._workSinceYield = 0;
 
             try {
                 new SemanticAnalyzer(ast).validate();
@@ -2031,6 +2035,7 @@
             } catch (e) {
                 throw e;
             } finally {
+                if (this.variablesPanel.flushUpdate) this.variablesPanel.flushUpdate();
                 this.running = false;
             }
         };
@@ -2088,7 +2093,11 @@
     };
 
     Executor.prototype.updateVarsPanel = function () {
-        this.variablesPanel.update(this.variables);
+        if (!this.stepMode && this.variablesPanel.scheduleUpdate) {
+            this.variablesPanel.scheduleUpdate(this.variables);
+        } else {
+            this.variablesPanel.update(this.variables);
+        }
     };
 
     Executor.prototype.checkRunning = function () {
@@ -2133,6 +2142,7 @@
         var depthAllowsPause = this.stepOutDepth !== null ? this.callStack.length < this.stepOutDepth : (this.stepDepth === null || this.callStack.length <= this.stepDepth);
         this.currentLine = stmt.line;
         if (((this.stepMode && depthAllowsPause) || onBreakpoint) && stmt.line !== undefined) {
+            if (this.variablesPanel.flushUpdate) this.variablesPanel.flushUpdate();
             if (window.VisualGEditor) {
                 window.VisualGEditor.highlightLine(stmt.line - 1, 'cm-debug-line');
             }
@@ -2234,6 +2244,7 @@
                     input = this.dataFile.values[this.dataFile.index++];
                 } else {
                     input = await this.terminal.readInput(prompt);
+                    this.checkRunning();
                 }
 
                 if (this.echoInput) {
@@ -2361,6 +2372,9 @@
             baseType = this.getBaseType(type);
             var text = String(input);
             var trimmed = text.trim();
+            if (text === '' || (baseType !== 'caractere' && trimmed === '')) {
+                return this.defaultValue(baseType);
+            }
             switch (baseType) {
                 case 'inteiro':
                     if (!/^[+-]?\d+$/.test(trimmed)) {
@@ -2687,6 +2701,11 @@
         };
 
     Executor.prototype.yield = function () {
+        if (++this._workSinceYield < 64) return Promise.resolve();
+        this._workSinceYield = 0;
+        var now = Date.now();
+        if (now - this._lastYieldAt < 8) return Promise.resolve();
+        this._lastYieldAt = now;
         return new Promise(function (resolve) { setTimeout(resolve, 0); });
     };
 

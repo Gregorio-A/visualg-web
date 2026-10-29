@@ -456,12 +456,7 @@
                 saveFolders(); renderFiles();
             });
             heading.addEventListener('contextmenu', function (event) {
-                event.preventDefault();
-                var name = window.prompt('Renomear pasta (deixe vazio para excluir)', folder.name);
-                if (name === null) return;
-                if (name.trim()) folder.name = name.trim();
-                else { folders = folders.filter(function (entry) { return entry.id !== folder.id; }); Object.keys(assignments).forEach(function (id) { if (assignments[id] === folder.id) delete assignments[id]; }); }
-                saveFolders(); renderFiles();
+                event.preventDefault(); openFolderMenu(event, folder);
             });
             list.append(heading, group);
         });
@@ -527,6 +522,31 @@
         link.click();
         link.remove();
         window.setTimeout(function () { URL.revokeObjectURL(objectUrl); }, 1000);
+    }
+
+    function editNumericPill(pill, currentValue, applyValue, restoreValue) {
+        if (pill.querySelector('input')) return;
+        var input = document.createElement('input'); input.type = 'text'; input.inputMode = 'decimal';
+        input.className = 'numeric-pill-input'; input.value = String(currentValue);
+        input.setAttribute('aria-label', pill.getAttribute('aria-label'));
+        pill.textContent = ''; pill.appendChild(input);
+        var finished = false;
+        function finish(commit, focusPill) {
+            if (finished) return;
+            finished = true;
+            var value = Number(input.value.trim().replace(',', '.'));
+            input.remove();
+            if (commit && input.value.trim() !== '' && Number.isFinite(value)) applyValue(value);
+            else restoreValue();
+            if (focusPill !== false) pill.focus();
+        }
+        input.addEventListener('keydown', function (event) {
+            event.stopPropagation();
+            if (event.key === 'Enter') { event.preventDefault(); finish(true); }
+            else if (event.key === 'Escape') { event.preventDefault(); finish(false); }
+        });
+        input.addEventListener('blur', function () { finish(true, false); });
+        input.focus(); input.select();
     }
 
     function openEditorQuickMenu(event) {
@@ -605,7 +625,7 @@
                     if (steps) updateQuickValue(Number(control.value) - steps * step, false);
                 }, { passive:false });
                 valuePill.addEventListener('pointerdown', function (pointerEvent) {
-                    if (pointerEvent.button !== 0) return;
+                    if (pointerEvent.button !== 0 || pointerEvent.target !== valuePill) return;
                     pillDrag = { x:pointerEvent.clientX, value:Number(control.value), moved:false };
                     valuePill.classList.add('is-adjusting'); valuePill.setPointerCapture(pointerEvent.pointerId);
                 });
@@ -614,8 +634,10 @@
                     var delta = pointerEvent.clientX - pillDrag.x; if (Math.abs(delta) < 3) return;
                     pillDrag.moved = true; pointerEvent.preventDefault(); updateQuickValue(pillDrag.value + Math.round(delta / 5) * step, false);
                 });
-                ['pointerup', 'pointercancel'].forEach(function (type) { valuePill.addEventListener(type, function () { var moved = pillDrag && pillDrag.moved; pillDrag = null; valuePill.classList.remove('is-adjusting'); if (moved) commitQuickValue(); }); });
+                ['pointerup', 'pointercancel'].forEach(function (type) { valuePill.addEventListener(type, function () { var clicked = !!pillDrag && !pillDrag.moved && type === 'pointerup'; var moved = pillDrag && pillDrag.moved; pillDrag = null; valuePill.classList.remove('is-adjusting'); if (moved) commitQuickValue(); else if (clicked) editNumericPill(valuePill, control.value, function (value) { updateQuickValue(value, true); }, function () { showQuickValue(control.value); }); }); });
                 valuePill.addEventListener('keydown', function (keyEvent) {
+                    if (keyEvent.target !== valuePill) return;
+                    if (keyEvent.key === 'Enter' || keyEvent.key === ' ') { keyEvent.preventDefault(); editNumericPill(valuePill, control.value, function (value) { updateQuickValue(value, true); }, function () { showQuickValue(control.value); }); return; }
                     if (!['ArrowUp', 'ArrowRight', 'ArrowDown', 'ArrowLeft', 'Home', 'End'].includes(keyEvent.key)) return;
                     keyEvent.preventDefault();
                     var next = keyEvent.key === 'Home' ? minimum : keyEvent.key === 'End' ? maximum : Number(control.value) + (keyEvent.key === 'ArrowUp' || keyEvent.key === 'ArrowRight' ? 1 : -1) * step;
@@ -670,11 +692,48 @@
         } else if (window.TabManager.setFileName(tab.id, name)) renderFiles();
     }
 
-    function openFileMenu(event, tab) {
+    function createFileContextMenu(event) {
         var old = get('file-context-menu'); if (old) old.remove();
         var menu = document.createElement('div'); menu.id = 'file-context-menu'; menu.className = 'debug-menu';
         menu.style.position = 'fixed'; menu.style.left = event.clientX + 'px'; menu.style.top = event.clientY + 'px';
         function option(label, action) { var button = document.createElement('button'); button.type = 'button'; button.textContent = label; button.addEventListener('click', function () { menu.remove(); action(); }); menu.appendChild(button); }
+        function show() {
+            document.body.appendChild(menu);
+            var bounds = menu.getBoundingClientRect();
+            menu.style.left = Math.max(8, Math.min(event.clientX, window.innerWidth - bounds.width - 8)) + 'px';
+            menu.style.top = Math.max(8, Math.min(event.clientY, window.innerHeight - bounds.height - 8)) + 'px';
+            setTimeout(function () { document.addEventListener('click', function dismiss() { menu.remove(); document.removeEventListener('click', dismiss); }, { once: true }); }, 0);
+        }
+        return { option:option, show:show };
+    }
+
+    function openFolderMenu(event, folder) {
+        var context = createFileContextMenu(event);
+        context.option('Novo arquivo nesta pasta', function () { selectedFolderId = folder.id; createWorkspaceFile({ folderId:folder.id }); });
+        context.option('Renomear pasta', function () {
+            var name = window.prompt('Novo nome da pasta', folder.name);
+            if (name && name.trim()) { folder.name = name.trim(); saveFolders(); renderFiles(); }
+        });
+        context.option('Excluir pasta', function () {
+            folders = folders.filter(function (entry) { return entry.id !== folder.id; });
+            Object.keys(assignments).forEach(function (id) { if (assignments[id] === folder.id) delete assignments[id]; });
+            if (selectedFolderId === folder.id) selectedFolderId = null;
+            saveFolders(); renderFiles();
+        });
+        context.show();
+    }
+
+    function openEmptyFileMenu(event) {
+        var context = createFileContextMenu(event);
+        context.option('Novo arquivo', function () { selectedFolderId = null; createWorkspaceFile({ folderId:null }); });
+        context.option('Nova pasta', function () { get('btn-new-workspace-folder').click(); });
+        context.option('Importar arquivo', function () { get('btn-upload-workspace').click(); });
+        context.show();
+    }
+
+    function openFileMenu(event, tab) {
+        var context = createFileContextMenu(event);
+        var option = context.option;
         if (!tab.closed) option('Fechar aba', function () { window.TabManager.closeTab(tab.id); });
         option('Exportar como .alg', function () { exportWorkspaceFile(tab, 'alg'); });
         option('Exportar como .txt', function () { exportWorkspaceFile(tab, 'txt'); });
@@ -692,11 +751,7 @@
             saveFolders(); renderFiles();
         });
         option('Excluir', function () { deleteFile(tab); });
-        document.body.appendChild(menu);
-        var bounds = menu.getBoundingClientRect();
-        menu.style.left = Math.max(8, Math.min(event.clientX, window.innerWidth - bounds.width - 8)) + 'px';
-        menu.style.top = Math.max(8, Math.min(event.clientY, window.innerHeight - bounds.height - 8)) + 'px';
-        setTimeout(function () { document.addEventListener('click', function dismiss() { menu.remove(); document.removeEventListener('click', dismiss); }, { once: true }); }, 0);
+        context.show();
     }
 
     function renderDocs() {
@@ -1160,12 +1215,6 @@
                 var group = document.createElement('div'); group.className = 'workspace-setting-group';
                 var text = document.createElement('label'); text.textContent = field[0];
                 var help = document.createElement('small'); help.textContent = descriptions[field[1]] || '';
-                var compactInterface = window.innerWidth <= 760 || (window.innerWidth <= 950 && window.innerHeight <= 500);
-                if (field[1] === 'setting-word-wrap' && compactInterface) {
-                    text.textContent += ' (sempre ativa em telas compactas)';
-                    control.value = 'on';
-                    control.disabled = true;
-                }
                 var slider = null; var stepper = null; var valueOutput = null;
                 if (source.type === 'number' || field[1] === 'setting-tab-size') {
                     slider = document.createElement('span');
@@ -1215,7 +1264,7 @@
                             syncRange(true, false);
                         }, { passive:false });
                         valueOutput.addEventListener('pointerdown', function (event) {
-                            if (event.button !== 0) return;
+                            if (event.button !== 0 || event.target !== valueOutput) return;
                             pillDrag = { x:event.clientX, value:Number(slider.value), moved:false };
                             valueOutput.classList.add('is-adjusting');
                             valueOutput.setPointerCapture(event.pointerId);
@@ -1231,9 +1280,11 @@
                             syncRange(true, false);
                         });
                         ['pointerup', 'pointercancel'].forEach(function (type) {
-                            valueOutput.addEventListener(type, function () { var moved = pillDrag && pillDrag.moved; pillDrag = null; valueOutput.classList.remove('is-adjusting'); if (moved) syncRange(true, true); });
+                            valueOutput.addEventListener(type, function () { var clicked = !!pillDrag && !pillDrag.moved && type === 'pointerup'; var moved = pillDrag && pillDrag.moved; pillDrag = null; valueOutput.classList.remove('is-adjusting'); if (moved) syncRange(true, true); else if (clicked) editNumericPill(valueOutput, slider.value, function (value) { slider.value = String(Math.max(Number(slider.min), Math.min(Number(slider.max), value))); syncRange(true, true); }, function () { syncRange(false); }); });
                         });
                         valueOutput.addEventListener('keydown', function (event) {
+                            if (event.target !== valueOutput) return;
+                            if (event.key === 'Enter' || event.key === ' ') { event.preventDefault(); editNumericPill(valueOutput, slider.value, function (value) { slider.value = String(Math.max(Number(slider.min), Math.min(Number(slider.max), value))); syncRange(true, true); }, function () { syncRange(false); }); return; }
                             if (!['ArrowUp', 'ArrowRight', 'ArrowDown', 'ArrowLeft', 'PageUp', 'PageDown', 'Home', 'End'].includes(event.key)) return;
                             event.preventDefault();
                             var next = Number(slider.value);
@@ -1585,9 +1636,9 @@
         }, true);
     }
 
-    function createWorkspaceFile() {
+    function createWorkspaceFile(options) {
         var active = window.TabManager.getActiveTab();
-        var folderId = selectedFolderId || (active ? assignments[active.id] || null : null);
+        var folderId = options && Object.prototype.hasOwnProperty.call(options, 'folderId') ? options.folderId : selectedFolderId || (active ? assignments[active.id] || null : null);
         var safeName = uniqueFileName('MeuAlgoritmo.alg', null, folderId);
         var declarationName = safeName.replace(/\.alg$/i, '');
         var code = window.TabManager.codeWithDeclarationName(window.gerarTemplate(), declarationName);
@@ -1604,7 +1655,7 @@
         var current = document.documentElement.getAttribute('data-theme') || 'dark';
         var currentMode = document.documentElement.dataset.colorMode;
         function previewTheme(id, mode) {
-            if (current === 'windows-95' || current.startsWith('visualg-') || id === 'windows-95' || id.startsWith('visualg-')) return;
+            if (current === 'windows-95' || current.startsWith('visualg-') || current === 'steam-classic' || id === 'windows-95' || id.startsWith('visualg-') || id === 'steam-classic') return;
             document.documentElement.setAttribute('data-theme', id);
             document.documentElement.dataset.colorMode = mode;
             window.VisualGEditor.instance.refresh();
@@ -1868,6 +1919,10 @@
         get('workspace-file-search').addEventListener('input', renderFiles);
         get('docs-search').addEventListener('input', renderDocs);
         get('btn-sidebar-files').addEventListener('click', function () { setSidebarTab('files'); });
+        get('workspace-file-list').addEventListener('contextmenu', function (event) {
+            if (event.target.closest('.file-item')) return;
+            event.preventDefault(); openEmptyFileMenu(event);
+        });
         get('btn-sidebar-docs').addEventListener('click', function () { setSidebarTab('docs'); });
         document.querySelector('.sidebar-tabs').addEventListener('keydown', function (event) {
             if (event.key !== 'ArrowLeft' && event.key !== 'ArrowRight') return;

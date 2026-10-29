@@ -483,7 +483,23 @@
                 cm.focus();
             }, true);
             cm.getInputField().addEventListener('beforeinput', function (event) {
-                if (!event.cancelable || event.isComposing) return;
+                if (event.isComposing) return;
+                if (event.inputType === 'deleteContentBackward' && /Android/i.test(navigator.userAgent)) {
+                    if (event.cancelable) {
+                        event.preventDefault();
+                        event.stopImmediatePropagation();
+                        if (!deleteFreshPair(cm)) cm.execCommand('delCharBefore');
+                    } else {
+                        var before = cm.getValue();
+                        window.setTimeout(function () {
+                            if (cm.getValue() === before && !cm.getOption('readOnly')) {
+                                if (!deleteFreshPair(cm)) cm.execCommand('delCharBefore');
+                            }
+                        }, 0);
+                    }
+                    return;
+                }
+                if (!event.cancelable) return;
                 if (event.inputType === 'deleteContentBackward' && deleteFreshPair(cm)) event.preventDefault();
                 else if (event.inputType === 'insertText' && event.data && event.data.length === 1 && handleDelimiter(cm, event.data)) event.preventDefault();
             });

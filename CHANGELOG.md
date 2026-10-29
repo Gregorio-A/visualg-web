@@ -1,5 +1,29 @@
 # Histórico de versões
 
+## 1.12.0 — 29 de outubro de 2026
+
+### Execução e entrada
+
+- Reduz o custo de programas longos: o painel de variáveis atualiza por quadro em execução contínua e sincroniza ao pausar ou terminar; o console reúne escritas consecutivas e evita agendar rolagens repetidas; o interpretador cede tempo à interface em intervalos controlados em vez de criar um timer a cada saída ou iteração.
+- `leia` aceita Enter vazio e avança para a próxima variável. O valor padrão é `0` para inteiro e real, texto vazio para caractere e `FALSO` para lógico, inclusive em elementos de vetor. Cancelar a execução durante a leitura continua interrompendo o programa.
+
+### Interface e editor
+
+- Reúne as ações rápidas no lado direito da barra de ferramentas dos quatro temas clássicos, com botões e ícones maiores. Os controles espelham rótulos, estados e disponibilidade dos botões principais.
+- O tema Steam Clássico só é aplicado por clique no seletor; passar o mouse sobre ele não muda a aparência automaticamente.
+- O clique direito na área vazia da lista de arquivos oferece criar arquivo, criar pasta e importar. Nas pastas, oferece criar arquivo na pasta, renomear e excluir; arquivos existentes mantêm seu menu contextual.
+- As pílulas numéricas das Configurações e dos ajustes rápidos do editor aceitam edição pelo teclado ao clicar no valor. Enter aplica, Esc cancela, e arrastar, rolar e usar os botões de incremento continuam disponíveis.
+- Unifica as barras de rolagem com as cores dos temas e substitui o canto branco do editor pela cor da superfície correspondente.
+- Corrige a documentação lateral: itens não encolhem nem deixam a descrição escapar do cartão. Em telas pequenas, capturas da documentação cabem na coluna e podem ser ampliadas pelo controle existente.
+- Permite desativar a quebra de linha também em telas pequenas e mantém a escolha ao redimensionar.
+- Trata Backspace do teclado virtual Android no editor, inclusive para unir linhas ao apagar no começo de uma linha.
+
+### Validação e limites
+
+- Adiciona regressão de linguagem para `leia` vazio nos quatro tipos e em vetor.
+- O comportamento de Backspace foi reproduzido em navegador com perfil Android; ainda depende de confirmação em dispositivos e teclados Android reais.
+- A build Web é preparada na branch `visualg-deploy-web` para implantação manual no site. Esta versão não publica instaladores Electron nem atualiza o site automaticamente.
+
 ## 1.11.0 — 24 de outubro de 2026
 
 - Reorganiza a página inicial em boas-vindas, duas ações principais, links de apoio, Desafios do Dia e Arquivos recentes. Os painéis de continuidade ficam lado a lado quando há espaço e se empilham em telas estreitas.

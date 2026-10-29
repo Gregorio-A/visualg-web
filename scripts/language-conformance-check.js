@@ -69,6 +69,15 @@ async function run() {
     'escreval(c)', 'escreval(l)', 'fimalgoritmo',
   ].join('\n'), '7\n2.5\nZ\nVERDADEIRO', ['7', '2.5', 'Z', 'verdadeiro']);
 
+  await ok('leia vazio avanca com valor padrao de cada tipo', [
+    'algoritmo "entradas_vazias"', 'eco off', 'var',
+    'n: inteiro', 'r: real', 'c: caractere', 'l: logico',
+    'v: vetor [1..1] de inteiro', 'inicio',
+    'leia(n, r, c, l, v[1])',
+    'escreval(n, "|", r:1:1, "|", c, "|", l, "|", v[1])',
+    'fimalgoritmo',
+  ].join('\n'), '0|0.0||FALSO|0', ['', '', '', '', '']);
+
   await ok('formatacao de saida e escreval vazio', [
     'algoritmo "formatacao"', 'inicio', 'escreva("X")',
     'escreva(7:3)', 'escreval', 'escreval(3.14159:1:2)',

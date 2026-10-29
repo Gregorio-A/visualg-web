@@ -189,6 +189,12 @@ html[data-theme="steam-classic"] ::-webkit-scrollbar { width:14px; height:14px; 
 html[data-theme="steam-classic"] ::-webkit-scrollbar-track { background:#30392c; }
 html[data-theme="steam-classic"] ::-webkit-scrollbar-thumb { border:1px solid #293227; background:#596653; }
 html[data-theme="steam-classic"] ::-webkit-scrollbar-thumb:hover { background:#75806b; }
+html[data-theme="steam-classic"] { --ide-scroll-track:#30392c; --ide-scroll-thumb:#596653; }
+html[data-theme="steam-classic"] :where(*) { scrollbar-color:var(--ide-scroll-thumb) var(--ide-scroll-track); }
+html[data-theme="steam-classic"] :is(.panel-body,#terminal-output)::-webkit-scrollbar { width:14px; height:14px; }
+html[data-theme="steam-classic"] :is(.panel-body,#terminal-output)::-webkit-scrollbar-track { background:#30392c; }
+html[data-theme="steam-classic"] :is(.panel-body,#terminal-output)::-webkit-scrollbar-thumb { border:1px solid #293227; border-radius:0; background:#596653; }
+html[data-theme="steam-classic"] :is(.panel-body,#terminal-output)::-webkit-scrollbar-thumb:hover { background:#75806b; }
 
 /* Denser VGUI surfaces: distinct shell, raised panels and inset work areas. */
 html[data-theme="steam-classic"] body,
