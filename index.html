@@ -1,0 +1,808 @@
+<!DOCTYPE html>
+<html lang="pt-BR" data-theme="dark" data-console-theme="dark">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, interactive-widget=resizes-content">
+    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; base-uri 'none'; object-src 'none'; frame-ancestors 'none'; form-action 'none'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; font-src 'self'; connect-src 'self'; frame-src https://www.youtube-nocookie.com">
+    <title>VisuAlg Web - Editor Online de Portugol e Pseudocódigo</title>
+
+    <!-- SEO -->
+    <meta name="description" content="Use o VisuAlg Web no navegador para escrever, executar e testar algoritmos em Portugol e pseudocódigo. Compatível com a sintaxe do VisuAlg 3.0.7, com console, variáveis, abas, documentação e execução passo a passo. Editor online compatível com a sintaxe do VisuAlg 3.0.7, criado para estudar lógica de programação, Portugol e pseudocódigo diretamente no navegador.">
+    <meta name="keywords" content="visualg, visualg 3.0.7, visualg 3, visualg 3.0, visualg online, visualg 3.0.7 online, ide visualg, pseudocódigo, algoritmos, lógica de programação, programação em português, aprender programar, ensino de programação">
+    <meta name="author" content="Murilo Gregorio Alves">
+    <meta name="robots" content="index, follow">
+    <meta name="theme-color" content="#1f1f22">
+    <link rel="manifest" href="manifest.json">
+    <link rel="icon" type="image/png" href="./assets/logo-visualg@0.25x-CzR5TBgn.png">
+    <link rel="apple-touch-icon" href="icons/visualg-180.png">
+
+    <!-- Open Graph -->
+    <meta property="og:title" content="VisuAlg Web - IDE Online para VisuAlg">
+    <meta property="og:description" content="Escreva, execute e depure algoritmos em pseudocódigo português diretamente no navegador. Gratuito e sem instalação.">
+    <meta property="og:image" content="images/logo/logo-visualg.png">
+    <meta property="og:type" content="website">
+    <meta property="og:locale" content="pt_BR">
+
+    <!-- Twitter Card -->
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="VisuAlg Web - IDE Online para VisuAlg">
+    <meta name="twitter:description" content="Escreva, execute e depure algoritmos em pseudocódigo português diretamente no navegador.">
+    <meta name="twitter:image" content="images/logo/logo-visualg.png">
+
+    <!-- CodeMirror 5 -->
+    <style>
+        html[data-app-loading] body > :not(#app-boot) { visibility: hidden; }
+        #app-boot { --boot-accent:var(--ide-accent,#ff168d); --boot-bg:var(--ide-canvas,#08090f); --boot-fg:var(--ide-foreground,#f7f7fb); position:fixed; inset:0; z-index:99999; display:grid; place-items:center; overflow:hidden; isolation:isolate; background:var(--boot-bg); color:var(--boot-fg); opacity:1; }
+        #app-boot::before,#app-boot::after { display:none; }
+        #app-boot.is-leaving { animation:boot-dissolve-exit 760ms cubic-bezier(.22,1,.36,1) both; pointer-events:none; }
+        body.app-entering > :not(#app-boot) { animation:app-content-unblur 900ms cubic-bezier(.22,1,.36,1) both; }
+        #app-boot[hidden] { display:none; }
+        .app-boot-card { position:relative; display:grid; justify-items:center; gap:0; width:min(520px,calc(100vw - 32px)); padding:36px 24px; text-align:center; font:14px/1.4 Inter,"Segoe UI",Arial,sans-serif; animation:boot-card-arrive 1050ms cubic-bezier(.16,1,.3,1) both; }
+        .app-boot-logo-stage { position:relative; display:grid; place-items:center; width:154px; height:154px; margin:0 0 9px; isolation:isolate; }
+        .app-boot-logo-stage::before,.app-boot-logo-stage::after { position:absolute; inset:10px; border:1px solid #ff168d30; border-radius:50%; content:""; animation:boot-orbit 9s linear infinite; }
+        .app-boot-logo-stage::after { inset:0; border-color:#73e9ff20; transform:rotateX(68deg) rotate(30deg); animation-duration:13s; animation-direction:reverse; }
+        .app-boot-logo-aura { display:none; }
+        .app-boot-logo { position:relative; z-index:1; width:142px; height:142px; object-fit:contain; animation:boot-logo-in 900ms cubic-bezier(.16,1,.3,1) both,boot-logo-float 4s ease-in-out 1s infinite; }
+        .app-boot-title { display:flex; justify-content:center; gap:.22em; margin:0; font-size:clamp(31px,5vw,46px); line-height:1.1; font-weight:600; letter-spacing:-.045em; animation:boot-copy-in 750ms 180ms cubic-bezier(.16,1,.3,1) both; }
+        .app-boot-title-web { color:var(--boot-accent); text-shadow:0 0 22px color-mix(in srgb,var(--boot-accent) 32%,transparent); }
+        .app-boot-version { margin-top:13px; color:var(--ide-muted,#aeb0bf); font-size:13px; letter-spacing:.22em; animation:boot-copy-in 700ms 300ms cubic-bezier(.16,1,.3,1) both; }
+        .app-boot-spinner { position:relative; width:58px; height:58px; margin:34px 0 19px; border:3px solid color-mix(in srgb,var(--boot-fg) 12%,transparent); border-top-color:var(--boot-accent); border-right-color:color-mix(in srgb,var(--boot-accent) 58%,transparent); border-radius:50%; box-shadow:0 0 24px color-mix(in srgb,var(--boot-accent) 20%,transparent); animation:app-boot-spin .9s linear infinite,boot-spinner-in 650ms 420ms cubic-bezier(.16,1,.3,1) both; }
+        .app-boot-spinner::after { position:absolute; inset:7px; border:1px solid color-mix(in srgb,var(--boot-fg) 14%,transparent); border-bottom-color:var(--boot-accent); border-radius:50%; content:""; animation:app-boot-spin 2.4s linear infinite reverse; }
+        .app-boot-status { margin:0; color:var(--ide-muted,#c8c8d3); font-size:13px; letter-spacing:.075em; animation:boot-copy-in 700ms 480ms cubic-bezier(.16,1,.3,1) both; }
+        .app-boot-status::after { display:inline-block; width:1.5em; text-align:left; content:""; animation:boot-ellipsis 1.4s steps(4,end) infinite; }
+        .app-boot-error { max-width:360px; color:#ffb4ab; }
+        .app-boot-reload { padding:9px 16px; border:0; border-radius:6px; background:#f4f4f5; color:#1f1f22; font:inherit; cursor:pointer; }
+        html[data-boot-skin="classic"] #app-boot { --boot-bg:#008080; --boot-fg:#000; display:grid; background:#008080; font:11px/1.25 "MS Sans Serif",Tahoma,Arial,sans-serif; image-rendering:pixelated; }
+        html[data-boot-skin="classic"] #app-boot::before { position:absolute; inset:0; display:block; background:radial-gradient(ellipse at 50% 46%,#119393 0,#008080 68%); content:""; animation:classic-desktop-in 650ms steps(8,end) both; }
+        html[data-boot-skin="classic"] #app-boot::after { position:absolute; inset:0; display:block; pointer-events:none; background:repeating-linear-gradient(0deg,#0000 0 3px,#00000008 4px); content:""; }
+        html[data-boot-skin="classic"] #app-boot.is-leaving { animation:classic-boot-exit 620ms steps(8,end) both; }
+        html[data-boot-skin="classic"] .app-boot-card { z-index:1; display:block; width:min(440px,calc(100vw - 30px)); padding:3px; border:2px solid; border-color:#fff #404040 #404040 #fff; background:#c0c0c0; box-shadow:1px 1px 0 #000,inset 1px 1px #dfdfdf; text-align:left; font:11px/1.25 "MS Sans Serif",Tahoma,Arial,sans-serif; animation:classic-window-pop 680ms steps(7,end) both; }
+        html[data-boot-skin="classic"] .app-boot-card > .app-boot-logo-stage,html[data-boot-skin="classic"] .app-boot-card > div:not(.app-boot-classic-content),html[data-boot-skin="classic"] .app-boot-card > #app-boot-spinner,html[data-boot-skin="classic"] .app-boot-card > #app-boot-status { display:none; }
+        html[data-boot-skin="classic"] .app-boot-classic-titlebar { display:flex; height:23px; align-items:center; gap:7px; padding:2px 5px; background:#000080; color:#fff; font-weight:bold; letter-spacing:0; }
+        .app-boot-classic-titlebar { display:none; }
+        html[data-boot-skin="classic"] .app-boot-classic-titlebar { display:flex; }
+        html[data-boot-skin="classic"] .app-boot-classic-titlebar img { width:16px; height:16px; image-rendering:pixelated; }
+        html[data-boot-skin="classic"] .app-boot-classic-titlebar span { margin-left:auto; padding:0 4px; border:1px solid; border-color:#fff #404040 #404040 #fff; background:#c0c0c0; color:#000; font:bold 12px/14px Tahoma,Arial,sans-serif; }
+        html[data-boot-skin="classic"] .app-boot-classic-content { padding:22px 23px 17px; }
+        .app-boot-classic-content { display:none; }
+        html[data-boot-skin="classic"] .app-boot-classic-content { display:block; }
+        html[data-boot-skin="classic"] .app-boot-brand { display:flex; align-items:center; gap:15px; min-height:72px; }
+        html[data-boot-skin="classic"] .app-boot-logo-stage { width:62px; height:62px; margin:0; }
+        html[data-boot-skin="classic"] .app-boot-logo-stage::before,html[data-boot-skin="classic"] .app-boot-logo-stage::after { display:none; }
+        html[data-boot-skin="classic"] .app-boot-logo { width:58px; height:58px; image-rendering:pixelated; animation:classic-logo-reveal 700ms steps(5,end) both; }
+        html[data-boot-skin="classic"] .app-boot-title { justify-content:flex-start; gap:4px; color:#000; font-size:25px; line-height:1; font-weight:bold; letter-spacing:-1.2px; animation:classic-text-in 480ms steps(5,end) 120ms both; }
+        html[data-boot-skin="classic"] .app-boot-title-web { color:#000080; text-shadow:none; }
+        html[data-boot-skin="classic"] .app-boot-version { margin-top:7px; color:#404040; font-size:11px; letter-spacing:0; animation:classic-text-in 420ms steps(4,end) 220ms both; }
+        html[data-boot-skin="classic"] .app-boot-classic-rule { height:2px; margin:12px 0 13px; border-top:1px solid #808080; border-bottom:1px solid #fff; }
+        html[data-boot-skin="classic"] .app-boot-status { min-height:16px; margin:0 0 9px; color:#222; font-size:11px; letter-spacing:0; text-align:left; animation:classic-text-in 400ms steps(4,end) 300ms both; }
+        html[data-boot-skin="classic"] .app-boot-status::after { width:1.5em; animation:boot-ellipsis 1.2s steps(4,end) infinite; }
+        html[data-boot-skin="classic"] .app-boot-spinner { display:none; }
+        html[data-boot-skin="classic"] .app-boot-progress-frame { height:19px; padding:2px; border:2px solid; border-color:#808080 #fff #fff #808080; background:#c0c0c0; }
+        .app-boot-progress-frame { display:none; }
+        html[data-boot-skin="classic"] .app-boot-progress-frame { display:block; }
+        html[data-boot-skin="classic"] .app-boot-progress { width:0; height:100%; background:repeating-linear-gradient(90deg,#000080 0 12px,#000080 12px,#c0c0c0 12px,#c0c0c0 15px); animation:classic-progress 1.8s steps(9,end) 150ms forwards; }
+        html[data-boot-skin="classic"] .app-boot-classic-footer { display:flex; justify-content:flex-start; align-items:center; gap:12px; margin-top:13px; color:#404040; font-size:10px; }
+        .app-boot-classic-footer { display:none; }
+        html[data-boot-skin="classic"] .app-boot-error { color:#800000; }
+        html[data-boot-skin="classic"] .app-boot-reload { border:2px solid; border-color:#fff #404040 #404040 #fff; border-radius:0; background:#c0c0c0; color:#000; font:11px Tahoma,Arial,sans-serif; }
+        html[data-boot-skin="steam"] #app-boot { --boot-bg:#000; --boot-fg:#d6d8c9; display:grid; background:#000; font:14px/1.3 Tahoma,Verdana,Arial,sans-serif; }
+        html[data-boot-skin="steam"] #app-boot::before,html[data-boot-skin="steam"] #app-boot::after { display:none; }
+        html[data-boot-skin="steam"] #app-boot.is-leaving { animation:classic-boot-exit 420ms steps(6,end) both; }
+        html[data-boot-skin="steam"] .app-boot-card { box-sizing:border-box; display:block; width:min(534px,calc(100vw - 28px)); min-height:300px; padding:10px; border:1px solid #75806b; background:#4c5844; box-shadow:none; text-align:left; font:14px/1.3 Tahoma,Verdana,Arial,sans-serif; animation:steam-load-in 480ms steps(6,end) both; }
+        html[data-boot-skin="steam"] .app-boot-card > :not(.steam-boot-content):not(#app-boot-error):not(#app-boot-reload) { display:none !important; }
+        .steam-boot-content { display:none; }
+        html[data-boot-skin="steam"] .steam-boot-content { display:block; }
+        html[data-boot-skin="steam"] .steam-boot-title { display:flex; align-items:center; gap:7px; margin:0 0 12px; color:#e0e3d4; font:18px/1.25 Tahoma,Verdana,Arial,sans-serif; }
+        html[data-boot-skin="steam"] .steam-boot-title img { width:18px; height:18px; object-fit:contain; image-rendering:pixelated; }
+        html[data-boot-skin="steam"] .steam-boot-status { margin:0 0 4px 17px; color:#bbc4af; font:14px/1.3 Tahoma,Verdana,Arial,sans-serif; }
+        html[data-boot-skin="steam"] .steam-boot-progress-frame { box-sizing:border-box; width:min(366px,calc(100% - 18px)); height:27px; margin:0 0 11px 17px; padding:3px; border:1px solid #293227; background:#3b4637; }
+        html[data-boot-skin="steam"] .steam-boot-progress { width:0; height:100%; background:repeating-linear-gradient(90deg,#c6b560 0 12px,transparent 12px 16px); animation:steam-load-progress 1.55s steps(13,end) 100ms forwards; }
+        html[data-boot-skin="steam"] .steam-boot-secondary { margin:0 0 4px 17px; color:#bbc4af; font:14px/1.3 Tahoma,Verdana,Arial,sans-serif; }
+        html[data-boot-skin="steam"] .steam-boot-progress-frame.secondary { margin-bottom:12px; }
+        html[data-boot-skin="steam"] .steam-boot-progress-frame.secondary .steam-boot-progress { animation-delay:420ms; }
+        html[data-boot-skin="steam"] #app-boot-error { margin:8px 17px 0; color:#f0a29a; }
+        html[data-boot-skin="steam"] #app-boot-reload { margin:10px 17px; padding:5px 12px; border:1px solid #293227; border-radius:0; background:#596653; color:#e0e3d4; font:12px Tahoma,Verdana,Arial,sans-serif; }
+        @keyframes steam-load-in { from { opacity:0; transform:scale(.98); } to { opacity:1; transform:none; } }
+        @keyframes steam-load-progress { to { width:100%; } }
+        @keyframes classic-desktop-in { from { opacity:0; } to { opacity:1; } }
+        @keyframes classic-window-pop { 0% { opacity:0; transform:translateY(16px) scale(.97); } 70% { opacity:1; transform:translateY(-2px) scale(1.005); } 100% { opacity:1; transform:none; } }
+        @keyframes classic-logo-reveal { from { opacity:0; transform:scale(.5); filter:contrast(2); } to { opacity:1; transform:scale(1); filter:none; } }
+        @keyframes classic-text-in { from { opacity:0; transform:translateX(-8px); } to { opacity:1; transform:none; } }
+        @keyframes classic-progress { to { width:100%; } }
+        @keyframes classic-boot-exit { 0% { opacity:1; } 55% { opacity:1; transform:scale(1.012); } 100% { opacity:0; transform:scale(1.025); } }
+        @keyframes app-boot-spin { to { transform:rotate(360deg); } }
+        @keyframes boot-aura { 0%,100% { opacity:.65; transform:scale(.88); } 50% { opacity:1; transform:scale(1.13); } }
+        @keyframes boot-orbit { to { transform:rotate(360deg); } }
+        @keyframes boot-card-arrive { from { opacity:0; transform:translateY(26px) scale(.94); filter:blur(12px); } to { opacity:1; transform:translateY(0) scale(1); filter:blur(0); } }
+        @keyframes boot-logo-in { from { opacity:0; transform:scale(.45) rotate(-14deg); } to { opacity:1; transform:scale(1) rotate(0); } }
+        @keyframes boot-logo-float { 0%,100% { translate:0 0; } 50% { translate:0 -5px; } }
+        @keyframes boot-copy-in { from { opacity:0; transform:translateY(13px); filter:blur(6px); } to { opacity:1; transform:translateY(0); filter:blur(0); } }
+        @keyframes boot-spinner-in { from { opacity:0; scale:.55; } to { opacity:1; scale:1; } }
+        @keyframes boot-ellipsis { 0% { content:""; } 25% { content:"."; } 50% { content:".."; } 75%,100% { content:"..."; } }
+        @keyframes boot-dissolve-exit { from { opacity:1; filter:blur(0); } to { opacity:0; filter:blur(12px); } }
+        @keyframes app-content-unblur { from { opacity:.7; filter:blur(10px); transform:scale(1.008); } to { opacity:1; filter:blur(0); transform:scale(1); } }
+        @media (max-width:600px) { .app-boot-logo-stage { width:136px; height:136px; } .app-boot-logo { width:124px; height:124px; } .app-boot-spinner { margin-top:29px; } }
+        @media (prefers-reduced-motion:reduce) { .app-boot-logo-stage::before,.app-boot-logo-stage::after,.app-boot-logo,.app-boot-title,.app-boot-version,.app-boot-spinner,.app-boot-spinner::after,.app-boot-status,.app-boot-status::after,.app-boot-card,#app-boot::before,.app-boot-progress,.steam-boot-progress { animation-duration:.01ms !important; animation-iteration-count:1 !important; } #app-boot.is-leaving { animation:boot-reduced-exit 180ms ease-out both; } body.app-entering > :not(#app-boot) { animation-duration:.01ms !important; } @keyframes boot-reduced-exit { to { opacity:0; } } }
+    </style>
+    <script src="js/boot.8262c623bf.js"></script>
+
+    <!-- Lucide Icons -->
+    <script src="unpk/lucide.min.bd712c6930.js"></script>
+    <script src="js/lucide-helper.9864b77301.js"></script>
+    <!-- Marked (Markdown parser) -->
+    <script src="jsdelivr/marked.min.281748b82e.js"></script>
+  <link rel="stylesheet" crossorigin href="./assets/main-Dv5Zs__C.css">
+  <link rel="stylesheet" crossorigin href="./assets/fonts-DktT97-D.css">
+</head>
+
+<body>
+    <div id="app-boot" role="status" aria-live="polite">
+        <div class="app-boot-card">
+            <div class="app-boot-classic-titlebar" aria-hidden="true"><img src="./assets/visualg-mark-B6MtKI0o.png" alt="" /><strong>VisuAlg Web — Iniciando</strong><span>×</span></div>
+            <div class="app-boot-classic-content">
+                <div class="app-boot-brand"><div class="app-boot-logo-stage" aria-hidden="true"><img class="app-boot-logo" src="./assets/visualg-mark-B6MtKI0o.png" alt="" /></div><div><h1 class="app-boot-title"><span>VisuAlg</span><span class="app-boot-title-web">Web</span></h1><div class="app-boot-version">1.13</div></div></div>
+                <div class="app-boot-classic-rule"></div>
+                <p class="app-boot-status" id="app-boot-status-classic">Preparando a área de trabalho</p>
+                <div class="app-boot-progress-frame" aria-hidden="true"><div class="app-boot-progress"></div></div>
+                <div class="app-boot-classic-footer"><span>Carregando componentes do sistema</span></div>
+            </div>
+            <div class="steam-boot-content" aria-hidden="true">
+                <h1 class="steam-boot-title"><img src="./assets/visualg-mark-B6MtKI0o.png" alt="" />VisuAlg Web — Loading...</h1>
+                <p class="steam-boot-status">Verificando e preparando recursos...</p>
+                <div class="steam-boot-progress-frame"><div class="steam-boot-progress"></div></div>
+                <p class="steam-boot-secondary">Iniciando editor e carregando arquivos...</p>
+                <div class="steam-boot-progress-frame secondary"><div class="steam-boot-progress"></div></div>
+            </div>
+            <div class="app-boot-logo-stage" aria-hidden="true"><img class="app-boot-logo" src="./assets/visualg-mark-B6MtKI0o.png" alt="" /></div>
+            <div><h1 class="app-boot-title"><span>VisualG</span><span class="app-boot-title-web">Web</span></h1><div class="app-boot-version">1.13</div></div>
+            <div class="app-boot-spinner" id="app-boot-spinner" aria-label="Carregando"></div>
+            <p class="app-boot-status" id="app-boot-status">Inicializando ambiente</p>
+            <p class="app-boot-error" id="app-boot-error" hidden></p>
+            <button class="app-boot-reload" id="app-boot-reload" type="button" hidden onclick="location.reload()">Recarregar</button>
+        </div>
+    </div>
+    <!-- Header / Toolbar -->
+    <header class="header">
+        <div class="win95-chrome" aria-label="Controles clássicos do VisuAlg Web">
+            <div class="win95-titlebar"><img src="./assets/visualg-mark-B6MtKI0o.png" alt="" /><strong id="win95-title">VisuAlg Web</strong></div>
+            <nav class="win95-menubar" aria-label="Menu principal">
+                <details><summary>Arquivo</summary><div class="win95-dropdown"><button data-win95-target="btn-new-workspace-file">Novo arquivo</button><button data-win95-target="btn-open">Abrir...</button><button data-win95-target="btn-save">Salvar</button><hr><button data-win95-target="btn-print">Imprimir...</button></div></details>
+                <details><summary>Editar</summary><div class="win95-dropdown"><button data-win95-command="undo">Desfazer</button><button data-win95-command="redo">Refazer</button><hr><button data-win95-command="selectAll">Selecionar tudo</button><button data-win95-target="btn-tab-indent">Indentar</button></div></details>
+                <details><summary>Exibir</summary><div class="win95-dropdown"><button data-win95-target="btn-toggle-left">Painel de arquivos</button><button data-win95-target="btn-toggle-right">Painel de controle</button><button data-win95-target="btn-show-console">Console</button><button data-win95-target="btn-scale">Temas</button></div></details>
+                <details><summary>Executar</summary><div class="win95-dropdown"><button data-win95-target="btn-run">Executar / Parar <span>F5</span></button><button data-win95-target="debug-start">Depurar</button><button data-win95-target="btn-step">Próxima linha <span>F10</span></button><button data-win95-target="btn-stop">Parar</button></div></details>
+                <details><summary>Ferramentas</summary><div class="win95-dropdown"><button data-win95-target="btn-settings">Configurações</button><button data-win95-target="btn-focus-mode">Modo foco</button><button data-win95-target="btn-history">Histórico</button></div></details>
+                <details><summary>Ajuda</summary><div class="win95-dropdown"><button data-win95-target="btn-docs">Documentação</button><button data-win95-target="btn-examples">Exemplos</button><button data-win95-target="btn-report-bug">Relatar problema</button></div></details>
+            </nav>
+            <div class="win95-toolbar" role="toolbar" aria-label="Ações principais"><span class="win95-grip" aria-hidden="true"></span><button class="win95-mobile-action" data-win95-target="mobile-files">Arquivos</button><button class="win95-mobile-action" data-win95-target="mobile-editor">Editor</button><button class="win95-mobile-action" data-win95-target="mobile-debug">Controle</button><span class="win95-toolbar-divider win95-mobile-action" aria-hidden="true"></span><button data-win95-target="btn-new-workspace-file"><img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQBAMAAADt3eJSAAAAIGNIUk0AAHomAACAhAAA+gAAAIDoAAB1MAAA6mAAADqYAAAXcJy6UTwAAAAPUExURQAAAAAAAP///4CAgAAAgB2LNkEAAAABdFJOUwBA5thmAAAAAWJLR0QAiAUdSAAAAAlwSFlzAAAAYAAAAGAA8GtCzwAAAAd0SU1FB+oKGAAHBOw6p0sAAAAldEVYdGRhdGU6Y3JlYXRlADIwMjYtMTAtMjRUMDA6MDM6MDgrMDA6MDDD3y4QAAAAJXRFWHRkYXRlOm1vZGlmeQAyMDI2LTEwLTI0VDAwOjAzOjA4KzAwOjAwsoKWrAAAACh0RVh0ZGF0ZTp0aW1lc3RhbXAAMjAyNi0xMC0yNFQwMDowNzowNCswMDowMCvcfX0AAAA+SURBVAjXY2AQBAIGEBBSUlIWgDEEYQxDKENJEZWh4uKET0QBIgJlAAUEFQUgDCUloBDIUkEFBghgFGCAAwC40Ak327X7zAAAAABJRU5ErkJggg==" alt="" />Novo</button><button data-win95-target="btn-open"><img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQBAMAAADt3eJSAAAAIGNIUk0AAHomAACAhAAA+gAAAIDoAAB1MAAA6mAAADqYAAAXcJy6UTwAAAAPUExURQAAAAAAAP///4CAAP//ADDWysUAAAABdFJOUwBA5thmAAAAAWJLR0QAiAUdSAAAAAlwSFlzAAAAYAAAAGAA8GtCzwAAAAd0SU1FB+oKGAAHBOw6p0sAAAAldEVYdGRhdGU6Y3JlYXRlADIwMjYtMTAtMjRUMDA6MDM6MDgrMDA6MDDD3y4QAAAAJXRFWHRkYXRlOm1vZGlmeQAyMDI2LTEwLTI0VDAwOjAzOjA4KzAwOjAwsoKWrAAAACh0RVh0ZGF0ZTp0aW1lc3RhbXAAMjAyNi0xMC0yNFQwMDowNzowNCswMDowMCvcfX0AAAA1SURBVAjXY2DADRgFBQUgDCUlQRhDURAkCpQShDBMXIDAGcgwxBCBM4yUgADEMAYDJO0YAABJ0QnRNHHq9AAAAABJRU5ErkJggg==" alt="" />Abrir</button><button data-win95-target="btn-save"><img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQBAMAAADt3eJSAAAAIGNIUk0AAHomAACAhAAA+gAAAIDoAAB1MAAA6mAAADqYAAAXcJy6UTwAAAAPUExURQAAAAAAAAAAgP///4CAgACzZyUAAAABdFJOUwBA5thmAAAAAWJLR0QAiAUdSAAAAAlwSFlzAAAAYAAAAGAA8GtCzwAAAAd0SU1FB+oKGAAHBOw6p0sAAAAldEVYdGRhdGU6Y3JlYXRlADIwMjYtMTAtMjRUMDA6MDM6MDgrMDA6MDDD3y4QAAAAJXRFWHRkYXRlOm1vZGlmeQAyMDI2LTEwLTI0VDAwOjAzOjA4KzAwOjAwsoKWrAAAACh0RVh0ZGF0ZTp0aW1lc3RhbXAAMjAyNi0xMC0yNFQwMDowNzowNCswMDowMCvcfX0AAAA1SURBVAjXY2CAAUZBEBAAMpSMjY1dFGEMJQFcDGMwAwyADEWQdiEUKRMXF2cl/CKCMFuhAADvow4mZ6mApgAAAABJRU5ErkJggg==" alt="" />Salvar</button><span class="win95-toolbar-divider" aria-hidden="true"></span><button data-win95-target="btn-run"><img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQAgMAAABinRfyAAAAIGNIUk0AAHomAACAhAAA+gAAAIDoAAB1MAAA6mAAADqYAAAXcJy6UTwAAAAMUExURQAAAAAAAACAAAD/ABcrenYAAAABdFJOUwBA5thmAAAAAWJLR0QAiAUdSAAAAAlwSFlzAAAAYAAAAGAA8GtCzwAAAAd0SU1FB+oKGAAHBOw6p0sAAAAldEVYdGRhdGU6Y3JlYXRlADIwMjYtMTAtMjRUMDA6MDM6MDgrMDA6MDDD3y4QAAAAJXRFWHRkYXRlOm1vZGlmeQAyMDI2LTEwLTI0VDAwOjAzOjA4KzAwOjAwsoKWrAAAACh0RVh0ZGF0ZTp0aW1lc3RhbXAAMjAyNi0xMC0yNFQwMDowNzowNCswMDowMCvcfX0AAAA3SURBVAjXY2AAAUYHEDEFRKwAETuBfMZdDUBi9xQQsQJErHQAik0FESCxlSEgAqRuKogIYYAAAB6zDgCFGGC3AAAAAElFTkSuQmCC" alt="" />Executar</button><button data-win95-target="debug-start"><img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQBAMAAADt3eJSAAAAIGNIUk0AAHomAACAhAAA+gAAAIDoAAB1MAAA6mAAADqYAAAXcJy6UTwAAAAPUExURQAAAAAAAIAAAP8AAP///80hahwAAAABdFJOUwBA5thmAAAAAWJLR0QAiAUdSAAAAAlwSFlzAAAAYAAAAGAA8GtCzwAAAAd0SU1FB+oKGAAHBOw6p0sAAAAldEVYdGRhdGU6Y3JlYXRlADIwMjYtMTAtMjRUMDA6MDM6MDgrMDA6MDDD3y4QAAAAJXRFWHRkYXRlOm1vZGlmeQAyMDI2LTEwLTI0VDAwOjAzOjA4KzAwOjAwsoKWrAAAACh0RVh0ZGF0ZTp0aW1lc3RhbXAAMjAyNi0xMC0yNFQwMDowNzowNCswMDowMCvcfX0AAABESURBVAjXY2BAAoKCaAxGQUEBCENJSQAioGwEEmIUFFI2UgSyGAVFXFwcwUIgEZAiGANJDZQBNFhJSRBqA8wOuKVgAAC73AaUA+Co0QAAAABJRU5ErkJggg==" alt="" />Depurar</button><span class="win95-toolbar-divider" aria-hidden="true"></span><button data-win95-target="btn-scale">Temas</button><button data-win95-target="btn-settings">Opções</button><div class="win95-header-actions" role="toolbar" aria-label="Ações rápidas"><button type="button" data-win95-target="btn-print" title="Imprimir código" aria-label="Imprimir código"><i data-lucide="printer"></i></button><button type="button" data-win95-target="btn-show-console" title="Abrir console" aria-label="Abrir console"><i data-lucide="terminal"></i></button><button type="button" data-win95-target="btn-theme" title="Alternar modo claro/escuro" aria-label="Alternar modo claro/escuro"><i data-lucide="sun"></i></button><button type="button" data-win95-target="btn-scale" title="Escolher paleta de cores" aria-label="Escolher paleta de cores"><i data-lucide="palette"></i></button><button type="button" data-win95-target="btn-toggle-left" title="Ocultar arquivos" aria-label="Ocultar arquivos" aria-pressed="true"><i data-lucide="panel-left-close"></i></button><button type="button" data-win95-target="btn-toggle-right" title="Ocultar depuração" aria-label="Ocultar depuração" aria-pressed="true"><i data-lucide="panel-right-close"></i></button><button type="button" data-win95-target="btn-focus-mode" title="Modo foco do editor" aria-label="Ativar modo foco" aria-pressed="false"><i data-lucide="maximize"></i></button><button type="button" data-win95-target="btn-settings" title="Configurações" aria-label="Configurações" aria-pressed="false"><i data-lucide="sliders-horizontal"></i></button><button type="button" data-win95-target="btn-report-bug" title="Relatar um problema" aria-label="Relatar um problema"><i data-lucide="message-circle-warning"></i></button></div></div>
+        </div>
+        <div class="header-logo">
+            <button id="btn-home" class="logo-home" type="button" title="Voltar ao editor"><img class="logo-img" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAGUAAABlCAYAAABUfC3PAAAACXBIWXMAAALEAAACxAFbkZ0LAAAGTklEQVR4nO2cTW4iORiGn4xmiZTMCUIvWYU+QegTJCMO0NUnSOYGzAmGPkGbA6AhJxhyg/SK5VRuABL7zMJVaiBVVPnzb2v8SFEElH+o1/ZnvzZ18fb2RiYtfoldgcx7sigJkkVJkCxKgmRREiSLkiBZlATJoiRIFiVBsigJkkVJkCxKgmRREiSLkiBZlATJoiRIFiVBsigJ8quDPCZAAQyr11tgBSgHeTtjM5gWwD1wVb1VAmq0X64jVamVC4s9+iv0jb9r+fw7WqwXaQEu2AymY3QjuW65ZAE8jvbLbbhancdGlDVw23HNDt2DonzhzWA6RDeKy45Ln0b75b3/GvVDGlMKugUBfTPmwjJcMKdbEIC7anhLAqkojwbXfuZHvAlG1UvahtYmfvqecmN4fSEsxwaThgMw9lILAaGmxEWgcmzKbJsIBCeUKNcEFKaKD31iySHfPVRFhFSUJ0GaQliWBNOhC/QsbSxM6xSpKEqQ5pYAAb9al5jGPNDfqeAnFmUFvArSzYTlmSC5qa/Vyr5AD7UTh/UxxiamKEGaQ5vDOZvB9Ao9BTdlhhakjkNRe4uNKJJF4SV+1wOFIM0O3fMPhbgjwtqqxkaULdo3MmVmUWYXkha+Gu2XQ97HocK6NkJsp8RKkMbLmL0ZTO+RrTVmNIsZbQizFWWNbH5fWJbrKs/nyh1uikOXwjytcbF4lMSWzzgM+AKfq0Zx/saf+8wbLkRZoYOlKS6HB+k0WHWkvSWCJ+ZClC2y2FI4KNsmL4WeCXbFoeCxxZX3JRnCrnEwPRb6XNA9dNV4XVs14UqUEngWpHPRCiV5LEb7JfSLQ8EDvkuXWNJbrPwwS5/LRMygQ5hLUaR+mM0XtvW5+hLUD3O9n6IEaQoEY7ZDn6svwXqLa1FC+mGFIE2Tz9WXYH6Ya1GkfpjkJrn0ufpSCNMZ4WM7WAnS3GAwZnvwufoSZAjzIcoa/36YybU153yuvgSZHvs6OCH1wyZdF3n0ufriIo+z+BJF6oet6BbGl8/VF+9+mC9RpH7YJfAPWpx79Jcfo1vnrLqmEOSr6Odz9cVrbLE54N3FEPjXYX5/bAbTLfBNkPbDaL+cIxv2mvB6cN3nYbwSmR/WxA5za6RmMdovS3Tv+w24qP4+Ipu+g+eA7/uEpKsT96sqwEt9rvr/Yct+Qd/YT8TfDzrCtyhSP+yUOXY+1znWyFq9Nz8sxFliZZn+eTOYlsh9rj6siLf18I4QotgOYQo7n8ukHFO8+GEhRJH6YWAX4FeGv2NUyGJLIUhzllA/hVDCdHNLn8u4PEEa50NYKFHWyPwwhdznKoXlmeJ8ehzy4QamrfBpM5iC3OeSUJLAb298ruhPuUJ/6b47fp+qoevBsJzXas/klIIfts0W3XtXVZ0OmaCtHlM+4uiZASF7iokf9op8/XBaxj36xn9DC3yL7n1/oW2gOcfb0WvCnzU4IvSzWfoOYXPL81w1BfA35ycKD2ghDoWRBHxn58NCi1LSvUhz4XOBHqb6mpc3HM/WFObTY2cBP8ZTjLpaoQufC8ynxA+8f+iPKU6GsBiidPlhrnwuyazt8FSN9CjuRJDuiFjP+1It77vyuSaC9HBsmbwQyQ+LJUpbK1SE8bnaGJ68VoI8rP2wWKI0+WEufa5SVq136wxFBD8s5uMK1clrlz5XiWyt0bT4C+6HxRRlzbEfpnDrcynDfF5pHgJN8wHL6XHsB3vWrdCHzzXDzAQtWt4vCeyHxRalPh+msDvP1caEbmF2wBd0z21D+tsb0fmw2KJs0S26zyG8JlSP/MfAnzTHmEX1eVc+65b0XRSCNEFd4rNsBlNJRT4Y7ptc8cMlNnV0H9EmpgnPCBpb7J4CwGYwnQiSLQQbWbVlL7HYFbLpsTFJiCJ8YLNyXI0upH6YMUmIUmEyU+pznssHpgFftOmVkijK4NqZpzp0YeKH7RAer0om0ANsBtM13Q+hXoz2y8J/bVoZ0u+p4F8QDrEp9RTQ1vnXM59/jSwI6MXkmPYeswN+xyLmJdVTaqpNrsPt1S3adCxj1amFMcd7MCV6MmD1E4kkRfm/k9rwlSGLkiRZlATJoiRIFiVBsigJkkVJkCxKgmRREiSLkiBZlATJoiRIFiVBsigJkkVJkCxKgmRREiSLkiD/AffPpzxz+Ag8AAAAAElFTkSuQmCC" alt="" /><span class="logo-text">VisuAlg Web</span><span class="logo-version">1.13</span></button>
+            <button type="button" class="beta-tag" title="Abrir status do projeto">Beta</button>
+        </div>
+        <div class="header-history"><button id="btn-nav-back" title="Voltar" aria-label="Voltar"><i data-lucide="arrow-left"></i></button><button id="btn-nav-forward" title="Avançar" aria-label="Avançar"><i data-lucide="arrow-right"></i></button></div>
+        <div class="command-bar" role="search">
+            <input id="command-input" type="search" placeholder="" aria-label="Pesquisar comandos" title="Comandos (Ctrl+Shift+P)">
+            <div id="command-results" class="command-results hidden"></div>
+        </div>
+        <div class="header-controls">
+            <div class="controls-exec">
+                <button id="btn-run" class="toolbar-btn btn-run" title="Executar — F5"><i data-lucide="play"></i> Executar</button>
+                <button id="btn-step" class="toolbar-btn btn-step" title="Próxima linha — F10"><i data-lucide="skip-forward"></i> Próxima linha</button>
+                <button id="btn-stop" class="toolbar-btn btn-stop" title="Parar — Shift + F5" disabled><i data-lucide="square"></i> Parar</button>
+            </div>
+            <span class="toolbar-separator"></span>
+            <div class="controls-file">
+                <button id="btn-open" class="toolbar-btn" title="Abrir arquivo"><i data-lucide="folder-open"></i> Abrir</button>
+                <div class="btn-group" id="save-group">
+                    <button id="btn-save" class="toolbar-btn" title="Salvar arquivo"><i data-lucide="download"></i> Salvar</button>
+                    <button id="btn-save-dropdown" class="toolbar-btn btn-dropdown" title="Opções de salvamento"><i data-lucide="chevron-down"></i></button>
+                    <div class="dropdown-menu hidden" id="save-menu">
+                        <button class="dropdown-item" data-format="alg">Salvar como .alg</button>
+                        <button class="dropdown-item" data-format="txt">Salvar como .txt</button>
+                    </div>
+                </div>
+                <input type="file" id="file-input" accept=".alg,.txt" style="display: none;">
+                <button id="btn-examples" class="toolbar-btn" title="Abrir exemplos prontos"><i data-lucide="library-big"></i> Exemplos</button>
+                <button id="btn-docs" class="toolbar-btn" title="Documentação"><i data-lucide="book-open"></i> Documentação</button>
+            </div>
+        </div>
+        <div class="header-actions">
+            <button id="btn-print" class="toolbar-btn" title="Imprimir código" aria-label="Imprimir código"><i data-lucide="printer"></i></button>
+            <button id="btn-show-console" class="toolbar-btn" title="Abrir console" aria-label="Abrir console" aria-pressed="false"><i data-lucide="terminal"></i></button>
+            <button id="btn-theme" class="toolbar-btn" title="Alternar modo claro/escuro" aria-label="Alternar modo claro/escuro"><i data-lucide="sun"></i></button>
+            <button id="btn-scale" class="toolbar-btn" title="Escolher paleta de cores" aria-label="Escolher paleta de cores" aria-pressed="false"><i data-lucide="palette"></i></button>
+            <button id="btn-toggle-left" class="toolbar-btn panel-toggle left-toggle" title="Ocultar arquivos" aria-label="Ocultar arquivos" aria-pressed="true"><i data-lucide="panel-left-close"></i></button>
+            <button id="btn-toggle-right" class="toolbar-btn panel-toggle right-toggle" title="Ocultar depuração" aria-label="Ocultar depuração" aria-pressed="true"><i data-lucide="panel-right-close"></i></button>
+            <button id="btn-focus-mode" class="toolbar-btn focus-mode-toggle" type="button" title="Modo foco do editor (Ctrl+Shift+F)" aria-label="Ativar modo foco" aria-pressed="false"><i data-lucide="maximize"></i></button>
+            <button id="btn-settings" class="toolbar-btn" title="Configurações" aria-label="Configurações" aria-pressed="false"><i data-lucide="sliders-horizontal"></i></button>
+            <button id="btn-report-bug" class="toolbar-btn" title="Relatar um problema" aria-label="Relatar um problema"><i data-lucide="message-circle-warning"></i></button>
+            <button id="btn-menu" class="toolbar-btn btn-menu" title="Menu" aria-label="Abrir menu" aria-expanded="false" aria-controls="mobile-menu"><i data-lucide="menu"></i></button>
+        </div>
+        <!-- Mobile menu -->
+        <div class="mobile-menu" id="mobile-menu">
+            <div class="mobile-menu-shortcuts" aria-label="Ações rápidas de execução">
+                <button class="mobile-menu-shortcut" id="mobile-run" type="button"><i data-lucide="play"></i><span>Executar</span></button>
+                <button class="mobile-menu-shortcut" id="mobile-step" type="button"><i data-lucide="skip-forward"></i><span>Passo</span></button>
+                <button class="mobile-menu-shortcut mobile-stop" id="mobile-stop" type="button" disabled><i data-lucide="square"></i><span>Parar</span></button>
+            </div>
+            <div class="mobile-menu-shortcuts mobile-history-shortcuts" aria-label="Histórico de navegação">
+                <button class="mobile-menu-shortcut" id="mobile-nav-back" type="button" disabled><i data-lucide="arrow-left"></i><span>Voltar</span></button>
+                <button class="mobile-menu-shortcut" id="mobile-nav-forward" type="button" disabled><i data-lucide="arrow-right"></i><span>Avançar</span></button>
+            </div>
+            <button class="mobile-menu-item" id="mobile-files"><i data-lucide="folder"></i> Arquivos e documentação</button>
+            <button class="mobile-menu-item" id="mobile-editor"><i data-lucide="code-2"></i> Editor</button>
+            <button class="mobile-menu-item" id="mobile-debug"><i data-lucide="play"></i> Execução e variáveis</button>
+            <button class="mobile-menu-item" id="mobile-open"><i data-lucide="folder-open"></i> Abrir</button>
+            <button class="mobile-menu-item" id="mobile-save-alg"><i data-lucide="download"></i> Salvar como .alg</button>
+            <button class="mobile-menu-item" id="mobile-save-txt"><i data-lucide="download"></i> Salvar como .txt</button>
+            <button class="mobile-menu-item" id="mobile-examples"><i data-lucide="library-big"></i> Exemplos</button>
+            <button class="mobile-menu-item" id="mobile-docs"><i data-lucide="book-open"></i> Documentação</button>
+            <button class="mobile-menu-item" id="mobile-settings"><i data-lucide="settings"></i> Configurações</button>
+            <button class="mobile-menu-item" id="mobile-focus-mode" type="button"><i data-lucide="maximize"></i> Modo foco do editor</button>
+            <button class="mobile-menu-item" id="mobile-report-bug"><i data-lucide="message-circle-warning"></i> Relatar um problema</button>
+            <button class="mobile-menu-item" id="mobile-install-app" type="button" hidden><i data-lucide="download"></i> Instalar aplicativo</button>
+        </div>
+    </header>
+
+    <!-- Conteúdo principal -->
+    <main class="main-content">
+        <div class="ide-shell">
+            <aside class="workspace-sidebar" id="workspace-sidebar">
+                <div class="sidebar-tabs" role="tablist" aria-label="Conteúdo da lateral">
+                    <button id="btn-sidebar-files" class="sidebar-tab active" type="button" role="tab" aria-selected="true" aria-controls="sidebar-files-panel">Arquivos</button>
+                    <button id="btn-sidebar-docs" class="sidebar-tab" type="button" role="tab" aria-selected="false" aria-controls="sidebar-docs-panel">Documentação</button>
+                </div>
+                <section class="file-tree sidebar-tab-panel active" id="sidebar-files-panel" role="tabpanel" aria-label="Arquivos">
+                    <div class="sidebar-actions" aria-label="Ações de arquivos">
+                        <button id="btn-upload-workspace" type="button" title="Importar arquivo" aria-label="Importar arquivo"><i data-lucide="file-up" aria-hidden="true"></i></button>
+                        <button id="btn-download-workspace" type="button" title="Exportar arquivo" aria-label="Exportar arquivo"><i data-lucide="file-down" aria-hidden="true"></i></button>
+                        <button id="btn-new-workspace-file" type="button" title="Novo arquivo" aria-label="Criar novo arquivo"><i data-lucide="file-plus-2" aria-hidden="true"></i></button>
+                        <button id="btn-new-workspace-folder" type="button" title="Nova pasta" aria-label="Criar nova pasta"><i data-lucide="folder-plus" aria-hidden="true"></i></button>
+                        <button id="btn-duplicate-workspace" type="button" title="Duplicar arquivo" aria-label="Duplicar arquivo"><i data-lucide="copy" aria-hidden="true"></i></button>
+                        <button id="sidebar-actions-more" class="sidebar-actions-more" type="button" title="Mais ações" aria-label="Mais ações" aria-expanded="false" aria-haspopup="menu" hidden><i data-lucide="ellipsis-vertical" aria-hidden="true"></i></button>
+                        <div id="sidebar-actions-menu" class="sidebar-actions-menu" role="menu" aria-label="Mais ações de arquivos" hidden></div>
+                    </div>
+                    <div id="desktop-project-toolbar" class="desktop-project-toolbar" hidden>
+                        <button id="btn-open-directory" type="button"><i data-lucide="folder-open" aria-hidden="true"></i><span id="btn-open-directory-label">Abrir pasta</span></button>
+                        <span id="desktop-project-label" hidden></span>
+                        <button id="btn-close-directory" type="button" title="Fechar pasta" aria-label="Fechar pasta" hidden><i data-lucide="x" aria-hidden="true"></i></button>
+                    </div>
+                    <div class="workspace-search"><i data-lucide="search" aria-hidden="true"></i><input id="workspace-file-search" type="search" aria-label="Pesquisar arquivos"></div>
+                    <div id="workspace-file-list"></div>
+                    <button id="btn-history" class="history-link" title="Histórico de recuperação"><i data-lucide="history"></i> Histórico</button>
+                </section>
+                <section class="docs-tree sidebar-tab-panel" id="sidebar-docs-panel" role="tabpanel" aria-label="Documentação" hidden>
+                    <div class="docs-title">Documentação <button id="btn-docs-sidebar" title="Sumário"><i data-lucide="book-open"></i></button></div>
+                    <div class="workspace-search"><i data-lucide="search" aria-hidden="true"></i><input id="docs-search" type="search" aria-label="Pesquisar documentação e exemplos"></div>
+                    <div id="workspace-doc-list"></div>
+                    <button id="btn-examples-sidebar" class="docs-example-link"><i data-lucide="library-big"></i> Exemplos</button>
+                </section>
+            </aside>
+            <div class="column-resizer" id="left-resizer" role="separator" aria-label="Redimensionar arquivos"></div>
+            <!-- Editor Column (tabs + editor) -->
+            <div class="editor-column">
+                <div class="tab-bar" role="tablist" aria-label="Abas abertas">
+                    <div class="tab-list" id="tab-list"></div>
+                    <button id="btn-tab-overview" class="tab-overview-trigger" type="button" title="Localizar e fechar abas" aria-label="Localizar e fechar abas" aria-expanded="false" aria-haspopup="dialog"><i data-lucide="list"></i></button>
+                    <button class="tab-add" id="btn-add-tab" title="Nova aba">+</button>
+                    <button class="tab-bar-indent" id="btn-tab-indent" title="Autoindentar código">
+                        <i data-lucide="indent-increase"></i>
+                        <span class="tab-bar-indent-label">Indentar</span>
+                    </button>
+                </div>
+                <div class="editor-panel" id="editorPanel">
+                    <div id="editor-empty-state" class="editor-empty-state" hidden>
+                        <div class="editor-empty-content">
+                            <div class="editor-empty-window-title" aria-hidden="true">Bem-vindo ao VisuAlg</div>
+                            <header class="editor-empty-intro">
+                                <i data-lucide="file-code-2" aria-hidden="true"></i>
+                                <div><h2>Bem-vindo ao VisuAlg</h2><p>Escolha como deseja começar.</p></div>
+                            </header>
+                            <div class="editor-empty-actions">
+                                <button id="btn-empty-new" class="editor-empty-primary" type="button"><i data-lucide="file-plus-2"></i><span><strong>Novo algoritmo</strong><small>Criar arquivo vazio</small></span></button>
+                                <button id="btn-empty-import" type="button"><i data-lucide="folder-up"></i><span><strong>Abrir arquivo</strong><small>Importar código existente</small></span></button>
+                            </div>
+                            <nav class="editor-empty-utilities" aria-label="Outras formas de começar">
+                                <button id="btn-empty-docs" type="button"><i data-lucide="book-open"></i> Documentação</button>
+                                <button id="btn-empty-restore-tabs" type="button"><i data-lucide="rotate-ccw"></i> Restaurar abas anteriores</button>
+                            </nav>
+                            <div class="editor-home-grid">
+                                <section id="daily-challenge-home" class="daily-challenge-home" aria-label="Desafio do Dia" hidden></section>
+                                <section id="editor-recent-files" class="editor-recent-files" aria-label="Códigos recentes" hidden>
+                                    <header><h3>Arquivos recentes</h3><i data-lucide="history" aria-hidden="true"></i></header>
+                                    <div id="editor-recent-list" class="editor-recent-list"></div>
+                                    <p id="editor-recent-empty" class="editor-recent-empty" hidden>Nenhum arquivo recente. Crie um algoritmo para começar.</p>
+                                    <p class="editor-recent-hint">Continue de onde parou ou abra um novo arquivo.</p>
+                                </section>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="resize-handle-horizontal" id="resizeHandleHorizontal"></div>
+                    <div class="resize-handle-vertical" id="resizeHandleVertical"></div>
+                    <div id="codemirror-host"></div>
+                    <div id="execution-lock-overlay" class="execution-lock-overlay" hidden aria-live="polite">
+                        <section class="execution-lock-card" role="status" aria-labelledby="execution-lock-title">
+                            <span class="execution-lock-icon" aria-hidden="true"><i data-lucide="circle-play"></i></span>
+                            <p class="execution-lock-eyebrow">EXECUÇÃO EM ANDAMENTO</p>
+                            <h2 id="execution-lock-title">Um código está rodando</h2>
+                            <p class="execution-lock-question">O editor está bloqueado para proteger a execução. Deseja parar o código para voltar a editar?</p>
+                            <div class="execution-lock-actions">
+                                <button id="execution-lock-console" class="execution-lock-console" type="button"><i data-lucide="terminal"></i> Ver console</button>
+                                <button id="execution-lock-stop" class="execution-lock-stop" type="button"><i data-lucide="square"></i> Parar código e editar</button>
+                            </div>
+                        </section>
+                    </div>
+                </div>
+                <div id="workspace-aux-view" class="workspace-aux-view hidden"></div>
+            </div>
+            <div class="column-resizer" id="right-resizer" role="separator" aria-label="Redimensionar depuração"></div>
+            <aside class="right-sidebar" id="right-sidebar">
+                <div class="debug-header"><span>Controle / Debug</span><button id="debug-more" type="button" title="Mais opções" aria-label="Mais opções"><i data-lucide="ellipsis"></i></button></div>
+                <section class="debug-controls" aria-label="Execução e depuração">
+                    <div class="debug-section-label">EXECUÇÃO</div>
+                    <div class="debug-launch-actions">
+                        <button id="debug-run" class="debug-run-primary" type="button" title="Executar — F5"><i data-lucide="play"></i><span>Executar</span></button>
+                        <button id="debug-start" class="debug-start-button" type="button" title="Iniciar depuração"><i data-lucide="bug"></i><span>Debug</span></button>
+                    </div>
+                    <div class="debug-status-block"><span class="debug-section-label">STATUS</span><span id="debug-status-state" class="debug-status-value is-ready"><span class="debug-status-dot" aria-hidden="true"></span><span id="debug-status" role="status" aria-live="polite">Pronto</span></span></div>
+                    <section class="problems-panel" id="problems-panel" aria-label="Mensagens da execução"><div class="right-section-title">MENSAGENS</div><div id="problems-list"></div></section>
+                    <div id="debug-session-controls" class="debug-session-controls hidden" aria-label="Controles de depuração">
+                        <div class="debug-section-label">DEBUG</div>
+                        <button id="debug-continue" class="debug-icon-button" type="button" title="Continuar — F5" aria-label="Continuar — F5" disabled><i data-lucide="play"></i></button>
+                        <button id="debug-pause" class="debug-icon-button" type="button" title="Pausar" aria-label="Pausar" disabled><i data-lucide="pause"></i></button>
+                        <button id="debug-next" class="debug-icon-button" type="button" title="Próxima linha — F10" aria-label="Próxima linha — F10" disabled><i data-lucide="arrow-down"></i></button>
+                        <button id="debug-into" class="debug-icon-button" type="button" title="Entrar na função" aria-label="Entrar na função" disabled><i data-lucide="corner-down-right"></i></button>
+                        <button id="debug-out" class="debug-icon-button" type="button" title="Sair da função" aria-label="Sair da função" disabled><i data-lucide="corner-up-left"></i></button>
+                    </div>
+                    <div id="debug-breakpoints" class="debug-subsection" hidden><span class="debug-section-label">BREAKPOINTS</span><div id="debug-breakpoint-list"></div></div>
+                    <div id="debug-callstack" class="debug-subsection" hidden><span class="debug-section-label">CALL STACK</span><div id="debug-callstack-list"></div></div>
+                </section>
+                <div class="right-divider debug-divider" id="debug-divider" role="separator" aria-label="Redimensionar controles de depuração e variáveis"></div>
+                <div id="debug-menu" class="debug-menu hidden"><button id="btn-toggle-breakpoints">Alternar ponto na linha atual</button><button id="btn-clear-breakpoints">Limpar breakpoints</button><button id="btn-clear-problems">Limpar mensagens</button><button id="btn-open-console">Abrir console</button></div>
+                <!-- Painel de variáveis -->
+                <div class="variables-panel" id="variablesPanel">
+                <div class="panel-header">
+                    Variáveis
+                    <button id="btn-clear-vars" class="panel-header-btn" type="button" title="Limpar valores exibidos" aria-label="Limpar valores exibidos"><i data-lucide="brush-cleaning"></i></button>
+                </div>
+                <div class="panel-body variables-wrapper">
+                    <table id="variables-table" class="variables-table">
+                        <thead>
+                            <tr>
+                                <th>Nome</th>
+                                <th>Tipo</th>
+                                <th>Valor</th>
+                            </tr>
+                        </thead>
+                        <tbody></tbody>
+                    </table>
+                </div>
+                </div>
+
+            </aside>
+            <!-- Console is a dedicated center tab, with the same interpreter output. -->
+            <div class="terminal-panel" id="terminalPanel">
+                <div class="panel-header">
+                    Console
+                    <button id="btn-console-stop" class="panel-header-btn console-stop-button" type="button" title="Parar execução" aria-label="Parar execução" disabled><i data-lucide="square" aria-hidden="true"></i><span>Parar execução</span></button>
+                </div>
+                <div class="panel-body">
+                    <div id="terminal-output"></div>
+                </div>
+                <div id="terminal-input-area" class="hidden">
+                    <input id="terminal-input" type="text" placeholder="Digite a entrada..." />
+                    <button id="terminal-input-ok">OK</button>
+                </div>
+            </div>
+        </div>
+    </main>
+    <footer class="win95-statusbar" aria-label="Barra de status"><span id="win95-status">Pronto</span><span id="win95-position">Linha 1, Coluna 1</span><span id="win95-mode">INS</span></footer>
+
+    <div class="mobile-code-toolbar" id="mobile-code-toolbar" role="toolbar" aria-label="Atalhos de programação" aria-hidden="true">
+        <div class="mobile-autocomplete-suggestions" id="mobile-autocomplete-suggestions" aria-label="Sugestões do autocomplete" hidden></div>
+        <button type="button" data-editor-action="font-decrease" title="Diminuir fonte do editor" aria-label="Diminuir fonte do editor">A−</button>
+        <span class="mobile-editor-font-size" id="mobile-editor-font-size" aria-live="polite">16 px</span>
+        <button type="button" data-editor-action="font-increase" title="Aumentar fonte do editor" aria-label="Aumentar fonte do editor">A+</button>
+        <button type="button" data-editor-action="indent" title="Indentar">Tab</button>
+        <button type="button" data-editor-pair="()" title="Inserir parênteses">( )</button>
+        <button type="button" data-editor-pair="&quot;&quot;" title="Inserir aspas">&quot; &quot;</button>
+        <button type="button" data-editor-text=":=" title="Atribuição">:=</button>
+        <button type="button" data-editor-text="&lt;&gt;" title="Diferente">&lt;&gt;</button>
+        <button type="button" data-editor-text="+" title="Soma">+</button>
+        <button type="button" data-editor-text="-" title="Subtração">−</button>
+        <button type="button" data-editor-text="*" title="Multiplicação">×</button>
+        <button type="button" data-editor-text="/" title="Divisão">÷</button>
+        <button type="button" data-editor-action="cursor-left" title="Mover cursor para a esquerda" aria-label="Mover cursor para a esquerda"><i data-lucide="arrow-left"></i></button>
+        <button type="button" data-editor-action="cursor-right" title="Mover cursor para a direita" aria-label="Mover cursor para a direita"><i data-lucide="arrow-right"></i></button>
+    </div>
+    <div class="mobile-cursor-loupe" id="mobile-cursor-loupe" aria-hidden="true" hidden>
+        <span class="mobile-cursor-loupe-line"></span>
+        <code class="mobile-cursor-loupe-code"></code>
+    </div>
+
+    <!-- Settings Modal -->
+    <div class="modal-overlay hidden" id="settingsOverlay">
+        <div class="modal">
+            <div class="modal-header">
+                <span>Configurações</span>
+                <button id="btn-close-settings"><i data-lucide="x"></i></button>
+            </div>
+            <div class="modal-tabs">
+                <button class="modal-tab active" data-tab="gerais">Gerais</button>
+                <button class="modal-tab" data-tab="editor">Editor</button>
+                <button class="modal-tab" data-tab="variaveis">Variáveis</button>
+                <button class="modal-tab" data-tab="console">Console</button>
+            </div>
+            <div class="modal-body">
+                <div class="modal-tab-panel active" data-tab-panel="gerais">
+                    <div class="setting-group">
+                        <label>Tema</label>
+                        <select id="setting-theme">
+                            <option value="dark">VisuAlg Dark</option>
+                            <option value="dark-monokai">Monokai (escuro)</option>
+                            <option value="dracula">Dracula (escuro)</option>
+                            <option value="nord">Nord (escuro)</option>
+                            <option value="solarized-dark">Solarized (escuro)</option>
+                            <option value="github-dark">GitHub Dark</option>
+                            <option value="one-dark">One Dark</option>
+                            <option value="light">VisuAlg Light</option>
+                            <option value="github-light">GitHub Light</option>
+                            <option value="solarized-light">Solarized Light</option>
+                            <option value="high-contrast">Alto contraste (branco)</option>
+                            <option value="high-contrast-dark">Alto contraste (escuro)</option>
+                            <option value="catppuccin-mocha">Catppuccin Mocha (escuro)</option>
+                            <option value="rose-pine">Rosé Pine (escuro)</option>
+                            <option value="gruvbox-dark">Gruvbox (escuro)</option>
+                            <option value="catppuccin-latte">Catppuccin Latte (claro)</option>
+                            <option value="gruvbox-light">Gruvbox (claro)</option>
+                            <option value="paper">Paper & Ink (claro)</option>
+                            <option value="nord-light">Nord (claro)</option>
+                            <option value="one-light">One Light</option>
+                            <option value="rose-pine-dawn">Rosé Pine Dawn</option>
+                            <option value="kanagawa-lotus">Kanagawa Lotus</option>
+                            <option value="visualg-classic">VisuAlg Clássico</option>
+                            <option value="windows-95">Windows 95</option>
+                            <option value="visualg-3">VisuAlg 3.0</option>
+                            <option value="steam-classic">Steam Clássico</option>
+                        </select>
+                    </div>
+                    <div class="setting-group">
+                        <label>Detecção de loop infinito</label>
+                        <select id="setting-loop-detection">
+                            <option value="on">Ativada</option>
+                            <option value="off">Desativada</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="modal-tab-panel" data-tab-panel="editor">
+                    <div class="setting-group">
+                        <label for="setting-editor-font-family">Fonte do editor</label>
+                        <select id="setting-editor-font-family">
+                            <option value="jetbrains">JetBrains Mono</option>
+                            <option value="fira-code">Fira Code</option>
+                            <option value="ibm-plex">IBM Plex Mono</option>
+                            <option value="source-code-pro">Source Code Pro</option>
+                            <option value="roboto-mono">Roboto Mono</option>
+                            <option value="inconsolata">Inconsolata</option>
+                            <option value="comic-neue">Comic Neue (divertida)</option>
+                            <option value="fredoka">Fredoka (arredondada)</option>
+                            <option value="patrick-hand">Patrick Hand (manuscrita)</option>
+                            <option value="system">Fonte monoespaçada do sistema</option>
+                        </select>
+                    <div class="setting-group">
+                        <label>Tamanho da fonte</label>
+                        <div class="font-size-control">
+                            <div class="font-size-input-row">
+                                <input type="number" class="setting-font-input" id="setting-font-size" min="1" max="160" value="14">
+                                <span class="font-size-unit">px</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="setting-group">
+                        <label for="setting-letter-spacing">Espaçamento entre letras (px em 14px; acompanha a fonte)</label>
+                        <input type="number" class="setting-font-input" id="setting-letter-spacing" min="-1" max="10" step="0.25" value="0.25">
+                        <small class="setting-range-limits">−1 — 10 px</small>
+                    </div>
+                    <div class="setting-group">
+                        <label for="setting-line-spacing">Espaçamento entre linhas (px em 14px; acompanha a fonte)</label>
+                        <input type="number" class="setting-font-input" id="setting-line-spacing" min="18" max="80" step="1" value="27">
+                        <small class="setting-range-limits">18 — 80 px</small>
+                    </div>
+                    <div class="setting-group">
+                        <label>Quebra de linha</label>
+                        <select id="setting-word-wrap">
+                            <option value="off">Desativada</option>
+                            <option value="on">Ativada</option>
+                        </select>
+                    </div>
+                    <div class="setting-group">
+                        <label>Tamanho do tab</label>
+                        <select id="setting-tab-size">
+                            <option value="2">2 espaços</option>
+                            <option value="4">4 espaços</option>
+                        </select>
+                    </div>
+                    <div class="setting-group">
+                        <label>Guias de indentação</label>
+                        <select id="setting-indent-guides">
+                            <option value="on">Ativadas</option>
+                            <option value="off">Desativadas</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="modal-tab-panel" data-tab-panel="variaveis">
+                    <div class="setting-group">
+                        <label>Tamanho da fonte</label>
+                        <div class="font-size-control">
+                            <div class="font-size-input-row">
+                                <input type="number" class="setting-font-input" id="setting-vars-font-size" min="1" max="160" value="12">
+                                <span class="font-size-unit">px</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="setting-group">
+                        <label>Colunas visíveis</label>
+                        <div class="setting-checkboxes">
+                            <label class="setting-checkbox">
+                                <input type="checkbox" id="setting-vars-col-nome" checked> Nome
+                            </label>
+                            <label class="setting-checkbox">
+                                <input type="checkbox" id="setting-vars-col-tipo" checked> Tipo
+                            </label>
+                            <label class="setting-checkbox">
+                                <input type="checkbox" id="setting-vars-col-valor" checked> Valor
+                            </label>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-tab-panel" data-tab-panel="console">
+                    <div class="setting-group">
+                        <label for="setting-console-font-family">Fonte do Console</label>
+                        <select id="setting-console-font-family">
+                            <option value="jetbrains">JetBrains Mono</option>
+                            <option value="fira-code">Fira Code</option>
+                            <option value="ibm-plex">IBM Plex Mono</option>
+                            <option value="source-code-pro">Source Code Pro</option>
+                            <option value="roboto-mono">Roboto Mono</option>
+                            <option value="inconsolata">Inconsolata</option>
+                            <option value="comic-neue">Comic Neue (divertida)</option>
+                            <option value="fredoka">Fredoka (arredondada)</option>
+                            <option value="patrick-hand">Patrick Hand (manuscrita)</option>
+                            <option value="system">Fonte monoespaçada do sistema</option>
+                        </select>
+                    </div>
+                    <div class="setting-group">
+                        <label for="setting-console-theme">Aparência do console</label>
+                        <select id="setting-console-theme">
+                            <option value="dark">Escuro (preto)</option>
+                            <option value="light">Claro (branco)</option>
+                        </select>
+                    </div>
+                    <div class="setting-group">
+                        <label for="setting-console-presentation">Exibir console em</label>
+                        <select id="setting-console-presentation">
+                            <option value="panel">Painel abaixo do editor</option>
+                            <option value="tab">Aba central</option>
+                            <option value="modal">Modal grande</option>
+                            <option value="window">Janela separada</option>
+                            <option value="browser-tab">Nova aba do navegador</option>
+                        </select>
+                    </div>
+                    <div class="setting-group">
+                        <label>Tamanho da fonte</label>
+                        <div class="font-size-control">
+                            <div class="font-size-input-row">
+                                <input type="number" class="setting-font-input" id="setting-console-font-size" min="1" max="160" value="13">
+                                <span class="font-size-unit">px</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="setting-group">
+                        <label>Entrada do console</label>
+                        <select id="setting-console-input-mode">
+                            <option value="inline">Abaixo do terminal</option>
+                            <option value="modal">Abrir modal</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- First-use Onboarding -->
+    <div class="modal-overlay hidden" id="onboardingOverlay" role="dialog" aria-modal="true" aria-labelledby="onboarding-title">
+        <div class="modal onboarding-modal">
+            <div class="modal-header">
+                <span id="onboarding-title">Comece a programar em poucos segundos</span>
+                <button id="btn-skip-onboarding" title="Pular apresentação"><i data-lucide="x"></i></button>
+            </div>
+            <div class="modal-body">
+                <p class="onboarding-intro">Escreva em português, execute no navegador e acompanhe cada variável sem instalar nada.</p>
+                <div class="onboarding-steps">
+                    <div class="onboarding-step"><span>1</span><strong>Escolha</strong><small>Abra um exemplo ou escreva seu algoritmo.</small></div>
+                    <div class="onboarding-step"><span>2</span><strong>Execute</strong><small>Use Executar (F9) ou avance com F8.</small></div>
+                    <div class="onboarding-step"><span>3</span><strong>Aprenda</strong><small>Veja saídas, variáveis e erros direto na linha.</small></div>
+                </div>
+                <p class="onboarding-save-note"><i data-lucide="cloud-check"></i> Suas abas são salvas automaticamente neste dispositivo.</p>
+                <div class="modal-footer onboarding-actions">
+                    <button class="modal-btn modal-btn-secondary" id="btn-onboarding-editor">Começar do zero</button>
+                    <button class="modal-btn modal-btn-primary" id="btn-onboarding-examples"><i data-lucide="sparkles"></i> Ver exemplos</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Executable Examples -->
+    <div class="modal-overlay hidden" id="examplesOverlay" role="dialog" aria-modal="true" aria-labelledby="examples-title">
+        <div class="modal examples-modal">
+            <div class="modal-header">
+                <span id="examples-title">Exemplos para aprender fazendo</span>
+                <button id="btn-close-examples"><i data-lucide="x"></i></button>
+            </div>
+            <div class="modal-body examples-body">
+                <p>Abra o código para explorar ou execute imediatamente em uma nova aba.</p>
+                <input id="examples-search" class="examples-search" type="search" placeholder="Pesquisar por título, descrição ou código" aria-label="Pesquisar exemplos">
+                <div class="examples-grid" id="examples-grid"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Autosave Recovery -->
+    <div class="modal-overlay hidden" id="recoveryOverlay" role="dialog" aria-modal="true" aria-labelledby="recovery-title">
+        <div class="modal recovery-modal">
+            <div class="modal-header">
+                <span id="recovery-title">Salvamento e recuperação</span>
+                <button id="btn-close-recovery"><i data-lucide="x"></i></button>
+            </div>
+            <div class="modal-body">
+                <div class="recovery-current"><i data-lucide="cloud-check"></i><div><strong id="recovery-current-status">Código salvo localmente</strong><small id="recovery-current-time"></small></div></div>
+                <div class="recovery-copy">
+                    <strong>Cópia de recuperação</strong>
+                    <p id="recovery-copy-description">Procurando uma cópia anterior...</p>
+                    <button class="modal-btn modal-btn-secondary" id="btn-restore-recovery" disabled><i data-lucide="history"></i> Restaurar cópia</button>
+                </div>
+                <p class="recovery-note">A restauração troca o conteúdo atual pela cópia anterior. O estado atual continuará disponível para desfazer a operação.</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Console Input Modal -->
+    <div class="modal-overlay hidden" id="consoleInputOverlay">
+        <div class="modal">
+            <div class="modal-header">
+                <span>Entrada de dados</span>
+            </div>
+            <div class="modal-body">
+                <div class="setting-group">
+                    <label id="console-input-modal-label">Digite a entrada:</label>
+                    <input id="console-input-modal" type="text" class="setting-font-input" style="width:100%" />
+                </div>
+                <div class="modal-footer">
+                    <button class="modal-btn modal-btn-secondary" id="console-input-modal-cancel">Cancelar</button>
+                    <button class="modal-btn modal-btn-secondary" id="console-input-modal-ok">OK</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Close Tab Confirmation Modal -->
+    <div class="modal-overlay hidden" id="closeTabOverlay">
+        <div class="modal">
+            <div class="modal-header">
+                <span>Fechar aba</span>
+                <button id="btn-cancel-close-tab"><i data-lucide="x"></i></button>
+            </div>
+            <div class="modal-body">
+                <p>O código desta aba foi modificado. Deseja realmente fechar e perder as alterações?</p>
+                <div class="modal-footer">
+                    <button class="modal-btn modal-btn-secondary" id="btn-cancel-close">Cancelar</button>
+                    <button class="modal-btn modal-btn-danger" id="btn-confirm-close">Fechar aba</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Loop Limit Modal -->
+    <div class="modal-overlay hidden" id="loopLimitOverlay">
+        <div class="modal">
+            <div class="modal-header">
+                <span>Possível loop infinito</span>
+            </div>
+            <div class="modal-body">
+                <p>O loop já executou mais de 1.000 iterações. Isso pode indicar um loop infinito. Deseja continuar a execução?</p>
+                <div class="modal-footer">
+                    <button class="modal-btn modal-btn-danger" id="btn-loop-stop">Parar</button>
+                    <button class="modal-btn modal-btn-secondary" id="btn-loop-continue">Continuar</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Docs Modal -->
+    <div class="modal-overlay hidden" id="docsOverlay">
+        <div class="modal docs-modal">
+            <div class="modal-header">
+                <span>Documentação</span>
+                <button id="btn-close-docs"><i data-lucide="x"></i></button>
+            </div>
+            <div class="modal-tabs">
+                <button class="modal-tab active" data-tab="sumario">Sumário</button>
+                <button class="modal-tab" data-tab="introducao">Introdução</button>
+                <button class="modal-tab" data-tab="status">Status</button>
+                <button class="modal-tab" data-tab="compatibilidade">Compatibilidade</button>
+                <button class="modal-tab" data-tab="operadores">Operadores</button>
+                <button class="modal-tab" data-tab="entrada-saida">E/S</button>
+                <button class="modal-tab" data-tab="condicionais">Condicionais</button>
+                <button class="modal-tab" data-tab="repeticao">Repetição</button>
+                <button class="modal-tab" data-tab="subprogramas">Subprogramas</button>
+                <button class="modal-tab" data-tab="funcoes">Funções</button>
+                <button class="modal-tab" data-tab="comandos">Comandos</button>
+                <button class="modal-tab" data-tab="historia">História</button>
+            </div>
+            <div class="modal-body docs-body" id="docs-content">
+                <div class="modal-tab-panel active" data-tab-panel="sumario"></div>
+                <div class="modal-tab-panel" data-tab-panel="introducao"></div>
+                <div class="modal-tab-panel" data-tab-panel="status"></div>
+                <div class="modal-tab-panel" data-tab-panel="compatibilidade"></div>
+                <div class="modal-tab-panel" data-tab-panel="operadores"></div>
+                <div class="modal-tab-panel" data-tab-panel="entrada-saida"></div>
+                <div class="modal-tab-panel" data-tab-panel="condicionais"></div>
+                <div class="modal-tab-panel" data-tab-panel="repeticao"></div>
+                <div class="modal-tab-panel" data-tab-panel="subprogramas"></div>
+                <div class="modal-tab-panel" data-tab-panel="funcoes"></div>
+                <div class="modal-tab-panel" data-tab-panel="comandos"></div>
+                <div class="modal-tab-panel" data-tab-panel="historia"></div>
+            </div>
+        </div>
+    </div>
+
+    <main id="print-document" aria-hidden="true">
+        <header class="print-header"><strong>VisuAlg Web</strong><span id="print-file-name"></span></header>
+        <table id="print-code" class="print-code"><tbody></tbody></table>
+    </main>
+    <dialog id="print-options-dialog" class="print-options-dialog" aria-labelledby="print-options-title">
+        <form method="dialog">
+            <h2 id="print-options-title">Imprimir código</h2>
+            <p>Escolha como o código deve sair no papel.</p>
+            <fieldset>
+                <legend>Estilo de impressão</legend>
+                <label><input type="radio" name="print-style" value="color" checked> Colorida</label>
+                <label><input type="radio" name="print-style" value="monochrome"> Preto e branco</label>
+            </fieldset>
+            <div class="print-options-actions">
+                <button type="button" id="btn-print-cancel">Cancelar</button>
+                <button type="button" id="btn-print-confirm">Continuar para impressão</button>
+            </div>
+        </form>
+    </dialog>
+
+    <!-- CodeMirror 5 JS -->
+    <script src="vendor/codemirror/codemirror.min.5df4d971e2.js"></script>
+    <script src="vendor/codemirror/addon/mode/simple.min.9c31d15000.js"></script>
+    <script src="vendor/codemirror/addon/edit/matchbrackets.min.f359c5f395.js"></script>
+    <script src="vendor/codemirror/addon/selection/active-line.min.bbca0b4ba0.js"></script>
+    <script src="vendor/codemirror/addon/comment/comment.min.5759e7847c.js"></script>
+
+    <!-- App JS -->
+    <script src="js/editor.fce545324f.js"></script>
+    <script src="js/terminal.20859ecdce.js"></script>
+    <script src="js/variables.6802cc288d.js"></script>
+    <script src="js/interpreter.dcd2fffe93.js"></script>
+    <script src="js/examples.493060b454.js"></script>
+    <script src="js/tabs.65611455cb.js"></script>
+    <script src="js/docs.5aa4c5eb30.js"></script>
+    <script src="js/desktop-project.63ed4c9c65.js"></script>
+    <script src="js/workspace.31e3b14967.js"></script>
+    <script src="js/challenge-clock.d65cc13164.js"></script>
+    <script src="js/daily-challenges.48aa53653f.js"></script>
+    <script src="js/main.ab5cb9fe19.js"></script>
+    <script src="js/accessibility.2d25128cf4.js"></script>
+    <script src="js/pwa.0c520e7c44.js"></script>
+
+    <!-- Resize and icon initialization -->
+    <script src="js/layout.8969cfe984.js"></script>
+    <script src="js/windows-95.4ef48bdadc.js"></script>
+</body>
+
+</html>

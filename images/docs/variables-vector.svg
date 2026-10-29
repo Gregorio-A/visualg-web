@@ -1,0 +1,26 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="920" height="430" viewBox="0 0 920 430" role="img" aria-labelledby="title desc">
+  <title id="title">Vetor expandido no painel de variáveis</title>
+  <desc id="desc">Painel de variáveis mostrando um vetor de inteiros e suas cinco posições expandidas.</desc>
+  <rect width="920" height="430" rx="16" fill="#111113"/>
+  <rect x="22" y="22" width="876" height="54" rx="9" fill="#242428"/>
+  <text x="48" y="56" fill="#e5e7eb" font-family="Arial, sans-serif" font-size="20" font-weight="700">VARIÁVEIS</text>
+  <g font-family="Arial, sans-serif" font-size="16">
+    <text x="48" y="112" fill="#aeb4be">NOME</text>
+    <text x="300" y="112" fill="#aeb4be">TIPO</text>
+    <text x="566" y="112" fill="#aeb4be">VALOR</text>
+    <path d="M38 128H882" stroke="#3b3d44"/>
+    <text x="48" y="164" fill="#7aa2f7">numeros</text>
+    <text x="300" y="164" fill="#3bc1d9">vetor de inteiro</text>
+    <text x="566" y="164" fill="#9aca66">[1..5] { … }</text>
+    <path d="M38 184H882" stroke="#3b3d44"/>
+    <rect x="42" y="202" width="836" height="196" rx="9" fill="#19191d" stroke="#343640"/>
+    <path d="M80 226V374" stroke="#535661"/>
+    <g fill="#b9bec8">
+      <text x="98" y="238">└─ [1]</text><text x="250" y="238" fill="#9aca66">1</text>
+      <text x="98" y="272">└─ [2]</text><text x="250" y="272" fill="#9aca66">4</text>
+      <text x="98" y="306">└─ [3]</text><text x="250" y="306" fill="#9aca66">9</text>
+      <text x="98" y="340">└─ [4]</text><text x="250" y="340" fill="#9aca66">16</text>
+      <text x="98" y="374">└─ [5]</text><text x="250" y="374" fill="#9aca66">25</text>
+    </g>
+  </g>
+</svg>
