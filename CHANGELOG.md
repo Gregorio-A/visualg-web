@@ -1,5 +1,12 @@
 # Histórico de versões
 
+## 1.12.1 — 29 de outubro de 2026
+
+- Adiciona botões **A−** e **A+** à barra de edição móvel para reduzir ou ampliar o texto do editor em passos de 2 px. O tamanho aparece ao lado dos botões, é salvo nas preferências e acompanha a configuração existente; a tela pequena respeita também valores abaixo de 16 px.
+- Desativa ligaduras tipográficas nos trechos de código do editor, da documentação, dos exemplos e da barra móvel. Operadores como `<=`, `>=` e `<>` permanecem visualmente como os caracteres que devem ser digitados, independentemente da fonte escolhida ou do computador.
+- Mostra `≤`, `≥` e `≠` como símbolos matemáticos explícitos na tabela de operadores, ao lado da sintaxe aceita pelo interpretador.
+- A build Web continua sendo preparada na branch `visualg-deploy-web` para implantação manual no site; esta versão não publica instaladores Electron.
+
 ## 1.12.0 — 29 de outubro de 2026
 
 ### Execução e entrada

@@ -34,6 +34,8 @@ Ao digitar aspas ou parênteses com um trecho selecionado, o editor envolve a se
 
 Em **Configurações** e no menu de ajustes rápidos do editor, clique no valor de uma pílula numérica para digitá-lo. Pressione Enter para aplicar ou Esc para cancelar. Também é possível arrastar a pílula, usar a roda do mouse ou os botões `+` e `−`. A opção **Quebra de linha** pode ser ativada ou desativada em qualquer largura de tela. No Android, o Backspace do teclado virtual apaga caracteres e junta linhas quando o cursor está no início da linha.
 
+Na barra de edição móvel, use **A−** ou **A+** para alterar o tamanho do código em passos de 2 px. O valor é salvo e também aparece em **Configurações > Editor**. Operadores de código como `<=`, `>=` e `<>` são exibidos com os caracteres que você deve digitar, em todas as fontes.
+
 O atalho `Alt+clique` acrescenta um cursor na palavra indicada. Para manter vários pontos de edição, clique em cada palavra com `Alt` pressionado.
 
 ## Executar e depurar

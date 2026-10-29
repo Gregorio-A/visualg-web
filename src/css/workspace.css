@@ -316,6 +316,8 @@ body > .main-content > .ide-shell { display: grid !important; grid-template-colu
 @container (max-width:540px) { .editor-empty-actions { grid-template-columns:1fr; } .editor-empty-actions button { min-height:62px; } .editor-empty-content { margin-top:4px; } .editor-empty-intro h2 { font-size:20px; } }
 .editor-panel .CodeMirror,.editor-panel .CodeMirror-gutters { background: var(--ide-canvas) !important; color: var(--ide-muted) !important; }
 .editor-panel .CodeMirror { font-size:var(--ide-editor-font-size,14px) !important; }
+.editor-panel .CodeMirror :is(.CodeMirror-line,.CodeMirror-line-like) { font-variant-ligatures:none !important; font-feature-settings:"liga" 0,"calt" 0 !important; }
+.workspace-aux-view :is(code,pre),.workspace-example-source,.settings-preview-code,.mobile-code-toolbar button { font-variant-ligatures:none; font-feature-settings:"liga" 0,"calt" 0; }
 .editor-panel .CodeMirror-gutters { border: 0 !important; }
 .editor-panel .CodeMirror,.editor-panel .CodeMirror-focused { outline:0 !important; box-shadow:none !important; }
 .editor-panel .CodeMirror-selected,
@@ -949,7 +951,7 @@ html[data-word-wrap="on"] .settings-preview-code { white-space:pre-wrap; overflo
     .tab-item,.view-tab { min-width:82px; padding-inline:7px !important; font-size:12px !important; }
     .tab-item .tab-close,.view-tab-close { width:26px; height:30px; flex-basis:26px; opacity:1; }
     .editor-column .editor-panel { flex:1 1 0 !important; width:100%; height:auto !important; max-height:none !important; min-height:0; overflow:hidden; }
-    .editor-panel .CodeMirror { font-size:max(16px,var(--ide-editor-font-size,14px)) !important; }
+    .editor-panel .CodeMirror { font-size:var(--ide-editor-font-size,14px) !important; }
     .editor-panel .CodeMirror-lines { padding-bottom:16px !important; }
 
     .workspace-sidebar .sidebar-tabs { height:40px; padding-inline:4px; }
@@ -1116,6 +1118,7 @@ html[data-word-wrap="on"] .settings-preview-code { white-space:pre-wrap; overflo
     .mobile-autocomplete-item small { margin-top:2px; color:var(--ide-muted); font:10px system-ui,sans-serif; }
     .mobile-code-toolbar .mobile-autocomplete-item.selected { background:var(--ide-selected); color:var(--ide-accent); }
     .mobile-code-toolbar button svg { width:16px; height:16px; }
+    .mobile-editor-font-size { display:grid; flex:0 0 auto; min-width:43px; place-items:center; color:var(--ide-muted); font:600 12px/1 system-ui,sans-serif; font-variant-numeric:tabular-nums; }
     body.mobile-editor-focused > .main-content { padding-bottom:calc(46px + max(0px,env(safe-area-inset-bottom))) !important; }
     .mobile-cursor-loupe {
         position:fixed;

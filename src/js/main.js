@@ -827,6 +827,12 @@
             else if (button.dataset.editorAction === 'indent') editor.indent();
             else if (button.dataset.editorAction === 'cursor-left') editor.moveCursor(-1);
             else if (button.dataset.editorAction === 'cursor-right') editor.moveCursor(1);
+            else if (button.dataset.editorAction === 'font-decrease' || button.dataset.editorAction === 'font-increase') {
+                var currentSize = Number(settingFontSize.value) || 14;
+                var change = button.dataset.editorAction === 'font-increase' ? 2 : -2;
+                settingFontSize.value = String(Math.max(10, Math.min(160, currentSize + change)));
+                settingFontSize.dispatchEvent(new window.Event('input', { bubbles: true }));
+            }
             showToolbar();
         });
         document.addEventListener('visualg:autocomplete-suggestions', function (event) {
@@ -957,6 +963,8 @@
         localStorage.setItem('visualg-font-size', size);
         if (settingFontSize) settingFontSize.value = size;
         if (settingFontSizeSlider) settingFontSizeSlider.value = size;
+        var mobileFontSize = document.getElementById('mobile-editor-font-size');
+        if (mobileFontSize) mobileFontSize.textContent = size + ' px';
         document.dispatchEvent(new window.CustomEvent('visualg:editor-font-size'));
     }
 

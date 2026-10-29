@@ -63,14 +63,18 @@ fimalgoritmo
 
 ## Relacionais
 
-| Operador | Significado |
-| --- | --- |
-| `=` | Igual |
-| `<>` | Diferente |
-| `<` | Menor que |
-| `>` | Maior que |
-| `<=` | Menor ou igual |
-| `>=` | Maior ou igual |
+O código usa os caracteres escritos na coluna **Digite no algoritmo**. Os símbolos
+matemáticos da segunda coluna ajudam a reconhecer a operação, sem depender de
+ligaduras da fonte escolhida ou do sistema do computador.
+
+| Digite no algoritmo | Símbolo matemático | Significado |
+| --- | --- | --- |
+| `=` | = | Igual |
+| `<>` | ≠ | Diferente |
+| `<` | &lt; | Menor que |
+| `>` | &gt; | Maior que |
+| `<=` | ≤ | Menor ou igual |
+| `>=` | ≥ | Maior ou igual |
 
 Comparações de texto não diferenciam maiúsculas e minúsculas. Assim, `"ABC" = "abc"` resulta em `VERDADEIRO`.
 
