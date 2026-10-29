@@ -18,7 +18,9 @@
         function finish() {
             if (finished || failed || !ready.main || !ready.workspace || !ready.layout) return;
             finished = true;
-            Promise.resolve(document.fonts ? document.fonts.ready : null).catch(function () {}).then(function () {
+            Promise.resolve(document.fonts ? document.fonts.load('14px "Fira Code"') : null).catch(function () {}).then(function () {
+                return document.fonts ? document.fonts.ready : null;
+            }).then(function () {
                 var reducedMotion = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
                 var minimumVisibleMs = classicBoot ? 2100 : (reducedMotion ? 500 : 1550);
                 window.setTimeout(function () {

@@ -64,8 +64,9 @@ fimalgoritmo
 ## Relacionais
 
 O código usa os caracteres escritos na coluna **Digite no algoritmo**. Os símbolos
-matemáticos da segunda coluna ajudam a reconhecer a operação, sem depender de
-ligaduras da fonte escolhida ou do sistema do computador.
+matemáticos da segunda coluna ajudam a reconhecer a operação. No editor, a
+fonte distribuída com o aplicativo desenha ligaduras para os operadores; o
+código salvo e executado continua usando os caracteres digitados.
 
 | Digite no algoritmo | Símbolo matemático | Significado |
 | --- | --- | --- |

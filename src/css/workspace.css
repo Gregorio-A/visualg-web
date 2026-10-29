@@ -316,7 +316,7 @@ body > .main-content > .ide-shell { display: grid !important; grid-template-colu
 @container (max-width:540px) { .editor-empty-actions { grid-template-columns:1fr; } .editor-empty-actions button { min-height:62px; } .editor-empty-content { margin-top:4px; } .editor-empty-intro h2 { font-size:20px; } }
 .editor-panel .CodeMirror,.editor-panel .CodeMirror-gutters { background: var(--ide-canvas) !important; color: var(--ide-muted) !important; }
 .editor-panel .CodeMirror { font-size:var(--ide-editor-font-size,14px) !important; }
-.editor-panel .CodeMirror :is(.CodeMirror-line,.CodeMirror-line-like) { font-variant-ligatures:none !important; font-feature-settings:"liga" 0,"calt" 0 !important; }
+.editor-panel .CodeMirror-code span.cm-operator { font-family:'Fira Code',monospace !important; font-variant-ligatures:contextual common-ligatures !important; font-feature-settings:"calt" 1,"liga" 1 !important; }
 .workspace-aux-view :is(code,pre),.workspace-example-source,.settings-preview-code,.mobile-code-toolbar button { font-variant-ligatures:none; font-feature-settings:"liga" 0,"calt" 0; }
 .editor-panel .CodeMirror-gutters { border: 0 !important; }
 .editor-panel .CodeMirror,.editor-panel .CodeMirror-focused { outline:0 !important; box-shadow:none !important; }

@@ -1,5 +1,10 @@
 # Histórico de versões
 
+## 1.12.2 — 29 de outubro de 2026
+
+- Restaura o desenho original das ligaduras dos operadores no editor. `<=` e `>=` voltam a aparecer como os símbolos visuais da fonte, com setas e outros operadores no mesmo alinhamento do texto.
+- Usa a fonte Fira Code distribuída com o aplicativo para os operadores de código, independentemente da fonte escolhida para o restante do editor, e carrega essa fonte antes de exibir a interface. O arquivo, a cópia e a execução preservam os caracteres de VisuAlg digitados.
+
 ## 1.12.1 — 29 de outubro de 2026
 
 - Adiciona botões **A−** e **A+** à barra de edição móvel para reduzir ou ampliar o texto do editor em passos de 2 px. O tamanho aparece ao lado dos botões, é salvo nas preferências e acompanha a configuração existente; a tela pequena respeita também valores abaixo de 16 px.
