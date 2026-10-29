@@ -217,8 +217,8 @@ html[data-theme="high-contrast"] .doc-results-heading { flex:0 0 auto; margin:4p
 html[data-theme="high-contrast"] .doc-item { box-sizing:border-box; width:100% !important; white-space:normal !important; overflow-wrap:anywhere; }
 html:is([data-theme^="visualg-"],[data-theme="steam-classic"]) :is(.workspace-settings .settings-content > *,.workspace-settings .settings-categories button,.workspace-aux-view:not(.hidden) > *,.file-item,.tab-item,.view-tab,.workspace-theme-menu,.modal) { animation:none !important; transition:none !important; }
 
-/* Pixel cursor set inspired by the classic Windows desktop cursors. */
-html:is([data-theme="windows-95"],[data-theme^="visualg-"]) {
+/* Pixel cursors belong exclusively to the four classic themes. */
+html:is([data-theme="windows-95"],[data-theme="visualg-classic"],[data-theme="visualg-3"],[data-theme="steam-classic"]) {
     --retro-cursor-arrow:url("../images/cursors/arrow.svg") 1 1,default;
     --retro-cursor-hand:url("../images/cursors/hand.svg") 5 1,pointer;
     --retro-cursor-text:url("../images/cursors/text.svg") 8 8,text;
@@ -243,80 +243,80 @@ html:is([data-theme="windows-95"],[data-theme^="visualg-"]) {
     --retro-cursor-vertical-text:url("../images/cursors/vertical-text.svg") 8 8,vertical-text;
     --retro-cursor-precision:url("../images/cursors/precision.svg") 8 8,crosshair;
 }
-html:is([data-theme="windows-95"],[data-theme^="visualg-"]) body,
-html:is([data-theme="windows-95"],[data-theme^="visualg-"]) body * {
+html:is([data-theme="windows-95"],[data-theme="visualg-classic"],[data-theme="visualg-3"],[data-theme="steam-classic"]) body,
+html:is([data-theme="windows-95"],[data-theme="visualg-classic"],[data-theme="visualg-3"],[data-theme="steam-classic"]) body * {
     cursor:var(--retro-cursor-arrow) !important;
 }
-html:is([data-theme="windows-95"],[data-theme^="visualg-"]) body :is(a[href],[role="link"],.history-link,.docs-example-link),
-html:is([data-theme="windows-95"],[data-theme^="visualg-"]) body :is(a[href],[role="link"],.history-link,.docs-example-link) * {
+html:is([data-theme="windows-95"],[data-theme="visualg-classic"],[data-theme="visualg-3"],[data-theme="steam-classic"]) body :is(a[href],[role="link"],.history-link,.docs-example-link),
+html:is([data-theme="windows-95"],[data-theme="visualg-classic"],[data-theme="visualg-3"],[data-theme="steam-classic"]) body :is(a[href],[role="link"],.history-link,.docs-example-link) * {
     cursor:var(--retro-cursor-hand) !important;
 }
-html:is([data-theme="windows-95"],[data-theme^="visualg-"]) body :is(button,a[href],[role="button"],[role="link"],[role="tab"],summary,select,label[for],input[type="checkbox"],input[type="radio"],.file-item,.doc-item,.tab-item,.view-tab,.activity-btn,.sidebar-tab,.docs-example-link,.theme-subgroup button,.breakpoint-marker,.message-card.error,[data-win95-target]),
-html:is([data-theme="windows-95"],[data-theme^="visualg-"]) body :is(button,a[href],[role="button"],[role="link"],[role="tab"],summary,select,label[for],input[type="checkbox"],input[type="radio"],.file-item,.doc-item,.tab-item,.view-tab,.activity-btn,.sidebar-tab,.docs-example-link,.theme-subgroup button,.breakpoint-marker,.message-card.error,[data-win95-target]) * {
+html:is([data-theme="windows-95"],[data-theme="visualg-classic"],[data-theme="visualg-3"],[data-theme="steam-classic"]) body :is(button,a[href],[role="button"],[role="link"],[role="tab"],summary,select,label[for],input[type="checkbox"],input[type="radio"],.file-item,.doc-item,.tab-item,.view-tab,.activity-btn,.sidebar-tab,.docs-example-link,.theme-subgroup button,.breakpoint-marker,.message-card.error,[data-win95-target]),
+html:is([data-theme="windows-95"],[data-theme="visualg-classic"],[data-theme="visualg-3"],[data-theme="steam-classic"]) body :is(button,a[href],[role="button"],[role="link"],[role="tab"],summary,select,label[for],input[type="checkbox"],input[type="radio"],.file-item,.doc-item,.tab-item,.view-tab,.activity-btn,.sidebar-tab,.docs-example-link,.theme-subgroup button,.breakpoint-marker,.message-card.error,[data-win95-target]) * {
     cursor:var(--retro-cursor-hand) !important;
 }
-html:is([data-theme="windows-95"],[data-theme^="visualg-"]) body :is(input:not([type="checkbox"]):not([type="radio"]),textarea,.CodeMirror,[contenteditable="true"]) {
+html:is([data-theme="windows-95"],[data-theme="visualg-classic"],[data-theme="visualg-3"],[data-theme="steam-classic"]) body :is(input:not([type="checkbox"]):not([type="radio"]),textarea,.CodeMirror,[contenteditable="true"]) {
     cursor:var(--retro-cursor-text) !important;
 }
-html:is([data-theme="windows-95"],[data-theme^="visualg-"]) body :is(.column-resizer,.resize-handle-horizontal,[aria-orientation="vertical"]) {
+html:is([data-theme="windows-95"],[data-theme="visualg-classic"],[data-theme="visualg-3"],[data-theme="steam-classic"]) body :is(.column-resizer,.resize-handle-horizontal,[aria-orientation="vertical"]) {
     cursor:var(--retro-cursor-ew) !important;
 }
-html:is([data-theme="windows-95"],[data-theme^="visualg-"]) body :is(.resize-handle-vertical,#debug-divider,[aria-orientation="horizontal"]) {
+html:is([data-theme="windows-95"],[data-theme="visualg-classic"],[data-theme="visualg-3"],[data-theme="steam-classic"]) body :is(.resize-handle-vertical,#debug-divider,[aria-orientation="horizontal"]) {
     cursor:var(--retro-cursor-ns) !important;
 }
-html:is([data-theme="windows-95"],[data-theme^="visualg-"]) body :is(.resize-handle-nwse,[data-resize-direction="nwse"]) {
+html:is([data-theme="windows-95"],[data-theme="visualg-classic"],[data-theme="visualg-3"],[data-theme="steam-classic"]) body :is(.resize-handle-nwse,[data-resize-direction="nwse"]) {
     cursor:var(--retro-cursor-nwse) !important;
 }
-html:is([data-theme="windows-95"],[data-theme^="visualg-"]) body :is(.resize-handle-nesw,[data-resize-direction="nesw"]) {
+html:is([data-theme="windows-95"],[data-theme="visualg-classic"],[data-theme="visualg-3"],[data-theme="steam-classic"]) body :is(.resize-handle-nesw,[data-resize-direction="nesw"]) {
     cursor:var(--retro-cursor-nesw) !important;
 }
-html:is([data-theme="windows-95"],[data-theme^="visualg-"]) body :is([aria-busy="true"],.loading,.is-loading),
-html:is([data-theme="windows-95"],[data-theme^="visualg-"]) body :is([aria-busy="true"],.loading,.is-loading) * {
+html:is([data-theme="windows-95"],[data-theme="visualg-classic"],[data-theme="visualg-3"],[data-theme="steam-classic"]) body :is([aria-busy="true"],.loading,.is-loading),
+html:is([data-theme="windows-95"],[data-theme="visualg-classic"],[data-theme="visualg-3"],[data-theme="steam-classic"]) body :is([aria-busy="true"],.loading,.is-loading) * {
     cursor:var(--retro-cursor-wait) !important;
 }
-html:is([data-theme="windows-95"],[data-theme^="visualg-"])[data-app-loading] body,
-html:is([data-theme="windows-95"],[data-theme^="visualg-"])[data-app-loading] body * {
+html:is([data-theme="windows-95"],[data-theme="visualg-classic"],[data-theme="visualg-3"],[data-theme="steam-classic"])[data-app-loading] body,
+html:is([data-theme="windows-95"],[data-theme="visualg-classic"],[data-theme="visualg-3"],[data-theme="steam-classic"])[data-app-loading] body * {
     cursor:var(--retro-cursor-wait) !important;
 }
-html:is([data-theme="windows-95"],[data-theme^="visualg-"]) body :is([data-cursor="progress"],.progress-cursor) {
+html:is([data-theme="windows-95"],[data-theme="visualg-classic"],[data-theme="visualg-3"],[data-theme="steam-classic"]) body :is([data-cursor="progress"],.progress-cursor) {
     cursor:var(--retro-cursor-progress) !important;
 }
-html:is([data-theme="windows-95"],[data-theme^="visualg-"]) body :is([data-cursor="help"],abbr[title],.help-cursor) {
+html:is([data-theme="windows-95"],[data-theme="visualg-classic"],[data-theme="visualg-3"],[data-theme="steam-classic"]) body :is([data-cursor="help"],abbr[title],.help-cursor) {
     cursor:var(--retro-cursor-help) !important;
 }
-html:is([data-theme="windows-95"],[data-theme^="visualg-"]) body :is(:disabled,[aria-disabled="true"],[data-drop-effect="none"],.not-allowed):is(:disabled,[aria-disabled="true"],[data-drop-effect="none"],.not-allowed),
-html:is([data-theme="windows-95"],[data-theme^="visualg-"]) body :is(:disabled,[aria-disabled="true"],[data-drop-effect="none"],.not-allowed):is(:disabled,[aria-disabled="true"],[data-drop-effect="none"],.not-allowed) * {
+html:is([data-theme="windows-95"],[data-theme="visualg-classic"],[data-theme="visualg-3"],[data-theme="steam-classic"]) body :is(:disabled,[aria-disabled="true"],[data-drop-effect="none"],.not-allowed):is(:disabled,[aria-disabled="true"],[data-drop-effect="none"],.not-allowed),
+html:is([data-theme="windows-95"],[data-theme="visualg-classic"],[data-theme="visualg-3"],[data-theme="steam-classic"]) body :is(:disabled,[aria-disabled="true"],[data-drop-effect="none"],.not-allowed):is(:disabled,[aria-disabled="true"],[data-drop-effect="none"],.not-allowed) * {
     cursor:var(--retro-cursor-no) !important;
 }
-html:is([data-theme="windows-95"],[data-theme^="visualg-"]) body :is(.drag-source,.dragging,[draggable="true"].dragging),
-html:is([data-theme="windows-95"],[data-theme^="visualg-"]) body :is(.drag-source,.dragging,[draggable="true"].dragging) * {
+html:is([data-theme="windows-95"],[data-theme="visualg-classic"],[data-theme="visualg-3"],[data-theme="steam-classic"]) body :is(.drag-source,.dragging,[draggable="true"].dragging),
+html:is([data-theme="windows-95"],[data-theme="visualg-classic"],[data-theme="visualg-3"],[data-theme="steam-classic"]) body :is(.drag-source,.dragging,[draggable="true"].dragging) * {
     cursor:var(--retro-cursor-move) !important;
 }
-html:is([data-theme="windows-95"],[data-theme^="visualg-"]) body [data-drop-effect="copy"] {
+html:is([data-theme="windows-95"],[data-theme="visualg-classic"],[data-theme="visualg-3"],[data-theme="steam-classic"]) body [data-drop-effect="copy"] {
     cursor:var(--retro-cursor-copy) !important;
 }
-html:is([data-theme="windows-95"],[data-theme^="visualg-"]) .ide-shell.is-resizing-columns * {
+html:is([data-theme="windows-95"],[data-theme="visualg-classic"],[data-theme="visualg-3"],[data-theme="steam-classic"]) .ide-shell.is-resizing-columns * {
     cursor:var(--retro-cursor-ew) !important;
 }
-html:is([data-theme="windows-95"],[data-theme^="visualg-"]) body.resizing *,
-html:is([data-theme="windows-95"],[data-theme^="visualg-"]) .right-sidebar.is-resizing-panels * {
+html:is([data-theme="windows-95"],[data-theme="visualg-classic"],[data-theme="visualg-3"],[data-theme="steam-classic"]) body.resizing *,
+html:is([data-theme="windows-95"],[data-theme="visualg-classic"],[data-theme="visualg-3"],[data-theme="steam-classic"]) .right-sidebar.is-resizing-panels * {
     cursor:var(--retro-cursor-ns) !important;
 }
-html:is([data-theme="windows-95"],[data-theme^="visualg-"]) body :is(canvas,[data-cursor="crosshair"],.crosshair-cursor) {
+html:is([data-theme="windows-95"],[data-theme="visualg-classic"],[data-theme="visualg-3"],[data-theme="steam-classic"]) body :is(canvas,[data-cursor="crosshair"],.crosshair-cursor) {
     cursor:var(--retro-cursor-crosshair) !important;
 }
-html:is([data-theme="windows-95"],[data-theme^="visualg-"]) body :is([data-cursor="alias"],.alias-cursor) { cursor:var(--retro-cursor-alias) !important; }
-html:is([data-theme="windows-95"],[data-theme^="visualg-"]) body :is([data-cursor="cell"],.cell-cursor) { cursor:var(--retro-cursor-cell) !important; }
-html:is([data-theme="windows-95"],[data-theme^="visualg-"]) body :is([data-cursor="context-menu"],.context-menu-cursor) { cursor:var(--retro-cursor-context) !important; }
-html:is([data-theme="windows-95"],[data-theme^="visualg-"]) body :is([data-cursor="no-drop"],.no-drop-cursor) { cursor:var(--retro-cursor-no-drop) !important; }
-html:is([data-theme="windows-95"],[data-theme^="visualg-"]) body :is([data-cursor="all-scroll"],.all-scroll-cursor) { cursor:var(--retro-cursor-all-scroll) !important; }
-html:is([data-theme="windows-95"],[data-theme^="visualg-"]) body :is([data-cursor="zoom-in"],.zoom-in-cursor) { cursor:var(--retro-cursor-zoom-in) !important; }
-html:is([data-theme="windows-95"],[data-theme^="visualg-"]) body :is([data-cursor="zoom-out"],.zoom-out-cursor) { cursor:var(--retro-cursor-zoom-out) !important; }
-html:is([data-theme="windows-95"],[data-theme^="visualg-"]) body :is([data-cursor="vertical-text"],.vertical-text-cursor) { cursor:var(--retro-cursor-vertical-text) !important; }
-html:is([data-theme="windows-95"],[data-theme^="visualg-"]) body :is([data-cursor="precision"],.precision-cursor) { cursor:var(--retro-cursor-precision) !important; }
-html:is([data-theme="windows-95"],[data-theme^="visualg-"]) body :is(abbr[title],[data-cursor="help"],.help-cursor) { cursor:var(--retro-cursor-help) !important; }
-html:is([data-theme="windows-95"],[data-theme^="visualg-"]) body :is([data-cursor="copy"],.copy-cursor,[data-drop-effect="copy"]) { cursor:var(--retro-cursor-copy) !important; }
-html:is([data-theme="windows-95"],[data-theme^="visualg-"]) body :is(.CodeMirror-code,.CodeMirror-code *,.CodeMirror-lines,.CodeMirror-lines *,.CodeMirror textarea,.cm-content,.cm-content *) { cursor:var(--retro-cursor-text) !important; }
+html:is([data-theme="windows-95"],[data-theme="visualg-classic"],[data-theme="visualg-3"],[data-theme="steam-classic"]) body :is([data-cursor="alias"],.alias-cursor) { cursor:var(--retro-cursor-alias) !important; }
+html:is([data-theme="windows-95"],[data-theme="visualg-classic"],[data-theme="visualg-3"],[data-theme="steam-classic"]) body :is([data-cursor="cell"],.cell-cursor) { cursor:var(--retro-cursor-cell) !important; }
+html:is([data-theme="windows-95"],[data-theme="visualg-classic"],[data-theme="visualg-3"],[data-theme="steam-classic"]) body :is([data-cursor="context-menu"],.context-menu-cursor) { cursor:var(--retro-cursor-context) !important; }
+html:is([data-theme="windows-95"],[data-theme="visualg-classic"],[data-theme="visualg-3"],[data-theme="steam-classic"]) body :is([data-cursor="no-drop"],.no-drop-cursor) { cursor:var(--retro-cursor-no-drop) !important; }
+html:is([data-theme="windows-95"],[data-theme="visualg-classic"],[data-theme="visualg-3"],[data-theme="steam-classic"]) body :is([data-cursor="all-scroll"],.all-scroll-cursor) { cursor:var(--retro-cursor-all-scroll) !important; }
+html:is([data-theme="windows-95"],[data-theme="visualg-classic"],[data-theme="visualg-3"],[data-theme="steam-classic"]) body :is([data-cursor="zoom-in"],.zoom-in-cursor) { cursor:var(--retro-cursor-zoom-in) !important; }
+html:is([data-theme="windows-95"],[data-theme="visualg-classic"],[data-theme="visualg-3"],[data-theme="steam-classic"]) body :is([data-cursor="zoom-out"],.zoom-out-cursor) { cursor:var(--retro-cursor-zoom-out) !important; }
+html:is([data-theme="windows-95"],[data-theme="visualg-classic"],[data-theme="visualg-3"],[data-theme="steam-classic"]) body :is([data-cursor="vertical-text"],.vertical-text-cursor) { cursor:var(--retro-cursor-vertical-text) !important; }
+html:is([data-theme="windows-95"],[data-theme="visualg-classic"],[data-theme="visualg-3"],[data-theme="steam-classic"]) body :is([data-cursor="precision"],.precision-cursor) { cursor:var(--retro-cursor-precision) !important; }
+html:is([data-theme="windows-95"],[data-theme="visualg-classic"],[data-theme="visualg-3"],[data-theme="steam-classic"]) body :is(abbr[title],[data-cursor="help"],.help-cursor) { cursor:var(--retro-cursor-help) !important; }
+html:is([data-theme="windows-95"],[data-theme="visualg-classic"],[data-theme="visualg-3"],[data-theme="steam-classic"]) body :is([data-cursor="copy"],.copy-cursor,[data-drop-effect="copy"]) { cursor:var(--retro-cursor-copy) !important; }
+html:is([data-theme="windows-95"],[data-theme="visualg-classic"],[data-theme="visualg-3"],[data-theme="steam-classic"]) body :is(.CodeMirror-code,.CodeMirror-code *,.CodeMirror-lines,.CodeMirror-lines *,.CodeMirror textarea,.cm-content,.cm-content *) { cursor:var(--retro-cursor-text) !important; }
 
 @media (max-width:760px) {
     html:is([data-theme^="visualg-"],[data-theme="steam-classic"]) body > .header { height:83px !important; min-height:83px !important; flex-basis:83px !important; }

@@ -10,6 +10,7 @@
 ### Interface e editor
 
 - Reúne as ações rápidas no lado direito da barra de ferramentas dos quatro temas clássicos, com botões e ícones maiores. Os controles espelham rótulos, estados e disponibilidade dos botões principais.
+- Restringe os ponteiros personalizados de mouse, texto, carregamento e demais estados aos quatro temas clássicos; os temas modernos usam os cursores padrão do navegador.
 - O tema Steam Clássico só é aplicado por clique no seletor; passar o mouse sobre ele não muda a aparência automaticamente.
 - O clique direito na área vazia da lista de arquivos oferece criar arquivo, criar pasta e importar. Nas pastas, oferece criar arquivo na pasta, renomear e excluir; arquivos existentes mantêm seu menu contextual.
 - As pílulas numéricas das Configurações e dos ajustes rápidos do editor aceitam edição pelo teclado ao clicar no valor. Enter aplica, Esc cancela, e arrastar, rolar e usar os botões de incremento continuam disponíveis.
