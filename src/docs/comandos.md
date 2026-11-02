@@ -59,7 +59,7 @@ No navegador, o nome identifica dados persistentes isolados pelo site. No aplica
 
 ## timer
 
-Aplica um atraso antes de cada comando seguinte. `timer on` usa 500 ms; valores são limitados ao intervalo de 0 a 10.000 ms.
+Aplica um atraso antes dos comandos seguintes. `timer on` define 500 ms; `timer off` desativa o atraso. Um valor numérico define a duração em milissegundos e é limitado ao intervalo de 0 a 10.000 ms. O atraso é aplicado na execução dos comandos, não mede o tempo total do algoritmo.
 
 ```visualg
 timer on
@@ -87,7 +87,7 @@ eco on
 
 ## cronometro
 
-Mede o tempo entre os comandos de início e fim e escreve o resultado em segundos e milissegundos.
+Mede o tempo entre os comandos de início e fim e escreve o resultado em segundos e milissegundos. Ative antes do trecho a medir e desative depois; a duração aparece no console ao encerrar a medição.
 
 ```visualg
 cronometro on
@@ -105,4 +105,3 @@ Algumas ações de depuração são recursos da interface, não comandos da ling
 | Passo a passo | Botão `Passo a passo`. |
 | Parar | Botão `Parar` durante a execução. |
 | Limpar console | Botão de limpeza no painel `Console` ou comando `limpatela`. |
-| Detecção de loop infinito | `Configurações > Gerais > Detecção de loop infinito`. |

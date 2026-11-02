@@ -6,8 +6,6 @@
 (function () {
     'use strict';
 
-    var MAX_ITERATIONS = 1000;
-
     // ==========================================
     // TOKEN TYPES
     // ==========================================
@@ -2048,7 +2046,7 @@
                     if (decl.isVector) {
                         var dimensions = this.normalizeDimensions(decl.dimensions);
                         var arr = this.createArray(dimensions, decl.dataType);
-                        scope.set(name, { type: 'vetor de ' + decl.dataType, value: arr, dataType: decl.dataType, dimensions: dimensions });
+                        scope.set(name, { type: 'vetor de ' + decl.dataType, value: arr, dataType: decl.dataType, dimensions: dimensions, _version: 0 });
                     } else {
                         scope.set(name, { type: decl.dataType, value: this.defaultValue(decl.dataType) });
                     }
@@ -2423,7 +2421,10 @@
                 }
                 this.validateArrayIndices(name, varInfo, keys);
                 var key = keys.join(',');
-                varInfo.value[key] = this.coerceType(value, varInfo.dataType || varInfo.type);
+                var nextValue = this.coerceType(value, varInfo.dataType || varInfo.type);
+                var valueChanged = !Object.prototype.hasOwnProperty.call(varInfo.value, key) || varInfo.value[key] !== nextValue;
+                varInfo.value[key] = nextValue;
+                if (valueChanged) varInfo._version = (varInfo._version || 0) + 1;
             } else {
                 if (varInfo.type.indexOf('vetor de ') === 0) {
                     throw new Error('Vetor "' + name + '" precisa de indice para receber valor');
@@ -2499,31 +2500,8 @@
         }
     };
 
-    Executor.prototype.checkIterationLimit = function (iter) {
-        if (localStorage.getItem('visualg-loop-detection') === 'off') return Promise.resolve();
-        if (iter.count <= MAX_ITERATIONS) return Promise.resolve();
-        iter.count = 0;
-        var overlay = document.getElementById('loopLimitOverlay');
-        overlay.classList.remove('hidden');
-        var self = this;
-        return new Promise(function (resolve, reject) {
-            document.getElementById('btn-loop-continue').onclick = function () {
-                overlay.classList.add('hidden');
-                resolve();
-            };
-            document.getElementById('btn-loop-stop').onclick = function () {
-                overlay.classList.add('hidden');
-                self.running = false;
-                reject(new Error('__STOP__'));
-            };
-        });
-    };
-
     Executor.prototype.execEnquanto = async function (stmt) {
-        var iter = { count: 0 };
         while (await this.evalExpr(stmt.condition)) {
-            iter.count++;
-            await this.checkIterationLimit(iter);
             this.checkRunning();
             this.breakFlag = false;
             await this.execBlock(stmt.body);
@@ -2544,10 +2522,7 @@
         this.setVarValue(stmt.variable, [], from);
 
         var ascending = step > 0;
-        var iter = { count: 0 };
         while (true) {
-            iter.count++;
-            await this.checkIterationLimit(iter);
             this.checkRunning();
             var current = this.getVar(stmt.variable).value;
             if (ascending && current > to) break;
@@ -2562,10 +2537,7 @@
     };
 
     Executor.prototype.execRepita = async function (stmt) {
-        var iter = { count: 0 };
         while (true) {
-            iter.count++;
-            await this.checkIterationLimit(iter);
             this.checkRunning();
             this.breakFlag = false;
             await this.execBlock(stmt.body);

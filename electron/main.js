@@ -51,6 +51,7 @@ ipcMain.handle('visualg-project:choose', async (event) => {
 });
 ipcMain.handle('visualg-project:close', (event) => { assertTrustedIpcSender(event); projectFiles.close(); });
 ipcMain.handle('visualg-project:list', (event, relative) => { assertTrustedIpcSender(event); return projectFiles.list(relative); });
+ipcMain.handle('visualg-project:search', (event, query) => { assertTrustedIpcSender(event); return projectFiles.search(query); });
 ipcMain.handle('visualg-project:read', (event, relative) => { assertTrustedIpcSender(event); return projectFiles.read(relative); });
 ipcMain.handle('visualg-project:write', (event, relative, content, revision) => {
   assertTrustedIpcSender(event);
@@ -68,9 +69,21 @@ ipcMain.handle('visualg-project:rename', (event, relative, name) => {
   assertTrustedIpcSender(event);
   return projectFiles.rename(relative, name);
 });
+ipcMain.handle('visualg-project:move', (event, relative, parent) => {
+  assertTrustedIpcSender(event);
+  return projectFiles.move(relative, parent);
+});
 ipcMain.handle('visualg-project:remove', (event, relative) => {
   assertTrustedIpcSender(event);
   return projectFiles.remove(relative);
+});
+ipcMain.handle('visualg-project:git-snapshot', (event) => {
+  assertTrustedIpcSender(event);
+  return projectFiles.gitSnapshot();
+});
+ipcMain.handle('visualg-project:git-commit-diff', (event, revision) => {
+  assertTrustedIpcSender(event);
+  return projectFiles.gitCommitDiff(revision);
 });
 
 const createWindow = () => {

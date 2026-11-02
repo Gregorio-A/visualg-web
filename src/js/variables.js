@@ -56,10 +56,24 @@
 
         update: function (variables) {
             if (!this.tbody) return;
-            this.tbody.innerHTML = '';
-
-            var hidden = this._getHiddenColumns();
             var entries = Array.from(variables.entries());
+            var hasChanges = Object.keys(this.previousValues).length !== entries.length;
+            if (!hasChanges) {
+                for (var check = 0; check < entries.length; check++) {
+                    var checkInfo = entries[check][1];
+                    var checkValue = this.formatValue(checkInfo.value, checkInfo.type, checkInfo);
+                    var isCheckVector = checkInfo.type && checkInfo.type.indexOf('vetor de ') === 0 && checkInfo.dimensions;
+                    var checkComparison = isCheckVector
+                        ? checkValue + '|' + (checkInfo._version !== undefined ? checkInfo._version : this.vectorValueSignature(checkInfo.value))
+                        : checkValue;
+                    if (this.previousValues[entries[check][0]] !== checkComparison) { hasChanges = true; break; }
+                }
+            }
+            if (!hasChanges) return;
+
+            this.tbody.replaceChildren();
+            var rows = document.createDocumentFragment();
+            var hidden = this._getHiddenColumns();
             for (var i = 0; i < entries.length; i++) {
                 var name = entries[i][0];
                 var info = entries[i][1];
@@ -67,7 +81,9 @@
 
                 var formattedValue = this.formatValue(info.value, info.type, info);
                 var isVector = info.type && info.type.indexOf('vetor de ') === 0 && info.dimensions;
-                var comparisonValue = isVector ? formattedValue + '|' + this.vectorValueSignature(info.value) : formattedValue;
+                var comparisonValue = isVector
+                    ? formattedValue + '|' + (info._version !== undefined ? info._version : this.vectorValueSignature(info.value))
+                    : formattedValue;
 
                 // Highlight changed values
                 if (this.previousValues[name] !== undefined &&
@@ -100,9 +116,13 @@
                 tr.appendChild(tdName);
                 tr.appendChild(tdType);
                 tr.appendChild(tdValue);
-                this.tbody.appendChild(tr);
-                if (expansion) this.tbody.appendChild(expansion.row);
+                rows.appendChild(tr);
+                if (expansion) rows.appendChild(expansion.row);
             }
+            this.tbody.appendChild(rows);
+            Object.keys(this.previousValues).forEach(function (name) {
+                if (!variables.has(name)) delete this.previousValues[name];
+            }, this);
         },
 
         formatValue: function (value, type, info) {

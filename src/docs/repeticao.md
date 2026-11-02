@@ -8,6 +8,8 @@ O VisuAlg Web implementa os laços `para`, `enquanto` e `repita`. Todos podem us
 
 Use `para` quando a quantidade de repetições é controlada por uma variável inteira.
 
+O cabeçalho usa `de` para o valor inicial, `ate` para o limite final e `faca` para iniciar o corpo. `passo` é opcional. O limite final é calculado uma vez antes do laço; a variável de controle avança pelo passo até ultrapassar esse limite.
+
 ```visualg
 para <variavel> de <inicio> ate <fim> [passo <incremento>] faca
   <comandos>
@@ -40,7 +42,7 @@ fimalgoritmo
 
 ## enquanto...faca
 
-Use `enquanto` quando a condição deve ser testada antes da primeira repetição. Se a condição começar falsa, o bloco não executa.
+Use `enquanto` quando a condição deve ser testada antes da primeira repetição. Se a condição começar falsa, o bloco não executa. `faca` encerra o cabeçalho e começa o corpo do laço.
 
 ```visualg
 enquanto <expressao-logica> faca
@@ -108,8 +110,25 @@ inicio
 fimalgoritmo
 ```
 
-## Detecção de loop infinito
-
-O Web pausa a execução quando um laço passa de 1.000 iterações e pergunta se você deseja continuar. Essa proteção pode ser alterada em `Configurações > Gerais > Detecção de loop infinito`.
-
 `passo 0` em `para` gera erro, porque a variável de controle não avançaria.
+
+## Escolha o laço
+
+- Prefira `para` quando você conhece o início, o fim e o passo da contagem.
+- Use `enquanto` quando a condição pode impedir até a primeira execução.
+- Use `repita` quando o corpo precisa executar ao menos uma vez, por exemplo,
+  para validar uma entrada.
+
+Nos exemplos de contagem acima, a saída é uma linha por número: de `1` a `5`.
+No laço decrescente, a saída vai de `5` a `1`. No exemplo com `interrompa`, o
+laço também para em `5`, mas por causa da condição dentro do corpo.
+
+## Pratique
+
+1. Some os números de `1` a `10` usando `para` e mostre o total (`55`).
+2. Faça uma contagem regressiva de `10` até `0` com `passo -1`.
+3. Leia uma senha e repita a leitura até receber a palavra `visualg`.
+
+Se um laço não termina, confira se a variável que participa da condição muda
+dentro do corpo. Para acompanhar cada repetição, use **Depurar** e o painel
+**Variáveis**. Consulte [Entrada e saída](#doc:entrada-saida) para ler valores.

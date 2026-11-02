@@ -255,30 +255,36 @@
         <div class="ide-shell">
             <aside class="workspace-sidebar" id="workspace-sidebar">
                 <div class="sidebar-tabs" role="tablist" aria-label="Conteúdo da lateral">
-                    <button id="btn-sidebar-files" class="sidebar-tab active" type="button" role="tab" aria-selected="true" aria-controls="sidebar-files-panel">Arquivos</button>
-                    <button id="btn-sidebar-docs" class="sidebar-tab" type="button" role="tab" aria-selected="false" aria-controls="sidebar-docs-panel">Documentação</button>
+                    <button id="btn-sidebar-files" class="sidebar-tab active" type="button" role="tab" aria-label="Arquivos" aria-selected="true" aria-controls="sidebar-files-panel"><i data-lucide="file" aria-hidden="true"></i><span>Arquivos</span></button>
+                    <button id="btn-sidebar-docs" class="sidebar-tab" type="button" role="tab" aria-label="Documentação" aria-selected="false" aria-controls="sidebar-docs-panel"><i data-lucide="book-open" aria-hidden="true"></i><span>Documentação</span></button>
                 </div>
                 <section class="file-tree sidebar-tab-panel active" id="sidebar-files-panel" role="tabpanel" aria-label="Arquivos">
                     <div class="sidebar-actions" aria-label="Ações de arquivos">
+                        <div id="workspace-new-split" class="workspace-new-split">
+                            <button id="btn-new-workspace-file" type="button" title="Criar algoritmo VisualG" aria-label="Novo algoritmo VisualG"><i data-lucide="plus" aria-hidden="true"></i><span>Novo</span></button>
+                            <button id="btn-new-workspace-menu" type="button" title="Escolher tipo de arquivo" aria-label="Escolher tipo de arquivo" aria-haspopup="menu" aria-expanded="false"><i data-lucide="chevron-down" aria-hidden="true"></i></button>
+                        </div>
+                        <div id="workspace-new-menu" class="sidebar-actions-menu workspace-new-menu" role="menu" aria-label="Criar novo arquivo" hidden></div>
                         <button id="btn-upload-workspace" type="button" title="Importar arquivo" aria-label="Importar arquivo"><i data-lucide="file-up" aria-hidden="true"></i></button>
                         <button id="btn-download-workspace" type="button" title="Exportar arquivo" aria-label="Exportar arquivo"><i data-lucide="file-down" aria-hidden="true"></i></button>
-                        <button id="btn-new-workspace-file" type="button" title="Novo arquivo" aria-label="Criar novo arquivo"><i data-lucide="file-plus-2" aria-hidden="true"></i></button>
                         <button id="btn-new-workspace-folder" type="button" title="Nova pasta" aria-label="Criar nova pasta"><i data-lucide="folder-plus" aria-hidden="true"></i></button>
                         <button id="btn-duplicate-workspace" type="button" title="Duplicar arquivo" aria-label="Duplicar arquivo"><i data-lucide="copy" aria-hidden="true"></i></button>
+                        <button id="btn-delete-selected-workspace" type="button" title="Excluir arquivos selecionados" aria-label="Excluir arquivos selecionados"><i data-lucide="trash-2" aria-hidden="true"></i></button>
                         <button id="sidebar-actions-more" class="sidebar-actions-more" type="button" title="Mais ações" aria-label="Mais ações" aria-expanded="false" aria-haspopup="menu" hidden><i data-lucide="ellipsis-vertical" aria-hidden="true"></i></button>
                         <div id="sidebar-actions-menu" class="sidebar-actions-menu" role="menu" aria-label="Mais ações de arquivos" hidden></div>
                     </div>
                     <div id="desktop-project-toolbar" class="desktop-project-toolbar" hidden>
                         <button id="btn-open-directory" type="button"><i data-lucide="folder-open" aria-hidden="true"></i><span id="btn-open-directory-label">Abrir pasta</span></button>
                         <span id="desktop-project-label" hidden></span>
+                        <button id="btn-project-git" type="button" title="Status e alterações Git" aria-label="Ver status e alterações Git" hidden><i data-lucide="git-branch" aria-hidden="true"></i><span>Git</span></button>
                         <button id="btn-close-directory" type="button" title="Fechar pasta" aria-label="Fechar pasta" hidden><i data-lucide="x" aria-hidden="true"></i></button>
                     </div>
-                    <div class="workspace-search"><i data-lucide="search" aria-hidden="true"></i><input id="workspace-file-search" type="search" aria-label="Pesquisar arquivos"></div>
+                    <div class="workspace-search"><i data-lucide="search" aria-hidden="true"></i><input id="workspace-file-search" type="search" aria-label="Pesquisar arquivos" placeholder="Buscar arquivos..."></div>
                     <div id="workspace-file-list"></div>
                     <button id="btn-history" class="history-link" title="Histórico de recuperação"><i data-lucide="history"></i> Histórico</button>
                 </section>
                 <section class="docs-tree sidebar-tab-panel" id="sidebar-docs-panel" role="tabpanel" aria-label="Documentação" hidden>
-                    <div class="docs-title">Documentação <button id="btn-docs-sidebar" title="Sumário"><i data-lucide="book-open"></i></button></div>
+                    <div class="docs-heading"><i data-lucide="book-open" aria-hidden="true"></i><div><h2>Documentação</h2><p>Guias, referências e exemplos do VisuAlg.</p></div><button id="btn-docs-sidebar" title="Sumário" aria-label="Abrir sumário"><i data-lucide="book-open"></i></button></div>
                     <div class="workspace-search"><i data-lucide="search" aria-hidden="true"></i><input id="docs-search" type="search" aria-label="Pesquisar documentação e exemplos"></div>
                     <div id="workspace-doc-list"></div>
                     <button id="btn-examples-sidebar" class="docs-example-link"><i data-lucide="library-big"></i> Exemplos</button>
@@ -470,13 +476,6 @@
                             <option value="windows-95">Windows 95</option>
                             <option value="visualg-3">VisuAlg 3.0</option>
                             <option value="steam-classic">Steam Clássico</option>
-                        </select>
-                    </div>
-                    <div class="setting-group">
-                        <label>Detecção de loop infinito</label>
-                        <select id="setting-loop-detection">
-                            <option value="on">Ativada</option>
-                            <option value="off">Desativada</option>
                         </select>
                     </div>
                 </div>
@@ -703,22 +702,6 @@
                 <div class="modal-footer">
                     <button class="modal-btn modal-btn-secondary" id="btn-cancel-close">Cancelar</button>
                     <button class="modal-btn modal-btn-danger" id="btn-confirm-close">Fechar aba</button>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- Loop Limit Modal -->
-    <div class="modal-overlay hidden" id="loopLimitOverlay">
-        <div class="modal">
-            <div class="modal-header">
-                <span>Possível loop infinito</span>
-            </div>
-            <div class="modal-body">
-                <p>O loop já executou mais de 1.000 iterações. Isso pode indicar um loop infinito. Deseja continuar a execução?</p>
-                <div class="modal-footer">
-                    <button class="modal-btn modal-btn-danger" id="btn-loop-stop">Parar</button>
-                    <button class="modal-btn modal-btn-secondary" id="btn-loop-continue">Continuar</button>
                 </div>
             </div>
         </div>

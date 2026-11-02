@@ -6,7 +6,9 @@
     function send(type, value) { parent.postMessage({ type: type, value: value }, window.location.origin === 'null' ? '*' : window.location.origin); }
     window.addEventListener('message', function (event) {
         if (event.source !== parent || event.origin !== window.location.origin || !event.data || event.data.type !== 'visualg-console') return;
-        document.getElementById('output').textContent = event.data.output || '';
+        var output = document.getElementById('output');
+        if (Object.prototype.hasOwnProperty.call(event.data, 'output')) output.textContent = event.data.output || '';
+        else if (event.data.outputAppend) output.appendChild(document.createTextNode(event.data.outputAppend));
         if (event.data.colors) {
             var colors = event.data.colors; var style = document.body.style;
             style.setProperty('--console-background', colors.background);

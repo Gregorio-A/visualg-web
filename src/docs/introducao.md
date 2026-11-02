@@ -16,13 +16,23 @@ A documentação abre na mesma aba de documentação ao trocar de assunto. A pes
 
 ![Documentação integrada à área central na versão 1.11](screenshots/interface-documentacao-1.11.png)
 
+## Ajuda contextual no editor
+
+Passe o cursor sobre uma palavra-chave, comando, operador ou função interna para ver uma explicação curta. Ao escrever uma chamada e abrir parênteses, o editor mostra a assinatura e realça o argumento que está sendo preenchido. A dica inclui um link para a seção correspondente desta documentação; use-o para abrir a explicação completa e os exemplos.
+
+O autocomplete continua disponível enquanto você digita e pode ser aberto com `Ctrl` + `Espaço`. As dicas contextuais são informativas: elas não alteram o código e não substituem a análise de erros feita ao executar o algoritmo.
+
 ## Desafios do Dia
 
 A página inicial e a Documentação apresentam dois exercícios independentes por data: **Iniciante** e **Avançado**. O calendário permite voltar a qualquer dia do ano atual desde 1º de janeiro, com uma prévia dos títulos. A lista permite buscar por nome ou descrição e filtrar por dificuldade. Abra o exercício, tente resolvê-lo no editor e consulte as dicas e a solução somente quando precisar.
 
 ![Calendário com os desafios simples e avançados](screenshots/interface-desafios-1.11.png)
 
-## Estrutura mínima
+## Primeiro programa
+
+Crie um arquivo, substitua o conteúdo pelo exemplo e pressione **Executar**. O
+comando `algoritmo` exige um nome entre aspas duplas; `var` declara dados,
+`inicio` abre os comandos executáveis e `fimalgoritmo` encerra o programa.
 
 Todo programa começa com `algoritmo`, pode declarar variáveis em `var`, executa comandos a partir de `inicio` e termina em `fimalgoritmo`.
 
@@ -40,13 +50,32 @@ inicio
 fimalgoritmo
 ```
 
+Quando o console pedir, informe `Ana` e depois `17`. A última mensagem exibida será:
+
+```text
+Olá, Ana. Idade: 17
+```
+
+`escreva` deixa o cursor na mesma linha para que o pedido e o valor digitado
+fiquem juntos; `escreval` termina a saída com uma quebra de linha. Consulte
+[Entrada e saída](#doc:entrada-saida) para separar melhor as mensagens e as
+leituras.
+
+### Experimente
+
+1. Troque a idade e execute novamente.
+2. Declare `ano_atual: inteiro`, atribua um ano e calcule uma idade aproximada
+   com `ano_atual - nascimento`.
+3. Se uma mensagem de erro aparecer, clique nela e procure o termo no
+   [guia de erros](#doc:erros).
+
 ## Regras gerais
 
 | Regra | Como funciona no Web |
 | --- | --- |
-| Maiúsculas e minúsculas | Palavras-chave e nomes são reconhecidos sem diferenciar caixa. |
-| Acentos | Prefira palavras sem acento, como `entao`, `senao`, `ate`, `faca`, `inicio`, `logico` e `nao`. O Web aceita alguns aliases acentuados para facilitar a digitação. |
-| Comandos por linha | Escreva um comando por linha. Não é necessário usar ponto e vírgula no fim das linhas. |
+| Maiúsculas e minúsculas | Palavras-chave, tipos e nomes de identificadores não diferenciam caixa. Evite declarar nomes que só mudam entre maiúsculas e minúsculas. |
+| Acentos | Prefira palavras sem acento, como `entao`, `senao`, `ate`, `faca`, `inicio`, `logico` e `nao`. O Web também aceita os aliases listados abaixo. |
+| Comandos por linha | Escreva um comando por linha. Não é necessário usar ponto e vírgula no fim das linhas; em parâmetros tipados, `;` separa grupos. |
 | Comentário de linha | Tudo depois de `//` é ignorado até o fim da linha. |
 | Comentário em bloco | Texto entre `{` e `}` também é ignorado. Se faltar `}`, o Web mostra erro. |
 | Strings | Textos usam aspas duplas. Se faltar a aspa final, o Web mostra erro. |
@@ -59,6 +88,11 @@ fimalgoritmo
 | `real` | `0.0` | Números com casas decimais usando ponto, como `3.14`. |
 | `caractere` | `""` | Textos entre aspas duplas. |
 | `logico` | `FALSO` | Valores `VERDADEIRO` ou `FALSO`. |
+
+Por compatibilidade, `numerico` e `numérico` são aliases de `real`; `caracter`,
+`caráter` e `literal` são aliases de `caractere`; `lógico` é alias de `logico`.
+`declare` é alias de `var`. Prefira as formas da tabela nos programas novos. O
+[glossário](#doc:glossario) explica a diferença entre tipo, variável e valor.
 
 ## Declaração de variáveis
 
@@ -124,3 +158,11 @@ Constantes reais usam ponto como separador decimal, independentemente da configu
 ```visualg
 preco <- 12.50
 ```
+
+## Percurso de aprendizado
+
+Depois de conhecer a estrutura, pratique na sequência do
+[sumário](#doc:sumario): entrada e saída, operadores, condicionais, repetição e
+subprogramas. Cada página traz exemplos e pequenas atividades. Se um conceito
+novo aparecer, consulte o [glossário](#doc:glossario); se o programa não
+executar, use [Erros e soluções](#doc:erros).

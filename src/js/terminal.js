@@ -5,6 +5,11 @@
 (function () {
     'use strict';
 
+    function notifyOutputChange(detail) {
+        var workspace = window.VisualGWorkspace;
+        if (workspace && workspace.queueConsoleOutput) workspace.queueConsoleOutput(detail);
+    }
+
     window.Terminal = {
         outputEl: null,
         inputArea: null,
@@ -46,8 +51,6 @@
                 if (!event.target.closest('#terminalPanel, .console-dialog')) self.focusRequested = false;
             });
             document.addEventListener('visualg:execution-end', function () {
-                // The workspace may move/show the console while handling this event.
-                // Scroll after that layout change has been painted.
                 self.scrollToBottom();
             });
         },
@@ -92,10 +95,7 @@
             }
             this._autoScrollFrame = window.requestAnimationFrame(function () {
                 align();
-                self._autoScrollFrame = window.requestAnimationFrame(function () {
-                    self._autoScrollFrame = 0;
-                    align();
-                });
+                self._autoScrollFrame = 0;
             });
         },
 
@@ -104,6 +104,7 @@
             var last = this.outputEl.lastChild;
             if (last && last.nodeType === 3) last.appendData(value);
             else this.outputEl.appendChild(document.createTextNode(value));
+            notifyOutputChange({ append: value });
             this.scrollToBottom();
         },
 
@@ -132,6 +133,7 @@
             }
 
             this.outputEl.appendChild(row);
+            notifyOutputChange({ reset: true });
             this.scrollToBottom();
         },
         readInput: function (prompt) {
@@ -257,6 +259,7 @@
             if (this._autoScrollFrame) window.cancelAnimationFrame(this._autoScrollFrame);
             this._autoScrollFrame = 0;
             this.outputEl.textContent = '';
+            notifyOutputChange({ reset: true });
             this.outputEl.scrollTop = 0;
             var panel = this.outputEl.closest('.panel-body');
             if (panel) panel.scrollTop = 0;

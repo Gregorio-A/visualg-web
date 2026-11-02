@@ -157,6 +157,7 @@
             fileName: options.fileName || null,
             code: tabCode,
             dirty: !!options.dirty,
+            pinned: !!options.pinned,
             used: !!options.used || (tabCode.trim() !== '' && tabCode.trim() !== getDefaultCode().trim()),
             lastOpenedAt: options.lastOpenedAt || null,
             terminalHTML: '',
@@ -185,7 +186,7 @@
             var id = typeof savedTab.id === 'string' && savedTab.id && !seenIds.has(savedTab.id) ? savedTab.id : newTabId();
             if (id !== savedTab.id) repaired = true;
             seenIds.add(id);
-            restoredTabs.push(createTabData(savedTab.code, { id: id, fileName: savedTab.fileName, dirty: savedTab.dirty, used: savedTab.used, lastOpenedAt: savedTab.lastOpenedAt || (savedTab.code.trim() !== getDefaultCode().trim() ? data.updatedAt : null) }));
+            restoredTabs.push(createTabData(savedTab.code, { id: id, fileName: savedTab.fileName, dirty: savedTab.dirty, pinned: savedTab.pinned, used: savedTab.used, lastOpenedAt: savedTab.lastOpenedAt || (savedTab.code.trim() !== getDefaultCode().trim() ? data.updatedAt : null) }));
         }
         return {
             tabs: restoredTabs,
@@ -238,6 +239,7 @@
                         fileName: tab.fileName,
                         code: tab.code,
                         dirty: tab.dirty,
+                        pinned: tab.pinned,
                         used: tab.used,
                         lastOpenedAt: tab.lastOpenedAt
                     };
@@ -267,6 +269,7 @@
                     fileName: tab.fileName,
                     code: tab.code,
                     dirty: tab.dirty,
+                    pinned: tab.pinned,
                     used: tab.used,
                     lastOpenedAt: tab.lastOpenedAt
                 };
@@ -295,6 +298,15 @@
             if (!Array.isArray(history)) return [];
             return history.map(function (raw, index) { var data = JSON.parse(raw); return { index: index, updatedAt: data.updatedAt, tabCount: data.tabs.length }; });
         } catch (error) { return []; }
+    }
+
+    function getVersionSnapshot(index) {
+        try {
+            var history = JSON.parse(localStorage.getItem(VERSIONS_STORAGE_KEY) || '[]');
+            if (!Array.isArray(history) || typeof history[index] !== 'string') return null;
+            var data = JSON.parse(history[index]);
+            return data && Array.isArray(data.tabs) ? data : null;
+        } catch (error) { return null; }
     }
 
     function restoreSnapshot(raw) {
@@ -379,7 +391,9 @@
         for (var i = 0; i < tabs.length; i++) {
             var tab = tabs[i];
             var el = document.createElement('div');
-            el.className = 'tab-item' + (tab.id === activeTabId ? ' active' : '') + (tab.dirty ? ' modified' : '') + (tab.running || (tab.executor && tab.executor.running) ? ' running' : '');
+            var tabKey = 'file:' + tab.id;
+            var isNewTab = !orderedItems[tabKey];
+            el.className = 'tab-item' + (tab.id === activeTabId ? ' active' : '') + (tab.dirty ? ' modified' : '') + (tab.pinned ? ' pinned' : '') + (tab.running || (tab.executor && tab.executor.running) ? ' running' : '') + (isNewTab ? ' tab-item-enter' : '');
             el.dataset.tabId = tab.id;
             el.draggable = true;
             el.setAttribute('role', 'tab');
@@ -489,7 +503,11 @@
                 if (closeBtn) {
                     e.preventDefault();
                     e.stopImmediatePropagation();
-                    self.closeTab(closeBtn.dataset.tabId);
+                    var closingTab = closeBtn.closest('.tab-item');
+                    if (closingTab && !closingTab.classList.contains('tab-item-closing')) {
+                        closingTab.classList.add('tab-item-closing');
+                        window.setTimeout(function () { self.closeTab(closeBtn.dataset.tabId); }, 150);
+                    }
                     return;
                 }
                 var tabItem = e.target.closest('.tab-item');
@@ -610,7 +628,7 @@
                     try {
                         if (!localStorage.getItem(RECOVERY_STORAGE_KEY)) localStorage.setItem(RECOVERY_STORAGE_KEY, persistedRaw);
                         var repairedData = JSON.parse(persistedRaw);
-                        repairedData.tabs = persistedWorkspace.tabs.map(function (tab) { return { id:tab.id, name:tab.name, fileName:tab.fileName, code:tab.code, dirty:tab.dirty, used:tab.used, lastOpenedAt:tab.lastOpenedAt }; });
+                        repairedData.tabs = persistedWorkspace.tabs.map(function (tab) { return { id:tab.id, name:tab.name, fileName:tab.fileName, code:tab.code, dirty:tab.dirty, pinned:tab.pinned, used:tab.used, lastOpenedAt:tab.lastOpenedAt }; });
                         persistedRaw = JSON.stringify(repairedData);
                         localStorage.setItem(WORKSPACE_STORAGE_KEY, persistedRaw);
                     } catch (error) { /* keep the original snapshot if storage is unavailable */ }
@@ -800,6 +818,35 @@
             return doCloseTab(id);
         },
 
+        closeOtherTabs: function (id) {
+            if (blockWhenRunning()) return false;
+            if (!getTab(id)) return false;
+            var self = this;
+            var closed = tabs.slice().filter(function (tab) { return tab.id !== id && !tab.pinned; })
+                .every(function (tab) { return self.closeTab(tab.id); });
+            if (closed) self.switchTab(id);
+            return closed;
+        },
+
+        closeTabsToRight: function (id) {
+            if (blockWhenRunning()) return false;
+            var index = tabs.findIndex(function (tab) { return tab.id === id; });
+            if (index < 0) return false;
+            var self = this;
+            return tabs.slice(index + 1).filter(function (tab) { return !tab.pinned; })
+                .every(function (tab) { return self.closeTab(tab.id); });
+        },
+
+        setPinned: function (id, pinned) {
+            if (blockWhenRunning()) return false;
+            var tab = getTab(id);
+            if (!tab) return false;
+            tab.pinned = !!pinned;
+            tabs.sort(function (left, right) { return Number(right.pinned) - Number(left.pinned); });
+            renderTabs(); schedulePersist();
+            return true;
+        },
+
         confirmClose: function () {
             if (pendingCloseTabId) {
                 if (blockWhenRunning()) return;
@@ -952,6 +999,8 @@
         getVersionHistory: getVersionHistory,
 
         restoreVersion: restoreVersion,
+        getVersionSnapshot: getVersionSnapshot,
+        getCurrentSnapshot: function () { try { return JSON.parse(serializeCurrentWorkspace()); } catch (error) { return null; } },
 
         restoreRecovery: restoreRecovery,
 

@@ -37,6 +37,8 @@ fimalgoritmo
 
 Parâmetros são declarados entre parênteses. Grupos podem ser separados por ponto e vírgula, como no VisuAlg clássico.
 
+Enquanto você digita uma chamada, a ajuda contextual do editor apresenta os parâmetros declarados e realça a posição do argumento atual. Passe o cursor sobre o nome do procedimento para ver um resumo; o link da dica abre esta seção.
+
 ```visualg
 procedimento <nome>(<parametros>: <tipo>; <parametros>: <tipo>)
 inicio
@@ -100,3 +102,23 @@ fimalgoritmo
 ```
 
 Ao usar `var`, passe uma variável simples na chamada. Expressões como `x + 1` não podem receber alterações por referência.
+
+## Parâmetros e argumentos
+
+O **parâmetro** é o nome e o tipo declarados na definição (`nome: caractere`).
+O **argumento** é o valor passado na chamada (`"Ana"`). A ordem importa: cada
+argumento ocupa a posição do parâmetro correspondente. Se a quantidade ou o
+tipo não combinar, corrija a chamada consultando a assinatura do procedimento.
+
+No exemplo `ProcedimentoComParametro`, a saída é `Nome: Ana` e `Idade: 17`.
+No exemplo `Referencia`, a saída é `Resultado: 13`, porque `saida` recebe a
+soma por referência e fica disponível depois que o procedimento termina.
+
+## Pratique
+
+1. Crie um procedimento `mostrarDobro` que receba um inteiro e mostre o dobro.
+2. Crie um procedimento que receba nome e idade e escreva uma frase completa.
+3. Crie `somar(a, b, var resultado)` e use-o para calcular `12 + 30`.
+
+Quando precisar produzir um valor dentro de uma expressão, use uma [função](#doc:funcoes).
+Para entender os termos usados nesta página, consulte o [glossário](#doc:glossario).

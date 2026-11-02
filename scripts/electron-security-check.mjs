@@ -42,8 +42,9 @@ try {
   assert.deepEqual(channels.sort(), [
     'visualg-data-file:append', 'visualg-data-file:read',
     'visualg-project:choose', 'visualg-project:close', 'visualg-project:create-directory',
-    'visualg-project:create-file', 'visualg-project:list', 'visualg-project:read',
-    'visualg-project:remove', 'visualg-project:rename', 'visualg-project:write',
+    'visualg-project:create-file', 'visualg-project:git-commit-diff', 'visualg-project:git-snapshot',
+    'visualg-project:list', 'visualg-project:move', 'visualg-project:read', 'visualg-project:remove',
+    'visualg-project:rename', 'visualg-project:search', 'visualg-project:write',
   ].sort());
 
   const rendererSource = await fs.readFile(new URL('../src/index.html', import.meta.url), 'utf8');

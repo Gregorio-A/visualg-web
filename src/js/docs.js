@@ -19,9 +19,12 @@
         'subprogramas': 'docs/subprogramas.md',
         'funcoes': 'docs/funcoes.md',
         'comandos': 'docs/comandos.md',
-        'historia': 'docs/historia.md'
+        'historia': 'docs/historia.md',
+        'glossario': 'docs/glossario.md',
+        'erros': 'docs/erros.md',
+        'duvidas-frequentes': 'docs/duvidas-frequentes.md'
     };
-    var docOrder = ['sumario', 'introducao', 'historia', 'editor', 'compatibilidade', 'operadores', 'entrada-saida', 'condicionais', 'repeticao', 'subprogramas', 'funcoes', 'comandos', 'status'];
+    var docOrder = ['sumario', 'introducao', 'historia', 'editor', 'erros', 'compatibilidade', 'glossario', 'operadores', 'entrada-saida', 'condicionais', 'repeticao', 'subprogramas', 'funcoes', 'comandos', 'duvidas-frequentes', 'status'];
 
     function enhanceImages(root) {
         root.querySelectorAll('img:not([data-doc-enhanced])').forEach(function (img) {

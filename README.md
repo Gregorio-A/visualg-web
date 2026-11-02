@@ -99,10 +99,10 @@ eles entram no documento de status com identificador e criterio de conclusao.
 
 - Editor baseado em CodeMirror 5 com destaque de sintaxe para VisuAlg.
 - Cinco arquivos de exemplo na primeira visita, sem substituir arquivos já salvos.
-- Arquivos locais organizáveis em pastas, filtráveis por nome, com upload, download, duplicação e exclusão recuperável por 30 dias.
+- Arquivos locais organizáveis em pastas, com busca por nome e conteúdo, ordenação por nome ou atividade recente, seleção múltipla, movimentação por arraste e ações em lote; exclusão recuperável por 30 dias.
 - Novo arquivo criado imediatamente com nome único, sem formulário; `F2` renomeia o arquivo e a declaração `Algoritmo` acompanha o nome, inclusive ao editar a declaração no código.
 - Modo foco alternado por `Ctrl+Shift+F` (`Cmd+Shift+F` no macOS), com `Esc` para sair.
-- Abas de código, documentação, exemplos, Console e Configurações numa única barra; todas podem ser fechadas sem apagar arquivos. As abas de código mostram alterações desde o último download e têm menu contextual.
+- Abas de código, documentação, exemplos, Console e Configurações numa única barra; reabra arquivos fechados, fixe abas e feche outras abas pelo menu contextual. As abas de código mostram alterações desde o último download.
 - Documentação e exemplos em abas centrais de altura total, com busca e divisão código + documentação ou código + código.
 - Autocompletar comandos (também com `Ctrl+Espaço`) e indentação automática.
 - Execucao completa com `F9` e execucao passo a passo com `F8`.
@@ -113,7 +113,8 @@ eles entram no documento de status com identificador e criterio de conclusao.
 - Abertura de arquivos `.alg` e `.txt`.
 - Salvamento do codigo como `.alg` ou `.txt`.
 - Persistencia automatica das abas e dos codigos no armazenamento local do navegador/Electron.
-- Indicador visível de autosave, cópia de recuperação e histórico de até 10 versões das abas por 30 dias.
+- Indicador visível de autosave, cópia de recuperação e histórico de até 10 versões das abas por 30 dias, com comparação entre snapshots.
+- No Electron, busca de conteúdo na pasta aberta e consulta somente leitura ao status, diffs e histórico recente do Git.
 - Galeria de exemplos executáveis na área central, sem cobrir o editor na primeira visita.
 - Erros clicaveis com navegacao direta para a linha e coluna no editor.
 - Botões superiores independentes para ocultar/reabrir arquivos e depuração; o editor ocupa automaticamente o espaço liberado.
@@ -127,7 +128,6 @@ eles entram no documento de status com identificador e criterio de conclusao.
 - Desafios do Dia: 365 datas com versões Simples e Avançada, calendário desde 1º de janeiro do ano atual, explicações, dicas e soluções ocultas que podem ser copiadas ou abertas no editor.
 - Configuracoes persistidas no `localStorage`.
 - Redefinição de todas as configurações ou de categorias individuais, preservando arquivos, códigos e histórico de recuperação.
-- Deteccao de possivel loop infinito apos 1.000 iteracoes, com opcao de continuar ou parar.
 
 ## Linguagem suportada
 

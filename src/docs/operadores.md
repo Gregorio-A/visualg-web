@@ -19,6 +19,25 @@ Operadores formam expressões numéricas, lógicas e de texto. O VisuAlg Web seg
 
 Exemplo: `2 ^ 3 ^ 2` resulta em `512`, pois é interpretado como `2 ^ (3 ^ 2)`.
 
+Quando a ordem puder causar dúvida, use parênteses para deixar a intenção
+visível. Em `a + b * c`, a multiplicação acontece antes da soma; em
+`(a + b) * c`, a soma acontece primeiro.
+
+## Atribuição
+
+Use `<-` para guardar o resultado de uma expressão em uma variável. A atribuição não é uma comparação: `idade <- 18` altera o valor de `idade`, enquanto `idade = 18` produz um valor lógico para uma condição. O Web também aceita `:=` como forma alternativa.
+
+```visualg
+algoritmo "Atribuicao"
+var
+  idade, proxima_idade: inteiro
+inicio
+  idade <- 18
+  proxima_idade := idade + 1
+  escreval(proxima_idade)
+fimalgoritmo
+```
+
 ## Aritméticos
 
 | Operador | Nome | Exemplo | Resultado |
@@ -45,6 +64,9 @@ inicio
 fimalgoritmo
 ```
 
+O resultado mostra `Soma: 11`, `Divisão inteira: 2`, `Resto: 2` e
+`Potência: 9`. `div` descarta a parte decimal; `mod` mostra o resto.
+
 ## Caracteres
 
 O operador `+` concatena textos quando os dois lados são `caractere`. Misturar
@@ -60,6 +82,9 @@ inicio
   escreval("Olá, " + nome + "!")
 fimalgoritmo
 ```
+
+O resultado é `Olá, Ana!`. Para mostrar texto junto de números sem convertê-los,
+passe cada valor como argumento separado de `escreva` ou `escreval`.
 
 ## Relacionais
 
@@ -113,3 +138,26 @@ inicio
   fimse
 fimalgoritmo
 ```
+
+O exemplo permite a entrada quando a pessoa tem 18 anos ou autorização. Como
+`ou` usa curto-circuito, a segunda condição não precisa ser avaliada se a
+primeira já for verdadeira.
+
+## Como escolher o operador
+
+- Use `<-` para **guardar** um valor; use `=`, `<>`, `<`, `>` e suas variantes
+  para **comparar** valores.
+- Use `/` para divisão com parte decimal; use `div` ou `\` para o quociente
+  inteiro e `mod` ou `%` para o resto.
+- Use `e` quando todas as condições devem ser verdadeiras; `ou` quando basta
+  uma; `xou` quando exatamente uma deve ser verdadeira.
+
+## Pratique
+
+1. Leia dois números e mostre soma, produto, quociente real e resto.
+2. Calcule o preço com desconto usando parênteses para tornar a ordem explícita.
+3. Escreva uma condição que verifique se um número está entre 1 e 10,
+   incluindo os extremos.
+
+Consulte [Condicionais](#doc:condicionais) para usar resultados lógicos no
+fluxo do algoritmo.

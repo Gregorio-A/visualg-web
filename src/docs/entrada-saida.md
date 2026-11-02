@@ -26,6 +26,10 @@ inicio
 fimalgoritmo
 ```
 
+Nesse exemplo, o console mostra `VisuAlg` e `Nova linha` em linhas separadas.
+Aspas são usadas no código para indicar valores de texto escritos diretamente
+no programa; o texto digitado em `leia` não precisa delas.
+
 ## Formatação
 
 Valores podem receber largura mínima e, no caso de reais, número de casas decimais.
@@ -73,6 +77,9 @@ inicio
 fimalgoritmo
 ```
 
+Digite `Ana` e `17` nos pedidos do console. A saída final será `Olá, Ana. Você
+tem 17 anos.`.
+
 ## Conversão dos valores digitados
 
 | Tipo da variável | Conversão no Web |
@@ -96,3 +103,24 @@ inicio
   escreval("Valor lógico: ", confirmado)
 fimalgoritmo
 ```
+
+## Se algo der errado
+
+- Se o valor numérico for recusado, confira se `inteiro` recebeu um número sem
+  casas decimais ou se `real` recebeu um número válido. Na entrada, os dois
+  aceitam ponto ou vírgula decimal.
+- Para `logico`, informe `verdadeiro`, `v`, `falso` ou `f`. Outros textos não
+  são convertidos em valor lógico.
+- Se a execução parar esperando uma leitura, preencha o campo do console e
+  envie a entrada; o programa só continua depois disso.
+
+## Pratique
+
+1. Leia duas notas reais e mostre a média com `escreval`.
+2. Leia o nome e a idade e exiba uma frase usando várias expressões na mesma
+   chamada.
+3. Use `media:6:2` para mostrar duas casas decimais. A largura é mínima; um
+   valor maior pode ocupar mais espaços.
+
+Se a leitura continuar repetindo, consulte o diagnóstico de
+[entrada inválida](#doc:erros).

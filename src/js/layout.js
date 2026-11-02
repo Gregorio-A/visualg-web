@@ -26,6 +26,8 @@
     var resizeType = null;
     var startPos = 0;
     var startSize = 0;
+    var pendingResizeEvent = null;
+    var resizeFrame = 0;
 
     function getEventPos(event, axis) {
         if (event.touches && event.touches.length > 0) {
@@ -58,9 +60,8 @@
         resizeHandleHorizontal.classList.add('dragging');
     }
 
-    function resize(event) {
+    function applyResize(event) {
         if (!isResizing) return;
-        event.preventDefault();
 
         if (resizeType === 'vertical') {
             var newHeight = startSize + getEventPos(event, 'y') - startPos;
@@ -93,8 +94,23 @@
         }
     }
 
+    function resize(event) {
+        if (!isResizing) return;
+        if (event.cancelable) event.preventDefault();
+        pendingResizeEvent = { clientX: getEventPos(event, 'x'), clientY: getEventPos(event, 'y') };
+        if (resizeFrame) return;
+        resizeFrame = window.requestAnimationFrame(function () {
+            resizeFrame = 0;
+            var latest = pendingResizeEvent;
+            pendingResizeEvent = null;
+            if (latest) applyResize(latest);
+        });
+    }
+
     function stopResize() {
         if (!isResizing) return;
+        if (resizeFrame) { window.cancelAnimationFrame(resizeFrame); resizeFrame = 0; }
+        if (pendingResizeEvent) { var latest = pendingResizeEvent; pendingResizeEvent = null; applyResize(latest); }
         isResizing = false;
         document.body.classList.remove('resizing');
         resizeHandleVertical.classList.remove('dragging');

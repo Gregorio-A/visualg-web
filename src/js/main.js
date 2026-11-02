@@ -15,11 +15,12 @@
     var settingEditorFontFamily, settingConsoleFontFamily;
     var settingVarsFontSize, settingVarsFontSizeSlider, settingConsoleFontSize, settingConsoleFontSizeSlider, settingConsoleInputMode;
     var settingVarsColNome, settingVarsColTipo, settingVarsColValor;
-    var settingLoopDetection;
     var editorRefreshFrame = 0;
     var ONBOARDING_STORAGE_KEY = 'visualg-onboarding-complete-v1';
     var SECTION_VISIBILITY_KEY = 'visualg-section-visibility-v1';
     var sectionVisibility = { editor: true, variables: true, terminal: true };
+    var exampleSearchIndex = new WeakMap();
+    var examplesSearchFrame = 0;
 
     function isCompactInterface() {
         return window.innerWidth <= 760 || (window.innerWidth <= 950 && window.innerHeight <= 500);
@@ -77,7 +78,6 @@
         settingVarsColNome = document.getElementById('setting-vars-col-nome');
         settingVarsColTipo = document.getElementById('setting-vars-col-tipo');
         settingVarsColValor = document.getElementById('setting-vars-col-valor');
-        settingLoopDetection = document.getElementById('setting-loop-detection');
 
         // Initialize theme and settings
         initTheme();
@@ -337,9 +337,6 @@
         settingConsoleInputMode.addEventListener('change', function () {
             applyConsoleInputMode(this.value);
         });
-        settingLoopDetection.addEventListener('change', function () {
-            applyLoopDetection(settingLoopDetection.value);
-        });
 
         function onVarsColChange() {
             applyVarsColumns({
@@ -417,9 +414,16 @@
         var examples = window.VisuAlgExamples || [];
         var search = document.getElementById('examples-search');
         var terms = search ? search.value.toLocaleLowerCase('pt-BR').normalize('NFD').replace(/[\u0300-\u036f]/g, '').trim().split(/\s+/).filter(Boolean) : [];
-        grid.textContent = '';
+        var cards = document.createDocumentFragment();
 
-        examples.filter(function (example) { var searchable = (example.title + ' ' + example.level + ' ' + example.description + ' ' + example.source).toLocaleLowerCase('pt-BR').normalize('NFD').replace(/[\u0300-\u036f]/g, ''); return terms.every(function (term) { return searchable.includes(term); }); }).forEach(function (example) {
+        examples.filter(function (example) {
+            var searchable = exampleSearchIndex.get(example);
+            if (!searchable) {
+                searchable = (example.title + ' ' + example.level + ' ' + example.description + ' ' + example.source).toLocaleLowerCase('pt-BR').normalize('NFD').replace(/[\u0300-\u036f]/g, '');
+                exampleSearchIndex.set(example, searchable);
+            }
+            return terms.every(function (term) { return searchable.includes(term); });
+        }).forEach(function (example) {
             var card = document.createElement('article');
             card.className = 'example-card';
 
@@ -445,10 +449,11 @@
             card.appendChild(header);
             card.appendChild(description);
             card.appendChild(actions);
-            grid.appendChild(card);
+            cards.appendChild(card);
         });
 
-        if (!grid.children.length) grid.textContent = 'Nenhum exemplo encontrado por título, descrição ou código.';
+        if (!cards.childNodes.length) cards.appendChild(document.createTextNode('Nenhum exemplo encontrado por título, descrição ou código.'));
+        grid.replaceChildren(cards);
 
         if (window.renderLucideIcons) window.renderLucideIcons(grid);
     }
@@ -481,7 +486,10 @@
     function initExamples() {
         var overlay = document.getElementById('examplesOverlay');
         renderExamples();
-        document.getElementById('examples-search').addEventListener('input', renderExamples);
+        document.getElementById('examples-search').addEventListener('input', function () {
+            if (examplesSearchFrame) return;
+            examplesSearchFrame = window.requestAnimationFrame(function () { examplesSearchFrame = 0; renderExamples(); });
+        });
         document.getElementById('btn-close-examples').addEventListener('click', closeExamples);
         overlay.addEventListener('click', function (event) {
             if (event.target === overlay) closeExamples();
@@ -947,9 +955,6 @@
         var varsColumns = JSON.parse(localStorage.getItem('visualg-vars-columns') || '{"nome":true,"tipo":true,"valor":true}');
         applyVarsColumns(varsColumns);
 
-        // Loop detection
-        var loopDetection = localStorage.getItem('visualg-loop-detection') || 'on';
-        applyLoopDetection(loopDetection);
     }
 
     function applyFontSize(size) {
@@ -1083,11 +1088,6 @@
         if (settingConsoleInputMode) settingConsoleInputMode.value = value;
     }
 
-    function applyLoopDetection(value) {
-        localStorage.setItem('visualg-loop-detection', value);
-        settingLoopDetection.value = value;
-    }
-
     function openSettings() {
         if (window.VisualGWorkspace) { window.VisualGWorkspace.showSettings(); return; }
         // Sync current values
@@ -1105,7 +1105,6 @@
         settingConsoleFontSize.value = savedConsoleFontSize;
         if (settingConsoleFontSizeSlider) settingConsoleFontSizeSlider.value = Math.min(parseInt(savedConsoleFontSize, 10), 160);
         settingConsoleInputMode.value = localStorage.getItem('visualg-console-input-mode') || 'inline';
-        settingLoopDetection.value = localStorage.getItem('visualg-loop-detection') || 'on';
         var varsColumns = JSON.parse(localStorage.getItem('visualg-vars-columns') || '{"nome":true,"tipo":true,"valor":true}');
         settingVarsColNome.checked = varsColumns.nome;
         settingVarsColTipo.checked = varsColumns.tipo;
