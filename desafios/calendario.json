@@ -1,0 +1,4382 @@
+[
+  {
+    "dia": "01-01",
+    "tema": "Verão e férias",
+    "simples": {
+      "titulo": "Boas-vindas de férias",
+      "enunciado": "leia um nome e exiba uma saudação personalizada."
+    },
+    "avancado": {
+      "titulo": "Roteiro de férias",
+      "enunciado": "armazene cinco destinos com custos e exiba o mais barato e o mais caro."
+    }
+  },
+  {
+    "dia": "01-02",
+    "tema": "Verão e férias",
+    "simples": {
+      "titulo": "Termômetro da praia",
+      "enunciado": "leia uma temperatura e diga se supera 30 °C."
+    },
+    "avancado": {
+      "titulo": "Histórico de calor",
+      "enunciado": "leia sete temperaturas em vetor e informe média, máxima e dias acima da média."
+    }
+  },
+  {
+    "dia": "01-03",
+    "tema": "Verão e férias",
+    "simples": {
+      "titulo": "Dividindo o sorvete",
+      "enunciado": "calcule quanto cada pessoa paga por uma compra dividida igualmente."
+    },
+    "avancado": {
+      "titulo": "Sorveteria em funcionamento",
+      "enunciado": "simule pedidos de três sabores, controle quantidades e total arrecadado."
+    }
+  },
+  {
+    "dia": "01-04",
+    "tema": "Verão e férias",
+    "simples": {
+      "titulo": "Tempo de piscina",
+      "enunciado": "converta minutos de natação em horas e minutos."
+    },
+    "avancado": {
+      "titulo": "Agenda da piscina",
+      "enunciado": "receba horários de início e fim de cinco reservas e detecte sobreposições."
+    }
+  },
+  {
+    "dia": "01-05",
+    "tema": "Verão e férias",
+    "simples": {
+      "titulo": "Preço do protetor",
+      "enunciado": "aplique um desconto percentual a um produto."
+    },
+    "avancado": {
+      "titulo": "Comparador de protetores",
+      "enunciado": "cadastre cinco embalagens com volume e preço e ordene por custo por mililitro."
+    }
+  },
+  {
+    "dia": "01-06",
+    "tema": "Verão e férias",
+    "simples": {
+      "titulo": "Passos do passeio",
+      "enunciado": "converta uma distância de quilômetros para metros."
+    },
+    "avancado": {
+      "titulo": "Contador semanal de passos",
+      "enunciado": "leia sete totais diários e encontre a maior sequência de dias acima da meta."
+    }
+  },
+  {
+    "dia": "01-07",
+    "tema": "Verão e férias",
+    "simples": {
+      "titulo": "Limite da mala",
+      "enunciado": "informe se o peso de uma bagagem ultrapassa um limite informado."
+    },
+    "avancado": {
+      "titulo": "Organizador da mala",
+      "enunciado": "escolha itens de uma lista por prioridade sem exceder um peso máximo."
+    }
+  },
+  {
+    "dia": "01-08",
+    "tema": "Verão e férias",
+    "simples": {
+      "titulo": "Duas passagens",
+      "enunciado": "calcule o total de passagens para ida e volta."
+    },
+    "avancado": {
+      "titulo": "Planejador de transporte",
+      "enunciado": "compare três rotas com tarifa e duração e identifique a mais barata e a mais rápida."
+    }
+  },
+  {
+    "dia": "01-09",
+    "tema": "Verão e férias",
+    "simples": {
+      "titulo": "Lanche compartilhado",
+      "enunciado": "leia o preço de três itens e some os valores."
+    },
+    "avancado": {
+      "titulo": "Caixa da lanchonete",
+      "enunciado": "monte um menu de pedidos, controle estoque de cinco itens e calcule troco."
+    }
+  },
+  {
+    "dia": "01-10",
+    "tema": "Verão e férias",
+    "simples": {
+      "titulo": "Relógio de férias",
+      "enunciado": "converta horas em minutos."
+    },
+    "avancado": {
+      "titulo": "Quadro de horários",
+      "enunciado": "receba cinco atividades com duração e organize o cronograma sem ultrapassar o dia."
+    }
+  },
+  {
+    "dia": "01-11",
+    "tema": "Verão e férias",
+    "simples": {
+      "titulo": "Pôr do sol",
+      "enunciado": "leia dois horários inteiros em minutos e calcule o intervalo entre eles."
+    },
+    "avancado": {
+      "titulo": "Registro solar",
+      "enunciado": "leia horários de sete dias e identifique o dia com maior duração entre nascer e pôr do sol."
+    }
+  },
+  {
+    "dia": "01-12",
+    "tema": "Verão e férias",
+    "simples": {
+      "titulo": "Piscina cheia",
+      "enunciado": "calcule o volume de uma piscina retangular."
+    },
+    "avancado": {
+      "titulo": "Monitor de reservatório",
+      "enunciado": "simule entradas e saídas de água por turnos, impedindo volume negativo ou excessivo."
+    }
+  },
+  {
+    "dia": "01-13",
+    "tema": "Verão e férias",
+    "simples": {
+      "titulo": "Corrida na areia",
+      "enunciado": "calcule velocidade média a partir de distância e tempo."
+    },
+    "avancado": {
+      "titulo": "Torneio de corrida",
+      "enunciado": "leia tempos de oito participantes e gere classificação com posições e empates."
+    }
+  },
+  {
+    "dia": "01-14",
+    "tema": "Verão e férias",
+    "simples": {
+      "titulo": "Férias econômicas",
+      "enunciado": "calcule a sobra de um orçamento após uma despesa."
+    },
+    "avancado": {
+      "titulo": "Diário de despesas",
+      "enunciado": "registre dez gastos categorizados e mostre totais por categoria e saldo."
+    }
+  },
+  {
+    "dia": "01-15",
+    "tema": "Verão e férias",
+    "simples": {
+      "titulo": "Temperatura convertida",
+      "enunciado": "transforme Celsius em Fahrenheit."
+    },
+    "avancado": {
+      "titulo": "Painel climático",
+      "enunciado": "receba temperaturas em Celsius e Fahrenheit, normalize e ordene todas em Celsius."
+    }
+  },
+  {
+    "dia": "01-16",
+    "tema": "Verão e férias",
+    "simples": {
+      "titulo": "Dias de viagem",
+      "enunciado": "informe quantas noites há entre dois números de dia do mesmo mês."
+    },
+    "avancado": {
+      "titulo": "Agenda de hospedagem",
+      "enunciado": "mantenha dez quartos e permita reservar períodos sem conflito de datas."
+    }
+  },
+  {
+    "dia": "01-17",
+    "tema": "Verão e férias",
+    "simples": {
+      "titulo": "Pedágio da estrada",
+      "enunciado": "multiplique o preço do pedágio pela quantidade de praças."
+    },
+    "avancado": {
+      "titulo": "Comparativo de estradas",
+      "enunciado": "avalie rotas por quilômetros, consumo e pedágios e selecione menor custo total."
+    }
+  },
+  {
+    "dia": "01-18",
+    "tema": "Verão e férias",
+    "simples": {
+      "titulo": "Nota do hotel",
+      "enunciado": "leia uma nota de 0 a 10 e diga se é pelo menos 8."
+    },
+    "avancado": {
+      "titulo": "Avaliador de hospedagens",
+      "enunciado": "calcule médias ponderadas de critérios para cinco hotéis e gere ranking."
+    }
+  },
+  {
+    "dia": "01-19",
+    "tema": "Verão e férias",
+    "simples": {
+      "titulo": "Garrafas de água",
+      "enunciado": "calcule quantas garrafas de 500 ml completam um volume informado em litros."
+    },
+    "avancado": {
+      "titulo": "Distribuição de água",
+      "enunciado": "calcule quantas caixas de tamanhos diferentes atendem um grupo com menor sobra."
+    }
+  },
+  {
+    "dia": "01-20",
+    "tema": "Verão e férias",
+    "simples": {
+      "titulo": "Jogos de praia",
+      "enunciado": "receba partidas ganhas e perdidas e calcule o total."
+    },
+    "avancado": {
+      "titulo": "Campeonato de praia",
+      "enunciado": "registre resultados entre quatro equipes e gere tabela por pontos e saldo."
+    }
+  },
+  {
+    "dia": "01-21",
+    "tema": "Verão e férias",
+    "simples": {
+      "titulo": "Férias em família",
+      "enunciado": "calcule custo total por pessoa para N integrantes."
+    },
+    "avancado": {
+      "titulo": "Divisor de orçamento",
+      "enunciado": "distribua despesas entre participantes com diferentes participações e determine saldos."
+    }
+  },
+  {
+    "dia": "01-22",
+    "tema": "Verão e férias",
+    "simples": {
+      "titulo": "Onda alta",
+      "enunciado": "compare duas alturas de onda e exiba a maior."
+    },
+    "avancado": {
+      "titulo": "Registro de ondas",
+      "enunciado": "analise 12 medições e identifique picos locais superiores aos vizinhos."
+    }
+  },
+  {
+    "dia": "01-23",
+    "tema": "Verão e férias",
+    "simples": {
+      "titulo": "Rota de bicicleta",
+      "enunciado": "calcule calorias estimadas com taxa fixa por quilômetro."
+    },
+    "avancado": {
+      "titulo": "Cicloturismo",
+      "enunciado": "calcule distância acumulada, desnível e pausas para uma sequência de trechos."
+    }
+  },
+  {
+    "dia": "01-24",
+    "tema": "Verão e férias",
+    "simples": {
+      "titulo": "Balde de areia",
+      "enunciado": "converta litros de um recipiente para mililitros."
+    },
+    "avancado": {
+      "titulo": "Estoque de materiais",
+      "enunciado": "gerencie volumes de três recipientes e simule transferências sem derramamento."
+    }
+  },
+  {
+    "dia": "01-25",
+    "tema": "Verão e férias",
+    "simples": {
+      "titulo": "Ingresso de parque",
+      "enunciado": "aplique meia-entrada quando a condição booleana for verdadeira."
+    },
+    "avancado": {
+      "titulo": "Bilheteria do parque",
+      "enunciado": "gerencie dois tipos de ingressos, capacidade diária e receita por categoria."
+    }
+  },
+  {
+    "dia": "01-26",
+    "tema": "Verão e férias",
+    "simples": {
+      "titulo": "Chuva inesperada",
+      "enunciado": "diga se deve levar guarda-chuva a partir de uma porcentagem limite."
+    },
+    "avancado": {
+      "titulo": "Previsão semanal",
+      "enunciado": "leia probabilidades de chuva e marque sequências de dias com risco acima do limite."
+    }
+  },
+  {
+    "dia": "01-27",
+    "tema": "Verão e férias",
+    "simples": {
+      "titulo": "Competição de mergulho",
+      "enunciado": "calcule a média de três notas."
+    },
+    "avancado": {
+      "titulo": "Júri de mergulho",
+      "enunciado": "receba sete notas por atleta, descarte extremos e ordene pela média restante."
+    }
+  },
+  {
+    "dia": "01-28",
+    "tema": "Verão e férias",
+    "simples": {
+      "titulo": "Lembrete de hidratação",
+      "enunciado": "mostre cinco lembretes numerados com um laço."
+    },
+    "avancado": {
+      "titulo": "Escala de lembretes",
+      "enunciado": "gere alertas em intervalos configuráveis dentro de uma janela de horário."
+    }
+  },
+  {
+    "dia": "01-29",
+    "tema": "Verão e férias",
+    "simples": {
+      "titulo": "Orçamento da viagem",
+      "enunciado": "compare um custo previsto com o dinheiro disponível."
+    },
+    "avancado": {
+      "titulo": "Pacote de viagem",
+      "enunciado": "compare pacotes com transporte, hospedagem e refeições, respeitando um teto de gastos."
+    }
+  },
+  {
+    "dia": "01-30",
+    "tema": "Verão e férias",
+    "simples": {
+      "titulo": "Cartão-postal",
+      "enunciado": "leia cidade e mensagem e exiba uma dedicatória."
+    },
+    "avancado": {
+      "titulo": "Catálogo de cartões",
+      "enunciado": "armazene destinatários e mensagens e implemente busca por nome e edição."
+    }
+  },
+  {
+    "dia": "01-31",
+    "tema": "Verão e férias",
+    "simples": {
+      "titulo": "Resumo das férias",
+      "enunciado": "leia três despesas e apresente total e média."
+    },
+    "avancado": {
+      "titulo": "Painel das férias",
+      "enunciado": "consolide gastos diários em matriz por pessoa e categoria e apresente totais."
+    }
+  },
+  {
+    "dia": "02-01",
+    "tema": "Festa e convivência",
+    "simples": {
+      "titulo": "Máscara colorida",
+      "enunciado": "leia uma cor e exiba uma frase com essa cor."
+    },
+    "avancado": {
+      "titulo": "Oficina de máscaras",
+      "enunciado": "cadastre pedidos por cor e tamanho e gere totais por combinação em matriz."
+    }
+  },
+  {
+    "dia": "02-02",
+    "tema": "Festa e convivência",
+    "simples": {
+      "titulo": "Confete contado",
+      "enunciado": "mostre números de 1 até um limite informado."
+    },
+    "avancado": {
+      "titulo": "Pacotes de confete",
+      "enunciado": "distribua quantidades entre equipes com capacidades distintas e reporte sobras."
+    }
+  },
+  {
+    "dia": "02-03",
+    "tema": "Festa e convivência",
+    "simples": {
+      "titulo": "Bloco da alegria",
+      "enunciado": "leia participantes adultos e crianças e calcule o total."
+    },
+    "avancado": {
+      "titulo": "Controle de acesso",
+      "enunciado": "registre entrada e saída por faixa etária e impeça exceder a lotação."
+    }
+  },
+  {
+    "dia": "02-04",
+    "tema": "Festa e convivência",
+    "simples": {
+      "titulo": "Fantasia em promoção",
+      "enunciado": "calcule o preço final após desconto."
+    },
+    "avancado": {
+      "titulo": "Loja de fantasias",
+      "enunciado": "registre vendas com descontos por categoria e produza ranking dos produtos."
+    }
+  },
+  {
+    "dia": "02-05",
+    "tema": "Festa e convivência",
+    "simples": {
+      "titulo": "Som da bateria",
+      "enunciado": "repita uma palavra quatro vezes em linhas separadas."
+    },
+    "avancado": {
+      "titulo": "Ritmo programado",
+      "enunciado": "receba uma sequência de batidas e durações e imprima sua repetição em compassos."
+    }
+  },
+  {
+    "dia": "02-06",
+    "tema": "Festa e convivência",
+    "simples": {
+      "titulo": "Nota da fantasia",
+      "enunciado": "leia três avaliações e calcule a média."
+    },
+    "avancado": {
+      "titulo": "Concurso de fantasias",
+      "enunciado": "guarde notas de jurados e calcule classificação descartando maior e menor."
+    }
+  },
+  {
+    "dia": "02-07",
+    "tema": "Festa e convivência",
+    "simples": {
+      "titulo": "Pulseira de evento",
+      "enunciado": "diga se uma idade alcança a idade mínima informada."
+    },
+    "avancado": {
+      "titulo": "Portaria do evento",
+      "enunciado": "valide códigos únicos de ingresso e rejeite entradas repetidas."
+    }
+  },
+  {
+    "dia": "02-08",
+    "tema": "Festa e convivência",
+    "simples": {
+      "titulo": "Carrinho de bebidas",
+      "enunciado": "some preços e quantidades de dois itens."
+    },
+    "avancado": {
+      "titulo": "Estoque do carrinho",
+      "enunciado": "simule pedidos e reposições de quatro bebidas sem permitir estoque negativo."
+    }
+  },
+  {
+    "dia": "02-09",
+    "tema": "Festa e convivência",
+    "simples": {
+      "titulo": "Fila do salão",
+      "enunciado": "leia o número de pessoas e estime o tempo com atendimento fixo."
+    },
+    "avancado": {
+      "titulo": "Fila de atendimento",
+      "enunciado": "gerencie fila de espera com entradas e chamadas até esvaziar."
+    }
+  },
+  {
+    "dia": "02-10",
+    "tema": "Festa e convivência",
+    "simples": {
+      "titulo": "Convite personalizado",
+      "enunciado": "leia um nome e imprima uma mensagem de convite."
+    },
+    "avancado": {
+      "titulo": "Lista de convidados",
+      "enunciado": "cadastre nomes, impeça duplicatas e busque convidados por prefixo."
+    }
+  },
+  {
+    "dia": "02-11",
+    "tema": "Festa e convivência",
+    "simples": {
+      "titulo": "Ordem do desfile",
+      "enunciado": "apresente três nomes na sequência digitada."
+    },
+    "avancado": {
+      "titulo": "Organizador do desfile",
+      "enunciado": "ordene blocos por horário e avise quando houver conflitos de duração."
+    }
+  },
+  {
+    "dia": "02-12",
+    "tema": "Festa e convivência",
+    "simples": {
+      "titulo": "Luzes piscantes",
+      "enunciado": "alterne as palavras LIGADO e DESLIGADO por dez rodadas."
+    },
+    "avancado": {
+      "titulo": "Programação de luzes",
+      "enunciado": "armazene padrões de três canais e simule a saída em passos de tempo."
+    }
+  },
+  {
+    "dia": "02-13",
+    "tema": "Festa e convivência",
+    "simples": {
+      "titulo": "Brilho da fantasia",
+      "enunciado": "calcule a soma de três notas de acabamento."
+    },
+    "avancado": {
+      "titulo": "Avaliação por critérios",
+      "enunciado": "aplique pesos configuráveis a notas de cinco fantasias e ordene resultados."
+    }
+  },
+  {
+    "dia": "02-14",
+    "tema": "Festa e convivência",
+    "simples": {
+      "titulo": "Bandeirinhas de cores",
+      "enunciado": "apresente uma cor repetida N vezes."
+    },
+    "avancado": {
+      "titulo": "Sequência de bandeiras",
+      "enunciado": "valide padrões de cores e encontre o menor ciclo que reproduz a sequência."
+    }
+  },
+  {
+    "dia": "02-15",
+    "tema": "Festa e convivência",
+    "simples": {
+      "titulo": "Passos de dança",
+      "enunciado": "converta N sequências de oito passos em total de passos."
+    },
+    "avancado": {
+      "titulo": "Coreografia textual",
+      "enunciado": "armazene oito movimentos e permita inverter e repetir trechos de uma sequência."
+    }
+  },
+  {
+    "dia": "02-16",
+    "tema": "Festa e convivência",
+    "simples": {
+      "titulo": "Preço em dupla",
+      "enunciado": "divida igualmente uma compra entre duas pessoas."
+    },
+    "avancado": {
+      "titulo": "Rateio do evento",
+      "enunciado": "distribua custos conforme consumo individual e despesas comuns."
+    }
+  },
+  {
+    "dia": "02-17",
+    "tema": "Festa e convivência",
+    "simples": {
+      "titulo": "Fantasia por tamanho",
+      "enunciado": "indique P, M ou G conforme faixas numéricas informadas."
+    },
+    "avancado": {
+      "titulo": "Distribuição de fantasias",
+      "enunciado": "relacione tamanhos solicitados ao estoque e gere faltas por tamanho."
+    }
+  },
+  {
+    "dia": "02-18",
+    "tema": "Festa e convivência",
+    "simples": {
+      "titulo": "Balões na festa",
+      "enunciado": "calcule quantos balões restam após estourar alguns."
+    },
+    "avancado": {
+      "titulo": "Reposição de balões",
+      "enunciado": "simule consumo em turnos e calcule o momento em que será necessária reposição."
+    }
+  },
+  {
+    "dia": "02-19",
+    "tema": "Festa e convivência",
+    "simples": {
+      "titulo": "Som ou silêncio",
+      "enunciado": "verifique se um volume numérico ultrapassa o limite."
+    },
+    "avancado": {
+      "titulo": "Monitor de volume",
+      "enunciado": "leia medições por horário e destaque períodos consecutivos acima do limite."
+    }
+  },
+  {
+    "dia": "02-20",
+    "tema": "Festa e convivência",
+    "simples": {
+      "titulo": "Cadeado do armário",
+      "enunciado": "leia uma senha numérica e compare com a senha fixa."
+    },
+    "avancado": {
+      "titulo": "Armários numerados",
+      "enunciado": "gerencie empréstimos com código, ocupação e limite de tentativas de acesso."
+    }
+  },
+  {
+    "dia": "02-21",
+    "tema": "Festa e convivência",
+    "simples": {
+      "titulo": "Convites restantes",
+      "enunciado": "subtraia os convites entregues dos impressos."
+    },
+    "avancado": {
+      "titulo": "Distribuição de convites",
+      "enunciado": "atribua lotes a equipes, controle devoluções e confira saldo total."
+    }
+  },
+  {
+    "dia": "02-22",
+    "tema": "Festa e convivência",
+    "simples": {
+      "titulo": "Percurso do bloco",
+      "enunciado": "some distâncias de três trechos de rua."
+    },
+    "avancado": {
+      "titulo": "Traçado do bloco",
+      "enunciado": "registre trechos em vetor e calcule distância acumulada e maior intervalo."
+    }
+  },
+  {
+    "dia": "02-23",
+    "tema": "Festa e convivência",
+    "simples": {
+      "titulo": "Pulseiras vendidas",
+      "enunciado": "calcule arrecadação a partir de unidades e preço."
+    },
+    "avancado": {
+      "titulo": "Relatório de vendas",
+      "enunciado": "leia vendas por setor e turno em matriz e informe destaques."
+    }
+  },
+  {
+    "dia": "02-24",
+    "tema": "Festa e convivência",
+    "simples": {
+      "titulo": "Festa com chuva",
+      "enunciado": "escolha entre espaço aberto e coberto conforme uma entrada SIM/NÃO."
+    },
+    "avancado": {
+      "titulo": "Plano alternativo",
+      "enunciado": "avalie capacidade de ambientes e redistribua grupos quando a opção externa fechar."
+    }
+  },
+  {
+    "dia": "02-25",
+    "tema": "Festa e convivência",
+    "simples": {
+      "titulo": "Mensagem embaralhada",
+      "enunciado": "apresente uma palavra ao contrário usando um laço."
+    },
+    "avancado": {
+      "titulo": "Bilhete criptografado",
+      "enunciado": "codifique e decodifique mensagens com deslocamento alfabético configurável."
+    }
+  },
+  {
+    "dia": "02-26",
+    "tema": "Festa e convivência",
+    "simples": {
+      "titulo": "Copos reutilizáveis",
+      "enunciado": "multiplique convidados por copos por pessoa."
+    },
+    "avancado": {
+      "titulo": "Logística de copos",
+      "enunciado": "simule retiradas e devoluções com depósito reembolsável."
+    }
+  },
+  {
+    "dia": "02-27",
+    "tema": "Festa e convivência",
+    "simples": {
+      "titulo": "Prêmio da festa",
+      "enunciado": "leia quatro notas e informe a maior."
+    },
+    "avancado": {
+      "titulo": "Premiação de grupos",
+      "enunciado": "calcule pontuação por várias provas e resolva empates por critério secundário."
+    }
+  },
+  {
+    "dia": "02-28",
+    "tema": "Festa e convivência",
+    "simples": {
+      "titulo": "Encerramento do mês",
+      "enunciado": "some a participação registrada em quatro festas."
+    },
+    "avancado": {
+      "titulo": "Balanço de eventos",
+      "enunciado": "compare receitas, custos e taxas de ocupação de quatro eventos."
+    }
+  },
+  {
+    "dia": "03-01",
+    "tema": "Escola e aprendizado",
+    "simples": {
+      "titulo": "Primeiro dia de aula",
+      "enunciado": "leia nome e turma e mostre uma identificação."
+    },
+    "avancado": {
+      "titulo": "Cadastro de turmas",
+      "enunciado": "armazene alunos e turmas em vetores paralelos e permita consultas."
+    }
+  },
+  {
+    "dia": "03-02",
+    "tema": "Escola e aprendizado",
+    "simples": {
+      "titulo": "Material escolar",
+      "enunciado": "some os preços de caderno, lápis e borracha."
+    },
+    "avancado": {
+      "titulo": "Lista de materiais",
+      "enunciado": "gerencie compras por categoria e destaque itens acima do orçamento."
+    }
+  },
+  {
+    "dia": "03-03",
+    "tema": "Escola e aprendizado",
+    "simples": {
+      "titulo": "Nota do teste",
+      "enunciado": "diga se uma nota alcançou a média mínima."
+    },
+    "avancado": {
+      "titulo": "Painel de avaliações",
+      "enunciado": "registre notas de cinco alunos em três provas e gere médias e ranking."
+    }
+  },
+  {
+    "dia": "03-04",
+    "tema": "Escola e aprendizado",
+    "simples": {
+      "titulo": "Hora de estudar",
+      "enunciado": "converta horas de estudo em minutos."
+    },
+    "avancado": {
+      "titulo": "Agenda de estudos",
+      "enunciado": "distribua disciplinas em blocos de tempo, respeitando a carga máxima diária."
+    }
+  },
+  {
+    "dia": "03-05",
+    "tema": "Escola e aprendizado",
+    "simples": {
+      "titulo": "Presença na chamada",
+      "enunciado": "calcule a porcentagem de presença dado total e comparecimentos."
+    },
+    "avancado": {
+      "titulo": "Frequência por aluno",
+      "enunciado": "registre presenças em matriz aluno × dia e emita alertas por limite."
+    }
+  },
+  {
+    "dia": "03-06",
+    "tema": "Escola e aprendizado",
+    "simples": {
+      "titulo": "Tarefa entregue",
+      "enunciado": "exiba ENTREGUE ou PENDENTE a partir de uma resposta."
+    },
+    "avancado": {
+      "titulo": "Quadro de tarefas",
+      "enunciado": "cadastre atividades com prazo numérico, status e filtro por atrasos."
+    }
+  },
+  {
+    "dia": "03-07",
+    "tema": "Escola e aprendizado",
+    "simples": {
+      "titulo": "Três matérias",
+      "enunciado": "leia e imprima os nomes de três disciplinas."
+    },
+    "avancado": {
+      "titulo": "Organizador de disciplinas",
+      "enunciado": "cadastre cinco matérias e ordene por carga horária."
+    }
+  },
+  {
+    "dia": "03-08",
+    "tema": "Escola e aprendizado",
+    "simples": {
+      "titulo": "Tempo de recreio",
+      "enunciado": "calcule o fim de um intervalo a partir do início em minutos."
+    },
+    "avancado": {
+      "titulo": "Escala do recreio",
+      "enunciado": "organize pausas de várias turmas sem exceder capacidade do pátio."
+    }
+  },
+  {
+    "dia": "03-09",
+    "tema": "Escola e aprendizado",
+    "simples": {
+      "titulo": "Livros emprestados",
+      "enunciado": "calcule quantos livros continuam disponíveis."
+    },
+    "avancado": {
+      "titulo": "Sistema de empréstimos",
+      "enunciado": "gerencie cadastro, retirada e devolução de dez livros."
+    }
+  },
+  {
+    "dia": "03-10",
+    "tema": "Escola e aprendizado",
+    "simples": {
+      "titulo": "Média do bimestre",
+      "enunciado": "calcule a média aritmética de quatro notas."
+    },
+    "avancado": {
+      "titulo": "Boletim ponderado",
+      "enunciado": "calcule médias de alunos com pesos de avaliação configuráveis."
+    }
+  },
+  {
+    "dia": "03-11",
+    "tema": "Escola e aprendizado",
+    "simples": {
+      "titulo": "Página de leitura",
+      "enunciado": "exiba os números de página de 1 até N."
+    },
+    "avancado": {
+      "titulo": "Meta de leitura",
+      "enunciado": "registre páginas lidas por dia e identifique a maior sequência de progresso."
+    }
+  },
+  {
+    "dia": "03-12",
+    "tema": "Escola e aprendizado",
+    "simples": {
+      "titulo": "Palavra nova",
+      "enunciado": "conte os caracteres de uma palavra digitada."
+    },
+    "avancado": {
+      "titulo": "Glossário de sala",
+      "enunciado": "armazene termos e definições, com busca e atualização."
+    }
+  },
+  {
+    "dia": "03-13",
+    "tema": "Escola e aprendizado",
+    "simples": {
+      "titulo": "Tabuada do aluno",
+      "enunciado": "apresente a tabuada de um número até dez."
+    },
+    "avancado": {
+      "titulo": "Treinador de tabuada",
+      "enunciado": "faça perguntas com dificuldade fixa, corrija e apresente taxa de acertos."
+    }
+  },
+  {
+    "dia": "03-14",
+    "tema": "Escola e aprendizado",
+    "simples": {
+      "titulo": "Dúvida rápida",
+      "enunciado": "diga se um número é par ou ímpar."
+    },
+    "avancado": {
+      "titulo": "Quiz de lógica",
+      "enunciado": "faça cinco perguntas, atribua pontos e mostre revisão de erros."
+    }
+  },
+  {
+    "dia": "03-15",
+    "tema": "Escola e aprendizado",
+    "simples": {
+      "titulo": "Notas extremas",
+      "enunciado": "identifique a maior entre três notas."
+    },
+    "avancado": {
+      "titulo": "Estatísticas da turma",
+      "enunciado": "calcule mínima, máxima, média e mediana de notas em vetor."
+    }
+  },
+  {
+    "dia": "03-16",
+    "tema": "Escola e aprendizado",
+    "simples": {
+      "titulo": "Aluno aprovado",
+      "enunciado": "classifique a média como aprovado ou reprovado."
+    },
+    "avancado": {
+      "titulo": "Simulador de recuperação",
+      "enunciado": "calcule a nota necessária e teste diferentes cenários de resultado."
+    }
+  },
+  {
+    "dia": "03-17",
+    "tema": "Escola e aprendizado",
+    "simples": {
+      "titulo": "Fila de entrega",
+      "enunciado": "numere os alunos de 1 até N."
+    },
+    "avancado": {
+      "titulo": "Distribuidor de provas",
+      "enunciado": "associe versões A e B aos assentos, evitando vizinhos com mesma versão."
+    }
+  },
+  {
+    "dia": "03-18",
+    "tema": "Escola e aprendizado",
+    "simples": {
+      "titulo": "Cartaz da turma",
+      "enunciado": "desenhe uma linha de N asteriscos."
+    },
+    "avancado": {
+      "titulo": "Gerador de cartazes",
+      "enunciado": "desenhe uma moldura textual ajustável para títulos de comprimentos variados."
+    }
+  },
+  {
+    "dia": "03-19",
+    "tema": "Escola e aprendizado",
+    "simples": {
+      "titulo": "Notas extras",
+      "enunciado": "adicione um ponto de bônus sem ultrapassar dez."
+    },
+    "avancado": {
+      "titulo": "Política de bônus",
+      "enunciado": "aplique regras de bonificação a uma lista de notas e registre alterações."
+    }
+  },
+  {
+    "dia": "03-20",
+    "tema": "Escola e aprendizado",
+    "simples": {
+      "titulo": "Troca de carteiras",
+      "enunciado": "troque os números de dois assentos usando auxiliar."
+    },
+    "avancado": {
+      "titulo": "Mapa de lugares",
+      "enunciado": "represente a sala em matriz e permita trocar alunos de posição."
+    }
+  },
+  {
+    "dia": "03-21",
+    "tema": "Escola e aprendizado",
+    "simples": {
+      "titulo": "Perguntas respondidas",
+      "enunciado": "calcule a porcentagem de acertos de um questionário."
+    },
+    "avancado": {
+      "titulo": "Analisador de prova",
+      "enunciado": "compare gabarito e respostas de vários alunos e mostre acertos por questão."
+    }
+  },
+  {
+    "dia": "03-22",
+    "tema": "Escola e aprendizado",
+    "simples": {
+      "titulo": "Intervalo de aulas",
+      "enunciado": "calcule a duração entre início e fim em minutos."
+    },
+    "avancado": {
+      "titulo": "Grade de horários",
+      "enunciado": "cadastre aulas e detecte conflitos de sala e professor."
+    }
+  },
+  {
+    "dia": "03-23",
+    "tema": "Escola e aprendizado",
+    "simples": {
+      "titulo": "Contador de faltas",
+      "enunciado": "some faltas de três meses."
+    },
+    "avancado": {
+      "titulo": "Previsão de frequência",
+      "enunciado": "estime a frequência final considerando aulas restantes e faltas futuras."
+    }
+  },
+  {
+    "dia": "03-24",
+    "tema": "Escola e aprendizado",
+    "simples": {
+      "titulo": "Aula mais longa",
+      "enunciado": "compare a duração de duas aulas."
+    },
+    "avancado": {
+      "titulo": "Relatório de tempos",
+      "enunciado": "calcule médias de duração por disciplina a partir de registros."
+    }
+  },
+  {
+    "dia": "03-25",
+    "tema": "Escola e aprendizado",
+    "simples": {
+      "titulo": "Número da carteira",
+      "enunciado": "verifique se uma carteira está em intervalo válido."
+    },
+    "avancado": {
+      "titulo": "Inventário das salas",
+      "enunciado": "controle carteiras livres, ocupadas e interditadas numa matriz."
+    }
+  },
+  {
+    "dia": "03-26",
+    "tema": "Escola e aprendizado",
+    "simples": {
+      "titulo": "Sequência do quadro",
+      "enunciado": "mostre os cinco primeiros múltiplos de um número."
+    },
+    "avancado": {
+      "titulo": "Caça-padrões",
+      "enunciado": "identifique se uma sequência de dez valores segue progressão aritmética ou geométrica."
+    }
+  },
+  {
+    "dia": "03-27",
+    "tema": "Escola e aprendizado",
+    "simples": {
+      "titulo": "Lista de chamada",
+      "enunciado": "repita uma saudação para N alunos."
+    },
+    "avancado": {
+      "titulo": "Rodízio de apresentações",
+      "enunciado": "gere uma ordem equilibrada de apresentação sem repetir aluno na rodada."
+    }
+  },
+  {
+    "dia": "03-28",
+    "tema": "Escola e aprendizado",
+    "simples": {
+      "titulo": "Preço da apostila",
+      "enunciado": "calcule o valor de N apostilas iguais."
+    },
+    "avancado": {
+      "titulo": "Pedido de apostilas",
+      "enunciado": "consolide pedidos de turmas e distribua lotes respeitando estoque."
+    }
+  },
+  {
+    "dia": "03-29",
+    "tema": "Escola e aprendizado",
+    "simples": {
+      "titulo": "Data da prova",
+      "enunciado": "apresente dia e mês digitados em formato DD/MM."
+    },
+    "avancado": {
+      "titulo": "Calendário de provas",
+      "enunciado": "valide datas e detecte duas avaliações na mesma data para uma turma."
+    }
+  },
+  {
+    "dia": "03-30",
+    "tema": "Escola e aprendizado",
+    "simples": {
+      "titulo": "Desempenho do mês",
+      "enunciado": "some os exercícios concluídos em quatro semanas."
+    },
+    "avancado": {
+      "titulo": "Painel de desempenho",
+      "enunciado": "registre exercícios por aluno e semana e calcule evolução percentual."
+    }
+  },
+  {
+    "dia": "03-31",
+    "tema": "Escola e aprendizado",
+    "simples": {
+      "titulo": "Mensagem final",
+      "enunciado": "mostre uma frase motivadora a partir do nome do estudante."
+    },
+    "avancado": {
+      "titulo": "Gerador de certificados",
+      "enunciado": "cadastre alunos e emita certificados textuais apenas para quem atender critérios."
+    }
+  },
+  {
+    "dia": "04-01",
+    "tema": "Lógica e enigmas",
+    "simples": {
+      "titulo": "Porta misteriosa",
+      "enunciado": "leia um número e diga se é positivo ou negativo."
+    },
+    "avancado": {
+      "titulo": "Sequência oculta",
+      "enunciado": "encontre o termo faltante em uma progressão aritmética com uma lacuna."
+    }
+  },
+  {
+    "dia": "04-02",
+    "tema": "Lógica e enigmas",
+    "simples": {
+      "titulo": "Cofre de dois dígitos",
+      "enunciado": "some os algarismos de um número de dois dígitos."
+    },
+    "avancado": {
+      "titulo": "Senha do cofre",
+      "enunciado": "conte tentativas e bloqueie acesso após três erros, armazenando histórico de tentativas."
+    }
+  },
+  {
+    "dia": "04-03",
+    "tema": "Lógica e enigmas",
+    "simples": {
+      "titulo": "Chaves trocadas",
+      "enunciado": "receba dois valores e mostre-os em ordem inversa."
+    },
+    "avancado": {
+      "titulo": "Chaves numeradas",
+      "enunciado": "encontre pares de códigos cuja soma corresponde ao código do cadeado."
+    }
+  },
+  {
+    "dia": "04-04",
+    "tema": "Lógica e enigmas",
+    "simples": {
+      "titulo": "Sala dos espelhos",
+      "enunciado": "apresente um número inteiro com seus dígitos invertidos."
+    },
+    "avancado": {
+      "titulo": "Espelhos da matriz",
+      "enunciado": "verifique simetria horizontal e vertical de uma grade de símbolos."
+    }
+  },
+  {
+    "dia": "04-05",
+    "tema": "Lógica e enigmas",
+    "simples": {
+      "titulo": "Número suspeito",
+      "enunciado": "verifique se um número é múltiplo de cinco."
+    },
+    "avancado": {
+      "titulo": "Investigação numérica",
+      "enunciado": "liste todos os divisores de valores suspeitos e agrupe os que compartilham um divisor."
+    }
+  },
+  {
+    "dia": "04-06",
+    "tema": "Lógica e enigmas",
+    "simples": {
+      "titulo": "Código secreto",
+      "enunciado": "verifique se um número de três algarismos tem todos os dígitos iguais."
+    },
+    "avancado": {
+      "titulo": "Decifrador de códigos",
+      "enunciado": "descubra quais códigos de quatro dígitos atendem a soma e posições parciais informadas."
+    }
+  },
+  {
+    "dia": "04-07",
+    "tema": "Lógica e enigmas",
+    "simples": {
+      "titulo": "Trilha numerada",
+      "enunciado": "mostre os números de N até 1."
+    },
+    "avancado": {
+      "titulo": "Caminho do tabuleiro",
+      "enunciado": "simule um personagem em grade, bloqueando movimentos em obstáculos."
+    }
+  },
+  {
+    "dia": "04-08",
+    "tema": "Lógica e enigmas",
+    "simples": {
+      "titulo": "Par misterioso",
+      "enunciado": "verifique se dois números possuem a mesma paridade."
+    },
+    "avancado": {
+      "titulo": "Investigador de pares",
+      "enunciado": "encontre todas as duplas com soma-alvo em um vetor sem repetir posições."
+    }
+  },
+  {
+    "dia": "04-09",
+    "tema": "Lógica e enigmas",
+    "simples": {
+      "titulo": "Escada de símbolos",
+      "enunciado": "imprima N linhas com quantidade crescente de #."
+    },
+    "avancado": {
+      "titulo": "Pirâmide criptográfica",
+      "enunciado": "desenhe uma pirâmide textual de dígitos com padrão alternado configurável."
+    }
+  },
+  {
+    "dia": "04-10",
+    "tema": "Lógica e enigmas",
+    "simples": {
+      "titulo": "Três suspeitos",
+      "enunciado": "exiba o menor de três números."
+    },
+    "avancado": {
+      "titulo": "Detetive de pistas",
+      "enunciado": "filtre uma lista de suspeitos por três características e apresente os compatíveis."
+    }
+  },
+  {
+    "dia": "04-11",
+    "tema": "Lógica e enigmas",
+    "simples": {
+      "titulo": "Enigma do dobro",
+      "enunciado": "descubra o número original dado seu dobro."
+    },
+    "avancado": {
+      "titulo": "Equações simples",
+      "enunciado": "resolva um sistema de duas equações lineares e trate ausência de solução única."
+    }
+  },
+  {
+    "dia": "04-12",
+    "tema": "Lógica e enigmas",
+    "simples": {
+      "titulo": "Número escondido",
+      "enunciado": "indique se uma entrada está entre 10 e 20."
+    },
+    "avancado": {
+      "titulo": "Jogo de pistas",
+      "enunciado": "reduza intervalos possíveis de um número secreto com comparações sucessivas."
+    }
+  },
+  {
+    "dia": "04-13",
+    "tema": "Lógica e enigmas",
+    "simples": {
+      "titulo": "Botões da máquina",
+      "enunciado": "receba 1, 2 ou 3 e exiba a função escolhida."
+    },
+    "avancado": {
+      "titulo": "Máquina de estados",
+      "enunciado": "simule estados ABERTO, FECHADO e TRAVADO com transições permitidas."
+    }
+  },
+  {
+    "dia": "04-14",
+    "tema": "Lógica e enigmas",
+    "simples": {
+      "titulo": "Palavra secreta",
+      "enunciado": "mostre somente a primeira letra de uma palavra."
+    },
+    "avancado": {
+      "titulo": "Frequência de letras",
+      "enunciado": "conte ocorrências das letras A a Z e apresente as três mais frequentes."
+    }
+  },
+  {
+    "dia": "04-15",
+    "tema": "Lógica e enigmas",
+    "simples": {
+      "titulo": "Inversão de sinais",
+      "enunciado": "transforme um número negativo em positivo sem função pronta de valor absoluto."
+    },
+    "avancado": {
+      "titulo": "Equilíbrio de somas",
+      "enunciado": "encontre um índice que divide o vetor em metades de soma igual."
+    }
+  },
+  {
+    "dia": "04-16",
+    "tema": "Lógica e enigmas",
+    "simples": {
+      "titulo": "Desafio das moedas",
+      "enunciado": "calcule quantas moedas de R$ 1 formam um valor inteiro."
+    },
+    "avancado": {
+      "titulo": "Troco exato",
+      "enunciado": "encontre a combinação de moedas que totaliza um valor com menor número de peças."
+    }
+  },
+  {
+    "dia": "04-17",
+    "tema": "Lógica e enigmas",
+    "simples": {
+      "titulo": "Desenho quadrado",
+      "enunciado": "imprima um quadrado de # com lado N."
+    },
+    "avancado": {
+      "titulo": "Quadrado vazado",
+      "enunciado": "desenhe bordas e diagonais em matriz, tratando encontros de símbolos."
+    }
+  },
+  {
+    "dia": "04-18",
+    "tema": "Lógica e enigmas",
+    "simples": {
+      "titulo": "Portas alternadas",
+      "enunciado": "mostre ABERTA nos índices pares e FECHADA nos ímpares."
+    },
+    "avancado": {
+      "titulo": "Cem portas",
+      "enunciado": "simule a alternância de portas feita em rodadas de múltiplos e liste as abertas."
+    }
+  },
+  {
+    "dia": "04-19",
+    "tema": "Lógica e enigmas",
+    "simples": {
+      "titulo": "Charada da idade",
+      "enunciado": "calcule em quantos anos alguém terá o dobro da idade atual."
+    },
+    "avancado": {
+      "titulo": "Idades combinadas",
+      "enunciado": "encontre idades inteiras que atendam soma e diferença fornecidas."
+    }
+  },
+  {
+    "dia": "04-20",
+    "tema": "Lógica e enigmas",
+    "simples": {
+      "titulo": "Soma escondida",
+      "enunciado": "calcule a soma dos números de 1 a N."
+    },
+    "avancado": {
+      "titulo": "Série enigmática",
+      "enunciado": "identifique o primeiro termo cuja soma acumulada supera um alvo e exiba histórico."
+    }
+  },
+  {
+    "dia": "04-21",
+    "tema": "Lógica e enigmas",
+    "simples": {
+      "titulo": "Senha espelhada",
+      "enunciado": "descubra se um número de três dígitos é capicua."
+    },
+    "avancado": {
+      "titulo": "Palíndromos em lote",
+      "enunciado": "percorra um intervalo e agrupe números capicuas por quantidade de dígitos."
+    }
+  },
+  {
+    "dia": "04-22",
+    "tema": "Lógica e enigmas",
+    "simples": {
+      "titulo": "Rodízio de letras",
+      "enunciado": "transforme uma letra maiúscula em sua próxima letra, com Z voltando a A."
+    },
+    "avancado": {
+      "titulo": "Cifra variável",
+      "enunciado": "codifique uma frase usando deslocamento alfabético diferente para cada posição."
+    }
+  },
+  {
+    "dia": "04-23",
+    "tema": "Lógica e enigmas",
+    "simples": {
+      "titulo": "Mapa codificado",
+      "enunciado": "traduza N, S, L ou O em uma direção escrita."
+    },
+    "avancado": {
+      "titulo": "Navegação por comandos",
+      "enunciado": "execute uma sequência de movimentos em grade e detecte saídas do mapa."
+    }
+  },
+  {
+    "dia": "04-24",
+    "tema": "Lógica e enigmas",
+    "simples": {
+      "titulo": "Contador de pistas",
+      "enunciado": "conte quantos dos cinco números digitados são positivos."
+    },
+    "avancado": {
+      "titulo": "Quadro de pistas",
+      "enunciado": "registre dez observações e filtre as que atendem a duas condições numéricas."
+    }
+  },
+  {
+    "dia": "04-25",
+    "tema": "Lógica e enigmas",
+    "simples": {
+      "titulo": "Número triangular",
+      "enunciado": "calcule 1 + 2 + ... + N."
+    },
+    "avancado": {
+      "titulo": "Catálogo de triangulares",
+      "enunciado": "gere termos da sequência e encontre quais pertencem a um intervalo."
+    }
+  },
+  {
+    "dia": "04-26",
+    "tema": "Lógica e enigmas",
+    "simples": {
+      "titulo": "Senha par",
+      "enunciado": "aceite apenas um PIN numérico com quatro dígitos e último dígito par."
+    },
+    "avancado": {
+      "titulo": "Validador de PIN",
+      "enunciado": "valide lista de PINs com formato, exclusão de sequências óbvias e contagem de recusas."
+    }
+  },
+  {
+    "dia": "04-27",
+    "tema": "Lógica e enigmas",
+    "simples": {
+      "titulo": "Labirinto de texto",
+      "enunciado": "imprima N caracteres de parede em uma linha."
+    },
+    "avancado": {
+      "titulo": "Labirinto de corredores",
+      "enunciado": "receba grade 5×5 e identifique saídas alcançáveis por exploração com fila."
+    }
+  },
+  {
+    "dia": "04-28",
+    "tema": "Lógica e enigmas",
+    "simples": {
+      "titulo": "Balança de números",
+      "enunciado": "compare duas somas e indique a maior."
+    },
+    "avancado": {
+      "titulo": "Partição equilibrada",
+      "enunciado": "divida seis pesos em dois grupos cuja diferença absoluta de somas seja mínima."
+    }
+  },
+  {
+    "dia": "04-29",
+    "tema": "Lógica e enigmas",
+    "simples": {
+      "titulo": "Mensagem invertida",
+      "enunciado": "inverta uma palavra com laço e funções de texto."
+    },
+    "avancado": {
+      "titulo": "Frases simétricas",
+      "enunciado": "encontre todas as palavras palíndromas de uma frase sem diferenciar caixa."
+    }
+  },
+  {
+    "dia": "04-30",
+    "tema": "Lógica e enigmas",
+    "simples": {
+      "titulo": "Fim do enigma",
+      "enunciado": "some os algarismos de um inteiro positivo."
+    },
+    "avancado": {
+      "titulo": "Cofre final",
+      "enunciado": "valide uma senha por soma de dígitos, ausência de repetições e ordem parcial."
+    }
+  },
+  {
+    "dia": "05-01",
+    "tema": "Profissões e comércio",
+    "simples": {
+      "titulo": "Primeiro salário",
+      "enunciado": "multiplique horas trabalhadas pelo valor da hora."
+    },
+    "avancado": {
+      "titulo": "Controle de ponto",
+      "enunciado": "registre entrada e saída de funcionários e calcule horas extras e atrasos."
+    }
+  },
+  {
+    "dia": "05-02",
+    "tema": "Profissões e comércio",
+    "simples": {
+      "titulo": "Vendas do dia",
+      "enunciado": "multiplique preço de um produto pela quantidade vendida."
+    },
+    "avancado": {
+      "titulo": "Fechamento do caixa",
+      "enunciado": "registre vendas de cinco produtos e emita faturamento, quantidades e ticket médio."
+    }
+  },
+  {
+    "dia": "05-03",
+    "tema": "Profissões e comércio",
+    "simples": {
+      "titulo": "Comissão simples",
+      "enunciado": "calcule uma comissão percentual sobre uma venda."
+    },
+    "avancado": {
+      "titulo": "Metas dos vendedores",
+      "enunciado": "guarde vendas por profissional em vetor e gere ranking por metas atingidas."
+    }
+  },
+  {
+    "dia": "05-04",
+    "tema": "Profissões e comércio",
+    "simples": {
+      "titulo": "Etiqueta na vitrine",
+      "enunciado": "aplique aumento percentual a um preço."
+    },
+    "avancado": {
+      "titulo": "Etiquetador em lote",
+      "enunciado": "atualize preços de dez produtos segundo categorias e regras de margem."
+    }
+  },
+  {
+    "dia": "05-05",
+    "tema": "Profissões e comércio",
+    "simples": {
+      "titulo": "Troco do cliente",
+      "enunciado": "calcule o troco após uma compra válida."
+    },
+    "avancado": {
+      "titulo": "Caixa com cédulas",
+      "enunciado": "decomponha o troco nas notas disponíveis e avise quando não for possível pagar."
+    }
+  },
+  {
+    "dia": "05-06",
+    "tema": "Profissões e comércio",
+    "simples": {
+      "titulo": "Prateleira organizada",
+      "enunciado": "informe quantos itens faltam para completar uma meta de estoque."
+    },
+    "avancado": {
+      "titulo": "Estoque mínimo",
+      "enunciado": "registre entradas e saídas e gere relatório de reposição para cinco produtos."
+    }
+  },
+  {
+    "dia": "05-07",
+    "tema": "Profissões e comércio",
+    "simples": {
+      "titulo": "Desconto de cliente",
+      "enunciado": "verifique se uma compra alcança limite para desconto."
+    },
+    "avancado": {
+      "titulo": "Clube de benefícios",
+      "enunciado": "acumule pontos e permita resgate obedecendo saldo e regras de pontos."
+    }
+  },
+  {
+    "dia": "05-08",
+    "tema": "Profissões e comércio",
+    "simples": {
+      "titulo": "Diária de serviço",
+      "enunciado": "calcule pagamento por número de dias trabalhados."
+    },
+    "avancado": {
+      "titulo": "Escala de equipes",
+      "enunciado": "associe funcionários a turnos e identifique conflitos de disponibilidade."
+    }
+  },
+  {
+    "dia": "05-09",
+    "tema": "Profissões e comércio",
+    "simples": {
+      "titulo": "Ponto comercial",
+      "enunciado": "calcule área de uma loja retangular."
+    },
+    "avancado": {
+      "titulo": "Distribuição de setores",
+      "enunciado": "use matriz para representar corredores e localizar posições ocupadas."
+    }
+  },
+  {
+    "dia": "05-10",
+    "tema": "Profissões e comércio",
+    "simples": {
+      "titulo": "Bônus de produtividade",
+      "enunciado": "adicione bônus fixo quando a meta for atingida."
+    },
+    "avancado": {
+      "titulo": "Painel de produtividade",
+      "enunciado": "acompanhe produção diária em vetor e destaque sequências acima da meta."
+    }
+  },
+  {
+    "dia": "05-11",
+    "tema": "Profissões e comércio",
+    "simples": {
+      "titulo": "Pedido de papelaria",
+      "enunciado": "some o preço de quatro materiais."
+    },
+    "avancado": {
+      "titulo": "Compras por fornecedor",
+      "enunciado": "compare preços e fretes de fornecedores e escolha menor custo por item."
+    }
+  },
+  {
+    "dia": "05-12",
+    "tema": "Profissões e comércio",
+    "simples": {
+      "titulo": "Contagem do depósito",
+      "enunciado": "mostre números de caixas de 1 até N."
+    },
+    "avancado": {
+      "titulo": "Mapeamento de caixas",
+      "enunciado": "encontre um produto em matriz de prateleiras e indique posição e quantidade."
+    }
+  },
+  {
+    "dia": "05-13",
+    "tema": "Profissões e comércio",
+    "simples": {
+      "titulo": "Taxa de entrega",
+      "enunciado": "acrescente uma taxa fixa a uma compra."
+    },
+    "avancado": {
+      "titulo": "Entregas em regiões",
+      "enunciado": "calcule taxas por distância e agrupe pedidos por rota definida."
+    }
+  },
+  {
+    "dia": "05-14",
+    "tema": "Profissões e comércio",
+    "simples": {
+      "titulo": "Jornada reduzida",
+      "enunciado": "diga se as horas trabalhadas ultrapassam a carga contratada."
+    },
+    "avancado": {
+      "titulo": "Banco de horas",
+      "enunciado": "controle créditos e débitos de horas em vários dias e feche o saldo."
+    }
+  },
+  {
+    "dia": "05-15",
+    "tema": "Profissões e comércio",
+    "simples": {
+      "titulo": "Comparador de preços",
+      "enunciado": "exiba o menor entre dois preços."
+    },
+    "avancado": {
+      "titulo": "Cotação de compra",
+      "enunciado": "compare propostas com preço, prazo e desconto, gerando ranking ponderado."
+    }
+  },
+  {
+    "dia": "05-16",
+    "tema": "Profissões e comércio",
+    "simples": {
+      "titulo": "Orçamento de reforma",
+      "enunciado": "multiplique área de piso pelo custo por metro quadrado."
+    },
+    "avancado": {
+      "titulo": "Materiais de obra",
+      "enunciado": "calcule pacotes inteiros necessários para áreas de cômodos e sobras."
+    }
+  },
+  {
+    "dia": "05-17",
+    "tema": "Profissões e comércio",
+    "simples": {
+      "titulo": "Entrega no prazo",
+      "enunciado": "compare dia da entrega com dia previsto."
+    },
+    "avancado": {
+      "titulo": "Controle de pedidos",
+      "enunciado": "rastreie pedidos por código e classifique atrasos conforme datas numéricas."
+    }
+  },
+  {
+    "dia": "05-18",
+    "tema": "Profissões e comércio",
+    "simples": {
+      "titulo": "Mesa de atendimento",
+      "enunciado": "mostre uma mensagem para cada cliente de 1 a N."
+    },
+    "avancado": {
+      "titulo": "Senhas de atendimento",
+      "enunciado": "implemente filas comum e prioritária com política de atendimento alternado."
+    }
+  },
+  {
+    "dia": "05-19",
+    "tema": "Profissões e comércio",
+    "simples": {
+      "titulo": "Receita da oficina",
+      "enunciado": "some os valores de três serviços."
+    },
+    "avancado": {
+      "titulo": "Oficina de reparos",
+      "enunciado": "cadastre ordens por status e calcule tempo médio e custo por tipo."
+    }
+  },
+  {
+    "dia": "05-20",
+    "tema": "Profissões e comércio",
+    "simples": {
+      "titulo": "Preço por quilograma",
+      "enunciado": "calcule o custo de um produto vendido por peso."
+    },
+    "avancado": {
+      "titulo": "Feira por peso",
+      "enunciado": "gerencie pesagens, descontos e totais de compras com vários itens."
+    }
+  },
+  {
+    "dia": "05-21",
+    "tema": "Profissões e comércio",
+    "simples": {
+      "titulo": "Contador de encomendas",
+      "enunciado": "some pedidos de dois períodos."
+    },
+    "avancado": {
+      "titulo": "Planejamento de produção",
+      "enunciado": "distribua encomendas em dias respeitando capacidade diária máxima."
+    }
+  },
+  {
+    "dia": "05-22",
+    "tema": "Profissões e comércio",
+    "simples": {
+      "titulo": "Frete separado",
+      "enunciado": "calcule preço do produto mais frete informado."
+    },
+    "avancado": {
+      "titulo": "Simulador de entregas",
+      "enunciado": "compare três transportadoras pelo custo total e prazo prometido."
+    }
+  },
+  {
+    "dia": "05-23",
+    "tema": "Profissões e comércio",
+    "simples": {
+      "titulo": "Caixa de ferramentas",
+      "enunciado": "diga se a quantidade de ferramentas alcança a necessidade."
+    },
+    "avancado": {
+      "titulo": "Inventário de ferramentas",
+      "enunciado": "controle empréstimos, devoluções e itens ainda em uso."
+    }
+  },
+  {
+    "dia": "05-24",
+    "tema": "Profissões e comércio",
+    "simples": {
+      "titulo": "Ajuste de salário",
+      "enunciado": "calcule salário após reajuste percentual."
+    },
+    "avancado": {
+      "titulo": "Folha de pagamento fictícia",
+      "enunciado": "compute salários de equipe com bônus e descontos parametrizados."
+    }
+  },
+  {
+    "dia": "05-25",
+    "tema": "Profissões e comércio",
+    "simples": {
+      "titulo": "Hora do almoço",
+      "enunciado": "calcule a duração de uma pausa a partir dos minutos de início e fim."
+    },
+    "avancado": {
+      "titulo": "Escala de almoço",
+      "enunciado": "distribua pausas preservando mínimo de pessoas disponíveis em cada turno."
+    }
+  },
+  {
+    "dia": "05-26",
+    "tema": "Profissões e comércio",
+    "simples": {
+      "titulo": "Peças por máquina",
+      "enunciado": "calcule produção com taxa fixa por hora."
+    },
+    "avancado": {
+      "titulo": "Fábrica em turnos",
+      "enunciado": "acompanhe produção e perdas por máquina numa matriz e gere relatórios."
+    }
+  },
+  {
+    "dia": "05-27",
+    "tema": "Profissões e comércio",
+    "simples": {
+      "titulo": "Pesquisa de preço",
+      "enunciado": "calcule média de três preços pesquisados."
+    },
+    "avancado": {
+      "titulo": "Monitor de preços",
+      "enunciado": "guarde histórico semanal e encontre maior queda percentual por produto."
+    }
+  },
+  {
+    "dia": "05-28",
+    "tema": "Profissões e comércio",
+    "simples": {
+      "titulo": "Chegada do caminhão",
+      "enunciado": "calcule hora prevista em minutos a partir de uma duração."
+    },
+    "avancado": {
+      "titulo": "Recebimento de cargas",
+      "enunciado": "simule fila de docas, duração de descarga e horários de liberação."
+    }
+  },
+  {
+    "dia": "05-29",
+    "tema": "Profissões e comércio",
+    "simples": {
+      "titulo": "Cartaz de promoção",
+      "enunciado": "apresente nome do produto e preço promocional."
+    },
+    "avancado": {
+      "titulo": "Vitrine automática",
+      "enunciado": "filtre produtos por percentual de desconto e ordene pelo valor economizado."
+    }
+  },
+  {
+    "dia": "05-30",
+    "tema": "Profissões e comércio",
+    "simples": {
+      "titulo": "Fechamento da loja",
+      "enunciado": "calcule a diferença entre saldo inicial e final de caixa."
+    },
+    "avancado": {
+      "titulo": "Auditoria do caixa",
+      "enunciado": "reconcilie vendas, sangrias e pagamentos e identifique divergências."
+    }
+  },
+  {
+    "dia": "05-31",
+    "tema": "Profissões e comércio",
+    "simples": {
+      "titulo": "Resumo do trabalho",
+      "enunciado": "leia cinco resultados diários e calcule sua soma."
+    },
+    "avancado": {
+      "titulo": "Relatório mensal",
+      "enunciado": "agregue resultados por equipe e semana, com médias e comparação de desempenho."
+    }
+  },
+  {
+    "dia": "06-01",
+    "tema": "Festa junina e tradições",
+    "simples": {
+      "titulo": "Bandeirinhas no ar",
+      "enunciado": "calcule o total de bandeirinhas em N fileiras iguais."
+    },
+    "avancado": {
+      "titulo": "Desenho de bandeirinhas",
+      "enunciado": "gere padrão alternado de cores em uma matriz e conte peças por cor."
+    }
+  },
+  {
+    "dia": "06-02",
+    "tema": "Festa junina e tradições",
+    "simples": {
+      "titulo": "Barraca do milho",
+      "enunciado": "calcule o custo de N espigas a preço fixo."
+    },
+    "avancado": {
+      "titulo": "Caixa da barraca",
+      "enunciado": "registre vendas por produto e quantidades com estoque limitado."
+    }
+  },
+  {
+    "dia": "06-03",
+    "tema": "Festa junina e tradições",
+    "simples": {
+      "titulo": "Quadrilha numerada",
+      "enunciado": "imprima passos de 1 até 8."
+    },
+    "avancado": {
+      "titulo": "Coreografia da quadrilha",
+      "enunciado": "armazene comandos de movimento e simule posições dos pares numa grade."
+    }
+  },
+  {
+    "dia": "06-04",
+    "tema": "Festa junina e tradições",
+    "simples": {
+      "titulo": "Pescaria simples",
+      "enunciado": "informe um prêmio conforme um número entre 1 e 3."
+    },
+    "avancado": {
+      "titulo": "Pescaria de prêmios",
+      "enunciado": "gerencie sorteios pré-definidos, estoque de prêmios e rodadas sem repetição."
+    }
+  },
+  {
+    "dia": "06-05",
+    "tema": "Festa junina e tradições",
+    "simples": {
+      "titulo": "Correio elegante",
+      "enunciado": "leia remetente e destinatário e imprima um bilhete."
+    },
+    "avancado": {
+      "titulo": "Correio de mensagens",
+      "enunciado": "armazene bilhetes, permita buscar destinatários e contar mensagens por pessoa."
+    }
+  },
+  {
+    "dia": "06-06",
+    "tema": "Festa junina e tradições",
+    "simples": {
+      "titulo": "Cachorro-quente",
+      "enunciado": "some preços de lanche e bebida."
+    },
+    "avancado": {
+      "titulo": "Montador de lanches",
+      "enunciado": "combine adicionais, calcule custo e controle ingredientes disponíveis."
+    }
+  },
+  {
+    "dia": "06-07",
+    "tema": "Festa junina e tradições",
+    "simples": {
+      "titulo": "Forno de pamonha",
+      "enunciado": "calcule quantas fornadas são necessárias para N unidades."
+    },
+    "avancado": {
+      "titulo": "Planejador de fornadas",
+      "enunciado": "distribua receitas com tempos diferentes em um cronograma de forno único."
+    }
+  },
+  {
+    "dia": "06-08",
+    "tema": "Festa junina e tradições",
+    "simples": {
+      "titulo": "Chapéu de palha",
+      "enunciado": "aplique desconto a um acessório."
+    },
+    "avancado": {
+      "titulo": "Bazar junino",
+      "enunciado": "gere ranking de vendas por categoria e total de descontos concedidos."
+    }
+  },
+  {
+    "dia": "06-09",
+    "tema": "Festa junina e tradições",
+    "simples": {
+      "titulo": "Paçocas para todos",
+      "enunciado": "calcule quantas paçocas sobram após divisão igual."
+    },
+    "avancado": {
+      "titulo": "Montagem de kits",
+      "enunciado": "forme kits com itens de estoques diferentes maximizando quantidade de kits completos."
+    }
+  },
+  {
+    "dia": "06-10",
+    "tema": "Festa junina e tradições",
+    "simples": {
+      "titulo": "Fogueira acesa",
+      "enunciado": "mostre a palavra FOGO por N linhas."
+    },
+    "avancado": {
+      "titulo": "Desenho da fogueira",
+      "enunciado": "crie arte ASCII com altura configurável e distribuição simétrica de chamas."
+    }
+  },
+  {
+    "dia": "06-11",
+    "tema": "Festa junina e tradições",
+    "simples": {
+      "titulo": "Bingo de números",
+      "enunciado": "diga se um número informado aparece em três números sorteados."
+    },
+    "avancado": {
+      "titulo": "Cartela de bingo",
+      "enunciado": "armazene cartela 5×5 e marque números sem contar repetidos."
+    }
+  },
+  {
+    "dia": "06-12",
+    "tema": "Festa junina e tradições",
+    "simples": {
+      "titulo": "Prêmio do bingo",
+      "enunciado": "compare duas quantidades de acertos."
+    },
+    "avancado": {
+      "titulo": "Verificador de bingo",
+      "enunciado": "analise cartela marcada e detecte linha, coluna ou diagonal completa."
+    }
+  },
+  {
+    "dia": "06-13",
+    "tema": "Festa junina e tradições",
+    "simples": {
+      "titulo": "Dança das cadeiras",
+      "enunciado": "calcule quantas cadeiras restam após retirar uma por rodada."
+    },
+    "avancado": {
+      "titulo": "Simulador de cadeiras",
+      "enunciado": "elimine jogadores em círculo a partir de passos contados."
+    }
+  },
+  {
+    "dia": "06-14",
+    "tema": "Festa junina e tradições",
+    "simples": {
+      "titulo": "Tempo de festa",
+      "enunciado": "calcule duração entre dois horários do mesmo dia."
+    },
+    "avancado": {
+      "titulo": "Cronograma de apresentações",
+      "enunciado": "ordene atrações por hora de início e sinalize conflitos."
+    }
+  },
+  {
+    "dia": "06-15",
+    "tema": "Festa junina e tradições",
+    "simples": {
+      "titulo": "Canjica da receita",
+      "enunciado": "multiplique ingredientes por fator de porções."
+    },
+    "avancado": {
+      "titulo": "Receita em lote",
+      "enunciado": "ajuste ingredientes de várias receitas e consolide uma lista de compras."
+    }
+  },
+  {
+    "dia": "06-16",
+    "tema": "Festa junina e tradições",
+    "simples": {
+      "titulo": "Quentão sem álcool",
+      "enunciado": "calcule o volume total de bebida em copos iguais."
+    },
+    "avancado": {
+      "titulo": "Controle da bebida",
+      "enunciado": "simule preparo em lotes e distribuição por consumo previsto."
+    }
+  },
+  {
+    "dia": "06-17",
+    "tema": "Festa junina e tradições",
+    "simples": {
+      "titulo": "Barraca premiada",
+      "enunciado": "verifique se uma pontuação alcança o mínimo do prêmio."
+    },
+    "avancado": {
+      "titulo": "Pontuação de barracas",
+      "enunciado": "registre tentativas, pontue desempenhos e gere classificação com desempate."
+    }
+  },
+  {
+    "dia": "06-18",
+    "tema": "Festa junina e tradições",
+    "simples": {
+      "titulo": "Pula-fogueira fictício",
+      "enunciado": "conte saltos de 1 até N."
+    },
+    "avancado": {
+      "titulo": "Jogo de saltos",
+      "enunciado": "calcule pontuação por sequência com bônus por acertos consecutivos."
+    }
+  },
+  {
+    "dia": "06-19",
+    "tema": "Festa junina e tradições",
+    "simples": {
+      "titulo": "Cadeia caipira",
+      "enunciado": "mostre uma mensagem para um número de participante."
+    },
+    "avancado": {
+      "titulo": "Captura fictícia",
+      "enunciado": "gerencie jogadores em estados livre e preso e operações de libertação."
+    }
+  },
+  {
+    "dia": "06-20",
+    "tema": "Festa junina e tradições",
+    "simples": {
+      "titulo": "Rifa junina",
+      "enunciado": "calcule o valor arrecadado por quantidade de bilhetes."
+    },
+    "avancado": {
+      "titulo": "Controle de rifas",
+      "enunciado": "valide números de bilhete, impeça duplicações e confira lotes vendidos."
+    }
+  },
+  {
+    "dia": "06-21",
+    "tema": "Festa junina e tradições",
+    "simples": {
+      "titulo": "Roleta de prendas",
+      "enunciado": "associe quatro números a quatro desafios."
+    },
+    "avancado": {
+      "titulo": "Gerenciador de prendas",
+      "enunciado": "distribua desafios entre participantes sem repetir até esgotar a lista."
+    }
+  },
+  {
+    "dia": "06-22",
+    "tema": "Festa junina e tradições",
+    "simples": {
+      "titulo": "Bandeira triangular",
+      "enunciado": "calcule a área a partir de base e altura."
+    },
+    "avancado": {
+      "titulo": "Otimizador de tecido",
+      "enunciado": "estime quantas bandeiras retangulares de recorte cabem em peças de tecido."
+    }
+  },
+  {
+    "dia": "06-23",
+    "tema": "Festa junina e tradições",
+    "simples": {
+      "titulo": "Maçã do amor",
+      "enunciado": "aplique percentual de lucro ao custo unitário."
+    },
+    "avancado": {
+      "titulo": "Precificação da barraca",
+      "enunciado": "calcule preço de produtos com custo, perdas e margem desejada."
+    }
+  },
+  {
+    "dia": "06-24",
+    "tema": "Festa junina e tradições",
+    "simples": {
+      "titulo": "Pratinhos de comida",
+      "enunciado": "calcule N pessoas vezes pratos por pessoa."
+    },
+    "avancado": {
+      "titulo": "Planejador de alimentação",
+      "enunciado": "estime consumo de pratos por faixa de público e controle reserva de segurança."
+    }
+  },
+  {
+    "dia": "06-25",
+    "tema": "Festa junina e tradições",
+    "simples": {
+      "titulo": "Pontuação do arremesso",
+      "enunciado": "some valores de três tentativas."
+    },
+    "avancado": {
+      "titulo": "Torneio de argolas",
+      "enunciado": "registre resultados por rodada e produza classificação de jogadores."
+    }
+  },
+  {
+    "dia": "06-26",
+    "tema": "Festa junina e tradições",
+    "simples": {
+      "titulo": "Noite fria",
+      "enunciado": "diga se a temperatura está abaixo do limite escolhido."
+    },
+    "avancado": {
+      "titulo": "Termômetro da festa",
+      "enunciado": "analise série de medições e identifique intervalos de queda contínua."
+    }
+  },
+  {
+    "dia": "06-27",
+    "tema": "Festa junina e tradições",
+    "simples": {
+      "titulo": "Convites juninos",
+      "enunciado": "calcule quantos convites faltam distribuir."
+    },
+    "avancado": {
+      "titulo": "Convites por grupo",
+      "enunciado": "divida lotes entre turmas e gere relatório de entregas e pendências."
+    }
+  },
+  {
+    "dia": "06-28",
+    "tema": "Festa junina e tradições",
+    "simples": {
+      "titulo": "Custo da decoração",
+      "enunciado": "some preços de três materiais decorativos."
+    },
+    "avancado": {
+      "titulo": "Orçamento da decoração",
+      "enunciado": "monte itens por prioridade e sinalize excesso do teto disponível."
+    }
+  },
+  {
+    "dia": "06-29",
+    "tema": "Festa junina e tradições",
+    "simples": {
+      "titulo": "Última dança",
+      "enunciado": "leia um número de pares e calcule o total de dançarinos."
+    },
+    "avancado": {
+      "titulo": "Organizador de pares",
+      "enunciado": "forme duplas sem repetir parceria em rodadas consecutivas."
+    }
+  },
+  {
+    "dia": "06-30",
+    "tema": "Festa junina e tradições",
+    "simples": {
+      "titulo": "Despedida do arraial",
+      "enunciado": "calcule arrecadação de duas barracas."
+    },
+    "avancado": {
+      "titulo": "Balanço do arraial",
+      "enunciado": "consolide receitas e despesas das barracas e determine lucro de cada uma."
+    }
+  },
+  {
+    "dia": "07-01",
+    "tema": "Inverno e descanso",
+    "simples": {
+      "titulo": "Chá quentinho",
+      "enunciado": "calcule custo de N sachês de chá."
+    },
+    "avancado": {
+      "titulo": "Cafeteria de inverno",
+      "enunciado": "registre pedidos, descontos por combos e estoque de ingredientes."
+    }
+  },
+  {
+    "dia": "07-02",
+    "tema": "Inverno e descanso",
+    "simples": {
+      "titulo": "Temperatura mínima",
+      "enunciado": "leia três temperaturas e exiba a menor."
+    },
+    "avancado": {
+      "titulo": "Ranking de cidades frias",
+      "enunciado": "cadastre temperaturas de localidades e ordene da mais fria à mais quente."
+    }
+  },
+  {
+    "dia": "07-03",
+    "tema": "Inverno e descanso",
+    "simples": {
+      "titulo": "Cobertor suficiente",
+      "enunciado": "diga se a quantidade de cobertores atende à demanda."
+    },
+    "avancado": {
+      "titulo": "Distribuição de cobertores",
+      "enunciado": "aloque itens a grupos segundo necessidade e estoque limitado."
+    }
+  },
+  {
+    "dia": "07-04",
+    "tema": "Inverno e descanso",
+    "simples": {
+      "titulo": "Sessão de filmes",
+      "enunciado": "some durações de dois filmes em minutos."
+    },
+    "avancado": {
+      "titulo": "Maratona de filmes",
+      "enunciado": "ordene uma lista por duração e selecione sessões sem ultrapassar um limite."
+    }
+  },
+  {
+    "dia": "07-05",
+    "tema": "Inverno e descanso",
+    "simples": {
+      "titulo": "Livros nas férias",
+      "enunciado": "calcule páginas restantes de um livro."
+    },
+    "avancado": {
+      "titulo": "Desafio de leitura",
+      "enunciado": "registre progresso de sete dias e calcule evolução e previsão baseada na média."
+    }
+  },
+  {
+    "dia": "07-06",
+    "tema": "Inverno e descanso",
+    "simples": {
+      "titulo": "Chocolate quente",
+      "enunciado": "converta litros de leite em mililitros."
+    },
+    "avancado": {
+      "titulo": "Produção de bebidas",
+      "enunciado": "calcule lotes com três tamanhos de copo minimizando sobras de volume."
+    }
+  },
+  {
+    "dia": "07-07",
+    "tema": "Inverno e descanso",
+    "simples": {
+      "titulo": "Casaco em promoção",
+      "enunciado": "aplique um desconto de inverno."
+    },
+    "avancado": {
+      "titulo": "Loja de casacos",
+      "enunciado": "organize modelos por tamanho, estoque e descontos e filtre itens disponíveis."
+    }
+  },
+  {
+    "dia": "07-08",
+    "tema": "Inverno e descanso",
+    "simples": {
+      "titulo": "Noites frias",
+      "enunciado": "conte de 1 até N noites com um laço."
+    },
+    "avancado": {
+      "titulo": "Histórico noturno",
+      "enunciado": "identifique a maior sequência de temperaturas abaixo de um limite."
+    }
+  },
+  {
+    "dia": "07-09",
+    "tema": "Inverno e descanso",
+    "simples": {
+      "titulo": "Aquecer o quarto",
+      "enunciado": "calcule custo estimado de um aparelho por horas de uso."
+    },
+    "avancado": {
+      "titulo": "Simulador de energia",
+      "enunciado": "compare custo semanal de três aquecedores em diferentes ciclos de funcionamento."
+    }
+  },
+  {
+    "dia": "07-10",
+    "tema": "Inverno e descanso",
+    "simples": {
+      "titulo": "Sopa dividida",
+      "enunciado": "divida uma quantidade de litros entre pessoas."
+    },
+    "avancado": {
+      "titulo": "Cozinha solidária",
+      "enunciado": "distribua porções entre equipes, respeitando volumes e número de pessoas."
+    }
+  },
+  {
+    "dia": "07-11",
+    "tema": "Inverno e descanso",
+    "simples": {
+      "titulo": "Hora do descanso",
+      "enunciado": "calcule a duração do sono em minutos entre dois horários, inclusive atravessando meia-noite."
+    },
+    "avancado": {
+      "titulo": "Diário do sono",
+      "enunciado": "calcule duração e média de sete noites com horários de início e fim."
+    }
+  },
+  {
+    "dia": "07-12",
+    "tema": "Inverno e descanso",
+    "simples": {
+      "titulo": "Termômetro duplo",
+      "enunciado": "converta Fahrenheit para Celsius."
+    },
+    "avancado": {
+      "titulo": "Painel de sensores",
+      "enunciado": "identifique leituras fora de faixa e calcule média sem valores inválidos."
+    }
+  },
+  {
+    "dia": "07-13",
+    "tema": "Inverno e descanso",
+    "simples": {
+      "titulo": "Fogueira de acampamento",
+      "enunciado": "calcule quantos gravetos serão usados em N pacotes iguais."
+    },
+    "avancado": {
+      "titulo": "Estoque do acampamento",
+      "enunciado": "simule consumo diário de recursos e avise o primeiro dia de falta."
+    }
+  },
+  {
+    "dia": "07-14",
+    "tema": "Inverno e descanso",
+    "simples": {
+      "titulo": "Viagem de ônibus",
+      "enunciado": "calcule custo de passagens para N pessoas."
+    },
+    "avancado": {
+      "titulo": "Roteiro de excursão",
+      "enunciado": "avalie paradas e duração total, incluindo tempos de espera configurados."
+    }
+  },
+  {
+    "dia": "07-15",
+    "tema": "Inverno e descanso",
+    "simples": {
+      "titulo": "Monte de neve fictício",
+      "enunciado": "calcule a área de um círculo a partir do raio."
+    },
+    "avancado": {
+      "titulo": "Mapa de neve",
+      "enunciado": "receba matriz de intensidades e conte regiões conectadas acima do limiar."
+    }
+  },
+  {
+    "dia": "07-16",
+    "tema": "Inverno e descanso",
+    "simples": {
+      "titulo": "Jogo de cartas",
+      "enunciado": "compare dois valores e indique o maior."
+    },
+    "avancado": {
+      "titulo": "Campeonato de cartas",
+      "enunciado": "leia resultados de rodadas e compute pontos e desempates dos jogadores."
+    }
+  },
+  {
+    "dia": "07-17",
+    "tema": "Inverno e descanso",
+    "simples": {
+      "titulo": "Dia de cinema",
+      "enunciado": "calcule total de pipocas e entradas."
+    },
+    "avancado": {
+      "titulo": "Cinema de férias",
+      "enunciado": "escolha sessões que não se sobrepõem e calcule o custo de um roteiro."
+    }
+  },
+  {
+    "dia": "07-18",
+    "tema": "Inverno e descanso",
+    "simples": {
+      "titulo": "Pares de meias",
+      "enunciado": "calcule a quantidade de pares completos dado N meias."
+    },
+    "avancado": {
+      "titulo": "Separador de meias",
+      "enunciado": "conte cores em vetor e calcule pares e peças sem par."
+    }
+  },
+  {
+    "dia": "07-19",
+    "tema": "Inverno e descanso",
+    "simples": {
+      "titulo": "Pista de gelo fictícia",
+      "enunciado": "calcule distância de N voltas."
+    },
+    "avancado": {
+      "titulo": "Competição de voltas",
+      "enunciado": "registre tempos em matriz e encontre volta mais rápida e média por atleta."
+    }
+  },
+  {
+    "dia": "07-20",
+    "tema": "Inverno e descanso",
+    "simples": {
+      "titulo": "Lista de malas",
+      "enunciado": "leia três pesos e calcule o total."
+    },
+    "avancado": {
+      "titulo": "Balanceamento de bagagens",
+      "enunciado": "distribua itens em duas malas minimizando a diferença de peso."
+    }
+  },
+  {
+    "dia": "07-21",
+    "tema": "Inverno e descanso",
+    "simples": {
+      "titulo": "Acampamento em grupo",
+      "enunciado": "calcule quantas barracas de quatro lugares são necessárias."
+    },
+    "avancado": {
+      "titulo": "Planejamento de barracas",
+      "enunciado": "distribua grupos em capacidades variadas preservando integridade das famílias."
+    }
+  },
+  {
+    "dia": "07-22",
+    "tema": "Inverno e descanso",
+    "simples": {
+      "titulo": "Termômetro congelante",
+      "enunciado": "diga se uma temperatura é menor ou igual a zero."
+    },
+    "avancado": {
+      "titulo": "Alertas de geada",
+      "enunciado": "identifique períodos de risco em uma lista e conte sua duração."
+    }
+  },
+  {
+    "dia": "07-23",
+    "tema": "Inverno e descanso",
+    "simples": {
+      "titulo": "Biscoitos do inverno",
+      "enunciado": "calcule quantos pacotes são necessários para uma quantidade de biscoitos."
+    },
+    "avancado": {
+      "titulo": "Produção de biscoitos",
+      "enunciado": "organize pedidos e calcule lotes de receitas com capacidades diferentes."
+    }
+  },
+  {
+    "dia": "07-24",
+    "tema": "Inverno e descanso",
+    "simples": {
+      "titulo": "Trilhas nas férias",
+      "enunciado": "calcule distância total de ida e volta."
+    },
+    "avancado": {
+      "titulo": "Classificador de trilhas",
+      "enunciado": "ordene trilhas por distância, tempo e ganho de elevação usando critérios escolhidos."
+    }
+  },
+  {
+    "dia": "07-25",
+    "tema": "Inverno e descanso",
+    "simples": {
+      "titulo": "Jogos de tabuleiro",
+      "enunciado": "some pontuações de duas rodadas."
+    },
+    "avancado": {
+      "titulo": "Placar de torneio",
+      "enunciado": "gerencie quatro jogadores e classificação após várias rodadas."
+    }
+  },
+  {
+    "dia": "07-26",
+    "tema": "Inverno e descanso",
+    "simples": {
+      "titulo": "Luzes do quarto",
+      "enunciado": "converta consumo de watts e horas para quilowatt-hora."
+    },
+    "avancado": {
+      "titulo": "Eficiência residencial",
+      "enunciado": "compare aparelhos e calcule economia estimada com substituições."
+    }
+  },
+  {
+    "dia": "07-27",
+    "tema": "Inverno e descanso",
+    "simples": {
+      "titulo": "Kit de inverno",
+      "enunciado": "some o preço de três peças."
+    },
+    "avancado": {
+      "titulo": "Kits de agasalhos",
+      "enunciado": "escolha peças de diferentes categorias dentro de um orçamento por kit."
+    }
+  },
+  {
+    "dia": "07-28",
+    "tema": "Inverno e descanso",
+    "simples": {
+      "titulo": "Café da manhã",
+      "enunciado": "calcule custo de N pães iguais."
+    },
+    "avancado": {
+      "titulo": "Planejamento de refeições",
+      "enunciado": "calcule ingredientes de um cardápio para grupos de tamanhos diferentes."
+    }
+  },
+  {
+    "dia": "07-29",
+    "tema": "Inverno e descanso",
+    "simples": {
+      "titulo": "Contador de férias",
+      "enunciado": "calcule dias restantes até uma data do mesmo mês."
+    },
+    "avancado": {
+      "titulo": "Linha do tempo",
+      "enunciado": "ordene eventos por dia e horário e calcule intervalos entre atividades."
+    }
+  },
+  {
+    "dia": "07-30",
+    "tema": "Inverno e descanso",
+    "simples": {
+      "titulo": "Dia de chuva",
+      "enunciado": "leia SIM ou NÃO e escolha atividade interna ou externa."
+    },
+    "avancado": {
+      "titulo": "Agenda alternativa",
+      "enunciado": "replaneje uma lista de atividades conforme restrições climáticas pré-definidas."
+    }
+  },
+  {
+    "dia": "07-31",
+    "tema": "Inverno e descanso",
+    "simples": {
+      "titulo": "Resumo de julho",
+      "enunciado": "calcule média de quatro temperaturas."
+    },
+    "avancado": {
+      "titulo": "Relatório do inverno",
+      "enunciado": "analise medições por semana e local numa matriz e destaque extremos."
+    }
+  },
+  {
+    "dia": "08-01",
+    "tema": "Jogos e tecnologia",
+    "simples": {
+      "titulo": "Pontuação do jogador",
+      "enunciado": "some os pontos de três fases."
+    },
+    "avancado": {
+      "titulo": "Ranking arcade",
+      "enunciado": "registre pontuações de dez jogadores e organize o top 5 sem perder nomes."
+    }
+  },
+  {
+    "dia": "08-02",
+    "tema": "Jogos e tecnologia",
+    "simples": {
+      "titulo": "Vidas restantes",
+      "enunciado": "subtraia vidas perdidas das iniciais sem permitir resultado negativo."
+    },
+    "avancado": {
+      "titulo": "Jogo por turnos",
+      "enunciado": "controle vida, defesa e pontos de energia de dois personagens."
+    }
+  },
+  {
+    "dia": "08-03",
+    "tema": "Jogos e tecnologia",
+    "simples": {
+      "titulo": "Teclas do comando",
+      "enunciado": "exiba uma ação para W, A, S ou D."
+    },
+    "avancado": {
+      "titulo": "Controle em grade",
+      "enunciado": "interprete uma sequência de teclas e mova um personagem entre obstáculos."
+    }
+  },
+  {
+    "dia": "08-04",
+    "tema": "Jogos e tecnologia",
+    "simples": {
+      "titulo": "FPS médio",
+      "enunciado": "calcule a média de três medições de quadros por segundo."
+    },
+    "avancado": {
+      "titulo": "Monitor de desempenho",
+      "enunciado": "analise série de FPS e calcule média, mínima e percentual abaixo de 30."
+    }
+  },
+  {
+    "dia": "08-05",
+    "tema": "Jogos e tecnologia",
+    "simples": {
+      "titulo": "Memória livre",
+      "enunciado": "subtraia memória usada da capacidade total."
+    },
+    "avancado": {
+      "titulo": "Alocador fictício",
+      "enunciado": "simule reservas e liberações de blocos de memória com capacidade limitada."
+    }
+  },
+  {
+    "dia": "08-06",
+    "tema": "Jogos e tecnologia",
+    "simples": {
+      "titulo": "Senha do jogo",
+      "enunciado": "compare a senha digitada com um código previamente estabelecido."
+    },
+    "avancado": {
+      "titulo": "Sistema de perfis",
+      "enunciado": "cadastre usuários em vetor e bloqueie acessos após tentativas falhas."
+    }
+  },
+  {
+    "dia": "08-07",
+    "tema": "Jogos e tecnologia",
+    "simples": {
+      "titulo": "Contador de cliques",
+      "enunciado": "mostre os números de 1 até N."
+    },
+    "avancado": {
+      "titulo": "Teste de cliques",
+      "enunciado": "analise contagens por segundo e identifique a melhor janela consecutiva."
+    }
+  },
+  {
+    "dia": "08-08",
+    "tema": "Jogos e tecnologia",
+    "simples": {
+      "titulo": "Moedas virtuais",
+      "enunciado": "calcule saldo depois de uma compra."
+    },
+    "avancado": {
+      "titulo": "Loja virtual fictícia",
+      "enunciado": "gerencie saldo, itens, inventário e operações de compra e venda."
+    }
+  },
+  {
+    "dia": "08-09",
+    "tema": "Jogos e tecnologia",
+    "simples": {
+      "titulo": "Nível do personagem",
+      "enunciado": "diga se pontos atingem o limite do próximo nível."
+    },
+    "avancado": {
+      "titulo": "Progressão de níveis",
+      "enunciado": "calcule níveis acumulados a partir de tabela de experiência e registre evolução."
+    }
+  },
+  {
+    "dia": "08-10",
+    "tema": "Jogos e tecnologia",
+    "simples": {
+      "titulo": "Dado digital",
+      "enunciado": "indique se um número informado está entre 1 e 6."
+    },
+    "avancado": {
+      "titulo": "Simulador de dados",
+      "enunciado": "processe uma sequência de lançamentos e calcule frequência e sequências de resultados."
+    }
+  },
+  {
+    "dia": "08-11",
+    "tema": "Jogos e tecnologia",
+    "simples": {
+      "titulo": "Peças de computador",
+      "enunciado": "some preços de processador, memória e armazenamento."
+    },
+    "avancado": {
+      "titulo": "Montador de PCs",
+      "enunciado": "selecione peças compatíveis por categoria e mantenha orçamento máximo."
+    }
+  },
+  {
+    "dia": "08-12",
+    "tema": "Jogos e tecnologia",
+    "simples": {
+      "titulo": "Espaço no disco",
+      "enunciado": "converta gigabytes para megabytes usando base binária."
+    },
+    "avancado": {
+      "titulo": "Gerente de armazenamento",
+      "enunciado": "simule inclusão e exclusão de arquivos com tamanhos e categorias."
+    }
+  },
+  {
+    "dia": "08-13",
+    "tema": "Jogos e tecnologia",
+    "simples": {
+      "titulo": "Bateria do controle",
+      "enunciado": "calcule percentual restante após consumo informado."
+    },
+    "avancado": {
+      "titulo": "Autonomia do controle",
+      "enunciado": "simule sessões com consumo variável e encontre quando será necessário recarregar."
+    }
+  },
+  {
+    "dia": "08-14",
+    "tema": "Jogos e tecnologia",
+    "simples": {
+      "titulo": "Vitórias consecutivas",
+      "enunciado": "exiba PARABÉNS N vezes conforme vitórias."
+    },
+    "avancado": {
+      "titulo": "Analisador de partidas",
+      "enunciado": "encontre maior sequência de vitórias e taxa de aproveitamento em histórico."
+    }
+  },
+  {
+    "dia": "08-15",
+    "tema": "Jogos e tecnologia",
+    "simples": {
+      "titulo": "Controle de volume",
+      "enunciado": "limite um valor numérico entre 0 e 100."
+    },
+    "avancado": {
+      "titulo": "Mixer virtual",
+      "enunciado": "gerencie níveis de três canais, aplique mudo e calcule volume médio."
+    }
+  },
+  {
+    "dia": "08-16",
+    "tema": "Jogos e tecnologia",
+    "simples": {
+      "titulo": "Fases concluídas",
+      "enunciado": "calcule quantas faltam para terminar um jogo."
+    },
+    "avancado": {
+      "titulo": "Mapa de progressão",
+      "enunciado": "controle fases liberadas conforme requisitos e conquistas de etapas anteriores."
+    }
+  },
+  {
+    "dia": "08-17",
+    "tema": "Jogos e tecnologia",
+    "simples": {
+      "titulo": "Inventário simples",
+      "enunciado": "calcule itens após adquirir mais unidades."
+    },
+    "avancado": {
+      "titulo": "Mochila de RPG",
+      "enunciado": "controle pilhas, limites por item e peso máximo com menu."
+    }
+  },
+  {
+    "dia": "08-18",
+    "tema": "Jogos e tecnologia",
+    "simples": {
+      "titulo": "Placar empatado",
+      "enunciado": "verifique se dois jogadores têm a mesma pontuação."
+    },
+    "avancado": {
+      "titulo": "Campeonato eliminatório",
+      "enunciado": "simule chaves de oito jogadores com entrada de vencedores por partida."
+    }
+  },
+  {
+    "dia": "08-19",
+    "tema": "Jogos e tecnologia",
+    "simples": {
+      "titulo": "Pixels coloridos",
+      "enunciado": "calcule quantos pixels existem numa imagem de largura e altura informadas."
+    },
+    "avancado": {
+      "titulo": "Editor ASCII",
+      "enunciado": "represente imagem em matriz de caracteres e implemente preenchimento de área conexa."
+    }
+  },
+  {
+    "dia": "08-20",
+    "tema": "Jogos e tecnologia",
+    "simples": {
+      "titulo": "Downloads restantes",
+      "enunciado": "subtraia dados baixados do total de um arquivo."
+    },
+    "avancado": {
+      "titulo": "Gerenciador de downloads",
+      "enunciado": "distribua banda entre três tarefas e estime rodadas até conclusão."
+    }
+  },
+  {
+    "dia": "08-21",
+    "tema": "Jogos e tecnologia",
+    "simples": {
+      "titulo": "Dano crítico",
+      "enunciado": "calcule dano base acrescido de bônus percentual."
+    },
+    "avancado": {
+      "titulo": "Combate com atributos",
+      "enunciado": "simule ataque, defesa, chance crítica pré-definida e efeitos em turnos."
+    }
+  },
+  {
+    "dia": "08-22",
+    "tema": "Jogos e tecnologia",
+    "simples": {
+      "titulo": "Temporizador de jogo",
+      "enunciado": "converta segundos de partida em minutos e segundos."
+    },
+    "avancado": {
+      "titulo": "Relógio de competição",
+      "enunciado": "mantenha placar e eventos em instantes informados e gere linha do tempo."
+    }
+  },
+  {
+    "dia": "08-23",
+    "tema": "Jogos e tecnologia",
+    "simples": {
+      "titulo": "Código ASCII",
+      "enunciado": "leia um código numérico e informe se representa dígito entre 48 e 57."
+    },
+    "avancado": {
+      "titulo": "Analisador de texto",
+      "enunciado": "conte caracteres por classe e construa histograma de letras de A a Z."
+    }
+  },
+  {
+    "dia": "08-24",
+    "tema": "Jogos e tecnologia",
+    "simples": {
+      "titulo": "Latência da rede",
+      "enunciado": "calcule a média de três tempos de resposta."
+    },
+    "avancado": {
+      "titulo": "Diagnóstico de conexão",
+      "enunciado": "identifique picos e estime percentis simples a partir de amostras ordenadas."
+    }
+  },
+  {
+    "dia": "08-25",
+    "tema": "Jogos e tecnologia",
+    "simples": {
+      "titulo": "Armazenamento de fotos",
+      "enunciado": "calcule espaço de N imagens iguais."
+    },
+    "avancado": {
+      "titulo": "Compactador fictício",
+      "enunciado": "agrupe arquivos por extensão e estime redução com taxas diferentes."
+    }
+  },
+  {
+    "dia": "08-26",
+    "tema": "Jogos e tecnologia",
+    "simples": {
+      "titulo": "Joystick em repouso",
+      "enunciado": "verifique se um valor está dentro da zona morta."
+    },
+    "avancado": {
+      "titulo": "Calibrador de controle",
+      "enunciado": "normalize eixos numéricos e aplique zona morta com limite configurável."
+    }
+  },
+  {
+    "dia": "08-27",
+    "tema": "Jogos e tecnologia",
+    "simples": {
+      "titulo": "Ranking por pontos",
+      "enunciado": "compare três pontuações e exiba a maior."
+    },
+    "avancado": {
+      "titulo": "Histórico de ranking",
+      "enunciado": "registre rodadas em matriz e compute ranking acumulado com desempates."
+    }
+  },
+  {
+    "dia": "08-28",
+    "tema": "Jogos e tecnologia",
+    "simples": {
+      "titulo": "Recompensa diária",
+      "enunciado": "calcule bônus após N dias fixos."
+    },
+    "avancado": {
+      "titulo": "Calendário de recompensas",
+      "enunciado": "simule registro de dias, bônus de sequência e reinício após ausência."
+    }
+  },
+  {
+    "dia": "08-29",
+    "tema": "Jogos e tecnologia",
+    "simples": {
+      "titulo": "Partida online",
+      "enunciado": "informe se o número de jogadores alcança o mínimo."
+    },
+    "avancado": {
+      "titulo": "Criador de salas",
+      "enunciado": "distribua jogadores por salas de capacidade fixa e sinalize salas incompletas."
+    }
+  },
+  {
+    "dia": "08-30",
+    "tema": "Jogos e tecnologia",
+    "simples": {
+      "titulo": "Game over",
+      "enunciado": "informe se a vida chegou a zero."
+    },
+    "avancado": {
+      "titulo": "Sistema de checkpoints",
+      "enunciado": "permita salvar e restaurar estado de posição, vida e recursos durante simulação."
+    }
+  },
+  {
+    "dia": "08-31",
+    "tema": "Jogos e tecnologia",
+    "simples": {
+      "titulo": "Resumo do jogo",
+      "enunciado": "calcule razão entre vitórias e partidas totais como percentual."
+    },
+    "avancado": {
+      "titulo": "Estatísticas de temporada",
+      "enunciado": "processe resultados em vetor e gere sequência máxima, aproveitamento e pontuação."
+    }
+  },
+  {
+    "dia": "09-01",
+    "tema": "Natureza e descobertas",
+    "simples": {
+      "titulo": "Muda de árvore",
+      "enunciado": "calcule quantas mudas serão plantadas em N fileiras."
+    },
+    "avancado": {
+      "titulo": "Viveiro de mudas",
+      "enunciado": "controle espécies, estoques e distribuição para áreas de reflorestamento."
+    }
+  },
+  {
+    "dia": "09-02",
+    "tema": "Natureza e descobertas",
+    "simples": {
+      "titulo": "Coleta seletiva",
+      "enunciado": "indique a lixeira correspondente a PAPEL, VIDRO ou PLÁSTICO."
+    },
+    "avancado": {
+      "titulo": "Central de reciclagem",
+      "enunciado": "registre material e peso de descartes e produza relatório por categoria."
+    }
+  },
+  {
+    "dia": "09-03",
+    "tema": "Natureza e descobertas",
+    "simples": {
+      "titulo": "Litros economizados",
+      "enunciado": "calcule economia de água por dia durante N dias."
+    },
+    "avancado": {
+      "titulo": "Consumo residencial",
+      "enunciado": "compare medições de água e localize aumentos anormais entre períodos."
+    }
+  },
+  {
+    "dia": "09-04",
+    "tema": "Natureza e descobertas",
+    "simples": {
+      "titulo": "Energia solar",
+      "enunciado": "calcule geração de um painel com potência e horas ideais."
+    },
+    "avancado": {
+      "titulo": "Painéis solares",
+      "enunciado": "simule produção diária de vários painéis com eficiências e sombreamentos diferentes."
+    }
+  },
+  {
+    "dia": "09-05",
+    "tema": "Natureza e descobertas",
+    "simples": {
+      "titulo": "Tamanho do jardim",
+      "enunciado": "calcule a área de um canteiro retangular."
+    },
+    "avancado": {
+      "titulo": "Projeto de jardim",
+      "enunciado": "distribua plantas em matriz respeitando distância mínima entre espécies."
+    }
+  },
+  {
+    "dia": "09-06",
+    "tema": "Natureza e descobertas",
+    "simples": {
+      "titulo": "Sementes restantes",
+      "enunciado": "calcule o saldo após semear parte das sementes."
+    },
+    "avancado": {
+      "titulo": "Banco de sementes",
+      "enunciado": "controle estoque por espécie e validade fictícia por mês numérico."
+    }
+  },
+  {
+    "dia": "09-07",
+    "tema": "Natureza e descobertas",
+    "simples": {
+      "titulo": "Volume de chuva",
+      "enunciado": "converta milímetros de chuva em litros por metro quadrado."
+    },
+    "avancado": {
+      "titulo": "Pluviômetro",
+      "enunciado": "analise chuva de 30 dias, encontre recordes e maiores sequências secas."
+    }
+  },
+  {
+    "dia": "09-08",
+    "tema": "Natureza e descobertas",
+    "simples": {
+      "titulo": "Temperatura da estufa",
+      "enunciado": "classifique uma leitura como abaixo, dentro ou acima da faixa ideal."
+    },
+    "avancado": {
+      "titulo": "Controle de estufa",
+      "enunciado": "monitore leituras e simule acionamento de aquecimento e ventilação por histerese."
+    }
+  },
+  {
+    "dia": "09-09",
+    "tema": "Natureza e descobertas",
+    "simples": {
+      "titulo": "Vento forte",
+      "enunciado": "informe se uma velocidade supera um limite informado."
+    },
+    "avancado": {
+      "titulo": "Rosa dos ventos",
+      "enunciado": "registre direções e velocidades e identifique direção predominante e média."
+    }
+  },
+  {
+    "dia": "09-10",
+    "tema": "Natureza e descobertas",
+    "simples": {
+      "titulo": "Ciclovia",
+      "enunciado": "calcule distância de ida e volta de um trajeto."
+    },
+    "avancado": {
+      "titulo": "Rede de ciclovias",
+      "enunciado": "compare trechos conectados e encontre rota de menor distância entre pontos."
+    }
+  },
+  {
+    "dia": "09-11",
+    "tema": "Natureza e descobertas",
+    "simples": {
+      "titulo": "Lixo recolhido",
+      "enunciado": "some massas de três sacos."
+    },
+    "avancado": {
+      "titulo": "Mutirão de limpeza",
+      "enunciado": "organize coleta por equipe e área e classifique rendimento por hora."
+    }
+  },
+  {
+    "dia": "09-12",
+    "tema": "Natureza e descobertas",
+    "simples": {
+      "titulo": "Dia ensolarado",
+      "enunciado": "diga se uma porcentagem de nebulosidade fica abaixo do limite."
+    },
+    "avancado": {
+      "titulo": "Histórico de nebulosidade",
+      "enunciado": "processe 14 dias e identifique séries de dias acima de 70%."
+    }
+  },
+  {
+    "dia": "09-13",
+    "tema": "Natureza e descobertas",
+    "simples": {
+      "titulo": "Pegada do transporte",
+      "enunciado": "calcule emissões estimadas por distância usando taxa informada."
+    },
+    "avancado": {
+      "titulo": "Comparador de transporte",
+      "enunciado": "avalie trajetos por tempo, custo e emissões com ranking ponderado."
+    }
+  },
+  {
+    "dia": "09-14",
+    "tema": "Natureza e descobertas",
+    "simples": {
+      "titulo": "Vasos no quintal",
+      "enunciado": "multiplique linhas e colunas para descobrir a quantidade de vasos."
+    },
+    "avancado": {
+      "titulo": "Irrigação por setores",
+      "enunciado": "represente canteiros em matriz e calcule água necessária por tipo de planta."
+    }
+  },
+  {
+    "dia": "09-15",
+    "tema": "Natureza e descobertas",
+    "simples": {
+      "titulo": "Plantas regadas",
+      "enunciado": "conte de 1 até N plantas atendidas."
+    },
+    "avancado": {
+      "titulo": "Agenda de rega",
+      "enunciado": "guarde últimos dias de rega e avise quais plantas venceram intervalo configurado."
+    }
+  },
+  {
+    "dia": "09-16",
+    "tema": "Natureza e descobertas",
+    "simples": {
+      "titulo": "Comprimento da folha",
+      "enunciado": "converta centímetros para milímetros."
+    },
+    "avancado": {
+      "titulo": "Crescimento das folhas",
+      "enunciado": "acompanhe medições de várias plantas em matriz e calcule tendências."
+    }
+  },
+  {
+    "dia": "09-17",
+    "tema": "Natureza e descobertas",
+    "simples": {
+      "titulo": "Peso da colheita",
+      "enunciado": "calcule o valor obtido vendendo N quilogramas."
+    },
+    "avancado": {
+      "titulo": "Controle de safra",
+      "enunciado": "calcule produção por canteiro, perdas e receita líquida."
+    }
+  },
+  {
+    "dia": "09-18",
+    "tema": "Natureza e descobertas",
+    "simples": {
+      "titulo": "Separando resíduos",
+      "enunciado": "verifique se a quantidade reciclada alcança uma meta."
+    },
+    "avancado": {
+      "titulo": "Metas ambientais",
+      "enunciado": "compare indicadores mensais e calcule quais áreas ficaram abaixo da meta."
+    }
+  },
+  {
+    "dia": "09-19",
+    "tema": "Natureza e descobertas",
+    "simples": {
+      "titulo": "Rios e nascentes",
+      "enunciado": "some volumes informados de três fontes."
+    },
+    "avancado": {
+      "titulo": "Monitor de reservatórios",
+      "enunciado": "simule entrada, consumo e transbordamento de água em vários dias."
+    }
+  },
+  {
+    "dia": "09-20",
+    "tema": "Natureza e descobertas",
+    "simples": {
+      "titulo": "Consumo consciente",
+      "enunciado": "calcule porcentagem de redução de um consumo antigo para um novo."
+    },
+    "avancado": {
+      "titulo": "Economia acumulada",
+      "enunciado": "compare séries mensais de consumo e gere projeção pela média móvel."
+    }
+  },
+  {
+    "dia": "09-21",
+    "tema": "Natureza e descobertas",
+    "simples": {
+      "titulo": "Trilha da mata",
+      "enunciado": "calcule o tempo de caminhada por distância e velocidade."
+    },
+    "avancado": {
+      "titulo": "Planejamento de trilhas",
+      "enunciado": "distribua atividades por trechos e estime horários com pausas."
+    }
+  },
+  {
+    "dia": "09-22",
+    "tema": "Natureza e descobertas",
+    "simples": {
+      "titulo": "Índice de poluição fictício",
+      "enunciado": "classifique uma medição por intervalos definidos."
+    },
+    "avancado": {
+      "titulo": "Painel de qualidade do ar",
+      "enunciado": "consolide sensores e identifique medições fora do limite por região."
+    }
+  },
+  {
+    "dia": "09-23",
+    "tema": "Natureza e descobertas",
+    "simples": {
+      "titulo": "Altura da árvore",
+      "enunciado": "converta metros para centímetros."
+    },
+    "avancado": {
+      "titulo": "Inventário florestal",
+      "enunciado": "classifique árvores por faixas de altura e produza distribuição de frequências."
+    }
+  },
+  {
+    "dia": "09-24",
+    "tema": "Natureza e descobertas",
+    "simples": {
+      "titulo": "Biodiversidade",
+      "enunciado": "some exemplares de três espécies."
+    },
+    "avancado": {
+      "titulo": "Observação de fauna",
+      "enunciado": "processe contagens de espécies em parcelas e calcule diversidade por riqueza de espécies."
+    }
+  },
+  {
+    "dia": "09-25",
+    "tema": "Natureza e descobertas",
+    "simples": {
+      "titulo": "Compostagem",
+      "enunciado": "calcule massa restante após perda percentual."
+    },
+    "avancado": {
+      "titulo": "Gestão de compostagem",
+      "enunciado": "simule entradas, transformação e saídas de material em várias semanas."
+    }
+  },
+  {
+    "dia": "09-26",
+    "tema": "Natureza e descobertas",
+    "simples": {
+      "titulo": "Lâmpadas eficientes",
+      "enunciado": "calcule economia em watts entre duas lâmpadas."
+    },
+    "avancado": {
+      "titulo": "Projeto de iluminação",
+      "enunciado": "avalie conjuntos de lâmpadas por consumo, custo e prazo de economia."
+    }
+  },
+  {
+    "dia": "09-27",
+    "tema": "Natureza e descobertas",
+    "simples": {
+      "titulo": "Caminho das formigas",
+      "enunciado": "calcule percurso total de N idas iguais."
+    },
+    "avancado": {
+      "titulo": "Colônia de formigas",
+      "enunciado": "simule deslocamentos em grade e conte visitas a cada posição."
+    }
+  },
+  {
+    "dia": "09-28",
+    "tema": "Natureza e descobertas",
+    "simples": {
+      "titulo": "Solo úmido",
+      "enunciado": "diga se a umidade ultrapassa o mínimo necessário."
+    },
+    "avancado": {
+      "titulo": "Irrigador automático",
+      "enunciado": "simule sensores e válvulas com faixas de liga/desliga independentes."
+    }
+  },
+  {
+    "dia": "09-29",
+    "tema": "Natureza e descobertas",
+    "simples": {
+      "titulo": "Maré medida",
+      "enunciado": "calcule a diferença entre nível máximo e mínimo."
+    },
+    "avancado": {
+      "titulo": "Série de marés",
+      "enunciado": "identifique máximos e mínimos locais num vetor de leituras."
+    }
+  },
+  {
+    "dia": "09-30",
+    "tema": "Natureza e descobertas",
+    "simples": {
+      "titulo": "Balanço verde",
+      "enunciado": "some três valores de economia ambiental."
+    },
+    "avancado": {
+      "titulo": "Relatório ambiental",
+      "enunciado": "combine indicadores por setor e apresente metas atingidas e pendências."
+    }
+  },
+  {
+    "dia": "10-01",
+    "tema": "Mistérios e Halloween",
+    "simples": {
+      "titulo": "Fantasma na tela",
+      "enunciado": "imprima BOO! a quantidade de vezes solicitada."
+    },
+    "avancado": {
+      "titulo": "Corredor assombrado",
+      "enunciado": "simule deslocamentos em um corredor com armadilhas e inventário de chaves."
+    }
+  },
+  {
+    "dia": "10-02",
+    "tema": "Mistérios e Halloween",
+    "simples": {
+      "titulo": "Abóboras na porta",
+      "enunciado": "calcule custo de N abóboras iguais."
+    },
+    "avancado": {
+      "titulo": "Estoque de abóboras",
+      "enunciado": "gerencie entradas, vendas e perdas em três tamanhos diferentes."
+    }
+  },
+  {
+    "dia": "10-03",
+    "tema": "Mistérios e Halloween",
+    "simples": {
+      "titulo": "Doces ou travessuras",
+      "enunciado": "divida uma quantidade de doces igualmente entre crianças."
+    },
+    "avancado": {
+      "titulo": "Distribuição de doces",
+      "enunciado": "monte sacolas com quantidades definidas e controle sobras por tipo."
+    }
+  },
+  {
+    "dia": "10-04",
+    "tema": "Mistérios e Halloween",
+    "simples": {
+      "titulo": "Morcegos voando",
+      "enunciado": "apresente números pares até um limite."
+    },
+    "avancado": {
+      "titulo": "Enxame de morcegos",
+      "enunciado": "simule posições em matriz e conte criaturas em cada quadrante."
+    }
+  },
+  {
+    "dia": "10-05",
+    "tema": "Mistérios e Halloween",
+    "simples": {
+      "titulo": "Caça aos fantasmas",
+      "enunciado": "diga se uma pontuação alcança o recorde informado."
+    },
+    "avancado": {
+      "titulo": "Ranking de caçadores",
+      "enunciado": "registre pontuações por rodada e classifique equipes com critério de desempate."
+    }
+  },
+  {
+    "dia": "10-06",
+    "tema": "Mistérios e Halloween",
+    "simples": {
+      "titulo": "Cemitério numérico",
+      "enunciado": "conte de N até zero."
+    },
+    "avancado": {
+      "titulo": "Mapa do cemitério",
+      "enunciado": "encontre coordenadas com lápides especiais em uma matriz codificada."
+    }
+  },
+  {
+    "dia": "10-07",
+    "tema": "Mistérios e Halloween",
+    "simples": {
+      "titulo": "Vassoura veloz",
+      "enunciado": "calcule velocidade média de uma bruxa fictícia."
+    },
+    "avancado": {
+      "titulo": "Corrida de vassouras",
+      "enunciado": "registre parciais por competidor e calcule classificação por tempo acumulado."
+    }
+  },
+  {
+    "dia": "10-08",
+    "tema": "Mistérios e Halloween",
+    "simples": {
+      "titulo": "Caldeirão mágico",
+      "enunciado": "some volumes de três ingredientes."
+    },
+    "avancado": {
+      "titulo": "Poção por receita",
+      "enunciado": "gerencie ingredientes limitados e calcule quantas poções completas podem ser produzidas."
+    }
+  },
+  {
+    "dia": "10-09",
+    "tema": "Mistérios e Halloween",
+    "simples": {
+      "titulo": "Poção de força",
+      "enunciado": "aumente um atributo em porcentagem informada."
+    },
+    "avancado": {
+      "titulo": "Misturador de poções",
+      "enunciado": "combine receitas com efeitos temporários e atualize atributos por turno."
+    }
+  },
+  {
+    "dia": "10-10",
+    "tema": "Mistérios e Halloween",
+    "simples": {
+      "titulo": "Esqueleto desmontado",
+      "enunciado": "calcule quantos ossos restam após perder alguns."
+    },
+    "avancado": {
+      "titulo": "Inventário do necromante",
+      "enunciado": "gerencie componentes para criar criaturas de receitas diferentes."
+    }
+  },
+  {
+    "dia": "10-11",
+    "tema": "Mistérios e Halloween",
+    "simples": {
+      "titulo": "Vampiro dorminhoco",
+      "enunciado": "calcule quantas horas faltam até um horário informado."
+    },
+    "avancado": {
+      "titulo": "Rotina noturna",
+      "enunciado": "organize atividades do vampiro em intervalos que atravessam meia-noite."
+    }
+  },
+  {
+    "dia": "10-12",
+    "tema": "Mistérios e Halloween",
+    "simples": {
+      "titulo": "Aranha de oito patas",
+      "enunciado": "calcule total de patas de N aranhas."
+    },
+    "avancado": {
+      "titulo": "Teia geométrica",
+      "enunciado": "desenhe padrões em matriz com linhas, diagonais e pontos de interseção."
+    }
+  },
+  {
+    "dia": "10-13",
+    "tema": "Mistérios e Halloween",
+    "simples": {
+      "titulo": "Porta do castelo",
+      "enunciado": "informe ABERTA quando uma senha correta for digitada."
+    },
+    "avancado": {
+      "titulo": "Fechaduras do castelo",
+      "enunciado": "valide sequência de chaves e estados de portas dependentes entre si."
+    }
+  },
+  {
+    "dia": "10-14",
+    "tema": "Mistérios e Halloween",
+    "simples": {
+      "titulo": "Lua cheia fictícia",
+      "enunciado": "classifique a fase conforme um índice entre 1 e 4."
+    },
+    "avancado": {
+      "titulo": "Calendário lunar fictício",
+      "enunciado": "gere fases em ciclo de 28 dias a partir de uma fase inicial informada."
+    }
+  },
+  {
+    "dia": "10-15",
+    "tema": "Mistérios e Halloween",
+    "simples": {
+      "titulo": "Monstro faminto",
+      "enunciado": "calcule energia restante após um ataque."
+    },
+    "avancado": {
+      "titulo": "Arena de monstros",
+      "enunciado": "simule combate por turnos com defesa, fraqueza e recursos consumíveis."
+    }
+  },
+  {
+    "dia": "10-16",
+    "tema": "Mistérios e Halloween",
+    "simples": {
+      "titulo": "Máscara assustadora",
+      "enunciado": "calcule a média de três notas dadas à fantasia."
+    },
+    "avancado": {
+      "titulo": "Concurso de monstros",
+      "enunciado": "calcule notas ponderadas, aplique penalidades e crie pódio com empates."
+    }
+  },
+  {
+    "dia": "10-17",
+    "tema": "Mistérios e Halloween",
+    "simples": {
+      "titulo": "Três portas",
+      "enunciado": "escolha um prêmio textual conforme a porta 1, 2 ou 3."
+    },
+    "avancado": {
+      "titulo": "Castelo de escolhas",
+      "enunciado": "modele salas conectadas e permita navegar sem atravessar portas trancadas."
+    }
+  },
+  {
+    "dia": "10-18",
+    "tema": "Mistérios e Halloween",
+    "simples": {
+      "titulo": "Doces no balde",
+      "enunciado": "some doces recebidos em cinco casas."
+    },
+    "avancado": {
+      "titulo": "Rota das casas",
+      "enunciado": "acompanhe visitas a uma lista de casas e impeça contagem de repetidas."
+    }
+  },
+  {
+    "dia": "10-19",
+    "tema": "Mistérios e Halloween",
+    "simples": {
+      "titulo": "Bruxa e caldeirão",
+      "enunciado": "exiba uma mensagem conforme a cor de poção digitada."
+    },
+    "avancado": {
+      "titulo": "Laboratório de bruxas",
+      "enunciado": "identifique combinações válidas de ingredientes a partir de regras."
+    }
+  },
+  {
+    "dia": "10-20",
+    "tema": "Mistérios e Halloween",
+    "simples": {
+      "titulo": "Névoa intensa",
+      "enunciado": "classifique visibilidade numérica acima ou abaixo de um limite."
+    },
+    "avancado": {
+      "titulo": "Sensores de névoa",
+      "enunciado": "compare leituras consecutivas e acione alerta após três valores críticos."
+    }
+  },
+  {
+    "dia": "10-21",
+    "tema": "Mistérios e Halloween",
+    "simples": {
+      "titulo": "Lanterna fraca",
+      "enunciado": "subtraia consumo de uma carga inicial."
+    },
+    "avancado": {
+      "titulo": "Explorador noturno",
+      "enunciado": "administre energia da lanterna e escolhas de trajeto com custos diferentes."
+    }
+  },
+  {
+    "dia": "10-22",
+    "tema": "Mistérios e Halloween",
+    "simples": {
+      "titulo": "Coro de fantasmas",
+      "enunciado": "repita uma palavra em N linhas numeradas."
+    },
+    "avancado": {
+      "titulo": "Coral assombrado",
+      "enunciado": "programe uma sequência de vozes em turnos e imprima a grade de entradas."
+    }
+  },
+  {
+    "dia": "10-23",
+    "tema": "Mistérios e Halloween",
+    "simples": {
+      "titulo": "Chaves misteriosas",
+      "enunciado": "some os códigos de duas chaves."
+    },
+    "avancado": {
+      "titulo": "Porta combinada",
+      "enunciado": "procure em uma lista duas chaves cujos códigos somem o valor da fechadura."
+    }
+  },
+  {
+    "dia": "10-24",
+    "tema": "Mistérios e Halloween",
+    "simples": {
+      "titulo": "Adivinhação da caveira",
+      "enunciado": "verifique se um número possui três dígitos."
+    },
+    "avancado": {
+      "titulo": "Gerador de enigmas",
+      "enunciado": "crie cinco desafios numéricos com respostas e valide tentativas do jogador."
+    }
+  },
+  {
+    "dia": "10-25",
+    "tema": "Mistérios e Halloween",
+    "simples": {
+      "titulo": "Corrida dos zumbis",
+      "enunciado": "calcule quantos metros um zumbi percorre em N minutos."
+    },
+    "avancado": {
+      "titulo": "Perseguição dos zumbis",
+      "enunciado": "simule perseguidor e fugitivo numa linha com velocidades por turno."
+    }
+  },
+  {
+    "dia": "10-26",
+    "tema": "Mistérios e Halloween",
+    "simples": {
+      "titulo": "Doce mais caro",
+      "enunciado": "compare preços de três doces e exiba o maior."
+    },
+    "avancado": {
+      "titulo": "Loja macabra",
+      "enunciado": "monte carrinho, aplique promoções por quantidade e controle estoque."
+    }
+  },
+  {
+    "dia": "10-27",
+    "tema": "Mistérios e Halloween",
+    "simples": {
+      "titulo": "Cemitério iluminado",
+      "enunciado": "calcule total de velas por fileira."
+    },
+    "avancado": {
+      "titulo": "Iluminação do cemitério",
+      "enunciado": "simule interruptores para conjuntos de lâmpadas em matriz."
+    }
+  },
+  {
+    "dia": "10-28",
+    "tema": "Mistérios e Halloween",
+    "simples": {
+      "titulo": "Enigma do espelho",
+      "enunciado": "exiba uma palavra invertida."
+    },
+    "avancado": {
+      "titulo": "Palavra amaldiçoada",
+      "enunciado": "detecte palíndromos e anagramas dentro de uma coleção de palavras."
+    }
+  },
+  {
+    "dia": "10-29",
+    "tema": "Mistérios e Halloween",
+    "simples": {
+      "titulo": "Dia da fantasia",
+      "enunciado": "aplique desconto percentual em fantasias."
+    },
+    "avancado": {
+      "titulo": "Figurinos do baile",
+      "enunciado": "distribua peças por participantes respeitando tamanhos e quantidades disponíveis."
+    }
+  },
+  {
+    "dia": "10-30",
+    "tema": "Mistérios e Halloween",
+    "simples": {
+      "titulo": "Festa dos monstros",
+      "enunciado": "conte convidados a partir de três grupos."
+    },
+    "avancado": {
+      "titulo": "Controle do baile",
+      "enunciado": "gerencie convites, entrada e saída com lotação máxima e histórico."
+    }
+  },
+  {
+    "dia": "10-31",
+    "tema": "Mistérios e Halloween",
+    "simples": {
+      "titulo": "A noite final",
+      "enunciado": "mostre um desenho de abóbora usando três linhas de texto."
+    },
+    "avancado": {
+      "titulo": "Escape do castelo",
+      "enunciado": "construa um jogo textual com salas, objetos, pistas e condição de vitória."
+    }
+  },
+  {
+    "dia": "11-01",
+    "tema": "Computadores e invenções",
+    "simples": {
+      "titulo": "Primeiro byte",
+      "enunciado": "converta bytes para bits multiplicando por oito."
+    },
+    "avancado": {
+      "titulo": "Analisador de arquivos",
+      "enunciado": "agrupe tamanhos de arquivos por extensão e calcule ocupação em memória."
+    }
+  },
+  {
+    "dia": "11-02",
+    "tema": "Computadores e invenções",
+    "simples": {
+      "titulo": "Lógica binária",
+      "enunciado": "diga se um número inteiro é par ou ímpar."
+    },
+    "avancado": {
+      "titulo": "Conversor de bases",
+      "enunciado": "converta números entre decimal, binário e hexadecimal com validação."
+    }
+  },
+  {
+    "dia": "11-03",
+    "tema": "Computadores e invenções",
+    "simples": {
+      "titulo": "Circuito ligado",
+      "enunciado": "exiba LIGADO quando uma entrada for 1."
+    },
+    "avancado": {
+      "titulo": "Simulador de portas",
+      "enunciado": "avalie uma expressão combinando AND, OR e NOT a partir de entradas lógicas."
+    }
+  },
+  {
+    "dia": "11-04",
+    "tema": "Computadores e invenções",
+    "simples": {
+      "titulo": "Resistor elétrico",
+      "enunciado": "calcule a corrente usando tensão e resistência positiva."
+    },
+    "avancado": {
+      "titulo": "Associação de resistores",
+      "enunciado": "calcule resistência equivalente de redes simples em série e paralelo."
+    }
+  },
+  {
+    "dia": "11-05",
+    "tema": "Computadores e invenções",
+    "simples": {
+      "titulo": "LED piscante",
+      "enunciado": "mostre LIGADO e DESLIGADO cinco vezes."
+    },
+    "avancado": {
+      "titulo": "Sequenciador de LEDs",
+      "enunciado": "processe padrões de quatro canais e gere tabela de estados por instante."
+    }
+  },
+  {
+    "dia": "11-06",
+    "tema": "Computadores e invenções",
+    "simples": {
+      "titulo": "Sensor de luz",
+      "enunciado": "avise quando uma leitura for menor que o limite."
+    },
+    "avancado": {
+      "titulo": "Controlador de luminosidade",
+      "enunciado": "simule ajuste automático de brilho com faixa morta e estados."
+    }
+  },
+  {
+    "dia": "11-07",
+    "tema": "Computadores e invenções",
+    "simples": {
+      "titulo": "Velocidade da internet",
+      "enunciado": "calcule tempo de download com tamanho e taxa fixa compatíveis."
+    },
+    "avancado": {
+      "titulo": "Monitor de transferência",
+      "enunciado": "estime tempos de várias tarefas compartilhando uma banda total limitada."
+    }
+  },
+  {
+    "dia": "11-08",
+    "tema": "Computadores e invenções",
+    "simples": {
+      "titulo": "Impressão de páginas",
+      "enunciado": "calcule folhas necessárias para impressão frente e verso."
+    },
+    "avancado": {
+      "titulo": "Fila de impressão",
+      "enunciado": "gerencie trabalhos por prioridade, páginas e estado de conclusão."
+    }
+  },
+  {
+    "dia": "11-09",
+    "tema": "Computadores e invenções",
+    "simples": {
+      "titulo": "Robô contador",
+      "enunciado": "conte de 0 até um número informado."
+    },
+    "avancado": {
+      "titulo": "Robô de entrega",
+      "enunciado": "navegue por grade, evite obstáculos e registre pontos atendidos."
+    }
+  },
+  {
+    "dia": "11-10",
+    "tema": "Computadores e invenções",
+    "simples": {
+      "titulo": "Coordenadas do cursor",
+      "enunciado": "leia X e Y e exiba a posição formatada."
+    },
+    "avancado": {
+      "titulo": "Editor de coordenadas",
+      "enunciado": "armazene pontos, calcule distâncias entre consecutivos e comprimento da rota."
+    }
+  },
+  {
+    "dia": "11-11",
+    "tema": "Computadores e invenções",
+    "simples": {
+      "titulo": "Percentual da bateria",
+      "enunciado": "diga se o percentual está abaixo de 20."
+    },
+    "avancado": {
+      "titulo": "Monitor de baterias",
+      "enunciado": "simule vários dispositivos com consumos diferentes por rodada."
+    }
+  },
+  {
+    "dia": "11-12",
+    "tema": "Computadores e invenções",
+    "simples": {
+      "titulo": "Uso da memória",
+      "enunciado": "calcule percentual de memória ocupada."
+    },
+    "avancado": {
+      "titulo": "Simulador de processos",
+      "enunciado": "aloque e libere memória de processos sem exceder limite físico."
+    }
+  },
+  {
+    "dia": "11-13",
+    "tema": "Computadores e invenções",
+    "simples": {
+      "titulo": "Temperatura do processador",
+      "enunciado": "compare leitura com limite configurado."
+    },
+    "avancado": {
+      "titulo": "Resfriamento automático",
+      "enunciado": "simule curva de ventoinha por faixas e registre mudanças de velocidade."
+    }
+  },
+  {
+    "dia": "11-14",
+    "tema": "Computadores e invenções",
+    "simples": {
+      "titulo": "Nome de arquivo",
+      "enunciado": "acrescente extensão `.txt` a um nome digitado sem extensão."
+    },
+    "avancado": {
+      "titulo": "Organizador de arquivos",
+      "enunciado": "classifique nomes por extensão, conte categorias e detecte nomes repetidos."
+    }
+  },
+  {
+    "dia": "11-15",
+    "tema": "Computadores e invenções",
+    "simples": {
+      "titulo": "Senha provisória",
+      "enunciado": "compare dois textos e diga se são iguais."
+    },
+    "avancado": {
+      "titulo": "Gerenciador de usuários",
+      "enunciado": "cadastre nomes e códigos de acesso, com bloqueio de duplicados e tentativas."
+    }
+  },
+  {
+    "dia": "11-16",
+    "tema": "Computadores e invenções",
+    "simples": {
+      "titulo": "Tamanho da tela",
+      "enunciado": "multiplique largura e altura para calcular pixels."
+    },
+    "avancado": {
+      "titulo": "Escalonamento de interface",
+      "enunciado": "calcule tamanho e posição de componentes após mudar resolução."
+    }
+  },
+  {
+    "dia": "11-17",
+    "tema": "Computadores e invenções",
+    "simples": {
+      "titulo": "Código de cores",
+      "enunciado": "calcule a média inteira de três canais RGB."
+    },
+    "avancado": {
+      "titulo": "Conversor de cores",
+      "enunciado": "converta RGB para hexadecimal e compare luminosidade estimada de amostras."
+    }
+  },
+  {
+    "dia": "11-18",
+    "tema": "Computadores e invenções",
+    "simples": {
+      "titulo": "Contagem de erros",
+      "enunciado": "some as ocorrências de três tipos de falha."
+    },
+    "avancado": {
+      "titulo": "Analisador de logs",
+      "enunciado": "conte mensagens por categoria e localize a maior sequência de erros."
+    }
+  },
+  {
+    "dia": "11-19",
+    "tema": "Computadores e invenções",
+    "simples": {
+      "titulo": "Pasta de projetos",
+      "enunciado": "calcule total de pastas e subpastas informadas."
+    },
+    "avancado": {
+      "titulo": "Estrutura de pastas",
+      "enunciado": "represente relações pai-filho em vetores e gere árvore textual com indentação."
+    }
+  },
+  {
+    "dia": "11-20",
+    "tema": "Computadores e invenções",
+    "simples": {
+      "titulo": "Volume do alto-falante",
+      "enunciado": "aplique aumento de dez unidades com limite de 100."
+    },
+    "avancado": {
+      "titulo": "Mesa de som",
+      "enunciado": "gerencie volumes de canais e estados mudo, solo e restauração."
+    }
+  },
+  {
+    "dia": "11-21",
+    "tema": "Computadores e invenções",
+    "simples": {
+      "titulo": "Alarme programado",
+      "enunciado": "compare hora em minutos com hora de alarme."
+    },
+    "avancado": {
+      "titulo": "Agenda de alarmes",
+      "enunciado": "armazene horários e recorrências e liste disparos para um dia informado."
+    }
+  },
+  {
+    "dia": "11-22",
+    "tema": "Computadores e invenções",
+    "simples": {
+      "titulo": "Sinal Wi-Fi fictício",
+      "enunciado": "classifique potência por três faixas numéricas definidas."
+    },
+    "avancado": {
+      "titulo": "Mapa de sinal",
+      "enunciado": "processe leituras em matriz e localize áreas com cobertura insuficiente."
+    }
+  },
+  {
+    "dia": "11-23",
+    "tema": "Computadores e invenções",
+    "simples": {
+      "titulo": "Tempo de inicialização",
+      "enunciado": "some durações de três etapas em segundos."
+    },
+    "avancado": {
+      "titulo": "Perfil de inicialização",
+      "enunciado": "analise tempos por processo, identifique gargalo e custo acumulado."
+    }
+  },
+  {
+    "dia": "11-24",
+    "tema": "Computadores e invenções",
+    "simples": {
+      "titulo": "Conversor de unidades",
+      "enunciado": "transforme kilobytes em bytes usando fator 1024."
+    },
+    "avancado": {
+      "titulo": "Calculadora de armazenamento",
+      "enunciado": "converta entre bytes, KiB, MiB e GiB com seleção de unidade."
+    }
+  },
+  {
+    "dia": "11-25",
+    "tema": "Computadores e invenções",
+    "simples": {
+      "titulo": "Controle remoto",
+      "enunciado": "associe os números 1 a 4 a comandos escritos."
+    },
+    "avancado": {
+      "titulo": "Protocolo de comandos",
+      "enunciado": "interprete uma sequência de instruções com parâmetros e valide erros."
+    }
+  },
+  {
+    "dia": "11-26",
+    "tema": "Computadores e invenções",
+    "simples": {
+      "titulo": "Fila de tarefas",
+      "enunciado": "numere N tarefas cadastradas."
+    },
+    "avancado": {
+      "titulo": "Escalonador simples",
+      "enunciado": "execute tarefas por prioridade e duração com relatório de espera."
+    }
+  },
+  {
+    "dia": "11-27",
+    "tema": "Computadores e invenções",
+    "simples": {
+      "titulo": "Alerta de disco",
+      "enunciado": "verifique se espaço livre está abaixo do mínimo."
+    },
+    "avancado": {
+      "titulo": "Limpeza simulada",
+      "enunciado": "escolha arquivos temporários por tamanho e prioridade para liberar espaço-alvo."
+    }
+  },
+  {
+    "dia": "11-28",
+    "tema": "Computadores e invenções",
+    "simples": {
+      "titulo": "Atualização de sistema",
+      "enunciado": "calcule o progresso percentual a partir de blocos concluídos."
+    },
+    "avancado": {
+      "titulo": "Gerenciador de atualizações",
+      "enunciado": "simule dependências entre pacotes e identifique ordem válida de instalação."
+    }
+  },
+  {
+    "dia": "11-29",
+    "tema": "Computadores e invenções",
+    "simples": {
+      "titulo": "Estado da conexão",
+      "enunciado": "indique ONLINE ou OFFLINE conforme uma entrada booleana."
+    },
+    "avancado": {
+      "titulo": "Monitor de rede",
+      "enunciado": "acompanhe resultados de testes e identifique quedas consecutivas de conexão."
+    }
+  },
+  {
+    "dia": "11-30",
+    "tema": "Computadores e invenções",
+    "simples": {
+      "titulo": "Fechamento tecnológico",
+      "enunciado": "calcule média de três avaliações de um aplicativo."
+    },
+    "avancado": {
+      "titulo": "Painel de bugs",
+      "enunciado": "cadastre falhas por severidade, status e módulo e gere resumo de pendências."
+    }
+  },
+  {
+    "dia": "12-01",
+    "tema": "Encerramento e celebrações",
+    "simples": {
+      "titulo": "Contagem para a festa",
+      "enunciado": "faça contagem regressiva de N até 0."
+    },
+    "avancado": {
+      "titulo": "Cronograma da festa",
+      "enunciado": "organize atividades por horário e duração, detectando conflitos."
+    }
+  },
+  {
+    "dia": "12-02",
+    "tema": "Encerramento e celebrações",
+    "simples": {
+      "titulo": "Luzes decorativas",
+      "enunciado": "calcule a quantidade total de lâmpadas em N cordões iguais."
+    },
+    "avancado": {
+      "titulo": "Painel de luzes",
+      "enunciado": "simule padrões de piscada em matriz por lâmpada e turno."
+    }
+  },
+  {
+    "dia": "12-03",
+    "tema": "Encerramento e celebrações",
+    "simples": {
+      "titulo": "Lista de presentes",
+      "enunciado": "some o preço de três presentes."
+    },
+    "avancado": {
+      "titulo": "Planejador de presentes",
+      "enunciado": "associe pessoas, itens e orçamento máximo, evitando presentes duplicados."
+    }
+  },
+  {
+    "dia": "12-04",
+    "tema": "Encerramento e celebrações",
+    "simples": {
+      "titulo": "Embrulho necessário",
+      "enunciado": "calcule a área de papel para uma face retangular."
+    },
+    "avancado": {
+      "titulo": "Corte de papel",
+      "enunciado": "distribua retângulos de embrulho em folhas de tamanho fixo e estime desperdício."
+    }
+  },
+  {
+    "dia": "12-05",
+    "tema": "Encerramento e celebrações",
+    "simples": {
+      "titulo": "Cartão de boas-festas",
+      "enunciado": "leia nome e imprima mensagem personalizada."
+    },
+    "avancado": {
+      "titulo": "Gerador de cartões",
+      "enunciado": "cadastre destinatários e modelos de texto e produza mensagens por categoria."
+    }
+  },
+  {
+    "dia": "12-06",
+    "tema": "Encerramento e celebrações",
+    "simples": {
+      "titulo": "Árvore iluminada",
+      "enunciado": "desenhe um triângulo de N linhas com asteriscos."
+    },
+    "avancado": {
+      "titulo": "Árvore ASCII",
+      "enunciado": "crie árvore simétrica com enfeites posicionados por uma matriz de caracteres."
+    }
+  },
+  {
+    "dia": "12-07",
+    "tema": "Encerramento e celebrações",
+    "simples": {
+      "titulo": "Biscoitos preparados",
+      "enunciado": "calcule quantas unidades resultam de N fornadas."
+    },
+    "avancado": {
+      "titulo": "Cozinha de festas",
+      "enunciado": "consolide ingredientes de receitas para diferentes quantidades de porções."
+    }
+  },
+  {
+    "dia": "12-08",
+    "tema": "Encerramento e celebrações",
+    "simples": {
+      "titulo": "Convites enviados",
+      "enunciado": "calcule quantos faltam distribuir."
+    },
+    "avancado": {
+      "titulo": "Organizador de convidados",
+      "enunciado": "cadastre confirmações, acompanhantes e calcule capacidade necessária."
+    }
+  },
+  {
+    "dia": "12-09",
+    "tema": "Encerramento e celebrações",
+    "simples": {
+      "titulo": "Bebidas geladas",
+      "enunciado": "converta litros disponíveis em copos de 200 ml."
+    },
+    "avancado": {
+      "titulo": "Planejador de bebidas",
+      "enunciado": "combine tamanhos de recipientes e estime volume restante após servir convidados."
+    }
+  },
+  {
+    "dia": "12-10",
+    "tema": "Encerramento e celebrações",
+    "simples": {
+      "titulo": "Desconto especial",
+      "enunciado": "aplique desconto de fim de ano a um produto."
+    },
+    "avancado": {
+      "titulo": "Analisador de ofertas",
+      "enunciado": "compare preços antigos e atuais e ordene descontos reais em porcentagem."
+    }
+  },
+  {
+    "dia": "12-11",
+    "tema": "Encerramento e celebrações",
+    "simples": {
+      "titulo": "Entrega de presentes",
+      "enunciado": "calcule a distância total de ida e volta."
+    },
+    "avancado": {
+      "titulo": "Roteirizador de entregas",
+      "enunciado": "compare ordens possíveis de visita a quatro locais usando distâncias informadas."
+    }
+  },
+  {
+    "dia": "12-12",
+    "tema": "Encerramento e celebrações",
+    "simples": {
+      "titulo": "Caixas empilhadas",
+      "enunciado": "calcule a altura de N caixas iguais."
+    },
+    "avancado": {
+      "titulo": "Empilhamento seguro",
+      "enunciado": "organize caixas por peso e limite de altura, com regras de estabilidade simplificadas."
+    }
+  },
+  {
+    "dia": "12-13",
+    "tema": "Encerramento e celebrações",
+    "simples": {
+      "titulo": "Meias decorativas",
+      "enunciado": "diga se a quantidade de meias é suficiente para todas as pessoas."
+    },
+    "avancado": {
+      "titulo": "Distribuição de brindes",
+      "enunciado": "atribua modelos de brinde a grupos, com limites de estoque."
+    }
+  },
+  {
+    "dia": "12-14",
+    "tema": "Encerramento e celebrações",
+    "simples": {
+      "titulo": "Sorteio de números",
+      "enunciado": "leia três números e exiba-os em ordem crescente."
+    },
+    "avancado": {
+      "titulo": "Sorteio controlado",
+      "enunciado": "valide uma sequência de vencedores sem repetição a partir de números informados."
+    }
+  },
+  {
+    "dia": "12-15",
+    "tema": "Encerramento e celebrações",
+    "simples": {
+      "titulo": "Mesa de jantar",
+      "enunciado": "calcule quantos lugares faltam para N convidados."
+    },
+    "avancado": {
+      "titulo": "Organização das mesas",
+      "enunciado": "distribua grupos familiares por mesas respeitando capacidades e proximidade."
+    }
+  },
+  {
+    "dia": "12-16",
+    "tema": "Encerramento e celebrações",
+    "simples": {
+      "titulo": "Sobremesa dividida",
+      "enunciado": "calcule a quantidade de fatias por pessoa e a sobra."
+    },
+    "avancado": {
+      "titulo": "Distribuição de sobremesas",
+      "enunciado": "divida porções de vários sabores por preferências e estoques."
+    }
+  },
+  {
+    "dia": "12-17",
+    "tema": "Encerramento e celebrações",
+    "simples": {
+      "titulo": "Papel de presente",
+      "enunciado": "converta metros para centímetros."
+    },
+    "avancado": {
+      "titulo": "Gerente de embalagens",
+      "enunciado": "escolha caixas de dimensões disponíveis para objetos com medidas informadas."
+    }
+  },
+  {
+    "dia": "12-18",
+    "tema": "Encerramento e celebrações",
+    "simples": {
+      "titulo": "Roupas para festa",
+      "enunciado": "calcule o total de peças de três categorias."
+    },
+    "avancado": {
+      "titulo": "Organizador de roupas",
+      "enunciado": "monte combinações de peças sem repetir uma mesma peça entre conjuntos."
+    }
+  },
+  {
+    "dia": "12-19",
+    "tema": "Encerramento e celebrações",
+    "simples": {
+      "titulo": "Nota da decoração",
+      "enunciado": "calcule média de três avaliações."
+    },
+    "avancado": {
+      "titulo": "Júri de decoração",
+      "enunciado": "ordene apresentações pela média ponderada de notas de jurados."
+    }
+  },
+  {
+    "dia": "12-20",
+    "tema": "Encerramento e celebrações",
+    "simples": {
+      "titulo": "Duração da celebração",
+      "enunciado": "calcule diferença de tempo entre dois horários, mesmo após meia-noite."
+    },
+    "avancado": {
+      "titulo": "Agenda noturna",
+      "enunciado": "organize atrações e calcule horários de término atravessando a virada do dia."
+    }
+  },
+  {
+    "dia": "12-21",
+    "tema": "Encerramento e celebrações",
+    "simples": {
+      "titulo": "Presentes por pessoa",
+      "enunciado": "calcule total de presentes para N pessoas recebendo dois cada."
+    },
+    "avancado": {
+      "titulo": "Conferência de pacotes",
+      "enunciado": "valide etiquetas de destinatários, conte pacotes e detecte duplicatas."
+    }
+  },
+  {
+    "dia": "12-22",
+    "tema": "Encerramento e celebrações",
+    "simples": {
+      "titulo": "Mensagens enviadas",
+      "enunciado": "conte quantas mensagens foram enviadas em N dias, com um valor fixo por dia."
+    },
+    "avancado": {
+      "titulo": "Relatório de mensagens",
+      "enunciado": "identifique dia de maior envio e média semanal a partir de vetor."
+    }
+  },
+  {
+    "dia": "12-23",
+    "tema": "Encerramento e celebrações",
+    "simples": {
+      "titulo": "Festa no orçamento",
+      "enunciado": "compare o custo da festa com o orçamento disponível."
+    },
+    "avancado": {
+      "titulo": "Ajustador de orçamento",
+      "enunciado": "reduza ou substitua itens por prioridade até caber no valor disponível."
+    }
+  },
+  {
+    "dia": "12-24",
+    "tema": "Encerramento e celebrações",
+    "simples": {
+      "titulo": "Preparativos finais",
+      "enunciado": "conte quantas de cinco tarefas foram marcadas como concluídas."
+    },
+    "avancado": {
+      "titulo": "Checklist dependente",
+      "enunciado": "mantenha tarefas com pré-requisitos e identifique quais estão liberadas."
+    }
+  },
+  {
+    "dia": "12-25",
+    "tema": "Encerramento e celebrações",
+    "simples": {
+      "titulo": "Visitas familiares",
+      "enunciado": "some distâncias de três trajetos."
+    },
+    "avancado": {
+      "titulo": "Planejamento de visitas",
+      "enunciado": "organize paradas em ordem, calcule distância total e restrições de horário."
+    }
+  },
+  {
+    "dia": "12-26",
+    "tema": "Encerramento e celebrações",
+    "simples": {
+      "titulo": "Doações recebidas",
+      "enunciado": "calcule a soma de três doações."
+    },
+    "avancado": {
+      "titulo": "Campanha solidária",
+      "enunciado": "registre doações por categoria, distribua kits e mostre faltas de materiais."
+    }
+  },
+  {
+    "dia": "12-27",
+    "tema": "Encerramento e celebrações",
+    "simples": {
+      "titulo": "Potes de sobras",
+      "enunciado": "calcule recipientes necessários para guardar N porções."
+    },
+    "avancado": {
+      "titulo": "Aproveitamento de alimentos",
+      "enunciado": "distribua porções de pratos entre recipientes com diferentes capacidades."
+    }
+  },
+  {
+    "dia": "12-28",
+    "tema": "Encerramento e celebrações",
+    "simples": {
+      "titulo": "Contando os dias",
+      "enunciado": "calcule quantos dias faltam para o dia 31 de dezembro."
+    },
+    "avancado": {
+      "titulo": "Agenda de encerramento",
+      "enunciado": "ordene pendências por prazo e destaque tarefas que ultrapassam uma data limite."
+    }
+  },
+  {
+    "dia": "12-29",
+    "tema": "Encerramento e celebrações",
+    "simples": {
+      "titulo": "Retrospectiva pessoal",
+      "enunciado": "calcule média de quatro metas percentuais."
+    },
+    "avancado": {
+      "titulo": "Painel de metas",
+      "enunciado": "acompanhe 12 resultados mensais em vetor e calcule evolução e melhores períodos."
+    }
+  },
+  {
+    "dia": "12-30",
+    "tema": "Encerramento e celebrações",
+    "simples": {
+      "titulo": "Preparando a virada",
+      "enunciado": "converta segundos restantes em minutos e segundos."
+    },
+    "avancado": {
+      "titulo": "Relógio de eventos",
+      "enunciado": "simule a contagem de vários eventos até um horário-alvo em segundos."
+    }
+  },
+  {
+    "dia": "12-31",
+    "tema": "Encerramento e celebrações",
+    "simples": {
+      "titulo": "Ano novo",
+      "enunciado": "leia uma meta pessoal e imprima mensagem com ela."
+    },
+    "avancado": {
+      "titulo": "Planejador anual",
+      "enunciado": "cadastre 12 metas, distribua prazos e gere painel textual de acompanhamento."
+    }
+  }
+]
