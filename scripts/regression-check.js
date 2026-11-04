@@ -1,4 +1,7 @@
+const fs = require('node:fs');
+const path = require('node:path');
 const {
+  root,
   ensureRuntimeLoaded,
   expectOk,
   expectError,
@@ -33,6 +36,19 @@ async function run() {
   for (const example of docExamples) {
     await expectOk(`docs ${example.name}`, example.source);
   }
+
+  const errorDocumentation = fs.readFileSync(path.join(root, 'src/docs/erros.md'), 'utf8');
+  const undefinedVariableExample = errorDocumentation.match(
+    /Código com erro:\s*```text\s*([\s\S]*?)```/,
+  );
+  if (!undefinedVariableExample) {
+    throw new Error('docs erros.md: exemplo inválido de variável não declarada não encontrado');
+  }
+  await expectError(
+    'docs erros.md#variavel-nao-declarada',
+    undefinedVariableExample[1].trim(),
+    /Variavel ["']total["'] nao declarada/i,
+  );
 
   await expectOk('recursao de funcao', `
 algoritmo "rec"

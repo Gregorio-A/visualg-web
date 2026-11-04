@@ -1385,14 +1385,14 @@ html[data-theme="visualg-3"] .modal-tab.active { background:linear-gradient(180d
 @property --ide-left-track { syntax:"<length>"; inherits:false; initial-value:308px; }
 @property --ide-right-track { syntax:"<length>"; inherits:false; initial-value:400px; }
 @property --ide-debug-track { syntax:"<length>"; inherits:false; initial-value:300px; }
-.ide-shell { --ide-left-track:var(--ide-left); --ide-right-track:var(--ide-right); --ide-left-resizer-track:6px; --ide-right-resizer-track:6px; transition:--ide-left-track 420ms var(--ide-motion-ease-out),--ide-right-track 420ms var(--ide-motion-ease-out),grid-template-columns 420ms var(--ide-motion-ease-out) !important; }
-.ide-shell.is-resizing-columns { transition-duration:180ms !important; }
+.ide-shell { --ide-left-track:var(--ide-left); --ide-right-track:var(--ide-right); --ide-left-resizer-track:6px; --ide-right-resizer-track:6px; transition:--ide-left-track 420ms var(--ide-motion-ease-out),--ide-right-track 420ms var(--ide-motion-ease-out) !important; }
+.ide-shell.is-resizing-columns { transition:none !important; }
 body > .main-content > .ide-shell { grid-template-columns:var(--ide-left-track) var(--ide-left-resizer-track) minmax(0,1fr) var(--ide-right-resizer-track) var(--ide-right-track) !important; }
 body.sidebar-left-collapsed > .main-content > .ide-shell { --ide-left-track:0px; --ide-left-resizer-track:0px; grid-template-columns:var(--ide-left-track) 0 minmax(0,1fr) var(--ide-right-resizer-track) var(--ide-right-track) !important; }
 body.sidebar-right-collapsed > .main-content > .ide-shell { --ide-right-track:0px; --ide-right-resizer-track:0px; grid-template-columns:var(--ide-left-track) var(--ide-left-resizer-track) minmax(0,1fr) 0 var(--ide-right-track) !important; }
 body.sidebar-left-collapsed.sidebar-right-collapsed > .main-content > .ide-shell { grid-template-columns:0 0 minmax(0,1fr) 0 0 !important; }
-.right-sidebar { --ide-debug-track:var(--ide-debug-height); --ide-debug-header-track:35px; --ide-vars-min-track:140px; grid-template-rows:var(--ide-debug-header-track) minmax(180px,var(--ide-debug-track)) 8px minmax(var(--ide-vars-min-track),1fr) !important; transition:--ide-debug-track 420ms var(--ide-motion-ease-out),grid-template-rows 420ms var(--ide-motion-ease-out) !important; }
-.right-sidebar.is-resizing-panels { transition-duration:180ms !important; }
+.right-sidebar { --ide-debug-track:var(--ide-debug-height); --ide-debug-header-track:35px; --ide-vars-min-track:140px; grid-template-rows:var(--ide-debug-header-track) minmax(180px,var(--ide-debug-track)) 8px minmax(var(--ide-vars-min-track),1fr) !important; transition:--ide-debug-track 420ms var(--ide-motion-ease-out) !important; }
+.right-sidebar.is-resizing-panels { transition:none !important; }
 @media (min-width:1001px) and (max-width:1919px) { .ide-shell { --ide-left-resizer-track:6px; --ide-right-resizer-track:6px; } .right-sidebar { --ide-debug-header-track:clamp(32px,1.823vw,35px); } }
 @media (max-width:900px) { .right-sidebar { --ide-vars-min-track:0px; } }
 

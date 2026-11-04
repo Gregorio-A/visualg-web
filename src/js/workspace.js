@@ -1766,8 +1766,9 @@
                 if (latest) applyResize(latest);
             });
         });
-        function finishResize() {
+        function finishResize(event) {
             if (resizeFrame) { window.cancelAnimationFrame(resizeFrame); resizeFrame = 0; }
+            if (event && typeof event.clientX === 'number') pendingEvent = { clientX: event.clientX, clientY: event.clientY };
             if (pendingEvent) { var latest = pendingEvent; pendingEvent = null; applyResize(latest); }
             handle.classList.remove('dragging'); document.querySelector('.ide-shell').classList.remove('is-resizing-columns'); saveLayout();
         }
@@ -1815,6 +1816,7 @@
         function finish(event) {
             if (event.pointerId !== pointerId) return;
             if (resizeFrame) { window.cancelAnimationFrame(resizeFrame); resizeFrame = 0; }
+            pendingEvent = { clientX: event.clientX, clientY: event.clientY };
             if (pendingEvent) { var latest = pendingEvent; pendingEvent = null; resize(latest); }
             pointerId = null;
             handle.classList.remove('dragging');

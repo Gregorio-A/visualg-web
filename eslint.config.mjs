@@ -1,5 +1,5 @@
 const sharedGlobals = {
-  Blob: 'readonly', CodeMirror: 'readonly', DocsPanel: 'readonly', FileReader: 'readonly',
+  Blob: 'readonly', CodeMirror: 'readonly', CustomEvent: 'readonly', DocsPanel: 'readonly', FileReader: 'readonly', Node: 'readonly',
   MutationObserver: 'readonly', URL: 'readonly',
   alert: 'readonly', clearTimeout: 'readonly', console: 'readonly', document: 'readonly',
   fetch: 'readonly', getComputedStyle: 'readonly', localStorage: 'readonly', lucide: 'readonly', marked: 'readonly',

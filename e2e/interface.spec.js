@@ -17,11 +17,9 @@ async function openApp(page) {
 
 async function createFileThroughWelcome(page) {
   const tabsBeforeCreate = await page.locator('.tab-item').count();
-  await page.locator('#btn-empty-new').click();
-  const dialog = page.locator('.workspace-create-dialog[open]');
-  await expect(dialog).toBeVisible();
-  await dialog.locator('button[type="submit"]').click();
-  await expect(dialog).toBeHidden();
+  const welcomeAction = page.locator('#btn-empty-new');
+  if (await welcomeAction.isVisible()) await welcomeAction.click();
+  else await page.locator('#btn-new-workspace-file').click();
   await expect(page.locator('.tab-item')).toHaveCount(tabsBeforeCreate + 1);
   await expect.poll(() => page.evaluate(() => window.TabManager.getActiveTab()?.fileName || '')).toContain('MeuAlgoritmo');
 }
@@ -411,7 +409,9 @@ test('importar o mesmo nome duas vezes cria cópias sem substituir códigos', as
   await page.locator('#file-input').setInputFiles({ name:'entrada.alg', mimeType:'text/plain', buffer:Buffer.from(second) });
   await expect.poll(() => page.evaluate(() => window.TabManager.getTabs().filter((tab) => /^entrada(?: \(cópia \d+\))?\.alg$/.test(tab.fileName || '')).length)).toBe(2);
   await page.reload();
-  await expect.poll(() => page.evaluate(() => window.TabManager.getTabs().filter((tab) => /^entrada(?: \(cópia \d+\))?\.alg$/.test(tab.fileName || '')).map((tab) => tab.code).sort())).toEqual([first, second].sort());
+  const renamedFirst = first.replace('"EntradaUm"', '"entrada"');
+  const renamedSecond = second.replace('"EntradaDois"', '"entrada (cópia 1)"');
+  await expect.poll(() => page.evaluate(() => window.TabManager.getTabs().filter((tab) => /^entrada(?: \(cópia \d+\))?\.alg$/.test(tab.fileName || '')).map((tab) => tab.code).sort())).toEqual([renamedFirst, renamedSecond].sort());
 });
 
 test('selecionar outro arquivo aberto na lateral também sai da tela inicial', async ({ page }) => {
@@ -440,11 +440,13 @@ test('menu de ações rápidas permanece acima dos arquivos e mostra todas as a�
   await trigger.click();
   const menu = page.locator('#sidebar-actions-menu');
   await expect(menu).toBeVisible();
-  await expect(menu.getByRole('menuitem')).toHaveCount(4);
+  await expect(menu.getByRole('menuitem')).toHaveCount(6);
   await expect(menu).toContainText('Exportar arquivo');
   await expect(menu).toContainText('Criar novo arquivo');
   await expect(menu).toContainText('Criar nova pasta');
   await expect(menu).toContainText('Duplicar arquivo');
+  await expect(menu).toContainText('Importar arquivo');
+  await expect(menu).toContainText('Excluir arquivos selecionados');
   await expect(menu.locator('.sidebar-actions-menu-heading')).toHaveText('Ações rápidas');
   const menuStyle = await menu.evaluate((element) => {
     const style = window.getComputedStyle(element);
@@ -473,7 +475,7 @@ test('ações rápidas são recalculadas ao voltar da documentação para Arquiv
   await trigger.click();
   const menu = page.locator('#sidebar-actions-menu');
   await expect(menu).toBeVisible();
-  await expect(menu.getByRole('menuitem')).toHaveCount(4);
+  await expect(menu.getByRole('menuitem')).toHaveCount(6);
   await expect(menu).toContainText('Duplicar arquivo');
 });
 
@@ -608,17 +610,13 @@ test('relatar problema explica o destino antes de abrir Issues', async ({ page }
   });
 });
 
-test('modal de criar arquivo permanece centralizado na janela', async ({ page }) => {
+test('criar arquivo abre imediatamente uma nova aba com o modelo', async ({ page }) => {
   await openApp(page);
+  const tabsBeforeCreate = await page.locator('.tab-item').count();
   await page.locator('#btn-new-workspace-file').click();
-  const dialog = page.locator('#new-workspace-file-dialog');
-  await expect(dialog).toBeVisible();
-  await expect.poll(() => dialog.evaluate((node) => {
-    const rect = node.getBoundingClientRect();
-    return Math.abs(rect.left + rect.width / 2 - window.innerWidth / 2) < 2
-      && Math.abs(rect.top + rect.height / 2 - window.innerHeight / 2) < 2;
-  })).toBe(true);
-  await dialog.locator('[data-create-cancel]').click();
+  await expect(page.locator('.tab-item')).toHaveCount(tabsBeforeCreate + 1);
+  await expect.poll(() => page.evaluate(() => window.TabManager.getActiveTab()?.fileName || '')).toContain('MeuAlgoritmo');
+  await expect.poll(() => page.evaluate(() => window.VisualGEditor.getValue())).toContain('fimalgoritmo');
 });
 
 test('configurações usam fontes em px e abrem o console em modal grande por padrão', async ({ page }) => {
@@ -637,7 +635,7 @@ test('configurações usam fontes em px e abrem o console em modal grande por pa
 
 test('desafio do dia abre os dois níveis e mantém a solução fechada até solicitar', async ({ page }) => {
   await openApp(page);
-  await expect(page.locator('#daily-challenge-home')).toContainText('Desafio do Dia');
+  await expect(page.locator('#daily-challenge-home')).toContainText(/Desafios do dia/i);
   await expect(page.locator('#daily-challenge-home .daily-challenge-home-row')).toHaveCount(2);
   await page.locator('#btn-sidebar-docs').click();
   await page.locator('.daily-challenge-sidebar-link').click();
@@ -667,7 +665,7 @@ test('desafio do dia abre os dois níveis e mantém a solução fechada até sol
 
 test('temas claros mantêm contraste legível e o Clássico substitui sua variante separada', async ({ page }, testInfo) => {
   await openApp(page);
-  await expect(page.locator('.logo-version')).toHaveText('1.0');
+  await expect(page.locator('.logo-version')).toHaveText('1.13');
   await expect(page.locator('#setting-theme option[value="visualg-classic-high-contrast"]')).toHaveCount(0);
   await page.locator('#btn-scale').click();
   for (const [groupName, count] of [['Escuros', 11], ['Claros', 11]]) {
@@ -875,17 +873,18 @@ fimalgoritmo`;
 test('abre e salva arquivo .alg', async ({ page }) => {
   await openApp(page);
   const source = ['Algoritmo "ArquivoE2E"', 'Inicio', '  escreval("arquivo")', 'fimalgoritmo'].join('\n');
+  const importedSource = source.replace('"ArquivoE2E"', '"entrada"');
   await page.locator('#file-input').setInputFiles({ name: 'entrada.alg', mimeType: 'text/plain', buffer: Buffer.from(source) });
-  await expect.poll(() => page.evaluate(() => window.VisualGEditor.getValue())).toBe(source);
+  await expect.poll(() => page.evaluate(() => window.VisualGEditor.getValue())).toBe(importedSource);
 
   const downloadPromise = page.waitForEvent('download');
   await page.locator('#btn-download-workspace').click();
   const download = await downloadPromise;
-  expect(download.suggestedFilename()).toBe('ArquivoE2E.alg');
+  expect(download.suggestedFilename()).toBe('entrada.alg');
   const stream = await download.createReadStream();
   const chunks = [];
   for await (const chunk of stream) chunks.push(chunk);
-  expect(Buffer.concat(chunks).toString('utf8')).toBe(source);
+  expect(Buffer.concat(chunks).toString('utf8')).toBe(importedSource);
 });
 
 test('restaura abas e uma cópia de recuperação', async ({ page }) => {
@@ -1547,10 +1546,8 @@ test('autocompletar aceita comando e barra de comandos cria arquivo', async ({ p
   const tabsBeforeNew = await page.locator('.tab-item').count();
   await page.locator('#command-input').fill('Novo arquivo');
   await page.locator('#command-results button').first().click();
-  const createDialog = page.locator('.workspace-create-dialog[open]');
-  await expect(createDialog).toBeVisible();
-  await createDialog.locator('button[type="submit"]').click();
   await expect(page.locator('.tab-item')).toHaveCount(tabsBeforeNew + 1);
+  await expect.poll(() => page.evaluate(() => window.TabManager.getActiveTab()?.fileName || '')).toContain('MeuAlgoritmo');
 });
 
 test('sugestões respeitam argumentos, blocos, comandos simples e cursor', async ({ page }) => {

@@ -107,9 +107,10 @@
         });
     }
 
-    function stopResize() {
+    function stopResize(event) {
         if (!isResizing) return;
         if (resizeFrame) { window.cancelAnimationFrame(resizeFrame); resizeFrame = 0; }
+        if (event && typeof event.clientX === 'number') pendingResizeEvent = { clientX: event.clientX, clientY: event.clientY };
         if (pendingResizeEvent) { var latest = pendingResizeEvent; pendingResizeEvent = null; applyResize(latest); }
         isResizing = false;
         document.body.classList.remove('resizing');

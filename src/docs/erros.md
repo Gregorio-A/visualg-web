@@ -45,7 +45,7 @@ As mensagens variam conforme o ponto em que o problema é detectado. Se a sugest
 
 Código com erro:
 
-```visualg
+```text
 algoritmo "SemDeclaracao"
 inicio
   total <- 10
